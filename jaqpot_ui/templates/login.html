@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form action="/send" method="POST"> {% csrf_token %}
+
+        <div class="login">
+		<div class="login-screen">
+			<div class="app-title">
+				<h1>Login</h1>
+			</div>
+
+			<div class="login-form">
+                 {% if error %}
+                  <p class="error">{{error}}</p>
+                {% endif %}
+				<div class="control-group">
+				<!--<input type="text" class="login-field" placeholder="username" id="login-name" name="username" value=""> -->
+				<label class="login-field-icon fui-user login-field">{{form.username}}</label>
+				</div>
+
+				<div class="control-group">
+				<!--<input type="password" class="login-field" value="" placeholder="password" id="login-pass" name="password"> -->
+					<label class="login-field-icon fui-lock login-field">{{form.password}}</label>
+				<!--<label class="login-field-icon fui-lock" for="login-pass"></label> -->
+				</div>
+                <input type="submit" class="btn btn-black btn-large btn-block" value="Log in" />
+				<!-- <a class="btn btn-black btn-large btn-block" href="/actions">login</a> -->
+				<a class="login-link" href="#">Lost your password?</a>
+			</div>
+		</div>
+	</div>
+         {% if form.errors %}
+            <div class="error">
+                <p>{{form.errors}}</p>
+            </div>
+        {% endif %}
+
+    </form>
+{% endblock %}
+
+<script>
+$(document).ready(function() {
+	$(.fui-user).attr("placeholder", "username");
+	$(.fui-lock).attr("placeholder", "password");
+	}
+</script>

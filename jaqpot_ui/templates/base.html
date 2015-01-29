@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>jaqpot</title>
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="/static/js/site.min.js"></script>
+    <script src="/static/js/jquery-1.11.0.min.js"></script>
+
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" media="all">
+    <link rel="stylesheet" href="/static/css/site.min.css" media="all">
+    <link rel="stylesheet" href="/static/css/site.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+
+
+    {% block header %}
+    {% endblock %}
+</head>
+<body>
+     {% include "util/menu.html" %}
+
+        <div class="wrapper">
+		    {% block content %}
+		    {% endblock %}
+        </div>
+
+
+</body>
+</html>
