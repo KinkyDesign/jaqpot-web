@@ -101,7 +101,7 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 
 TEMPLATE_DIRS = (
-  'jaqpot_ui\\templates',
+  'jaqpot_ui/templates',
 )
 
 # External Authenticator
