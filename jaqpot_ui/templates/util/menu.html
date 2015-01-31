@@ -6,71 +6,72 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
-            </button> <a class="navbar-brand" href="/"><img src="/static/img/red.png" height="20">Jaqpot</a>
+            </button> <a class="navbar-brand" href="/"><img src="/static/img/red.png" class="logo">Jaqpot</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-5">
-            {% if login %} <!-- If user is logged in -->
-            <ul class="nav navbar-nav">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Model <b class="caret"></b></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li class="dropdown-header">Setting</li>
-                        <li>
-                            <a href="#">Train</a>
-                        </li>
-                        <li>
-                            <a href="#">Predict</a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Algorithm <b class="caret"></b></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li class="dropdown-header">Setting</li>
-                        <li>
-                            <a href="#">Train</a>
-                        </li>
-                        <li>
-                            <a href="#">Predict</a>
-                        </li>
-                        <!--<li>
-                            <a href="#">Something else here</a>
-                        </li>
-                        <li class="divider"></li>
-                        <li class="active">
-                            <a href="#">Separated link</a>
-                        </li>
-                        <li class="divider"></li>
-                        <li class="disabled">
-                            <a href="#">One more separated link</a>
-                        </li>  -->
-                    </ul>
-                </li>
-            <ul class="nav navbar-nav">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Policies <b class="caret"></b></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li>
-                            <a href="#">Train</a>
-                        </li>
-                        <li>
-                            <a href="#">Predict</a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+            {% if token %} <!-- If user is logged in -->
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Model <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="dropdown-header">Setting</li>
+                            <li>
+                                <a href="#">Train</a>
+                            </li>
+                            <li>
+                                <a href="#">Predict</a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Algorithm <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="dropdown-header">Setting</li>
+                            <li>
+                                <a href="#">Train</a>
+                            </li>
+                            <li>
+                                <a href="#">Predict</a>
+                            </li>
+                            <!--<li>
+                                <a href="#">Something else here</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li class="active">
+                                <a href="#">Separated link</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li class="disabled">
+                                <a href="#">One more separated link</a>
+                            </li>  -->
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Policies <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a href="#">Edit Policy</a>
+                            </li>
+                            <li>
+                                <a href="#">Delete Policy</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                 <span class="user-info">
+                        Welcome back, <a href="#">{{username}}</a>
+                        <a href="/logout"><span class="glyphicon glyphicon-off"></span></a>
+                        </span>
+            {% else %} <!-- If user hasn't logged in -->
+                <a class="btn btn-danger navbar-btn" href="/login">Sign in</a>
+                <a class="btn btn-danger navbar-btn" href="http://www.opentox.org/join_form">Create Account</a>
+                <form class="navbar-form navbar-right" role="search">
+                    <div class="form-search search-only"><i class="search-icon glyphicon glyphicon-search hoverable"></i>
+                        <input class="form-control search-query">
+                    </div>
+                </form>
             {% endif %}
-            {% if not login %} <!-- If user hasn't logged in -->
-            <a class="btn btn-danger navbar-btn" href="send">Sign in</a>
-            <a class="btn btn-danger navbar-btn" href="http://www.opentox.org/join_form">Create Account</a>
-            {% endif %}
-            <form class="navbar-form navbar-right" role="search">
-                <div class="form-search search-only"><i class="search-icon glyphicon glyphicon-search"></i>
-                    <input class="form-control search-query">
-                </div>
-            </form>
         </div>
     </div>
 </nav>

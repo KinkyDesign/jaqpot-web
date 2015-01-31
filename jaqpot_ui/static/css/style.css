@@ -1,5 +1,5 @@
 .dropdown-menu {
-background-color: #ed5565
+background-color: #d43f3a
 }
 //login css
 * {
@@ -9,11 +9,24 @@ box-sizing: border-box;
 *:focus {
 	outline: none;
 }
+
+html{
+  height: 100%;
+}
+body {
+  min-height: 100%;
+}
+
 body {
 font-family: Arial;
-background-color: #d43f3a;
+//background-color: #d43f3a;
+//background-color: #BFBFBF;
+background-position: center 30%;
+background-image: url('/static/img/background.jpg');
+background-repeat: no-repeat;
 padding: 50px;
 }
+
 .login {
 margin: 20px auto;
 width: 300px;
@@ -27,6 +40,12 @@ border-radius: 5px
 .app-title {
 text-align: center;
 color: #777;
+}
+
+nav .logo {
+    width: auto;
+    height: 30px;
+    margin-top: -5px;
 }
 
 .login-form {
@@ -75,4 +94,14 @@ background-color:#434A54;
 
 .btn-black:hover{
 background-color:#656D78;
+}
+
+.user-info {
+    color: #fff;
+    padding: 10px;
+    float: right;
+}
+
+.hoverable:hover {
+    opacity: 1;
 }

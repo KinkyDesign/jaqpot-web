@@ -1,14 +1,22 @@
 from django.shortcuts import render, redirect
 from jaqpot_ui.forms import UserForm
 import requests
+import json
 import subprocess
+from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT
 from django.http import HttpResponseRedirect, HttpResponse
 
-# Create your views here.
-def WelcomePage(request):
-    return render(request, "mainPage.html")
 
-def Login(request):
+# Home page
+def index(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+
+    return render(request, "mainPage.html", {'token': token, 'username': username})
+
+
+# Authenticate user
+def login(request):
     if request.method == 'GET':
         form = UserForm(initial={'username': ''})
         return render(request, "login.html", {'form': form})
@@ -19,23 +27,33 @@ def Login(request):
         else:
             username = form['username'].value()
             password = form['password'].value()
-            url = 'https://opensso.in-silico.ch:443/auth/authenticate?uri=service=openldap'
 
-            token = subprocess.check_output(['curl', '-X', 'POST', '-k', 'https://opensso.in-silico.ch:443/auth/authenticate?uri=service=openldap', '-d', 'username='+username, '-d', 'password='+password])
-            if token.startswith("token.id"):
-                return redirect('/actions?username='+username+'&token='+token)
-                #return render(request, "mainPage.html", {'username': username, 'token': token, 'login': True})
+            # send request to external authenticator
+            r = requests.post(EXT_AUTH_URL_LOGIN, data={'username': username, 'password': password})
+            if r.status_code == 200: #
+                token = r.text.split('=')[1]
+                token = token[:-1]
+
+                # set session request
+                request.session['token'] = token
+                request.session['username'] = username
+                return redirect('/')
             else:
-                error = {"Wrong username or password"}
+                error = "Wrong username or password"
                 return render(request, "login.html", {'form': form, 'error': error})
 
-def CheckUser(request):
-     #check if user exists and redirect to mainpage as logged in
-     if request.method == 'GET':
-         username = request.GET.get('username')
-         token = request.GET.get('token')
-         print username
-         return render(request, "mainPage.html", {'username': username, 'token':token, 'login':True})
 
+def logout(request):
+    token = request.session.get('token', '')
+    if token:
+        # send request to logout from auth server
+        url = EXT_AUTH_URL_LOGOUT + '?subjectid=' + token
+        requests.get(url)
 
+        # remove from session
+        request.session['token'] = ''
+        request.session['username'] = ''
+
+        # send to home page
+        return redirect('/')
 

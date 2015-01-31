@@ -5,15 +5,10 @@ from django.contrib.auth.decorators import login_required
 from jaqpot_ui import views
 
 urlpatterns = patterns('',
-    url(r'^$', views.WelcomePage, name='home'),
-    url(r'^send', views.Login),
-    url(r'^actions', views.CheckUser),
+                       url(r'^$', views.index, name='home'),
+                       url(r'^login', views.login),
+                       url(r'^logout', views.logout),
 
-    # Authentication module
-    #url(r'^account/', include('allauth.urls')),
-
-    # Administration page
-    url(r'^admin/', include(admin.site.urls)),
-
-
+                       # Administration page
+                       url(r'^admin/', include(admin.site.urls)),
 )

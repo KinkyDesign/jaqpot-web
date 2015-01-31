@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <form action="/send" method="POST"> {% csrf_token %}
+    <form action="/login" method="POST"> {% csrf_token %}
 
         <div class="login">
 		<div class="login-screen">
@@ -10,9 +10,13 @@
 			</div>
 
 			<div class="login-form">
-                 {% if error %}
-                  <p class="error">{{error}}</p>
-                {% endif %}
+				{% if error %}
+					<div class="alert alert-danger" role="alert">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{error}}</span>
+					</div>
+				{% endif %}
+
 				<div class="control-group">
 				<!--<input type="text" class="login-field" placeholder="username" id="login-name" name="username" value=""> -->
 				<label class="login-field-icon fui-user login-field">{{form.username}}</label>
@@ -29,11 +33,6 @@
 			</div>
 		</div>
 	</div>
-         {% if form.errors %}
-            <div class="error">
-                <p>{{form.errors}}</p>
-            </div>
-        {% endif %}
 
     </form>
 {% endblock %}
