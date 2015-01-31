@@ -101,5 +101,5 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 
 TEMPLATE_DIRS = (
-  '/home/gkaimakas/Desktop/ui/jaqpot_ui/jaqpot_ui/templates',
+  'jaqpot_ui\\templates',
 )
