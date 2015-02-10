@@ -3,6 +3,76 @@
 {% block content %}
 
 <body>
+<div class="col-md-8" style="position: absolute; top:20%;">
+    <div id="side-bar" class="span2" style="position:fixed; right:3%;" >
+        <video width="320" height="240" controls>
+        <source src="static/video/VideoLogo.mp4" type="video/mp4">
+        <source src="movie.ogg" type="video/ogg">
+Your browser does not support the video tag.
+</video>
+    </div>
+        <div class="pricing">
+            <ul>
+                <li class="unit price-primary">
+                    <div class="price-title">
+                        <h3>Train</h3>
+                    </div>
+                    <div class="price-body">
+                        <h4>Step 1</h4>
+                        <p>Train a model</p>
+                        <ul><li>Choose algorithms</li>
+                            <li>Choose a dataset</li>
+                            <li>Define algorithm parameters</li>
+                        </ul>
+                    </div>
+                    <div class="price-foot">
+                        <a class="btn btn-primary" href="/">TRAIN</a>
+                    </div>
+                </li>
+                <li class="unit price-success active">
+                    <div class="price-title">
+                        <h3>Calculate</h3>
+                    </div>
+                    <div class="price-body">
+                        <h4>Step 2</h4>
+                        <p>Calculate descriptors</p>
+                        <ul><li>choice1</li>
+                            <li>choice2</li>
+                            <li>choice3</li>
+                        </ul>
+                    </div>
+                    <div class="price-foot">
+                        <a class="btn btn-success" href="/">CALCULATE</a>
+                    </div>
+                </li>
+                <li class="unit price-warning">
+                    <div class="price-title" style="background-color:#da4453;">
+                        <h3>Predict</h3>
+                    </div>
+                    <div class="price-body" style="background-color:#faedff;">
+                        <h4>Step 3</h4>
+                        <p>Predict a property</p>
+                        <ul style="border-top: 1px solid #da4453;"><li>Choose conformer</li>
+                            <li>Choose feature</li>
+                            <li>Choose model</li>
+                        </ul>
+                    </div>
+                    <div class="price-foot">
+                        <a class="btn btn-danger" href="/">PREDICT</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+</div>
+
+<!--<div class="sidebar" style="width: 20%; float: right;">
+    <video width="320" height="240" controls>
+        <source src="static/video/VideoLogo.mp4" type="video/mp4">
+        <source src="movie.ogg" type="video/ogg">
+Your browser does not support the video tag.
+</video>
+</div>  -->
 
 </body>
 

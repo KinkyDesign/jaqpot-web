@@ -8,6 +8,14 @@ urlpatterns = patterns('',
                        url(r'^$', views.index, name='home'),
                        url(r'^login', views.login),
                        url(r'^logout', views.logout),
+                       url(r'^task', views.task),
+                       url(r'^t_detail', views.taskdetail),
+                       url(r'^bibtex', views.bibtex),
+                       url(r'^bib_detail', views.bib_detail),
+                       url(r'^add_bibtex', views.add_bibtex),
+                       url(r'^sub', views.sub),
+                       url(r'^user', views.user),
+
 
                        # Administration page
                        url(r'^admin/', include(admin.site.urls)),

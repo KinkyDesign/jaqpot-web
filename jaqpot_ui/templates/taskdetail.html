@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="div-table" style="width:100%;">
+    <h1>Task #{{name}}</h1>
+    {% if status == "running"%}
+    <div id="container" style=" width: 50%; float:left; min-width: 310px; height: 150px; max-width: 500px; margin: 0 auto"></div>
+    <div>
+            <label class="align">ID:</label>
+            <input id="id1" readonly="readonly" style="margin:5px" >
+        </div>
+        <div >
+            <label class="align">Status:</label>
+            <input id="status" readonly="readonly" style="margin:5px">
+            </div>
+        <div>
+            <label class="align">ETA:</label>
+            <input id="eta" readonly="readonly" style="margin:5px">
+        </div>
+        <br>
+        <a href="/" class="btn btn-danger" data-toggle="tooltip" title="Stop task"><i class="glyphicon glyphicon-remove-sign"></i></a>
+    {%elif status == "cancelled" %}
+        <h3>This task has failed </h3>
+        <div>
+            <label class="align">Actor:</label>
+            <input readonly="readonly" style="margin:5px" >
+        </div>
+        <div >
+            <label class="align">Message:</label>
+            <input readonly="readonly" style="margin:5px">
+        </div>
+        <div>
+            <label class="align">Code:</label>
+            <input readonly="readonly" style="margin:5px">
+        </div>
+        <div>
+            <label class="align">Details:</label>
+            <input readonly="readonly" style="margin:5px">
+        </div>
+        <br>
+        <a href="/" class="btn btn-danger" title="Report it">Report it</a>
+    {%elif status == "completed" %}
+        <h3>Completed task </h3>
+        <div>
+            <label class="align">Title:</label>
+            <input readonly="readonly" style="margin:5px" >
+        </div>
+        <div >
+            <label class="align">Creator:</label>
+            <input readonly="readonly" style="margin:5px">
+        </div>
+        <div>
+            <label class="align">Date:</label>
+            <input readonly="readonly" style="margin:5px">
+        </div>
+        <br>
+    {% endif %}
+        <input id="task" value="{{task_info}}" style="display:none">
+
+
+</div>
+
+
+
+
+<script>
+
+//display tooltip right
+$('[data-toggle="tooltip"]').tooltip({
+    'placement': 'right'
+});
+var params_json = JSON.parse($("#task").val() )
+$("#id1").val(params_json.id);
+$("#status").val('{{status}}');
+$("#eta").val(params_json.ETA);
+
+//Create chart pie
+$(function () {
+    $('#container').highcharts({
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false
+        },
+        title: {
+            text: 'Task status'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Task status',
+            data: [
+                ['Completed',   45.0],
+                ['Remaining',       55.0]
+
+            ]
+        }]
+    });
+});
+
+
+</script>
+{% endblock %}

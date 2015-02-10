@@ -6,6 +6,7 @@
     <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
     <script src="/static/js/site.min.js"></script>
     <script src="/static/js/jquery-1.11.0.min.js"></script>
+    <script src="/static/js/highcharts.js"></script>
 
 
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" media="all">
@@ -23,7 +24,38 @@
         <div class="wrapper">
 		    {% block content %}
 		    {% endblock %}
+            <!--Footer -->
+            <div class="push"></div>
         </div>
+
+        <div class="footer" id="footer">
+            <div class="container">
+                <div class="clearfix">
+                    <div class="footer-logo">
+                        <a href="/"><img src="/static/img/red.png" style="height:20px">Jaqpot</a>
+                    </div>
+                    <dl class="footer-nav">
+                        <dt class="nav-title">SOURCE</dt>
+                        <dd class="nav-item">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Source</a></dd>
+                    </dl>
+                    <dl class="footer-nav">
+                        <dt class="nav-title">DOCUMENTATION</dt>
+                            <dd class="nav-item">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Docs</a></dd>
+
+                    </dl>
+                    <dl class="footer-nav">
+                        <dt class="nav-title">CONTACT</dt>
+                        <dd class="nav-item">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Conctact Form</a></dd>
+                    </dl>
+                </div>
+            <div class="footer-copyright text-center">Copyright © 2015 KinkyDesign.All rights reserved.</div></div>
+
+        </div>
+
+
 
 
 </body>
