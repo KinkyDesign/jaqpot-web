@@ -37,8 +37,8 @@
       <file leaf-file-name="user_details.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/user_details.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-22.5" vertical-offset="0" max-vertical-offset="1620">
-              <caret line="36" column="0" selection-start-line="17" selection-start-column="12" selection-end-line="48" selection-end-column="18" />
+            <state vertical-scroll-proportion="-56.25" vertical-offset="0" max-vertical-offset="1620">
+              <caret line="90" column="25" selection-start-line="90" selection-start-column="25" selection-end-line="90" selection-end-column="25" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
@@ -51,7 +51,7 @@
       <file leaf-file-name="addbibtex.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/addbibtex.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-25.625" vertical-offset="90" max-vertical-offset="1005">
+            <state vertical-scroll-proportion="-29.375" vertical-offset="0" max-vertical-offset="1005">
               <caret line="47" column="32" selection-start-line="47" selection-start-column="32" selection-end-line="47" selection-end-column="32" />
               <folding />
             </state>
@@ -61,8 +61,8 @@
       <file leaf-file-name="bibdetail.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/bibdetail.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-15.708333" vertical-offset="238" max-vertical-offset="1680">
-              <caret line="41" column="12" selection-start-line="37" selection-start-column="4" selection-end-line="50" selection-end-column="6" />
+            <state vertical-scroll-proportion="-37.5" vertical-offset="0" max-vertical-offset="1080">
+              <caret line="60" column="0" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#table#0;n#div#0;n#!!top" expanded="true" />
@@ -74,8 +74,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.41080198" vertical-offset="1669" max-vertical-offset="3285">
-              <caret line="128" column="40" selection-start-line="128" selection-start-column="40" selection-end-line="128" selection-end-column="40" />
+            <state vertical-scroll-proportion="0.7299509" vertical-offset="1729" max-vertical-offset="3330">
+              <caret line="145" column="120" selection-start-line="145" selection-start-column="120" selection-end-line="145" selection-end-column="120" />
               <folding>
                 <element signature="e#0#45#0" expanded="true" />
               </folding>
@@ -86,8 +86,8 @@
       <file leaf-file-name="bibtex.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/bibtex.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-34.375" vertical-offset="0" max-vertical-offset="2445">
-              <caret line="55" column="16" selection-start-line="55" selection-start-column="16" selection-end-line="55" selection-end-column="16" />
+            <state vertical-scroll-proportion="-34.375" vertical-offset="0" max-vertical-offset="1020">
+              <caret line="55" column="0" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
               <folding>
                 <element signature="n#style#0;n#table#0;n#div#0;n#!!top" expanded="true" />
               </folding>
@@ -176,8 +176,8 @@
         <option value="$PROJECT_DIR$/jaqpot_ui/urls.py" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/user_details.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/addbibtex.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/bibdetail.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/bibtex.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/bibdetail.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/views.py" />
       </list>
     </option>
@@ -540,7 +540,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="47" y="24" width="1873" height="1056" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -550,7 +550,7 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25093433" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39939025" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32884902" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.33638212" sideWeight="0.49919915" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.33638212" sideWeight="0.49919915" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32723576" sideWeight="0.50080085" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -954,8 +954,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/user_details.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-22.5" vertical-offset="0" max-vertical-offset="1620">
-          <caret line="36" column="0" selection-start-line="17" selection-start-column="12" selection-end-line="48" selection-end-column="18" />
+        <state vertical-scroll-proportion="-56.25" vertical-offset="0" max-vertical-offset="1620">
+          <caret line="90" column="25" selection-start-line="90" selection-start-column="25" selection-end-line="90" selection-end-column="25" />
           <folding>
             <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
@@ -964,20 +964,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/bibtex.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-34.375" vertical-offset="0" max-vertical-offset="2445">
-          <caret line="55" column="16" selection-start-line="55" selection-start-column="16" selection-end-line="55" selection-end-column="16" />
-          <folding>
-            <element signature="n#style#0;n#table#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/bibdetail.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-15.708333" vertical-offset="238" max-vertical-offset="1680">
-          <caret line="41" column="12" selection-start-line="37" selection-start-column="4" selection-end-line="50" selection-end-column="6" />
+        <state vertical-scroll-proportion="-37.5" vertical-offset="0" max-vertical-offset="1080">
+          <caret line="60" column="0" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
           <folding>
             <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#table#0;n#div#0;n#!!top" expanded="true" />
@@ -985,9 +975,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/bibtex.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-34.375" vertical-offset="0" max-vertical-offset="1020">
+          <caret line="55" column="0" selection-start-line="55" selection-start-column="0" selection-end-line="55" selection-end-column="0" />
+          <folding>
+            <element signature="n#style#0;n#table#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/addbibtex.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-25.625" vertical-offset="90" max-vertical-offset="1005">
+        <state vertical-scroll-proportion="-29.375" vertical-offset="0" max-vertical-offset="1005">
           <caret line="47" column="32" selection-start-line="47" selection-start-column="32" selection-end-line="47" selection-end-column="32" />
           <folding />
         </state>
@@ -995,8 +995,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.41080198" vertical-offset="1669" max-vertical-offset="3285">
-          <caret line="128" column="40" selection-start-line="128" selection-start-column="40" selection-end-line="128" selection-end-column="40" />
+        <state vertical-scroll-proportion="0.7299509" vertical-offset="1729" max-vertical-offset="3330">
+          <caret line="145" column="120" selection-start-line="145" selection-start-column="120" selection-end-line="145" selection-end-column="120" />
           <folding>
             <element signature="e#0#45#0" expanded="true" />
           </folding>

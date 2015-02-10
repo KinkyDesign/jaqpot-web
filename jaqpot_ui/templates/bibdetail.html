@@ -4,26 +4,50 @@
 <div class="div-table" style="width:100%;">
     <h1>Bibtex Entry</h1>
     <table id="bib-info" style="margin:10px;">
-        <!--<tr>
-            <td>Author(s):</td>
-            <td id="auth"></td>
+        <tr>
+            <th>Author(s):</th>
+            <td>{{ details.author }}</td>
         </tr>
         <tr>
-            <td>Title:</td>
-            <td></td>
+            <th>Title:</th>
+            <td>{{ details.Title }}</td>
         </tr>
          <tr>
-            <td>Isbn:</td>
-            <td></td>
+            <th>Abstract:</th>
+            <td>{{ details.Abstract }}</td>
         </tr>
          <tr>
-            <td>Publisher:</td>
-            <td></td>
+            <th>Copyright:</th>
+            <td>{{ details.Copyright }}</td>
         </tr>
          <tr>
-            <td>BibTeX:</td>
-            <td></td>
-        </tr> -->
+            <th>Address:</th>
+            <td>{{ details.Address }}</td>
+        </tr>
+        <tr>
+            <th>Year:</th>
+            <td>{{ details.Year }}</td>
+        </tr>
+        <tr>
+            <th>Pages:</th>
+            <td>{{ details.Pages }}</td>
+        </tr>
+        <tr>
+            <th>Volume:</th>
+            <td>{{ details.Volume }}</td>
+        </tr>
+        <tr>
+            <th>Journal:</th>
+            <td>{{ details.Journal }}</td>
+        </tr>
+        <tr>
+            <th>Keywords:</th>
+            <td>{{ details.Keywords }}</td>
+        </tr>
+        <tr>
+            <th>Url:</th>
+            <td>{{ details.Url }}</td>
+        </tr>
     </table>
     <p>BibTeX:</p>
     <textarea id ="text" class="form-control" rows="4">
@@ -34,70 +58,6 @@
 
 
 <script>
-    var data=[
-    {   author:'Sarimveis H., Alexandridis A., Bafas G.',
-        Abstract : 'A new algorithm for training radial basis function neural networks is presented in this paper. The algorithm, which is based on the subtractive clustering technique, has a number of advantages compared to the traditional learning algorithms, including faster training times and more accurate predictions. Due to these advantages the method proves suitable for developing models for complex nonlinear systems.',
-        Title : "A fast training algorithm for RBF networks based on subtractive clustering",
-        Copyright : "Copyright © 2003 Elsevier Science B.V. All rights reserved.",
-        Address : "National Technical University of Athens, School of Chemical Engineering, 9 Heroon Polytechniou str., Zografou Campus, Athens 15780, Greece",
-        Year : "2003",
-        Pages : "501-505",
-        Volume : "51",
-        Journal : "Neurocomputing",
-        Keywords : "Radial basis function networks, Training algorithms, Model selection",
-        Url : "http://dx.doi.org/10.1016/S0925-2312(03)00342-4",
-        text: 'sdxcfvgbhnjmk,l',
-
-    },
-        ];
-var tableContent = "";
-    $.each(data, function(){
-        tableContent += '<tr>';
-        tableContent += '<th> Author(s)</td>';
-        tableContent += '<td> '+this.author+'</td>';
-        tableContent += '</tr>';
-        tableContent += '<tr>';
-        tableContent += '<th> Title</td>';
-        tableContent += '<td> '+this.Title+'</td>';
-        tableContent += '</tr>';
-        tableContent += '<tr>';
-        tableContent += '<th> Abstract</td>';
-        tableContent += '<td> '+ this.Abstract+'</td>';
-        tableContent += '</tr>';
-        tableContent += '<tr>';
-        tableContent += '<th>Copyright</td>';
-        tableContent += '<td> '+ this.Copyright+'</td>';
-        tableContent += '</tr>';
-        tableContent += '<tr>';
-        tableContent += '<th>Address</td>';
-        tableContent += '<td> '+ this.Address+'</td>';
-        tableContent += '</tr>';
-        tableContent += '<tr>';
-        tableContent += '<th>Year</td>';
-        tableContent += '<td> '+ this.Year+'</td>';
-        tableContent += '</tr>';
-        tableContent += '<tr>';
-        tableContent += '<th>Pages</td>';
-        tableContent += '<td> '+ this.Pages+'</td>';
-        tableContent += '</tr>';
-        tableContent += '<tr>';
-        tableContent += '<th>Volume</td>';
-        tableContent += '<td> '+ this.Volume+'</td>';
-        tableContent += '</tr>';
-        tableContent += '<tr>';
-        tableContent += '<th>Journal</td>';
-        tableContent += '<td> '+ this.Journal+'</td>';
-        tableContent += '</tr>';
-        tableContent += '<tr>';
-        tableContent += '<th>Keywords</td>';
-        tableContent += '<td> '+ this.Keywords+'</td>';
-        tableContent += '</tr>';
-        tableContent += '<tr>';
-        tableContent += '<th>Url</td>';
-        tableContent += '<td><a href="'+ this.Url + '" > '+ this.Url + '</a></td>';
-        tableContent += '</tr>';
-        });
-
 
 // Inject the whole content string into our existing HTML table
 $('#bib-info').append(tableContent);

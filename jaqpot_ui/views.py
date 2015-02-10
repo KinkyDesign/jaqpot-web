@@ -123,7 +123,7 @@ def bib_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     name = request.GET.get('name')
-    details = [{ 'author':'Sarimveis H., Alexandridis A., Bafas G.',
+    details = { 'author':'Sarimveis H., Alexandridis A., Bafas G.',
                 'Abstract' : 'A new algorithm for training radial basis function neural networks is presented in this paper. The algorithm, which is based on the subtractive clustering technique, has a number of advantages compared to the traditional learning algorithms, including faster training times and more accurate predictions. Due to these advantages the method proves suitable for developing models for complex nonlinear systems.',
                 'Title' : "A fast training algorithm for RBF networks based on subtractive clustering",
                 'Copyright' : "Copyright 2003 Elsevier Science B.V. All rights reserved.",
@@ -136,11 +136,14 @@ def bib_detail(request):
                 'Url' : "http://dx.doi.org/10.1016/S0925-2312(03)00342-4",
                 'text': 'sdxcfvgbhnjmk,l',
 
-                },]
+                }
 
+    details = json.dumps(details)
+    #get json data
+    details = json.loads(details)
     if request.method == 'GET':
 
-        return render(request, "bibdetail.html", {'token': token, 'username': username, 'name': name})
+        return render(request, "bibdetail.html", {'token': token, 'username': username, 'name': name, 'details': details})
 
 #Add a Bibtex
 def add_bibtex(request):
