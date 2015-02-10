@@ -101,8 +101,8 @@ def bibtex(request):
             {'id':8, 'author':'Sarimveis H., Alexandridis A., Bafas G', 'information':'A fast training algorithm for RBF networks based on subtractive clustering'},
             {'id':9, 'author':'Sarimveis H., Alexandridis A., Bafas G', 'information':'A fast training algorithm for RBF networks based on subtractive clustering'},
         ]
-        list_of_bibtex = json.dumps(list_of_bibtex)
         #get json data
+        list_of_bibtex = json.dumps(list_of_bibtex)
         list_of_bibtex = json.loads(list_of_bibtex)
         paginator = Paginator(list_of_bibtex, 25) # Show 25 contacts per page
 
@@ -137,9 +137,8 @@ def bib_detail(request):
                 'text': 'sdxcfvgbhnjmk,l',
 
                 }
-
-    details = json.dumps(details)
     #get json data
+    details = json.dumps(details)
     details = json.loads(details)
     if request.method == 'GET':
 
@@ -188,30 +187,7 @@ def user(request):
         #headers = {'content-type': 'text/uri-list'}
         #r = requests.get('http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/model', headers=headers)
         #print r.text
-        list=[ "model1", "model2"]
-        alg_list=["l","m","k"]
-        paginator = Paginator(list, 1) # Show 25 contacts per page
+        contacts = {'name': "guest", 'maxtasks': 5, 'maxmodels': 2000, 'maxalgorithms': 2000, 'models': 100, 'tasks':2, 'alg': 1000}
+        contacts = json.dumps(contacts)
 
-        page = request.GET.get('page')
-        try:
-            contacts = paginator.page(page)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            contacts = paginator.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            contacts = paginator.page(paginator.num_pages)
-
-        paginator1 = Paginator(alg_list, 1) # Show 25 contacts per page
-
-        page1 = request.GET.get('page')
-        try:
-            algorithms = paginator1.page(page1)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            algorithms = paginator1.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            algorithms = paginator1.page(paginator1.num_pages)
-
-        return render(request, "user_details.html", {'token': token, 'username': username, 'name': name, 'contacts': contacts, 'algorithms': algorithms})
+        return render(request, "user_details.html", {'token': token, 'username': username, 'name': name, 'contacts': contacts})

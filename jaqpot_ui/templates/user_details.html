@@ -1,102 +1,101 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="div-table" style="width:100%; display: inline-block;">
+<div class="div-table" style="width:100%; display:inline-block ">
     <h1>{{username}}</h1>
-    <div style="float:left; width:50%;">
-    <h3>My models</h3>
-        <div>
-            {% if not contacts %}
-                <h6>Haven't created yet</h6>
-            {% else %}
-             <ul>
-                {% for l in contacts %}
-                    <li>{{l}}</li>
-                {% endfor%}
-             </ul>
-            {%endif%}
-            <div id="pageNavPosition" class="pagination">
-                <span class="step-links">
-                    <ul class="pagination">
-                    {% if contacts.has_previous %}
-                        <li class="active">
-                        <a href="?page={{ contacts.previous_page_number }}">Previous</a>
-                        </li>
-                    {% else %}
-                        <li class="active">
-                        <a href="#">Previous</a>
-                        </li>
-                    {% endif %}
-                        {% for num in contacts.paginator.page_range %}
-                        {% ifequal num contacts.number %}
-                           <li><a href="?page={{num}}"><b>{{num}}</b></a></li>
-                        {% else %}
-                                <li><a href="?page={{num}}">{{num}}</a></li>
-                        {% endifequal%}
-                        {% endfor %}
 
-                    {% if contacts.has_next %}
-                        <li class="active">
-                        <a href="?page={{ contacts.next_page_number }}">Next</a>
-                        </li>
-                    {% else %}
-                            <li class="active">
-                        <a href="#">Next</a>
-                        </li>
-                    {% endif %}
-                    </ul>
-                </span>
+    <div>
+        <label class="align">Name:</label>
+        <input readonly="readonly"  style="margin:5px" id="user" value="{{contacts.name}}">
+    </div>
+    <div>
+        <label class="align">ID:</label>
+        <input readonly="readonly"   style="margin:5px" id="idc" value="{{contacts.id}}">
+    </div>
+    <br>
+    <h3> Permissions </h3>
+    <div class="panel" style="background-color: #F5F7FA;">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion2" href="#collapseFour" class="collapsed grey-link">Max allowed parallel tasks</a>
+                <span id="max-tasks" class="badge badge-primary" style="float:right;"></span>
+            </h4>
+        </div>
+        <div id="collapseFour" class="panel-collapse collapse" style="height: 0px;">
+            <div class="panel-body">
+                <div class="progress">
+                    <div id="perc-tasks" class="progress-bar" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                        <span class="sr-only"></span>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div style="float:left; width:50%;">
-    <h3>My algorithms</h3>
-        <div>
-            {% if not algorithms%}
-                <h6>Haven't created yet</h6>
-            {% else %}
-            <ul>
-                {% for al in algorithms %}
-                    <li>{{al}}</li>
-                {% endfor%}
-            </ul>
-            {%endif%}
-            <div class="pagination">
-            <span class="step-links">
-                <ul class="pagination">
-                {% if algorithms.has_previous %}
-                    <li class="active">
-                    <a href="?page={{ algorithms.previous_page_number }}">Previous</a>
-                    </li>
-                {% else %}
-                    <li class="active">
-                    <a href="#">Previous</a>
-                    </li>
-                {% endif %}
-                    {% for num in algorithms.paginator.page_range %}
-                    {% ifequal num algorithms.number %}
-                       <li><a href="?page={{num}}"><b>{{num}}</b></a></li>
-                    {% else %}
-                            <li><a href="?page={{num}}">{{num}}</a></li>
-                    {% endifequal%}
-                    {% endfor %}
-
-                {% if algorithms.has_next %}
-                    <li class="active">
-                    <a href="?page={{ algorithms.next_page_number }}">Next</a>
-                    </li>
-                {% else %}
-                        <li class="active">
-                    <a href="#">Next</a>
-                    </li>
-                {% endif %}
-                </ul>
-            </span>
         </div>
+
+    <div class="panel" style="background-color: #F5F7FA;">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion2" href="#collapseFive" class="collapsed grey-link">Max allowed models</a>
+                <span id="max-models" class="badge badge-success" style="float:right;"></span>
+            </h4>
+        </div>
+        <div id="collapseFive" class="panel-collapse collapse">
+            <div class="panel-body">
+                <div class="progress">
+                    <div id="perc-model" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                        <span class="sr-only"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+    <div class="panel" style="background-color: #F5F7FA;">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion2" href="#collapseSix" class="collapsed grey-link">Max allowed parallel algorithms</a>
+                <span id="max-alg" class="badge badge-danger" style="float:right;"></span>
+            </h4>
+        </div>
+        <div id="collapseSix" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <div class="progress">
+                        <div id="perc-alg" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                            <span class="sr-only"></span>
+                        </div>
+
+                </div>
+            </div>
         </div>
     </div>
     <br>
 
 
 </div>
+
+<script>
+
+    var data = {{ contacts | safe }};
+
+    $('#user').val(data.name)
+
+    //calculate percentages
+    var percentage_algorithms = (data.alg/data.maxalgorithms)*100;
+    var percentage_models = (data.models/data.maxmodels)*100;
+    var percentage_tasks = (data.tasks/data.maxtasks)*100;
+    $("#perc-tasks").text( percentage_tasks+'%');
+    $("#perc-model").text( percentage_models+'%');
+    $("#perc-alg").text( percentage_algorithms+'%');
+
+
+    $('#perc-tasks').css('width', percentage_tasks+'%').attr('aria-valuenow', percentage_tasks);
+    $('#perc-model').css('width', percentage_models+'%').attr('aria-valuenow', percentage_models);
+    $('#perc-alg').css('width', percentage_algorithms+'%').attr('aria-valuenow', percentage_algorithms);
+
+    $("#max-tasks").text( data.maxtasks);
+    $("#max-models").text( data.maxmodels);
+    $("#max-alg").text( data.maxalgorithms);
+
+
+</script>
 {% endblock %}
