@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="div-table" style="width:100%;display:inline-block;">
+    <div style="width:50%; float:left;">
+        <h1>My datasets:</h1>
+        <div>
+            <ul>
+             {% for e in entries %}
+                <li><a href="/">{{e}}</a></li>
+            {% endfor %}
+            </ul>
+
+         <div id="pageNavPosition" class="pagination">
+                <span class="step-links">
+                    <ul class="pagination">
+                    {% if entries.has_previous %}
+                        <li class="active">
+                            <a href="?page={{ entries.previous_page_number }}">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="active">
+                        <a href="#">Previous</a>
+                        </li>
+                   {% endif %}
+                        {% for num in entries.paginator.page_range %}
+                        {% ifequal num entries.number %}
+                           <li><a href="?page={{num}}"><b>{{num}}</b></a></li>
+                        {% else %}
+                                <li><a href="?page={{num}}">{{num}}</a></li>
+                        {% endifequal%}
+                        {% endfor %}
+
+                    {% if entries.has_next %}
+                        <li class="active">
+                        <a href="?page={{ entries.next_page_number }}">Next</a>
+                       </li>
+                    {% else %}
+                            <li class="active">
+                        <a href="#">Next</a>
+                        </li>
+                    {% endif %}
+                   </ul>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div style="width:50%; float:right;">
+        <h1>Public datasets:</h1>
+        <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input class="form-control search-query green-form"></div>
+    </div>
+
+
+    </div>
+
+
+{%endblock%}

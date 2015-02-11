@@ -15,6 +15,8 @@ urlpatterns = patterns('',
                        url(r'^add_bibtex', views.add_bibtex),
                        url(r'^sub', views.sub),
                        url(r'^user', views.user),
+                       url(r'^train', views.trainmodel),
+                       url(r'^dataset', views.choose_dataset),
 
 
                        # Administration page

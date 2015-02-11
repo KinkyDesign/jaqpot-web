@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="div-table" style="width:100%; display: inline-block">
+    <h1>Train model</h1>
+    <div class="form-search search-only" style="float:right; right:5%;"><i class="search-icon glyphicon glyphicon-search"></i> <input class="form-control search-query green-form"></div>
+    <h4>Choose Algorithm(s)</h4>
+    <div style="float:left; width:33%;">
+        <h3>Jaqpot</h3>
+        <div>
+             {% for e in entries %}
+                <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="checkbox" name="checkbox" value="value">{{e}}</label>
+            {% endfor %}
+
+         <div id="pageNavPosition" class="pagination">
+                <span class="step-links">
+                    <ul class="pagination">
+                    {% if entries.has_previous %}
+                        <li class="active">
+                            <a href="?page={{ entries.previous_page_number }}">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="active">
+                        <a href="#">Previous</a>
+                        </li>
+                   {% endif %}
+                        {% for num in entries.paginator.page_range %}
+                        {% ifequal num entries.number %}
+                           <li><a href="?page={{num}}"><b>{{num}}</b></a></li>
+                        {% else %}
+                                <li><a href="?page={{num}}">{{num}}</a></li>
+                        {% endifequal%}
+                        {% endfor %}
+
+                    {% if entries.has_next %}
+                        <li class="active">
+                        <a href="?page={{ entries.next_page_number }}">Next</a>
+                       </li>
+                    {% else %}
+                            <li class="active">
+                        <a href="#">Next</a>
+                        </li>
+                    {% endif %}
+                   </ul>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div style="float:left; width:33%;">
+        <h3>Public</h3>
+         <div>
+             {% for e in entries_2 %}
+                <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block;width:99%;">
+                    <input type="checkbox" name="checkbox" value="value">{{e}}</label>
+            {% endfor %}
+
+            <div id="pageNavPosition2" class="pagination">
+                <span class="step-links">
+                    <ul class="pagination">
+                    {% if entries_2.has_previous %}
+                        <li class="active">
+                            <a href="?page={{ entries_2.previous_page_number }}">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="active">
+                        <a href="#">Previous</a>
+                        </li>
+                   {% endif %}
+                        {% for num in entries_2.paginator.page_range %}
+                        {% ifequal num entries_2.number %}
+                           <li><a href="?page={{num}}"><b>{{num}}</b></a></li>
+                        {% else %}
+                                <li><a href="?page={{num}}">{{num}}</a></li>
+                        {% endifequal%}
+                        {% endfor %}
+
+                    {% if entries_2.has_next %}
+                        <li class="active">
+                        <a href="?page={{ entries_2.next_page_number }}">Next</a>
+                       </li>
+                    {% else %}
+                            <li class="active">
+                        <a href="#">Next</a>
+                        </li>
+                    {% endif %}
+                   </ul>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div style="float:left; width:33%;">
+       <h3>Mine</h3>
+        <div>
+
+            {% for e in entries_3 %}
+                <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block;width:99%;">
+                    <input type="checkbox" name="checkbox" value="value">{{e}}</label>
+            {% endfor %}
+            <div id="pageNavPosition3" class="pagination">
+                <span class="step-links">
+                    <ul class="pagination">
+                    {% if entries_3.has_previous %}
+                        <li class="active">
+                            <a href="?page={{ entries_3.previous_page_number }}">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="active">
+                        <a href="#">Previous</a>
+                        </li>
+                   {% endif %}
+                        {% for num in entries_3.paginator.page_range %}
+                        {% ifequal num entries_3.number %}
+                           <li><a href="?page={{num}}"><b>{{num}}</b></a></li>
+                        {% else %}
+                                <li><a href="?page={{num}}">{{num}}</a></li>
+                        {% endifequal%}
+                        {% endfor %}
+
+                    {% if entries_3.has_next %}
+                        <li class="active">
+                        <a href="?page={{ entries_3.next_page_number }}">Next</a>
+                       </li>
+                    {% else %}
+                            <li class="active">
+                        <a href="#">Next</a>
+                        </li>
+                    {% endif %}
+                   </ul>
+                </span>
+            </div>
+
+        </div>
+    </div>
+    <!--<button type="button" class="btn btn-success btn-block" style="width:10%; float:right; right:10%;" onclick="/">Next</button> -->
+    <a href="/dataset" class="btn btn-success" style="width:10%; float:right; right:10%;" >Next</a>
+</div>
+
+<script>
+     /*if( $('#t1').find('input:checked').val() == "met"){
+                            var organ1_params_json= [{
+                                type: $('#t1').find('input:checked').val(),
+                                const: $('select[name="const"]').val(),
+                                k_met: $("#k_met1").val(),
+                                k_bile: $("#k_bile1").val()
+                            }]
+                        }
+                        $("#id_dr-organ1_params").val( JSON.stringify(organ1_params_json) );
+    var algorithm = ["alg1"] */
+</script>
+{% endblock %}

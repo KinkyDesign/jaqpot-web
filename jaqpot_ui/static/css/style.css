@@ -125,7 +125,19 @@ margin-bottom: 10px;
 }
 
 
-input{
+input[type=text] {
+text-align: center;
+background-color: #ECF0F1;
+border: 2px solid transparent;
+border-radius: 3px;
+font-size: 16px;
+font-weight: 200;
+padding: 10px 0;
+width: 250px;
+transition: border .5s;
+}
+
+#id_password{
 text-align: center;
 background-color: #ECF0F1;
 border: 2px solid transparent;
@@ -251,3 +263,9 @@ color: #656D78;
 color: #656D78;
 }
 
+.green-form:hover{
+border-color: #8CC152;
+}
+.green-form:focus{
+border-color: #8CC152;
+}

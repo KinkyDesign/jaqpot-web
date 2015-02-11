@@ -7,15 +7,15 @@
     <div id="container" style=" width: 50%; float:left; min-width: 310px; height: 150px; max-width: 500px; margin: 0 auto"></div>
     <div>
             <label class="align">ID:</label>
-            <input id="id1" readonly="readonly" style="margin:5px" >
+            <input type="text" id="id1" readonly="readonly" style="margin:5px" >
         </div>
         <div >
             <label class="align">Status:</label>
-            <input id="status" readonly="readonly" style="margin:5px">
+            <input type="text" id="status" readonly="readonly" style="margin:5px">
             </div>
         <div>
             <label class="align">ETA:</label>
-            <input id="eta" readonly="readonly" style="margin:5px">
+            <input type="text" id="eta" readonly="readonly" style="margin:5px">
         </div>
         <br>
         <a href="/" class="btn btn-danger" data-toggle="tooltip" title="Stop task"><i class="glyphicon glyphicon-remove-sign"></i></a>
@@ -23,19 +23,19 @@
         <h3>This task has failed </h3>
         <div>
             <label class="align">Actor:</label>
-            <input readonly="readonly" style="margin:5px" >
+            <input type="text" readonly="readonly" style="margin:5px" >
         </div>
         <div >
             <label class="align">Message:</label>
-            <input readonly="readonly" style="margin:5px">
+            <input type="text" readonly="readonly" style="margin:5px">
         </div>
         <div>
             <label class="align">Code:</label>
-            <input readonly="readonly" style="margin:5px">
+            <input type="text" readonly="readonly" style="margin:5px">
         </div>
         <div>
             <label class="align">Details:</label>
-            <input readonly="readonly" style="margin:5px">
+            <input type="text" readonly="readonly" style="margin:5px">
         </div>
         <br>
         <a href="/" class="btn btn-danger" title="Report it">Report it</a>
@@ -43,15 +43,15 @@
         <h3>Completed task </h3>
         <div>
             <label class="align">Title:</label>
-            <input readonly="readonly" style="margin:5px" >
+            <input type="text" readonly="readonly" style="margin:5px" >
         </div>
         <div >
             <label class="align">Creator:</label>
-            <input readonly="readonly" style="margin:5px">
+            <input type="text" readonly="readonly" style="margin:5px">
         </div>
         <div>
             <label class="align">Date:</label>
-            <input readonly="readonly" style="margin:5px">
+            <input type="text" readonly="readonly" style="margin:5px">
         </div>
         <br>
     {% endif %}
@@ -73,6 +73,11 @@ var params_json = JSON.parse($("#task").val() )
 $("#id1").val(params_json.id);
 $("#status").val('{{status}}');
 $("#eta").val(params_json.ETA);
+
+data : [
+        [ 'Completed', params_json.percentage],
+        [ 'Remaining', 90 ]
+        ]
 
 //Create chart pie
 $(function () {
@@ -104,11 +109,10 @@ $(function () {
         series: [{
             type: 'pie',
             name: 'Task status',
-            data: [
-                ['Completed',   45.0],
-                ['Remaining',       55.0]
-
-            ]
+             data : [
+                [ 'Completed', params_json.percentage],
+                [ 'Remaining', 100-params_json.percentage]
+                ]
         }]
     });
 });
