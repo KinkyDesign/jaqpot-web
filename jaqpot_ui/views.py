@@ -201,42 +201,7 @@ def trainmodel(request):
         entries = [ "alg_1", "alg_2", "alg_3"]
         entries_2 = [ "a1", "a2", "a3"]
         entries_3 = [ "1", "2", "3"]
-        paginator = Paginator(entries, 10) # Show 10 contacts per page
-        #first paginator
-        page = request.GET.get('page')
-        try:
-            entries = paginator.page(page)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            entries = paginator.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            entries = paginator.page(paginator.num_pages)
 
-        #second paginator
-        paginator1 = Paginator(entries_2, 10) # Show 10 contacts per page
-
-        page2 = request.GET.get('page')
-        try:
-            entries_2 = paginator1.page(page2)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            entries_2 = paginator1.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            entries_2 = paginator1.page(paginator1.num_pages)
-        #third paginator
-        paginator2 = Paginator(entries_3, 10) # Show 10 contacts per page
-
-        page1 = request.GET.get('page')
-        try:
-            entries_3 = paginator2.page(page1)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            entries_3 = paginator2.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            entries_3 = paginator2.page(paginator2.num_pages)
         return render(request, "train_model.html", {'token': token, 'username': username, 'name': name, 'entries': entries, 'entries_2': entries_2, 'entries_3': entries_3})
     '''if request.method=="POST":
         algorithm = request.GET.get('algorithm')
@@ -252,17 +217,6 @@ def choose_dataset(request):
 
     if request.method == 'GET':
         entries = [ "data", "data2", "data3"]
+        entries2 = [ "data", "data2", "data3"]
 
-        paginator = Paginator(entries, 10) # Show 10 contacts per page
-        #first paginator
-        page = request.GET.get('page')
-        try:
-            entries = paginator.page(page)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            entries = paginator.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            entries = paginator.page(paginator.num_pages)
-
-        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'name': name, 'entries': entries})
+        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'name': name, 'entries': entries, 'entries2': entries2})

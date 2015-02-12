@@ -5,11 +5,13 @@
 <div class="div-table" style="width:100%;">
     <a href="/add_bibtex" class="btn btn-danger" data-toggle="tooltip" title="Add BibTex"><i class="glyphicon glyphicon-plus-sign"></i></a>
     <br>
+    {% load endless %}
     <table id="results" style="margin:10px;">
         <tr>
             <th>Author</th>
             <th>Title</th>
         </tr>
+        {% paginate 20 list_of_bibtex %}
         {% for l in list_of_bibtex %}
         <tr>
             <td>{{l.author}}</td>
@@ -17,36 +19,34 @@
         </tr>
         {% endfor%}
     </table>
+    {% get_pages %}
     <div id="pageNavPosition" class="pagination">
                 <span class="step-links">
                     <ul class="pagination">
-                    {% if list_of_bibtex.has_previous %}
-                        <li class="active">
-                        <a href="?page={{ list_of_bibtex.previous_page_number }}">Previous</a>
-                        </li>
-                    {% else %}
-                        <li class="active">
-                        <a href="#">Previous</a>
-                        </li>
-                    {% endif %}
-                        {% for num in list_of_bibtex.paginator.page_range %}
-                        {% ifequal num list_of_bibtex.number %}
-                           <li><a href="?page={{num}}"><b>{{num}}</b></a></li>
-                        {% else %}
-                                <li><a href="?page={{num}}">{{num}}</a></li>
-                        {% endifequal%}
-                        {% endfor %}
-
-                    {% if list_of_bibtex.has_next %}
-                        <li class="active">
-                        <a href="?page={{ list_of_bibtex.next_page_number }}">Next</a>
-                        </li>
-                    {% else %}
+                        {% if pages.previous %}
                             <li class="active">
-                        <a href="#">Next</a>
-                        </li>
-                    {% endif %}
-                    </ul>
+                                {{ pages.previous}}
+                            </li>
+                        {% else%}
+                        <li class="active">
+                                <a href="#">Previous</a>
+                            </li>
+                        {%endif%}
+                        {% for page in pages %}
+                        <li>{{page}}</li>
+                        {%endfor%}
+
+                        {% if pages.next %}
+                            <li class="active">
+                                {{ pages.next}}
+                            </li>
+                        {% else%}
+                        <li class="active">
+                                <a href="#">Next </a>
+                            </li>
+                        {%endif%}
+
+                   </ul>
                 </span>
             </div>
 
