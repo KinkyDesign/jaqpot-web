@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="div-table" style="width:100%;display:inline-block;">
+    <h1>Conformer</h1>
+    <div style="width:30%; float:left;">
+        <img>
+    </div>
+    <div style="width:70%; float:left;">
+        <div>
+            <label class="align">IUCAP name:</label>
+            <input type="text" style="margin:5px;" >
+        </div>
+        <div>
+            <label class="align">CAS-RN:</label>
+            <input type="text" style="margin:5px;" >
+        </div>
+        <div>
+            <label class="align">Compound:</label>
+            <input type="text" style="margin:5px;" >
+        </div>
+    </div>
+    <div>
+        <h3>Database Properties:</h3>
+    </div>
+    <div>
+        <h3>Predict a property:</h3>
+        <input type="text" style="margin:5px;" >
+    </div>
+</div>
+
+{% endblock %}

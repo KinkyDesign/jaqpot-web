@@ -16,3 +16,5 @@ class BibtexForm(forms.Form):
         journal = forms.CharField()
         keyword = forms.CharField()
         url = forms.CharField()
+class TrainForm(forms.Form):
+         alg = forms.CharField()

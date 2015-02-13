@@ -17,6 +17,8 @@ urlpatterns = patterns('',
                        url(r'^user', views.user),
                        url(r'^train', views.trainmodel),
                        url(r'^dataset', views.choose_dataset),
+                       url(r'^alg', views.alg),
+                       url(r'^conformer', views.conformer),
 
 
                        # Administration page

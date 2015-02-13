@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+ <form method="post" id="form1"> {% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block">
     <h1>Train model</h1>
     <div class="form-search search-only" style="float:right; right:5%;"><i class="search-icon glyphicon glyphicon-search"></i> <input class="form-control search-query green-form"></div>
@@ -12,7 +13,7 @@
              {% paginate 20 entries %}
              {% for e in entries %}
                 <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="checkbox" name="checkbox" value="value">{{e}}</label>
+                    <input type="checkbox" name="checkbox" id= "check" value="{{e}}">{{e}}</label>
             {% endfor %}
 
             {% get_pages %}
@@ -53,7 +54,7 @@
              {% paginate 20 entries_2 using "other_page" %}
              {% for e in entries_2 %}
                 <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block;width:99%;">
-                    <input type="checkbox" name="checkbox" value="value">{{e}}</label>
+                    <input type="checkbox" name="checkbox" value="{{e}}">{{e}}</label>
             {% endfor %}
             {% get_pages %}
             <div id="pageNavPosition2" class="pagination">
@@ -93,7 +94,7 @@
             {% paginate 20 entries_3 using "other_object_page" %}
             {% for e in entries_3 %}
                 <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block;width:99%;">
-                    <input type="checkbox" name="checkbox" value="value">{{e}}</label>
+                    <input type="checkbox" name="checkbox" value="{{e}}">{{e}}</label>
             {% endfor %}
             {% get_pages %}
             <div id="pageNavPosition3" class="pagination">
@@ -128,20 +129,46 @@
 
         </div>
     </div>
-    <!--<button type="button" class="btn btn-success btn-block" style="width:10%; float:right; right:10%;" onclick="/">Next</button> -->
-    <a href="/dataset" class="btn btn-success" style="width:10%; float:right; right:10%;" >Next</a>
+   <!--<a href="/dataset" class="btn btn-success" style="width:10%; float:right; right:10%;" >Save</a> -->
+     <input id="choose_alg" type="submit" value="Save" class="btn btn-success" style="width: 10%; float:right; right:10%;">
+
+
+    <input id="id_alg" style="display:none">
 </div>
+     </form>
+
 
 <script>
-     /*if( $('#t1').find('input:checked').val() == "met"){
-                            var organ1_params_json= [{
-                                type: $('#t1').find('input:checked').val(),
-                                const: $('select[name="const"]').val(),
-                                k_met: $("#k_met1").val(),
-                                k_bile: $("#k_bile1").val()
-                            }]
+
+    $('input[name=checkbox]').click(function(){
+        //get value of all checked checkboxes
+        var checkedAlg = $('input[name=checkbox]:checked').map(function() {
+        return this.value;
+        }).get();
+        var data=[]
+        for (i = 0; i < checkedAlg.length; i++) {
+            data[i]={'algorithm' : checkedAlg[i] }
+        }
+        //convert to json format
+        checkedAlg = JSON.stringify(data)
+        $('#id_alg').val(checkedAlg)
+        })
+
+
+$('#choose_alg').bind('click', function(e){
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                url: '/train/',
+                data: checkedAlg,
+                success: function(result) {
+                        document.write(result)
                         }
-                        $("#id_dr-organ1_params").val( JSON.stringify(organ1_params_json) );
-    var algorithm = ["alg1"] */
+    });
+
+});
+
 </script>
 {% endblock %}

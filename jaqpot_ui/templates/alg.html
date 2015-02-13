@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="div-table" style="width:100%; display: inline-block">
+
+    {% for al in alg_param %}
+        <h1>Algorithm</h1>
+        <h3>Title: {{al.alg}}</h3>
+            <div>
+                <label class="align">Kernel:</label>
+                <input type="text" style="margin:5px;" value="{{al.kernel}}" >
+            </div>
+            <div>
+                <label  class="align">Gamma:</label>
+                <input type="text" style="margin:5px;" value="{{al.gamma}}" >
+            </div>
+            <div>
+                <label  class="align">e:</label>
+                <input type="text" style="margin:5px;" value="{{al.e}}" >
+            </div>
+        <h5>Upload a PMML with transformations:</h5>
+        <h5>Define transformations:</h5>
+
+
+
+    {% endfor %}
+    <a href="/tasks" class="btn btn-success" style="width:10%; float:left; left:10%;" >Train</a>
+    </div>
+
+
+{%endblock%}

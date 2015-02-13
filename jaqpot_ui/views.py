@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from jaqpot_ui.forms import UserForm, BibtexForm
+from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm
 import requests
 import json
 import subprocess
@@ -64,6 +64,8 @@ def task(request):
     username = request.session.get('username', '')
     if token:
         request.session.get('token', '')
+    #r = requests.get('http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/task')
+    #print r.text
     list = [{'name': "task1", 'status':"running"}, {'name': "task2", 'status':"completed"}, {'name': "task3", 'status':"cancelled"}]
     list = json.dumps(list)
     list = json.loads(list)
@@ -195,28 +197,49 @@ def user(request):
 def trainmodel(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    name = request.GET.get('name')
+    form = TrainForm(initial={})
 
     if request.method == 'GET':
-        entries = [ "alg_1", "alg_2", "alg_3"]
+        entries = [ "svm", "mlr", "alg_3"]
         entries_2 = [ "a1", "a2", "a3"]
         entries_3 = [ "1", "2", "3"]
+        return render(request, "train_model.html", {'token': token, 'username': username, 'entries': entries, 'entries_2': entries_2, 'entries_3': entries_3, 'form':form})
 
-        return render(request, "train_model.html", {'token': token, 'username': username, 'name': name, 'entries': entries, 'entries_2': entries_2, 'entries_3': entries_3})
-    '''if request.method=="POST":
-        algorithm = request.GET.get('algorithm')
-        print algorithm'''
-
+    if request.method == 'POST':
+        data=[]
+        for alg in request.POST.getlist('checkbox'):
+            data.append({"alg": alg})
+        data = json.dumps(data)
+        return redirect('/dataset?data='+data, {'data': data})
 
 def choose_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    name = request.GET.get('name')
-    algorithm = request.GET.get('algorithm')
-    print algorithm
-
     if request.method == 'GET':
+        data = request.GET.get('data')
+        print data
         entries = [ "data", "data2", "data3"]
         entries2 = [ "data", "data2", "data3"]
+        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries': entries, 'entries2': entries2, 'data':data})
 
-        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'name': name, 'entries': entries, 'entries2': entries2})
+def alg(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if request.method == 'GET':
+        alg = request.GET.get('alg')
+        dataset = request.GET.get('dataset')
+        alg = json.loads(alg)
+        #for a in alg:
+            #r = request.get() get algorithm parameters
+            #r.append('{ r}')
+        alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1},{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1}]
+        print alg
+        print dataset
+        return render(request, "alg.html", {'token': token, 'username': username, 'alg':alg, 'dataset':dataset, 'alg_param': alg_param})
+
+#Conformer
+def conformer(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if request.method == 'GET':
+        return render(request, "conformer.html", {'token': token, 'username': username})
