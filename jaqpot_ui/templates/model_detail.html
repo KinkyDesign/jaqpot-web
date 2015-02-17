@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="div-table" style="width:100%;">
+    <h1>Model:</h1>
+    <div>
+        <label class="align">Name:</label>
+        <input type="text" style="margin:5px;" value="{{name}}">
+    </div>
+    <div>
+        <label class="align">Description:</label>
+        <input type="text" style="margin:5px;" >
+    </div>
+    <h4>Parameters</h4>
+    {% for d in details%}
+    <div>
+        <label class="align">a</label>
+        <input type="text" style="margin:5px;" value="{{d.a}}" >
+    </div>
+    <div>
+        <label class="align">b</label>
+        <input type="text" style="margin:5px;" value="{{d.b}}" >
+    </div>
+    {% endfor %}
+    <div>
+        <p><b>Some metadata:</b></p>
+        <textarea id ="text" class="form-control" rows="4" style="width:30%;"></textarea>
+    </div>
+    <br>
+    <a href="#" class="btn btn-success" style="width:10%;">Predict</a>
+    <h4>Validations:</h4>
+    <br>
+    <a href="#" class="btn btn-success" style="width:10%; margin: 5px;" data-toggle="tooltip" title="Show all test-set validations">Test</a>
+    <a href="#" class="btn btn-success" style="width:10%; margin: 5px;" data-toggle="tooltip" title="Show all cross validations">Cross</a>
+    <a href="#" class="btn btn-success" style="width:10%; margin: 5px;" data-toggle="tooltip" title="Validate the model">Validate me</a>
+</div>
+
+<script>
+
+//display tooltip right
+$('[data-toggle="tooltip"]').tooltip({
+    'placement': 'top'
+});
+</script>
+{% endblock %}

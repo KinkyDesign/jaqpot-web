@@ -3,24 +3,95 @@
 {% block content %}
 
 <div class="panel panel-danger">
-    <div class="panel-heading">
-        <h3 class="panel-title">Tasks</h3>
-    </div>
-    <div class="panel-body" style="height:100%;">
-        <table class="div-form-table">
-            <tr>
-                <th>Task</th>
-                <th> Status</th>
-            </tr>
-        {% for l in list %}
-        <tr>
-            <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
-            <td>{% if l.status == "cancelled" %}<span class="label label-danger"><i class="glyphicon glyphicon-warning-sign"></i> Error</span>
-                {% elif l.status == "running" %} <span class="label label-warning"><i class="glyphicon glyphicon-time"></i> Running</span>
-                {% else %} <span class="label label-success"><i class="glyphicon glyphicon-ok-sign"></i> Completed</span> {% endif%}</td>
-        </tr>
-        {% endfor%}
-    </table>
+    <div class="panel">
+        <ul id="myTab1" class="nav nav-tabs nav-justified">
+            <li class="">
+                <a href="#all" data-toggle="tab">All tasks</a>
+            </li>
+            <li class="active">
+                <a href="#completed" data-toggle="tab">Completed</a>
+            </li>
+            <li class="active">
+                <a href="#running" data-toggle="tab">Running</a>
+            </li>
+            <li class="active">
+                <a href="#cancelled" data-toggle="tab">Cancelled</a>
+            </li>
+            <li class="active">
+                <a href="#error" data-toggle="tab">Error</a>
+                </li>
+            <li class="active">
+                <a href="#queued" data-toggle="tab">Queued</a>
+            </li>
+        </ul>
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade active in" id="all">
+                 <br>
+                <table class="div-form-table">
+                    <tr>
+                        <th>Task</th>
+                        <th> Status</th>
+                    </tr>
+                    {% load endless %}
+                    {% paginate 20 list using "page" %}
+                    {% for l in list %}
+                    <tr>
+                        <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
+                        <td>{% if l.status == "cancelled" %}<span class="label label-danger"><i class="glyphicon glyphicon-warning-sign"></i> Error</span>
+                            {% elif l.status == "running" %} <span class="label label-warning"><i class="glyphicon glyphicon-time"></i> Running</span>
+                            {% else %} <span class="label label-success"><i class="glyphicon glyphicon-ok-sign"></i> Completed</span> {% endif%}</td>
+                    </tr>
+                    {%endfor%}
+                </table>
+                {% get_pages %}
+                <div id="pageNavPosition3" class="pagination">
+                    <span class="step-links">
+                        <ul class="pagination">
+                            {% if pages.previous %}
+                                <li class="active">
+                                    {{ pages.previous}}
+                                </li>
+                            {% else%}
+                            <li class="active">
+                                    <a href="#">Previous</a>
+                                </li>
+                            {%endif%}
+                            {% for page in pages %}
+                            <li>{{page}}</li>
+                            {%endfor%}
+
+                            {% if pages.next %}
+                                <li class="active">
+                                    {{ pages.next}}
+                                </li>
+                            {% else%}
+                            <li class="active">
+                                    <a href="#"> Next </a>
+                                </li>
+                            {%endif%}
+
+                       </ul>
+                    </span>
+                </div>
+            </div>
+            <div class="tab-pane fade " id="completed"><p>Completed</p>
+            </div>
+            <div class="tab-pane fade" id="running">
+                <p>Running</p>
+            </div>
+            <div class="tab-pane fade" id="cancelled">
+                <p>Cancelled</p>
+            </div>
+            <div class="tab-pane fade" id="error">
+                <p>Error</p>
+            </div>
+            <div class="tab-pane fade " id="queued">
+                <p>Queued</p>
+            </div>
+        </div>
     </div>
 </div>
+
 {% endblock %}
+
+

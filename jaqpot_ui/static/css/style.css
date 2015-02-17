@@ -28,7 +28,7 @@ body {
     padding: 10px;
 }
 .footer, .push {
-    height: 152px; /* .push must be the same height as .footer */
+    min-height: 152px; /* .push must be the same height as .footer */
 }
 
 body {

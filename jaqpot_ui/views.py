@@ -243,3 +243,31 @@ def conformer(request):
     username = request.session.get('username', '')
     if request.method == 'GET':
         return render(request, "conformer.html", {'token': token, 'username': username})
+
+def model(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if request.method == 'GET':
+        #get all models
+        #headers = {'Accept:text/uri-list'}
+        #r = requests.get('http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/model', headers=headers)
+        #print r.text
+        models= [{'name':'model1'}, {'name':'model2'}, {'name':'model3'}, {'name':'model4'}]
+        return render(request, "model.html", {'token': token, 'username': username, 'models':models})
+
+def model_detail(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    name = request.GET.get('name')
+    details = [{'a':'0.1','b':'0.2', 'description':'model',}]
+
+    if request.method == 'GET':
+        return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name} )
+
+def features(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+
+    if request.method == 'GET':
+        features = [{ 'name':'feature1'}, {'name':'feature2'}, {'name':'feature3'},{'name':'feature4' }]
+        return render(request, "features.html", {'token': token, 'username': username, 'features': features})
