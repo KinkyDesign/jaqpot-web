@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
+import rdflib
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm
 import requests
 import json
 import subprocess
-from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT
+from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, URL
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect, HttpResponse
+from rdflib import Graph, plugin, term
+from rdflib.serializer import Serializer
 
 
 # Home page
@@ -64,13 +67,74 @@ def task(request):
     username = request.session.get('username', '')
     if token:
         request.session.get('token', '')
-    #r = requests.get('http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/task')
-    #print r.text
-    list = [{'name': "task1", 'status':"running"}, {'name': "task2", 'status':"completed"}, {'name': "task3", 'status':"cancelled"}]
-    list = json.dumps(list)
-    list = json.loads(list)
+
+    all_tasks = []
+    #get all tasks with status Running
+    headers = {'content-type': 'text/uri-list'}
+    res = requests.get(URL+'/tasks?status=Running', headers=headers)
+    list_resp = res.text
+    list_resp = list_resp.split('\n')[:-1]
+    list_run=[]
+    for l in list_resp:
+        l = l.split('/task/')[1]
+        list_run.append({'name': l, 'status': "running"})
+        all_tasks.append({'name': l, 'status': "running"})
+    list_run = json.dumps(list_run)
+    list_run = json.loads(list_run)
+
+    #get all tasks with status Completed
+    res = requests.get(URL+'/tasks?status=Completed', headers=headers)
+    list_resp = res.text
+    list_resp = list_resp.split('\n')[:-1]
+    list_complete=[]
+    for l in list_resp:
+        l = l.split('/task/')[1]
+        list_complete.append({'name': l, 'status': "completed"})
+        all_tasks.append({'name': l, 'status': "completed"})
+    list_complete= json.dumps(list_complete)
+    list_complete = json.loads(list_complete)
+
+    #get all tasks with status Cancelled
+    res = requests.get(URL+'/tasks?status=Cancelled', headers=headers)
+    list_resp = res.text
+    list_resp = list_resp.split('\n')[:-1]
+    list_cancelled=[]
+    for l in list_resp:
+        l = l.split('/task/')[1]
+        list_cancelled.append({'name': l, 'status': "cancelled"})
+        all_tasks.append({'name': l, 'status': "cancelled"})
+    list_cancelled= json.dumps(list_cancelled)
+    list_cancelled = json.loads(list_cancelled)
+
+    #get all tasks with status Error
+    res = requests.get(URL+'/tasks?status=Error', headers=headers)
+    list_resp = res.text
+    list_resp = list_resp.split('\n')[:-1]
+    list_error=[]
+    for l in list_resp:
+        l = l.split('/task/')[1]
+        list_error.append({'name': l, 'status': "error"})
+        all_tasks.append({'name': l, 'status': "error"})
+    list_error= json.dumps(list_error)
+    list_error = json.loads(list_error)
+
+
+    #get all tasks with status Queued
+    res = requests.get(URL+'/tasks?status=Queued', headers=headers)
+    list_resp = res.text
+    list_resp = list_resp.split('\n')[:-1]
+    list_queued=[]
+    for l in list_resp:
+        l = l.split('/task/')[1]
+        list_queued.append({'name': l, 'status': "queued"})
+        all_tasks.append({'name': l, 'status': "queued"})
+    list_queued= json.dumps(list_queued)
+    list_queued = json.loads(list_queued)
+    all_tasks= json.dumps(all_tasks)
+    all_tasks = json.loads(all_tasks)
+
     if request.method == 'GET':
-        return render(request, "task.html", {'list': list, 'token': token, 'username': username})
+        return render(request, "task.html", {'token': token, 'username': username, 'all_tasks': all_tasks ,'list_run': list_run, 'list_complete': list_complete, 'list_cancelled': list_cancelled, 'list_error': list_error, 'list_queued': list_queued})
 
 #More information about each task
 def taskdetail(request):
@@ -80,9 +144,28 @@ def taskdetail(request):
     status = request.GET.get('status')
 
     if request.method == 'GET':
-        task_info = {"id": "12", "ETA": 2, "percentage": 40}
-        task_info = json.dumps(task_info)
-        return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'task_info': task_info, 'status':status})
+        #get task details in rdf format
+        headers = {'content-type': 'text/uri-list'}
+        res = requests.get(URL+'/task/'+name, headers=headers)
+        g = Graph().parse(URL+'/task/'+name)
+        output = {}
+        k=''
+        for s, p, o in g:
+            if type(o) == rdflib.term.Literal:
+                if 'elements/1.1/' in p:
+                    k = p.split('elements/1.1/')[1]
+                    print k
+                if '#' in p:
+                    k = p.split('#')[1]
+                    print k
+                output.update({k: o.toPython()})
+                print output
+
+
+        output = json.dumps(output)
+        output = json.loads(output)
+
+        return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'status': status, 'output': output})
 
 #List of all BibTex
 def bibtex(request):
@@ -91,60 +174,102 @@ def bibtex(request):
     name = request.GET.get('name')
 
     if request.method == 'GET':
-        #create json data
-        list_of_bibtex = [
-            {'id':1, 'author':'Sarimveis H., Alexandridis A., Bafas G.', 'information':'A fast training algorithm for RBF networks based on subtractive clustering'},
-            {'id':2, 'author':'Sarimveis H., Alexandridis A., Bafas G.', 'information':'A fast training algorithm for RBF networks based on subtractive clustering'},
-            {'id':3, 'author':'Sarimveis H., Alexandridis A., Bafas G.', 'information':'A fast training algorithm for RBF networks based on subtractive clustering'},
-            {'id':4, 'author':'Sarimveis H., Alexandridis A., Bafas G.', 'information':'A fast training algorithm for RBF networks based on subtractive clustering'},
-            {'id':5, 'author':'Sarimveis H., Alexandridis A., Bafas G', 'information':'A fast training algorithm for RBF networks based on subtractive clustering'},
-            {'id':6, 'author':'Sarimveis H., Alexandridis A., Bafas G', 'information':'A fast training algorithm for RBF networks based on subtractive clustering'},
-            {'id':7, 'author':'Sarimveis H., Alexandridis A., Bafas G', 'information':'A fast training algorithm for RBF networks based on subtractive clustering'},
-            {'id':8, 'author':'Sarimveis H., Alexandridis A., Bafas G', 'information':'A fast training algorithm for RBF networks based on subtractive clustering'},
-            {'id':9, 'author':'Sarimveis H., Alexandridis A., Bafas G', 'information':'A fast training algorithm for RBF networks based on subtractive clustering'},
-        ]
+
+        #get all bibtex
+        headers = {'content-type': 'text/uri-list'}
+        res = requests.get(URL+'/bibtex', headers=headers)
+        list_resp = res.text
+        list_resp = list_resp.split('\n')[:-1]
+        print list_resp
+        b=[]
+        final_output= []
+        #create json with bibtex urls.
+        for l in list_resp:
+            b.append({"url":l})
+            res = requests.get(l, headers=headers)
+            list_resp = res.text
+            g = Graph().parse(l)
+
+            output = {}
+            k=''
+            print g
+
+            for s, p, o in g:
+                if type(o) == rdflib.term.Literal:
+                    if '/bibtex#' in p:
+                        k = p.split('/bibtex#')[1]
+                        if k=="hasTitle":
+                            output.update({k: o.toPython()})
+                        if k=="hasAuthor":
+                            output.update({k: o.toPython()})
+            id = l.split('/bibtex/')[1]
+            output.update({"id" : id})
+            final_output.append(output)
+
         #get json data
-        list_of_bibtex = json.dumps(list_of_bibtex)
-        list_of_bibtex = json.loads(list_of_bibtex)
-        paginator = Paginator(list_of_bibtex, 25) # Show 25 contacts per page
+        final_output = json.dumps(final_output)
+        final_output = json.loads(final_output)
 
-        page = request.GET.get('page')
-        try:
-            list_of_bibtex = paginator.page(page)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            list_of_bibtex = paginator.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            list_of_bibtex = paginator.page(paginator.num_pages)
+        '''list_run=[]
+        for l in list_resp:
+            l = l.split('/task/')[1]
+            list_run.append({'name': l, 'status': "running"})
+            all_tasks.append({'name': l, 'status': "running"})
+        list_run = json.dumps(list_run)
+        list_run = json.loads(list_run) '''
 
-        return render(request, "bibtex.html", {'token': token, 'username': username, 'name': name, 'list_of_bibtex' : list_of_bibtex})
+
+        return render(request, "bibtex.html", {'token': token, 'username': username, 'name': name, 'final_output': final_output})
 
 #Details of each bibtex
 def bib_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     name = request.GET.get('name')
-    details = { 'author':'Sarimveis H., Alexandridis A., Bafas G.',
-                'Abstract' : 'A new algorithm for training radial basis function neural networks is presented in this paper. The algorithm, which is based on the subtractive clustering technique, has a number of advantages compared to the traditional learning algorithms, including faster training times and more accurate predictions. Due to these advantages the method proves suitable for developing models for complex nonlinear systems.',
-                'Title' : "A fast training algorithm for RBF networks based on subtractive clustering",
-                'Copyright' : "Copyright 2003 Elsevier Science B.V. All rights reserved.",
-                'Address' : "National Technical University of Athens, School of Chemical Engineering, 9 Heroon Polytechniou str., Zografou Campus, Athens 15780, Greece",
-                'Year' : "2003",
-                'Pages' : "501-505",
-                'Volume' : "51",
-                'Journal' : "Neurocomputing",
-                'Keywords' : "Radial basis function networks, Training algorithms, Model selection",
-                'Url' : "http://dx.doi.org/10.1016/S0925-2312(03)00342-4",
-                'text': 'sdxcfvgbhnjmk,l',
+    id = request.GET.get('id')
+    #send request
+    headers = {'content-type': 'text/uri-list'}
+    res = requests.get(URL+'/bibtex/'+id, headers=headers)
+    list_resp = res.text
+    #get rdf response and convert to json data with details for bibtex
+    g = Graph().parse(URL+'/bibtex/'+id)
+    details = {}
+    k=''
+    print g
 
-                }
+    for s, p, o in g:
+        if type(o) == rdflib.term.Literal:
+            if '/bibtex#' in p:
+                k = p.split('/bibtex#')[1]
+                if k=="hasTitle":
+                    details.update({"Title": o.toPython()})
+                if k=="hasAuthor":
+                    details.update({"author": o.toPython()})
+                if k=="hasKeywords":
+                    details.update({"Keywords": o.toPython()})
+                if k=="hasVolume":
+                    details.update({"Volume": o.toPython()})
+                if k=="hasCopyright":
+                    details.update({"Copyright": o.toPython()})
+                if k=="hasJournal":
+                    details.update({"Journal": o.toPython()})
+                if k=="hasAbstract":
+                    details.update({"Abstract": o.toPython()})
+                if k=="hasPages":
+                    details.update({"Pages": o.toPython()})
+                if k=="hasAddress":
+                    details.update({"Address": o.toPython()})
+                if k=="hasYear":
+                    details.update({"Year": o.toPython()})
+                if k=="hasURL":
+                    details.update({"Url": o.toPython()})
+
     #get json data
     details = json.dumps(details)
     details = json.loads(details)
     if request.method == 'GET':
 
-        return render(request, "bibdetail.html", {'token': token, 'username': username, 'name': name, 'details': details})
+        return render(request, "bibdetail.html", {'token': token, 'username': username, 'name': name, 'details': details })
 
 #Add a Bibtex
 def add_bibtex(request):
@@ -165,7 +290,7 @@ def add_bibtex(request):
         json_b= {'author': form['author'].value(), 'abstract': form['abstract'].value(), 'title': form['title'].value(),
                  'copyright': form['copyright'].value(),'address':form['address'].value(), 'year': form['year'].value(),
                  'pages':form['pages'].value(), 'volume':form['volume'].value(), 'journal': form['journal'].value(),
-                 'keyword':form['keyword'].value(), 'url':form['url'].value() }
+                 'keyword':form['keyword'].value(), 'url':form['url'].value()}
         bibtex_entry = json.dumps(json_b)
         print bibtex_entry
         #it should send request with the new entry for saving

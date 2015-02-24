@@ -4,19 +4,41 @@
 <div class="div-table" style="width:100%;">
     <h1>Task #{{name}}</h1>
     {% if status == "running"%}
-    <div id="container" style=" width: 50%; float:left; min-width: 310px; height: 150px; max-width: 500px; margin: 0 auto"></div>
+    <h3>Running task</h3>
+    <div id="container" style=" width: 75%; float:right; right:80%; min-width: 310px; height: 150px; /*max-width: 500px;*/ margin: 0 auto"></div>
+    <!--<div>
+        <label class="align">ID:</label>
+        <input type="text" id="id1" readonly="readonly" style="margin:5px" >
+    </div> -->
     <div>
-            <label class="align">ID:</label>
-            <input type="text" id="id1" readonly="readonly" style="margin:5px" >
-        </div>
-        <div >
-            <label class="align">Status:</label>
-            <input type="text" id="status" readonly="readonly" style="margin:5px">
-            </div>
-        <div>
-            <label class="align">ETA:</label>
-            <input type="text" id="eta" readonly="readonly" style="margin:5px">
-        </div>
+        <label class="align">Status:</label>
+        <input type="text" readonly="readonly" style="margin:5px" value="{{output.hasStatus}}">
+    </div>
+    <div><label class="align">ETA:</label>
+            <input type="text" id="eta" readonly="readonly" style="margin:5px" value="{{output.duration}}">
+    </div>
+    <div>
+        <label class="align">Date:</label>
+        <input type="text" readonly="readonly" style="margin:5px" value="{{output.date}}">
+    </div>
+    <div>
+        <label class="align">Creator:</label>
+        <input type="text" readonly="readonly" style="margin:5px" value="{{output.creator}}">
+    </div>
+    <div>
+        <label class="align">Http Status:</label>
+        <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
+    </div>
+    <p><b>Comment:</b></p>
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{{output.comment}}
+
+        </textarea>
+    <p><b>Description:</b></p>
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{{output.description}}
+
+        </textarea>
+
+
         <br>
         <a href="/" class="btn btn-danger" data-toggle="tooltip" title="Stop task"><i class="glyphicon glyphicon-remove-sign"></i></a>
     {%elif status == "cancelled" %}
@@ -39,20 +61,80 @@
         </div>
         <br>
         <a href="/" class="btn btn-danger" title="Report it">Report it</a>
+    {%elif status == "error" %}
+        <h3>Error </h3>
+        <div >
+            <label class="align">Creator:</label>
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.creator}}">
+        </div>
+        <div>
+            <label class="align">Status:</label>
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.hasStatus}}" >
+        </div>
+        <div >
+            <label class="align">Date:</label>
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.date}}">
+        </div>
+        <div>
+            <label class="align">Actor:</label>
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.actor}}" >
+        </div>
+        <div>
+            <label class="align">Http Status:</label>
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}" >
+        </div>
+        <div>
+            <label class="align">Code:</label>
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorCode}}">
+        </div>
+        <p><b>Message:</b></p>
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="1">{{output.message}}
+
+        </textarea>
+        <p><b>Comment:</b></p>
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{{output.comment}}
+
+        </textarea>
+        <p><b>Description:</b></p>
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{{output.description}}
+
+        </textarea>
+
+        <p><b>Details:</b></p>
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="10">{{output.details}}
+
+        </textarea>
+        <br>
+        <a href="/" class="btn btn-danger" title="Report it">Report it</a>
     {%elif status == "completed" %}
         <h3>Completed task </h3>
         <div>
-            <label class="align">Title:</label>
-            <input type="text" readonly="readonly" style="margin:5px" >
-        </div>
-        <div >
             <label class="align">Creator:</label>
-            <input type="text" readonly="readonly" style="margin:5px">
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.creator}}">
+        </div>
+        <div>
+            <label class="align">Status:</label>
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.hasStatus}}">
+        </div>
+        <div><label class="align">Duration:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.duration}}">
         </div>
         <div>
             <label class="align">Date:</label>
-            <input type="text" readonly="readonly" style="margin:5px">
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.date}}">
         </div>
+        <div>
+            <label class="align">Http Status:</label>
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
+        </div>
+        <p><b>Comment:</b></p>
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{{output.comment}}
+
+        </textarea>
+        <p><b>Description:</b></p>
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{{output.description}}
+
+        </textarea>
         <br>
     {% endif %}
         <input id="task" value="{{task_info}}" style="display:none">
@@ -69,15 +151,13 @@
 $('[data-toggle="tooltip"]').tooltip({
     'placement': 'right'
 });
-var params_json = JSON.parse($("#task").val() )
+/*var params_json = JSON.parse($("#task").val() )
 $("#id1").val(params_json.id);
 $("#status").val('{{status}}');
-$("#eta").val(params_json.ETA);
+$("#eta").val(params_json.ETA);*/
 
-data : [
-        [ 'Completed', params_json.percentage],
-        [ 'Remaining', 90 ]
-        ]
+percentage = {{output.percentageCompleted}}
+
 
 //Create chart pie
 $(function () {
@@ -110,8 +190,8 @@ $(function () {
             type: 'pie',
             name: 'Task status',
              data : [
-                [ 'Completed', params_json.percentage],
-                [ 'Remaining', 100-params_json.percentage]
+                [ 'Completed', percentage],
+                [ 'Remaining', 100-percentage]
                 ]
         }]
     });

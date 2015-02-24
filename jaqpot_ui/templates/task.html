@@ -26,72 +26,359 @@
         </ul>
         <div id="myTabContent" class="tab-content">
             <div class="tab-pane fade active in" id="all">
-                 <br>
-                <table class="div-form-table">
-                    <tr>
-                        <th>Task</th>
-                        <th> Status</th>
-                    </tr>
-                    {% load endless %}
-                    {% paginate 20 list using "page" %}
-                    {% for l in list %}
-                    <tr>
-                        <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
-                        <td>{% if l.status == "cancelled" %}<span class="label label-danger"><i class="glyphicon glyphicon-warning-sign"></i> Error</span>
-                            {% elif l.status == "running" %} <span class="label label-warning"><i class="glyphicon glyphicon-time"></i> Running</span>
-                            {% else %} <span class="label label-success"><i class="glyphicon glyphicon-ok-sign"></i> Completed</span> {% endif%}</td>
-                    </tr>
-                    {%endfor%}
-                </table>
-                {% get_pages %}
-                <div id="pageNavPosition3" class="pagination">
-                    <span class="step-links">
-                        <ul class="pagination">
-                            {% if pages.previous %}
+                {% if not all_tasks %}
+                <h1>Any task</h1>
+                {% else %}
+                     <br>
+                    <table class="div-form-table">
+                        <tr>
+                            <th>Task</th>
+                            <th>Status</th>
+                        </tr>
+                        {% load endless %}
+                        {% paginate 20 all_tasks using "page" %}
+                        {% for l in all_tasks %}
+                        <tr>
+                            <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
+                            <td>{% if l.status == "cancelled" %}<span class="label label-danger"><i class="glyphicon glyphicon-warning-sign"></i> Cancelled </span>
+                                {% elif l.status == "running" %} <span class="label label-warning"><i class="glyphicon glyphicon-time"></i> Running</span>
+                                {% elif l.status == "error" %} <span class="label label-danger"><i class="glyphicon glyphicon-exclamation-sign"></i> Error</span>
+                                {% elif l.status == "queued" %} <span class="label label-warning"><i class="glyphicon glyphicon-stopwatch"></i> Queued</span>
+                                {% else %} <span class="label label-success"><i class="glyphicon glyphicon-ok-sign"></i> Completed</span> {% endif%}</td>
+                        </tr>
+                        {%endfor%}
+                    </table>
+                    {% get_pages %}
+                    <div id="pageNavPosition3" class="pagination">
+                        <span class="step-links">
+                            <ul class="pagination ">
+                                {% if pages.previous %}
+                                    <li class="active">
+                                        {{ pages.previous}}
+                                    </li>
+                                {% else%}
                                 <li class="active">
-                                    {{ pages.previous}}
-                                </li>
-                            {% else%}
-                            <li class="active">
-                                    <a href="#">Previous</a>
-                                </li>
-                            {%endif%}
-                            {% for page in pages %}
-                            <li>{{page}}</li>
-                            {%endfor%}
+                                        <a href="#">Previous</a>
+                                    </li>
+                                {%endif%}
+                                {% for page in pages %}
+                                <li>{{page}}</li>
+                                {%endfor%}
 
-                            {% if pages.next %}
+                                {% if pages.next %}
+                                    <li class="active">
+                                        {{ pages.next}}
+                                    </li>
+                                {% else%}
                                 <li class="active">
-                                    {{ pages.next}}
-                                </li>
-                            {% else%}
-                            <li class="active">
-                                    <a href="#"> Next </a>
-                                </li>
-                            {%endif%}
+                                        <a href="#"> Next </a>
+                                    </li>
+                                {%endif%}
 
-                       </ul>
-                    </span>
-                </div>
+                           </ul>
+                        </span>
+                    </div>
+                {% endif %}
             </div>
-            <div class="tab-pane fade " id="completed"><p>Completed</p>
+            <div class="tab-pane fade " id="completed">
+                {% if not list_complete %}
+                <h1>Any completed task </h1>
+                {% else %}
+                    <br>
+                    <table class="div-form-table">
+                        <tr>
+                            <th>Task</th>
+                            <th>Status</th>
+                        </tr>
+                        {% load endless %}
+                        {% paginate 20 list_complete using "page_c" %}
+                        {% for l in list_complete %}
+                        <tr>
+                            <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
+                            <td>{% if l.status == "completed" %} <span class="label label-success"><i class="glyphicon glyphicon-ok-sign"></i> Completed</span> {% endif%}</td>
+                        </tr>
+                        {%endfor%}
+                    </table>
+                    {% get_pages %}
+                    <div id="pageNavPosition4" class="pagination">
+                        <span class="step-links">
+                            <ul class="pagination">
+                                {% if pages.previous %}
+                                    <li class="active">
+                                        {{ pages.previous}}
+                                    </li>
+                                {% else%}
+                                <li class="active">
+                                        <a href="#">Previous</a>
+                                    </li>
+                                {%endif%}
+                                {% for page in pages %}
+                                <li>{{page}}</li>
+                                {%endfor%}
+
+                                {% if pages.next %}
+                                    <li class="active">
+                                        {{ pages.next}}
+                                    </li>
+                                {% else%}
+                                <li class="active">
+                                        <a href="#"> Next </a>
+                                    </li>
+                                {%endif%}
+
+                           </ul>
+                        </span>
+                    </div>
+                {% endif %}
             </div>
             <div class="tab-pane fade" id="running">
-                <p>Running</p>
+                {% if not list_run %}
+                <h1>Any running task </h1>
+                {% else %}
+                    <br>
+                    <table class="div-form-table">
+                        <tr>
+                            <th>Task</th>
+                            <th>Status</th>
+                        </tr>
+                        {% load endless %}
+                        {% paginate 20 list_run using "page_r" %}
+                        {% for l in list_run %}
+                        <tr>
+                            <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
+                            <td>{% if l.status == "running" %} <span class="label label-warning"><i class="glyphicon glyphicon-time"></i> Running</span> {% endif%}</td>
+                        </tr>
+                        {%endfor%}
+                    </table>
+                    {% get_pages %}
+                    <div id="pageNavPosition5" class="pagination">
+                        <span class="step-links">
+                            <ul class="pagination">
+                                {% if pages.previous %}
+                                    <li class="active">
+                                        {{ pages.previous}}
+                                    </li>
+                                {% else%}
+                                <li class="active">
+                                        <a href="#">Previous</a>
+                                    </li>
+                                {%endif%}
+                                {% for page in pages %}
+                                <li>{{page}}</li>
+                                {%endfor%}
+
+                                {% if pages.next %}
+                                    <li class="active">
+                                        {{ pages.next}}
+                                    </li>
+                                {% else%}
+                                <li class="active">
+                                        <a href="#"> Next </a>
+                                    </li>
+                                {%endif%}
+
+                           </ul>
+                        </span>
+                    </div>
+                {% endif %}
             </div>
             <div class="tab-pane fade" id="cancelled">
-                <p>Cancelled</p>
+                 {% if not list_cancelled %}
+                <h1>Any cancelled task </h1>
+                {% else %}
+                    <br>
+                    <table class="div-form-table">
+                        <tr>
+                            <th>Task</th>
+                            <th>Status</th>
+                        </tr>
+                        {% load endless %}
+                        {% paginate 20 list_cancelled using "page_canc" %}
+                        {% for l in list_cancelled %}
+                        <tr>
+                            <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
+                            <td>{% if l.status == "cancelled" %}<span class="label label-danger"><i class="glyphicon glyphicon-warning-sign"></i> Cancelled </span>{% endif%}</td>
+                        </tr>
+                        {%endfor%}
+                    </table>
+                    {% get_pages %}
+                    <div id="pageNavPosition6" class="pagination">
+                        <span class="step-links">
+                            <ul class="pagination">
+                                {% if pages.previous %}
+                                    <li class="active">
+                                        {{ pages.previous}}
+                                    </li>
+                                {% else%}
+                                <li class="active">
+                                        <a href="#">Previous</a>
+                                    </li>
+                                {%endif%}
+                                {% for page in pages %}
+                                <li>{{page}}</li>
+                                {%endfor%}
+
+                                {% if pages.next %}
+                                    <li class="active">
+                                        {{ pages.next}}
+                                    </li>
+                                {% else%}
+                                <li class="active">
+                                        <a href="#"> Next </a>
+                                    </li>
+                                {%endif%}
+
+                           </ul>
+                        </span>
+                    </div>
+                {% endif %}
             </div>
             <div class="tab-pane fade" id="error">
-                <p>Error</p>
+                {% if not list_error %}
+                <h1>Any error task </h1>
+                {% else %}
+                    <br>
+                    <table class="div-form-table">
+                        <tr>
+                            <th>Task</th>
+                            <th>Status</th>
+                        </tr>
+                        {% load endless %}
+                        {% paginate 20 list_error using "page_e" %}
+                        {% for l in list_error %}
+                        <tr>
+                            <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
+                            <td>{%if l.status == "error" %} <span class="label label-danger"><i class="glyphicon glyphicon-exclamation-sign"></i> Error</span>{% endif%}</td>
+                        </tr>
+                        {%endfor%}
+                    </table>
+                    {% get_pages %}
+                    <div id="pageNavPosition7" class="pagination">
+                        <span class="step-links">
+                            <ul class="pagination">
+                                {% if pages.previous %}
+                                    <li class="active">
+                                        {{ pages.previous}}
+                                    </li>
+                                {% else%}
+                                <li class="active">
+                                        <a href="#">Previous</a>
+                                    </li>
+                                {%endif%}
+                                {% for page in pages %}
+                                <li>{{page}}</li>
+                                {%endfor%}
+
+                                {% if pages.next %}
+                                    <li class="active">
+                                        {{ pages.next}}
+                                    </li>
+                                {% else%}
+                                <li class="active">
+                                        <a href="#"> Next </a>
+                                    </li>
+                                {%endif%}
+
+                           </ul>
+                        </span>
+                    </div>
+                {% endif %}
             </div>
             <div class="tab-pane fade " id="queued">
-                <p>Queued</p>
+                {% if not list_queued %}
+                <h1>Any queued task </h1>
+                {% else %}
+                    <br>
+                    <table class="div-form-table">
+                        <tr>
+                            <th>Task</th>
+                            <th>Status</th>
+                        </tr>
+                        {% load endless %}
+                        {% paginate 20 list_queued using "page_q" %}
+                        {% for l in list_queued %}
+                        <tr>
+                            <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
+                            <td> {% if l.status == "queued" %} <span class="label label-warning"><i class="glyphicon glyphicon-stopwatch"></i> Queued</span>{% endif%}</td>
+                        </tr>
+                        {%endfor%}
+                    </table>
+                    {% get_pages %}
+                    <div id="pageNavPosition8" class="pagination">
+                        <span class="step-links">
+                            <ul class="pagination">
+                                {% if pages.previous %}
+                                    <li class="active">
+                                        {{ pages.previous}}
+                                    </li>
+                                {% else%}
+                                <li class="active">
+                                        <a href="#">Previous</a>
+                                    </li>
+                                {%endif%}
+                                {% for page in pages %}
+                                <li>{{page}}</li>
+                                {%endfor%}
+
+                                {% if pages.next %}
+                                    <li class="active">
+                                        {{ pages.next}}
+                                    </li>
+                                {% else%}
+                                <li class="active">
+                                        <a href="#"> Next </a>
+                                    </li>
+                                {%endif%}
+
+                           </ul>
+                        </span>
+                    </div>
+                    {% endif %}
             </div>
         </div>
     </div>
 </div>
 
+<script>
+
+    $('#myTab1 a:first').tab('show') ;
+
+
+ $('#myTab1 a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+    // store the currently selected tab in the hash value
+    $("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
+        var id = $(e.target).attr("href").substr(1);
+        window.location.hash = id;
+
+    });
+     $("ul.pagination > li > a").on("shown.bs.tab", function (e) {
+        var id = $(e.target).attr("href").substr(1);
+        window.location.hash = id;
+    });
+
+    // on load of the page: switch to the currently selected tab
+    var hash = window.location.hash;
+    $('#myTab1 a[href="' + hash + '"]').tab('show');
+
+
+    /*$("#pageNavPosition4").on("click", "a", function() {
+        //$('#myTab1 li:eq(3) a').tab('show') ;
+        //e.preventDefault();
+        //$('#myTab1 a:last').tab('show') ;
+        //$('#myTab1 li:eq(2) a').tab('show') ;
+
+        window.location.hash = 'completed';
+
+
+    });*/
+
+
+
+
+</script>
 {% endblock %}
 
 

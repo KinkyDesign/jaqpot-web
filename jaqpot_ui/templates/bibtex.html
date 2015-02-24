@@ -11,11 +11,11 @@
             <th>Author</th>
             <th>Title</th>
         </tr>
-        {% paginate 20 list_of_bibtex %}
-        {% for l in list_of_bibtex %}
+        {% paginate 20 final_output %}
+        {% for l in final_output %}
         <tr>
-            <td>{{l.author}}</td>
-            <td><a href="/bib_detail?id={{l.id}}">{{l.information}}</a></td>
+            <td>{{l.hasAuthor}}</td>
+            <td><a href="/bib_detail?id={{l.id}}">{{l.hasTitle}}</a></td>
         </tr>
         {% endfor%}
     </table>

@@ -109,6 +109,7 @@ TEMPLATE_DIRS = (
 # External Authenticator
 EXT_AUTH_URL_LOGIN = 'https://opensso.in-silico.ch:443/auth/authenticate?uri=service=openldap'
 EXT_AUTH_URL_LOGOUT = 'http://opensso.in-silico.ch/opensso/identity/logout'
+URL = 'http://opentox.ntua.gr:8080'
 
 
 TEMPLATE_CONTEXT_PROCESSORS += (
