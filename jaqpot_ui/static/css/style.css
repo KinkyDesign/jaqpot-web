@@ -269,3 +269,9 @@ border-color: #8CC152;
 .green-form:focus{
 border-color: #8CC152;
 }
+
+.pagination>.active>a,
+.pagination>.active>a:hover,
+.pagination>.active>a:focus{
+cursor: pointer;
+ }

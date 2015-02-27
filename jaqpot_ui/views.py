@@ -71,7 +71,7 @@ def task(request):
     all_tasks = []
     #get all tasks with status Running
     headers = {'content-type': 'text/uri-list'}
-    res = requests.get(URL+'/tasks?status=Running', headers=headers)
+    res = requests.get(URL+'/tasks?status=Running?creator='+username, headers=headers)
     list_resp = res.text
     list_resp = list_resp.split('\n')[:-1]
     list_run=[]
@@ -83,7 +83,7 @@ def task(request):
     list_run = json.loads(list_run)
 
     #get all tasks with status Completed
-    res = requests.get(URL+'/tasks?status=Completed', headers=headers)
+    res = requests.get(URL+'/tasks?status=Completed?creator='+username, headers=headers)
     list_resp = res.text
     list_resp = list_resp.split('\n')[:-1]
     list_complete=[]
@@ -95,7 +95,7 @@ def task(request):
     list_complete = json.loads(list_complete)
 
     #get all tasks with status Cancelled
-    res = requests.get(URL+'/tasks?status=Cancelled', headers=headers)
+    res = requests.get(URL+'/tasks?status=Cancelled?creator='+username, headers=headers)
     list_resp = res.text
     list_resp = list_resp.split('\n')[:-1]
     list_cancelled=[]
@@ -107,7 +107,7 @@ def task(request):
     list_cancelled = json.loads(list_cancelled)
 
     #get all tasks with status Error
-    res = requests.get(URL+'/tasks?status=Error', headers=headers)
+    res = requests.get(URL+'/tasks?status=Error?creator='+username, headers=headers)
     list_resp = res.text
     list_resp = list_resp.split('\n')[:-1]
     list_error=[]
@@ -120,7 +120,7 @@ def task(request):
 
 
     #get all tasks with status Queued
-    res = requests.get(URL+'/tasks?status=Queued', headers=headers)
+    res = requests.get(URL+'/tasks?status=Queued?creator='+username, headers=headers)
     list_resp = res.text
     list_resp = list_resp.split('\n')[:-1]
     list_queued=[]
@@ -357,7 +357,8 @@ def alg(request):
         #for a in alg:
             #r = request.get() get algorithm parameters
             #r.append('{ r}')
-        alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1},{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1}]
+        #alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1},{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1}]
+        alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1}]
         print alg
         print dataset
         return render(request, "alg.html", {'token': token, 'username': username, 'alg':alg, 'dataset':dataset, 'alg_param': alg_param})
@@ -377,17 +378,34 @@ def model(request):
         #headers = {'Accept:text/uri-list'}
         #r = requests.get('http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/model', headers=headers)
         #print r.text
-        models= [{'name':'model1'}, {'name':'model2'}, {'name':'model3'}, {'name':'model4'}]
-        return render(request, "model.html", {'token': token, 'username': username, 'models':models})
+        models = []
+        #get all models
+        headers = {'content-type': 'text/uri-list'}
+        res = requests.get(URL+'/model', headers=headers)
+        list_resp = res.text
+        list_resp = list_resp.split('\n')[:-1]
+        for l in list_resp:
+            l = l.split('/model/')[1]
+            models.append({'name': l})
+        models = json.dumps(models)
+        models = json.loads(models)
+
+        #models= [{'name':'model1'}, {'name':'model2'}, {'name':'model3'}, {'name':'model4'}]
+        return render(request, "model.html", {'token': token, 'username': username, 'models':models })
 
 def model_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     name = request.GET.get('name')
-    details = [{'a':'0.1','b':'0.2', 'description':'model',}]
+    details = [{'a':'0.1','b':'0.2', 'description':'model'}]
+    #get task details in rdf format
+    headers = {'content-type': 'text/uri-list'}
+    res = requests.get(URL+'/model/'+name, headers=headers)
+    #print res.text
+
 
     if request.method == 'GET':
-        return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name} )
+        return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name })
 
 def features(request):
     token = request.session.get('token', '')
@@ -396,3 +414,107 @@ def features(request):
     if request.method == 'GET':
         features = [{ 'name':'feature1'}, {'name':'feature2'}, {'name':'feature3'},{'name':'feature4' }]
         return render(request, "features.html", {'token': token, 'username': username, 'features': features})
+def feature_details(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    name = request.GET.get('name')
+
+    if request.method == 'GET':
+        return render(request, "feature_details.html", {'token': token, 'username': username, 'name': name})
+
+def algorithm(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+
+    if request.method == 'GET':
+         algorithms = []
+         #get all algorithms
+         headers = {'Accept': 'text/uri-list'}
+         res = requests.get(URL+'/algorithm', headers=headers)
+         list_resp = res.text
+         list_resp = list_resp.split('\n')[:-1]
+         for l in list_resp:
+             l = l.split('/algorithm/')[1]
+             algorithms.append({'name': l})
+         algorithms = json.dumps(algorithms)
+         algorithms = json.loads(algorithms)
+         print algorithms
+
+         return render(request, "algorithm.html", {'token': token, 'username': username, 'algorithms': algorithms})
+
+def algorithm_detail(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    algorithm = request.GET.get('name')
+
+    if request.method == 'GET':
+        #get task details in rdf format
+        headers = {'content-type': 'text/uri-list'}
+        res = requests.get(URL+'/algorithm/'+algorithm, headers=headers)
+        #get rdf response and convert to json data with details for bibtex
+        g = Graph().parse(URL+'/algorithm/'+algorithm)
+        details = {}
+        sub= []
+        i=1
+        j=1
+        t=1
+        k=''
+        for s, p, o in g:
+            if type(o) == rdflib.term.Literal:
+                if 'algorithm/'+algorithm in s:
+
+                    if 'elements/1.1/' in p:
+                        k = p.split('elements/1.1/')[1]
+                        '''if k == 'subject':
+                            sub.append(o.toPython())
+                            i=i+1
+                            details.update(sub)
+                            details.update({'num_of_sub': i-1})'''
+                        '''if k == 'contributor':
+                            sub.update({"contributor"+str(j): o.toPython()})
+                            j=j+1
+                            details.update(sub)
+                            details.update({'num_of_cont': j-1})
+                        if k == 'title':
+                            sub.update({"title"+str(t): o.toPython()})
+                            t=t+1
+                            details.update(sub)
+                            details.update({'num_of_cont': t-1})'''
+
+
+                        details.update({k: o.toPython()})
+
+        #details.update({'subject': sub})
+        details = json.dumps(details)
+        details = json.loads(details)
+        return render(request, "algorithm_detail.html", {'token': token, 'username': username, 'details': details})
+
+def dataset(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if request.method == 'GET':
+        dataset= [{'name':'dataset1'}, {'name':'dataset2'}, {'name':'dataset3'}, {'name':'dataset4'}]
+        return render(request, "dataset.html", {'token': token, 'username': username, 'dataset': dataset})
+
+def dataset_detail(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    name = request.GET.get('name', '')
+    if request.method == 'GET':
+        return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name})
+
+def predict(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if request.method == 'GET':
+        return render(request, "predict.html", {'token': token, 'username': username})
+
+def predict_model(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    my_models = [{'name':'model1'}, {'name':'model2'}, {'name':'model3'}, {'name':'model4'}]
+    #my_models = [ "model1", "data2", "data3"]
+    my_models = json.dumps(my_models)
+    my_models = json.loads(my_models)
+    if request.method == 'GET':
+        return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models':my_models})

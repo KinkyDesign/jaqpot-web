@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="div-table" style="width:100%;">
+    <h1>Predict a property for a conformer</h1>
+    <h3>Choose compound:</h3>
+    <input type=text >
+    <h3>Choose the feature to be predicted:</h3>
+    <input type=text>
+
+    <!--<input value="Save" class="btn btn-success" style="width: 10%; float:right; right:10%;">  -->
+    <a type="button" class="btn btn-success" style="width: 10%; float:right; right:10%;" href="/predict_model">Next</a>
+
+    <br>
+</div>
+
+{% endblock%}

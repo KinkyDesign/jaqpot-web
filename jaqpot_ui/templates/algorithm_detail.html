@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="div-table" style="width:100%; display:inline-block">
+    <h1>Algorithm Information</h1>
+    <div  style="float:left;">
+        <!--<div>
+            <label class="align">Identifier:</label>
+            <input type="text" style="margin:5px;" value="{{details.identifier}}">
+        </div>-->
+        <div>
+            <label class="align">Title:</label>
+            <input type="text" style="margin:5px;" value="{{details.title}}">
+        </div>
+        <div>
+            <label class="align">Subjects:</label>
+            <input type="text" style="margin:5px;" value="{{details.subject}}">
+
+        </div>
+        <div>
+            <label class="align">Publisher:</label>
+            <input type="text" style="margin:5px;" value="{{details.publisher}}">
+        </div>
+        <div>
+            <label class="align">Contributor:</label>
+            <input type="text" style="margin:5px;" value="{{details.contributor}}">
+        </div>
+        <div>
+            <label class="align">Date:</label>
+            <input type="text" style="margin:5px;" value="{{details.date}}">
+        </div>
+        <p><b>Description:</b></p>
+        <textarea class="form-control" rows="10" readonly="readonly" style="margin:5px;">{{details.description}}
+
+        </textarea>
+        <p><b>Copyright:</b></p>
+        <textarea class="form-control" rows="10" readonly="readonly" style="margin:5px;">{{details.rights}}
+
+        </textarea>
+        </div>
+
+
+</div>
+{% endblock %}
