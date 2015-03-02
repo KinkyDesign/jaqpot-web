@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<form method="post"> {% csrf_token %}
 <div class="div-table" style="width:100%;display:inline-block;">
     <h1>Search for models:</h1>
     <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input class="form-control search-query green-form"></div>
@@ -8,12 +9,14 @@
         <h1>Public Models:</h1>
         <div>
             {% load endless %}
-            <ul>
+
             {% paginate 18 my_models %}
             {% for e in my_models %}
-                <li><a href="#">{{e.name}}</a></li>
+                <!--<li><a href="#">{{e.name}}</a></li> -->
+                <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="checkbox" name="checkbox" id= "check" value="{{e.name}}">{{e.name}}</label>
             {% endfor %}
-            </ul>
+
 
             {% get_pages %}
             <div id="pageNavPosition4" class="pagination">
@@ -50,12 +53,13 @@
     <div style="width:50%; float:right;">
         <h1>My models:</h1>
 
-         <ul>
         {% paginate 15 my_models using "other_objects_page" %}
         {% for e in my_models %}
-             <li><a href="#">{{e.name}}</a></li>
+
+             <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="checkbox" name="checkbox" value="{{e.name}}">{{e.name}}</label>
         {% endfor %}
-            </ul>
+
             {% get_pages %}
             <div id="pageNavPosition5" class="pagination">
                 <span class="step-links">
@@ -87,6 +91,8 @@
                 </span>
             </div>
         </div>
+    <input id="choose_alg" type="submit" value="Save" class="btn btn-success" style="width: 10%; float:right; right:10%;">
 </div>
+</form>
 
 {% endblock %}

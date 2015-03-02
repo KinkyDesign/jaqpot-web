@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 import rdflib
-from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm
+from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm
 import requests
 import json
 import subprocess
@@ -294,7 +294,7 @@ def add_bibtex(request):
         bibtex_entry = json.dumps(json_b)
         print bibtex_entry
         #it should send request with the new entry for saving
-        return render(request, "mainpage.html", {'token': token, 'username': username, 'name': name})
+        return render(request, "mainPage.html", {'token': token, 'username': username, 'name': name})
 
 def sub(request):
     token = request.session.get('token', '')
@@ -335,9 +335,12 @@ def trainmodel(request):
         for alg in request.POST.getlist('checkbox'):
             data.append({"alg": alg})
         data = json.dumps(data)
-        return redirect('/dataset?data='+data, {'data': data})
+        #return redirect('/dataset?data='+data, {'data': data})
+        entries = [ "data", "data2", "data3"]
+        entries2 = [ "data", "data2", "data3"]
+        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries': entries, 'entries2': entries2, 'data':data})
 
-def choose_dataset(request):
+'''def choose_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     if request.method == 'GET':
@@ -345,7 +348,7 @@ def choose_dataset(request):
         print data
         entries = [ "data", "data2", "data3"]
         entries2 = [ "data", "data2", "data3"]
-        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries': entries, 'entries2': entries2, 'data':data})
+        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries': entries, 'entries2': entries2, 'data':data})'''
 
 def alg(request):
     token = request.session.get('token', '')
@@ -358,7 +361,7 @@ def alg(request):
             #r = request.get() get algorithm parameters
             #r.append('{ r}')
         #alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1},{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1}]
-        alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1}]
+        alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma': 0.5, 'e': 0.1}]
         print alg
         print dataset
         return render(request, "alg.html", {'token': token, 'username': username, 'alg':alg, 'dataset':dataset, 'alg_param': alg_param})
@@ -369,6 +372,9 @@ def conformer(request):
     username = request.session.get('username', '')
     if request.method == 'GET':
         return render(request, "conformer.html", {'token': token, 'username': username})
+    if request.method == 'POST':
+        #add task for descriptors calculation
+        return render(request, "task.html", {'token': token, 'username': username})
 
 def model(request):
     token = request.session.get('token', '')
@@ -421,6 +427,28 @@ def feature_details(request):
 
     if request.method == 'GET':
         return render(request, "feature_details.html", {'token': token, 'username': username, 'name': name})
+
+#Add feature
+def add_feature(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    name = request.GET.get('name')
+    if request.method == 'GET':
+        form = FeatureForm(initial={'feature': ""})
+
+        return render(request, "add_feature.html", {'token': token, 'username': username, 'name': name, 'form': form})
+    if request.method == 'POST':
+        form = FeatureForm(request.POST)
+        if not form.is_valid():
+            error = "Invalid value"
+            params = {'form': form, 'error': error, 'token': token, 'username': username, 'name': name}
+            return render(request, "add_feature.html", params)
+
+        json_b= {'feature': form['feature'].value() }
+        feature_entry = json.dumps(json_b)
+        print feature_entry
+        #it should send request with the new entry for saving
+        return render(request, "mainPage.html", {'token': token, 'username': username, 'name': name})
 
 def algorithm(request):
     token = request.session.get('token', '')
@@ -517,4 +545,13 @@ def predict_model(request):
     my_models = json.dumps(my_models)
     my_models = json.loads(my_models)
     if request.method == 'GET':
-        return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models':my_models})
+        return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models': my_models})
+    if request.method == 'POST':
+        data=[]
+        for model in request.POST.getlist('checkbox'):
+            data.append({"model": model})
+        data = json.dumps(data)
+        print data
+
+
+        return render(request, "task.html", {'token': token, 'username': username})

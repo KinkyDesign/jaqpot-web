@@ -1,12 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
+<form method="post" xmlns="http://www.w3.org/1999/html"> {% csrf_token %}
 <div class="div-table" style="width:100%;display:inline-block;">
     <h1>Conformer</h1>
-    <div style="width:30%; float:left;">
-        <img src = static/img/conformer.jpeg style="height:150px; weight:70px;">
-    </div>
-    <div style="width:70%; float:left;">
+    <div style="width:70%; float:right;">
         <div>
             <label class="align">IUCAP name:</label>
             <input type="text" style="margin:5px;" >
@@ -19,14 +17,21 @@
             <label class="align">Compound:</label>
             <input type="text" style="margin:5px;" >
         </div>
-    </div>
-    <div>
+
         <h3>Database Properties:</h3>
-    </div>
-    <div>
+
         <h3>Predict a property:</h3>
-        <input type="text" style="margin:5px;" placeholder="Enter property name">
+
+        <input type="text" style="margin:5px;float:left;" placeholder="Enter property name">
+
     </div>
+    <div style="width:30%; float:left;">
+        <!--<img src = static/img/conformer.jpeg style="height:150px; weight:70px;">-->
+        <iframe id="sketch" src="static/editor.html" style="overflow: hidden; min-width: 500px; min-height: 450px; border: 1px solid darkgray;"></iframe>
+        <input type="submit" value="Calculate Descriptors" class="btn btn-success"  style="margin:5px;">
+    </div>
+
 </div>
+</form>
 
 {% endblock %}

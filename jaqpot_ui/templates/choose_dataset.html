@@ -10,7 +10,7 @@
             <ul>
             {% paginate 18 entries %}
             {% for e in entries %}
-                <li><a href="/alg?dataset={{e}}&alg={{data}}">{{e}}</a></li>
+                <li><a id="dataset" href="/alg?dataset={{e}}&alg={{data}}">{{e}}</a></li>
             {% endfor %}
             </ul>
 
@@ -90,5 +90,22 @@
         </div>
     </div>
 
-<script>console.log(data)</script>
+<script>
+console.log(data)
+$('#dataset').bind('click', function(e){
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                url: '/alg/',
+                data: {{data}},
+                success: function(result) {
+                        document.write(result)
+                        }
+    });
+
+});
+
+</script>
 {%endblock%}
