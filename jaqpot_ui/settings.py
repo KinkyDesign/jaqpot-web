@@ -118,3 +118,12 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 
 ENDLESS_PAGINATION_PREVIOUS_LABEL = 'Previous'
 ENDLESS_PAGINATION_NEXT_LABEL = 'Next'
+
+#EMAIL_HOST = 'localhost'
+#EMAIL_PORT = 25
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'eanagnosto@gmail.com'
+EMAIL_HOST_PASSWORD = 'evangelia90'

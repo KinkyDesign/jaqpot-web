@@ -22,3 +22,8 @@ class FeatureForm(forms.Form):
 
 class TrainForm(forms.Form):
          alg = forms.CharField()
+
+class ContactForm(forms.Form):
+    subject = forms.CharField(max_length=100)
+    message = forms.CharField()
+    sender = forms.EmailField()

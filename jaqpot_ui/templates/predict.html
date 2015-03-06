@@ -4,14 +4,45 @@
 <div class="div-table" style="width:100%;">
     <h1>Predict a property for a conformer</h1>
     <h3>Choose compound:</h3>
-    <input type=text >
+    <input type=text id="compound">
     <h3>Choose the feature to be predicted:</h3>
-    <input type=text>
+    <input type=text id="feature">
 
     <!--<input value="Save" class="btn btn-success" style="width: 10%; float:right; right:10%;">  -->
-    <a type="button" class="btn btn-success" style="width: 10%; float:right; right:10%;" href="/predict_model">Next</a>
+    <a id="predict" type="button" class="btn btn-success" style="width: 10%; float:right; right:10%;" href="/predict_model">Next</a>
 
     <br>
 </div>
+<script>
+    var compound = $( "#compound" ).val();
+    var feature = $( "#feature" ).val();
+    data={ 'compound' : compound }
 
+    //convert to json format
+    data = JSON.stringify(data)
+    $('#predict').bind('click', function(e){
+
+
+    var compound = $( "#compound" ).val();
+    var feature = $( "#feature" ).val();
+    data={ 'compound' : compound , 'feature' : feature}
+
+    //convert to json format
+    data = JSON.stringify(data)
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                url: '/predict_model/',
+                data: {'predict_params': data,
+                    },
+                success: function(result) {
+                        document.write(result)
+                        }
+    });
+
+
+});
+</script>
 {% endblock%}

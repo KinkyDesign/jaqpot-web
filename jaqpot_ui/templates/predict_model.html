@@ -15,6 +15,7 @@
                 <!--<li><a href="#">{{e.name}}</a></li> -->
                 <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                     <input type="checkbox" name="checkbox" id= "check" value="{{e.name}}">{{e.name}}</label>
+
             {% endfor %}
 
 
@@ -91,8 +92,29 @@
                 </span>
             </div>
         </div>
-    <input id="choose_alg" type="submit" value="Save" class="btn btn-success" style="width: 10%; float:right; right:10%;">
+    <input id="choose_alg1" type="submit" value="Save" class="btn btn-success" style="width: 10%; float:right; right:10%;">
 </div>
 </form>
 
+<script>
+/*    $('#choose_alg1').bind('click', function(e){
+
+
+    //convert to json format
+    data = JSON.stringify(data)
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                url: '/predict_model/',
+                data: {'predict_params': {{predict_params}},
+                    },
+                success: function(result) {
+                        document.write(result)
+                        }
+    });
+
+});*/
+</script>
 {% endblock %}

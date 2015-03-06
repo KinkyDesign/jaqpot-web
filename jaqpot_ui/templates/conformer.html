@@ -3,6 +3,9 @@
 {% block content %}
 <form method="post" xmlns="http://www.w3.org/1999/html"> {% csrf_token %}
 <div class="div-table" style="width:100%;display:inline-block;">
+    <a href="#" class="btn btn-danger" data-toggle="tooltip" style="margin: 7px;float:right;">
+                    <i class="glyphicon glyphicon-lock"></i>
+                </a>
     <h1>Conformer</h1>
     <div style="width:70%; float:right;">
         <div>
@@ -17,6 +20,10 @@
             <label class="align">Compound:</label>
             <input type="text" style="margin:5px;" >
         </div>
+        <!--icon-search -->
+        <a href="#" class="btn btn-danger" data-toggle="tooltip" style="margin: 7px;">
+                    <i class="glyphicon glyphicon-search"></i>
+                </a>
 
         <h3>Database Properties:</h3>
 

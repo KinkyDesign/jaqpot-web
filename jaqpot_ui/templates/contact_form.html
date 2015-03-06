@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="/contact" method="post">{% csrf_token %}
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Contact</h4>
+        </div>
+        <div class="modal-body">
+            <p>Feel free to contact us for any issues you might have.</p>
+            <div class="row">
+                <div class="col-xs-6">
+                    <label for="id_subject">Subject:</label>
+                    <input class="form-control" placeholder="Subject" id="id_subject" name="subject" maxlength="100">
+                </div>
+                <div class="col-xs-6">
+                    <label for="id_sender" >Sender:</label>
+                    <input class="form-control" placeholder="Email" name="sender" id="id_sender">
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <label for="id_message">Message</label><textarea class="form-control" rows="3" name="message" id="id_message"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Send</button>
+        </div>
+    </div>
+</div>
+
+</form>
+{%endblock%}

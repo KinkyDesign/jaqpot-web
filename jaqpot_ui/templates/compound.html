@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="div-table" style="width:100%;">
+    {% load endless %}
+        <div>
+             <h1>Compound:</h1>
+             {% paginate 20 compound %}
+             <ul>
+             {% for c in compound %}
+                 <li>
+                    <a href="/compound_detail?name={{c.name}}">{{c.name}}</a>
+                 </li>
+            {% endfor %}
+                 </ul>
+
+            {% get_pages %}
+         <div id="pageNavPosition" class="pagination">
+             <span class="step-links">
+                    <ul class="pagination">
+                        {% if pages.previous %}
+                            <li class="active">
+                                {{ pages.previous}}
+                            </li>
+                        {% else%}
+                        <li class="active">
+                                <a href="#">Previous</a>
+                            </li>
+                        {%endif%}
+                        {% for page in pages %}
+                        <li>{{page}}</li>
+                        {%endfor%}
+
+                        {% if pages.next %}
+                            <li class="active">
+                                {{ pages.next}}
+                            </li>
+                        {% else%}
+                        <li class="active">
+                                <a href="#">Next </a>
+                            </li>
+                        {%endif%}
+
+                   </ul>
+                </span>
+         </div>
+        </div>
+</div>
+
+{% endblock %}

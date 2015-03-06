@@ -10,7 +10,7 @@
             <ul>
             {% paginate 18 entries %}
             {% for e in entries %}
-                <li><a id="dataset" href="/alg?dataset={{e}}&alg={{data}}">{{e}}</a></li>
+                <li><a id="dataset" href="/alg?dataset={{e}}">{{e}}</a></li>
             {% endfor %}
             </ul>
 
@@ -54,7 +54,7 @@
         <ul>
         {% paginate 15 entries2 using "other_objects_page" %}
         {% for e in entries2 %}
-             <li><a href="/alg?dataset={{e}}&alg={{data}}">{{e}}</a></li>
+             <li><a href="/alg?dataset={{e}}">{{e}}</a></li>
         {% endfor %}
             </ul>
             {% get_pages %}
@@ -91,21 +91,20 @@
     </div>
 
 <script>
-console.log(data)
-$('#dataset').bind('click', function(e){
-
+//console.log(data)
+/*$('#dataset').bind('click', function(e){
             $.ajax({
-                type: 'POST',
+                type: 'GET',
                 dataType: 'json',
                 contentType: 'application/json; charset=utf-8',
                 url: '/alg/',
-                data: {{data}},
+                data: {'algorithm': {{data|safe}} , },
                 success: function(result) {
                         document.write(result)
                         }
     });
 
-});
+});*/
 
 </script>
 {%endblock%}

@@ -30,6 +30,11 @@ urlpatterns = patterns('',
                        url(r'^addfeature', views.add_feature),
                        url(r'^predict_model', views.predict_model),
                        url(r'^predict', views.predict),
+                       url(r'^contact', views.contact),
+                       url(r'^thanks', views.thanks),
+                       url(r'^compound_detail', views.compound_details),
+                       url(r'^compound', views.compound),
+
 
 
                        # Administration page

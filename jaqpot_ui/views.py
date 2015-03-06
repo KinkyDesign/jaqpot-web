@@ -1,12 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
+from django.template import RequestContext
 import rdflib
-from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm
+from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm
 import requests
 import json
 import subprocess
 from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, URL
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect, HttpResponse
+from django.core.mail import send_mail
 from rdflib import Graph, plugin, term
 from rdflib.serializer import Serializer
 
@@ -71,7 +73,7 @@ def task(request):
     all_tasks = []
     #get all tasks with status Running
     headers = {'content-type': 'text/uri-list'}
-    res = requests.get(URL+'/tasks?status=Running?creator='+username, headers=headers)
+    res = requests.get(URL+'/tasks?status=Running&creator='+username, headers=headers)
     list_resp = res.text
     list_resp = list_resp.split('\n')[:-1]
     list_run=[]
@@ -83,7 +85,7 @@ def task(request):
     list_run = json.loads(list_run)
 
     #get all tasks with status Completed
-    res = requests.get(URL+'/tasks?status=Completed?creator='+username, headers=headers)
+    res = requests.get(URL+'/tasks?status=Completed&creator='+username, headers=headers)
     list_resp = res.text
     list_resp = list_resp.split('\n')[:-1]
     list_complete=[]
@@ -95,7 +97,7 @@ def task(request):
     list_complete = json.loads(list_complete)
 
     #get all tasks with status Cancelled
-    res = requests.get(URL+'/tasks?status=Cancelled?creator='+username, headers=headers)
+    res = requests.get(URL+'/tasks?status=Cancelled&creator='+username, headers=headers)
     list_resp = res.text
     list_resp = list_resp.split('\n')[:-1]
     list_cancelled=[]
@@ -107,7 +109,7 @@ def task(request):
     list_cancelled = json.loads(list_cancelled)
 
     #get all tasks with status Error
-    res = requests.get(URL+'/tasks?status=Error?creator='+username, headers=headers)
+    res = requests.get(URL+'/tasks?status=Error&creator='+username, headers=headers)
     list_resp = res.text
     list_resp = list_resp.split('\n')[:-1]
     list_error=[]
@@ -120,7 +122,7 @@ def task(request):
 
 
     #get all tasks with status Queued
-    res = requests.get(URL+'/tasks?status=Queued?creator='+username, headers=headers)
+    res = requests.get(URL+'/tasks?status=Queued&creator='+username, headers=headers)
     list_resp = res.text
     list_resp = list_resp.split('\n')[:-1]
     list_queued=[]
@@ -314,7 +316,7 @@ def user(request):
         #headers = {'content-type': 'text/uri-list'}
         #r = requests.get('http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/model', headers=headers)
         #print r.text
-        contacts = {'name': "guest", 'maxtasks': 5, 'maxmodels': 2000, 'maxalgorithms': 2000, 'models': 100, 'tasks':2, 'alg': 1000}
+        contacts = {'name': username, 'maxtasks': 5, 'maxmodels': 2000, 'maxalgorithms': 2000, 'models': 100, 'tasks':2, 'alg': 1000}
         contacts = json.dumps(contacts)
 
         return render(request, "user_details.html", {'token': token, 'username': username, 'name': name, 'contacts': contacts})
@@ -333,8 +335,11 @@ def trainmodel(request):
     if request.method == 'POST':
         data=[]
         for alg in request.POST.getlist('checkbox'):
-            data.append({"alg": alg})
+            data.append({"alg":alg})
         data = json.dumps(data)
+        #data = json.loads(data)
+        #get algorithm to the session
+        request.session['algorithm'] = data
         #return redirect('/dataset?data='+data, {'data': data})
         entries = [ "data", "data2", "data3"]
         entries2 = [ "data", "data2", "data3"]
@@ -353,10 +358,13 @@ def trainmodel(request):
 def alg(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+
+
     if request.method == 'GET':
-        alg = request.GET.get('alg')
+
+        alg = request.session.get('algorithm', '')
         dataset = request.GET.get('dataset')
-        alg = json.loads(alg)
+        #alg = json.loads(alg)
         #for a in alg:
             #r = request.get() get algorithm parameters
             #r.append('{ r}')
@@ -534,6 +542,7 @@ def dataset_detail(request):
 def predict(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+
     if request.method == 'GET':
         return render(request, "predict.html", {'token': token, 'username': username})
 
@@ -544,14 +553,66 @@ def predict_model(request):
     #my_models = [ "model1", "data2", "data3"]
     my_models = json.dumps(my_models)
     my_models = json.loads(my_models)
+
     if request.method == 'GET':
+        if request.GET.get('predict_params'):
+            predict_params = request.GET.get('predict_params')
+            print predict_params
+            request.session['predict_params'] = predict_params
+
         return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models': my_models})
     if request.method == 'POST':
+        predict_params= request.session.get('predict_params', '')
+        print predict_params
         data=[]
         for model in request.POST.getlist('checkbox'):
             data.append({"model": model})
         data = json.dumps(data)
         print data
 
-
         return render(request, "task.html", {'token': token, 'username': username})
+#Contact form
+def contact(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+
+    if request.method == 'POST': # If the form has been submitted...
+        form = ContactForm(request.POST) # A form bound to the POST data
+        if form.is_valid(): # All validation rules pass
+            # Process the data in form.cleaned_data
+            # ...
+            subject = form.cleaned_data['subject']
+            message = form.cleaned_data['message']
+            sender = form.cleaned_data['sender']
+
+            recipients = ['evangelie_5@hotmail.com']
+
+            send_mail(subject, message, sender, recipients)
+            return HttpResponseRedirect('/thanks/') # Redirect after POST
+        else:
+            error = "Invalid value"
+            return render_to_response('contact_form.html', {'form': form, 'token': token, 'username': username, 'error': error}, context_instance=RequestContext(request))
+    else:
+        form = ContactForm() # An unbound form
+
+    return render_to_response('contact_form.html', {'form': form, 'token': token, 'username': username}, context_instance=RequestContext(request))
+
+def thanks(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if request.method == 'GET':
+        return render(request, "thanks.html", {'token': token, 'username': username})
+
+def compound(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if request.method == 'GET':
+        compound= [{'name':'compound1'}, {'name':'compound2'}, {'name':'compound3'}, {'name':'compound4'}]
+        return render(request, "compound.html", {'token': token, 'username': username, 'compound': compound})
+
+def compound_details(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    name = request.GET.get('name', '')
+    if request.method == 'GET':
+        return render(request, "compound_detail.html", {'token': token, 'username': username, 'name': name})
