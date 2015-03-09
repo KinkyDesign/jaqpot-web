@@ -571,6 +571,7 @@ def predict_model(request):
         print data
 
         return render(request, "task.html", {'token': token, 'username': username})
+
 #Contact form
 def contact(request):
     token = request.session.get('token', '')
@@ -586,7 +587,8 @@ def contact(request):
             sender = form.cleaned_data['sender']
 
             recipients = ['evangelie_5@hotmail.com']
-
+            #css the sender mail
+            recipients.append(sender)
             send_mail(subject, message, sender, recipients)
             return HttpResponseRedirect('/thanks/') # Redirect after POST
         else:
@@ -597,6 +599,7 @@ def contact(request):
 
     return render_to_response('contact_form.html', {'form': form, 'token': token, 'username': username}, context_instance=RequestContext(request))
 
+#redirect to thanks page
 def thanks(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -616,3 +619,18 @@ def compound_details(request):
     name = request.GET.get('name', '')
     if request.method == 'GET':
         return render(request, "compound_detail.html", {'token': token, 'username': username, 'name': name})
+
+#redirect to source page
+def source(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if request.method == 'GET':
+        return render(request, "source.html", {'token': token, 'username': username})
+
+#redirect to documentation page
+def documentation(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if request.method == 'GET':
+        return render(request, "documentation.html", {'token': token, 'username': username})
+
