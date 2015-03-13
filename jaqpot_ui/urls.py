@@ -34,8 +34,9 @@ urlpatterns = patterns('',
                        url(r'^thanks', views.thanks),
                        url(r'^compound_detail', views.compound_details),
                        url(r'^compound', views.compound),
-                        url(r'^source', views.source),
+                       url(r'^source', views.source),
                        url(r'^documentation', views.documentation),
+                       url(r'^explore', views.explore),
 
 
 

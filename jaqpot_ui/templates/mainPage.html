@@ -4,16 +4,32 @@
 
 <body>
 <div class="col-md-8" style="position: absolute; top:20%;">
-    <div id="side-bar" class="span2" style="position:fixed; right:3%;" >
+    <!--<div id="side-bar" class="span2" style="position:fixed; right:3%;" >
         <video width="320" height="240" controls>
         <source src="static/video/VideoLogo.mp4" type="video/mp4">
         <source src="movie.ogg" type="video/ogg">
-Your browser does not support the video tag.
-</video>
-    </div>
+        Your browser does not support the video tag.
+        </video>
+    </div> -->
         <div class="pricing">
             <ul>
                 <li class="unit price-primary">
+                    <div class="price-title">
+                        <h3>Explore</h3>
+                    </div>
+                    <div class="price-body">
+                        <h4>Step 1</h4>
+                        <p>Explore chemical dataset</p>
+                        <ul><li>Explore dataset</li>
+                            <li>Explore compound</li>
+                            <li>EXplore conformer</li>
+                        </ul>
+                    </div>
+                    <div class="price-foot">
+                        <a class="btn btn-primary" href="/explore">Explore</a>
+                    </div>
+                </li>
+                <li class="unit price-success active">
                     <div class="price-title">
                         <h3>Train</h3>
                     </div>
@@ -26,23 +42,7 @@ Your browser does not support the video tag.
                         </ul>
                     </div>
                     <div class="price-foot">
-                        <a class="btn btn-primary" href="/train">TRAIN</a>
-                    </div>
-                </li>
-                <li class="unit price-success active">
-                    <div class="price-title">
-                        <h3>Calculate</h3>
-                    </div>
-                    <div class="price-body">
-                        <h4>Step 2</h4>
-                        <p>Calculate descriptors</p>
-                        <ul><li>Choose compound</li>
-                            <li>Choose a property</li>
-                            <li>Calculate descriptors</li>
-                        </ul>
-                    </div>
-                    <div class="price-foot">
-                        <a class="btn btn-success" href="/conformer">CALCULATE</a>
+                        <a class="btn btn-success" href="/train">TRAIN</a>
                     </div>
                 </li>
                 <li class="unit price-warning">
@@ -66,13 +66,6 @@ Your browser does not support the video tag.
 
 </div>
 
-<!--<div class="sidebar" style="width: 20%; float: right;">
-    <video width="320" height="240" controls>
-        <source src="static/video/VideoLogo.mp4" type="video/mp4">
-        <source src="movie.ogg" type="video/ogg">
-Your browser does not support the video tag.
-</video>
-</div>  -->
 
 </body>
 

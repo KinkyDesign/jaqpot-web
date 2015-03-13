@@ -161,7 +161,6 @@ def taskdetail(request):
                     k = p.split('#')[1]
                     print k
                 output.update({k: o.toPython()})
-                print output
 
 
         output = json.dumps(output)
@@ -316,6 +315,9 @@ def user(request):
         #headers = {'content-type': 'text/uri-list'}
         #r = requests.get('http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/model', headers=headers)
         #print r.text
+        headers = {'content-type': 'text/uri-list'}
+        res = requests.get(URL+'/user/hampos@opensso.in-silico.ch', headers=headers)
+        print res.text
         contacts = {'name': username, 'maxtasks': 5, 'maxmodels': 2000, 'maxalgorithms': 2000, 'models': 100, 'tasks':2, 'alg': 1000}
         contacts = json.dumps(contacts)
 
@@ -634,3 +636,11 @@ def documentation(request):
     if request.method == 'GET':
         return render(request, "documentation.html", {'token': token, 'username': username})
 
+def explore(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    entries = [ "data", "data2", "data3"]
+    entries2 = [ "compound", "compound2", "compound3"]
+    entries3 = [ "conformer", "conformer2", "conformer3"]
+    if request.method == 'GET':
+        return render(request, "explore.html", {'token': token, 'username': username, 'entries': entries, 'entries_2':entries2, 'entries_3':entries3})
