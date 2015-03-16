@@ -315,9 +315,12 @@ def user(request):
         #headers = {'content-type': 'text/uri-list'}
         #r = requests.get('http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/model', headers=headers)
         #print r.text
-        headers = {'content-type': 'text/uri-list'}
-        res = requests.get(URL+'/user/hampos@opensso.in-silico.ch', headers=headers)
+        headers = {'content-type': 'text/uri-list', 'subjectid': token}
+        #headers = {'subjectid': token}
+        res = requests.get(URL+'/user/'+ '?subjectid='+ token, headers=headers)
+        rw=requests.get('http://opentox.ntua.gr:8080/user/'+ username +'@opensso.in-silico.ch/quota', headers=headers)
         print res.text
+        print rw.text
         contacts = {'name': username, 'maxtasks': 5, 'maxmodels': 2000, 'maxalgorithms': 2000, 'models': 100, 'tasks':2, 'alg': 1000}
         contacts = json.dumps(contacts)
 
@@ -326,55 +329,34 @@ def user(request):
 def trainmodel(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    form = TrainForm(initial={})
 
     if request.method == 'GET':
+        entries = [ "data", "data2", "data3"]
+        entries2 = [ "data", "data2", "data3"]
+        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries': entries, 'entries2': entries2})
+
+
+def choose_dataset(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    form = TrainForm(initial={})
+    if request.method == 'GET':
+        dataset = request.GET.get('dataset')
         entries = [ "svm", "mlr", "alg_3"]
         entries_2 = [ "a1", "a2", "a3"]
         entries_3 = [ "1", "2", "3"]
-        return render(request, "train_model.html", {'token': token, 'username': username, 'entries': entries, 'entries_2': entries_2, 'entries_3': entries_3, 'form':form})
-
+        return render(request, "train_model.html", {'token': token, 'username': username, 'entries': entries, 'entries_2': entries_2, 'entries_3': entries_3, 'form':form, 'dataset': dataset})
     if request.method == 'POST':
-        data=[]
+        algorithms=[]
         for alg in request.POST.getlist('checkbox'):
-            data.append({"alg":alg})
-        data = json.dumps(data)
-        #data = json.loads(data)
-        #get algorithm to the session
-        request.session['algorithm'] = data
-        #return redirect('/dataset?data='+data, {'data': data})
-        entries = [ "data", "data2", "data3"]
-        entries2 = [ "data", "data2", "data3"]
-        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries': entries, 'entries2': entries2, 'data':data})
-
-'''def choose_dataset(request):
-    token = request.session.get('token', '')
-    username = request.session.get('username', '')
-    if request.method == 'GET':
-        data = request.GET.get('data')
-        print data
-        entries = [ "data", "data2", "data3"]
-        entries2 = [ "data", "data2", "data3"]
-        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries': entries, 'entries2': entries2, 'data':data})'''
-
-def alg(request):
-    token = request.session.get('token', '')
-    username = request.session.get('username', '')
-
-
-    if request.method == 'GET':
-
-        alg = request.session.get('algorithm', '')
+            algorithms.append({"alg":alg})
+        algorithms = json.dumps(algorithms)
+        print algorithms
         dataset = request.GET.get('dataset')
-        #alg = json.loads(alg)
-        #for a in alg:
-            #r = request.get() get algorithm parameters
-            #r.append('{ r}')
         #alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1},{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1}]
         alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma': 0.5, 'e': 0.1}]
-        print alg
         print dataset
-        return render(request, "alg.html", {'token': token, 'username': username, 'alg':alg, 'dataset':dataset, 'alg_param': alg_param})
+        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'alg_param': alg_param})
 
 #Conformer
 def conformer(request):

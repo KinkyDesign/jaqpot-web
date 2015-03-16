@@ -10,7 +10,7 @@
             <ul>
             {% paginate 18 entries %}
             {% for e in entries %}
-                <li><a id="dataset" href="/alg?dataset={{e}}">{{e}}</a></li>
+                <li><a id="dataset" href="/dataset?dataset={{e}}">{{e}}</a></li>
             {% endfor %}
             </ul>
 
@@ -54,7 +54,7 @@
         <ul>
         {% paginate 15 entries2 using "other_objects_page" %}
         {% for e in entries2 %}
-             <li><a href="/alg?dataset={{e}}">{{e}}</a></li>
+             <li><a href="/dataset?dataset={{e}}">{{e}}</a></li>
         {% endfor %}
             </ul>
             {% get_pages %}

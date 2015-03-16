@@ -16,12 +16,11 @@ urlpatterns = patterns('',
                        url(r'^sub', views.sub),
                        url(r'^user', views.user),
                        url(r'^train', views.trainmodel),
-                       #url(r'^dataset', views.choose_dataset),
+                       url(r'^dataset', views.choose_dataset),
                        url(r'^data_detail', views.dataset_detail),
                        url(r'^data', views.dataset),
                        url(r'^algorithm_detail', views.algorithm_detail),
                        url(r'^algorithm', views.algorithm),
-                       url(r'^alg', views.alg),
                        url(r'^conformer', views.conformer),
                        url(r'^model', views.model),
                        url(r'^m_detail', views.model_detail),
@@ -37,7 +36,6 @@ urlpatterns = patterns('',
                        url(r'^source', views.source),
                        url(r'^documentation', views.documentation),
                        url(r'^explore', views.explore),
-
 
 
                        # Administration page

@@ -37,7 +37,7 @@ font-family: Arial;
 //background-color: #BFBFBF;
 background-position: center 30%;
 background-image: url('/static/img/background.jpg');
-background-repeat: no-repeat;
+//background-repeat: no-repeat;
 padding: 50px;
 }
 .footer{
@@ -125,7 +125,7 @@ margin-bottom: 10px;
 }
 
 
-input[type=text] {
+input[type=text]  {
 text-align: center;
 background-color: #ECF0F1;
 border: 2px solid transparent;
@@ -136,7 +136,9 @@ padding: 10px 0;
 width: 250px;
 transition: border .5s;
 }
-
+input [type=search] {
+radius:4px;
+}
 #id_password{
 text-align: center;
 background-color: #ECF0F1;
@@ -275,3 +277,25 @@ border-color: #8CC152;
 .pagination>.active>a:focus{
 cursor: pointer;
  }
+
+/* radius paginator of dataTables */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+border-radius: 4px;
+}
+/* change css search field of dataTables*/
+.dataTables_wrapper .dataTables_filter input{
+border: 2px solid #ccc;
+border-radius: 4px;
+}
+.dataTables_wrapper .dataTables_filter input:hover{
+border: 2px solid #ccc;
+border-radius: 4px;
+border-color:#8cc152;
+transition: 2s;
+}
+
+.dataTables_wrapper .dataTables_filter input:focus{
+border: 2px solid #ccc;
+border-radius: 4px;
+border-color:#8cc152;
+}
