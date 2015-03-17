@@ -4,13 +4,15 @@
 
 <div class="div-table" style="width:100%;">
     <a href="/add_bibtex" class="btn btn-danger" data-toggle="tooltip" title="Add BibTex"><i class="glyphicon glyphicon-plus-sign"></i></a>
-    <br>
     {% load endless %}
-    <table id="results" style="margin:10px;">
+    <table id="results" class="display">
+        <thead>
         <tr>
-            <th>Author</th>
-            <th>Title</th>
+            <th style="background-color: #A0D468;">Author</th>
+            <th style="background-color: #A0D468;">Title</th>
         </tr>
+        </thead>
+        <tbody>
         {% paginate 20 final_output %}
         {% for l in final_output %}
         <tr>
@@ -18,6 +20,7 @@
             <td><a href="/bib_detail?id={{l.id}}">{{l.hasTitle}}</a></td>
         </tr>
         {% endfor%}
+        </tbody>
     </table>
     {% get_pages %}
     <div id="pageNavPosition" class="pagination">
@@ -58,5 +61,15 @@
 $('[data-toggle="tooltip"]').tooltip({
     'placement': 'right'
 });
+
+//DataTable
+$(document).ready( function () {
+        $('#results').DataTable();
+
+    } );
+//disable paging
+$('#results').DataTable( {
+    paging: false,
+} );
 </script>
 {% endblock %}

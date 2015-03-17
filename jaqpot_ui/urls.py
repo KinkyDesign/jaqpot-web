@@ -37,6 +37,10 @@ urlpatterns = patterns('',
                        url(r'^documentation', views.documentation),
                        url(r'^explore', views.explore),
 
+                       # captcha
+                       url(r'^captcha/', include('captcha.urls')),
+
+
 
                        # Administration page
                        url(r'^admin/', include(admin.site.urls)),

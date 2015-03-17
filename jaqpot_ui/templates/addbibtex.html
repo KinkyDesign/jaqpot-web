@@ -7,54 +7,114 @@
         <div>
             <label class="align">Author:</label>
             <label class="align">{{form.author}}</label>
+            {% if form.author.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-left: 6%;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.author.errors.as_text}}</span>
+               </div>
+            {% endif %}
         </div>
         <div>
             <label class="align">Title:</label>
             <label class="align">{{form.title}}</label>
+             {% if form.title.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-left: 6%;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.title.errors.as_text}}</span>
+               </div>
+            {% endif %}
         </div>
         <div>
             <label class="align">Abstract:</label>
             <label class="align">{{form.abstract}}</label>
+            {% if form.abstract.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-left: 6%;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.abstract.errors.as_text}}</span>
+               </div>
+            {% endif %}
         </div>
         <div>
             <label class="align">Copyright:</label>
             <label class="align">{{form.copyright}}</label>
+            {% if form.copyright.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-left: 6%;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.copyright.errors.as_text}}</span>
+               </div>
+            {% endif %}
         </div>
         <div>
             <label class="align">Address:</label>
             <label class="align">{{form.address}}</label>
+            {% if form.address.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-left: 6%;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.address.errors.as_text}}</span>
+               </div>
+            {% endif %}
         </div>
         <div>
             <label class="align">Year:</label>
             <label class="align">{{form.year}}</label>
+            {% if form.year.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-left: 6%;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.year.errors.as_text}}</span>
+               </div>
+            {% endif %}
         </div>
         <div>
             <label class="align">Pages:</label>
             <label class="align">{{form.pages}}</label>
+            {% if form.pages.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-left: 6%;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.pages.errors.as_text}}</span>
+               </div>
+            {% endif %}
         </div>
         <div>
             <label class="align">Volume:</label>
             <label class="align">{{form.volume}}</label>
+            {% if form.volume.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-left: 6%;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.volume.errors.as_text}}</span>
+               </div>
+            {% endif %}
         </div>
         <div>
             <label class="align">Journal:</label>
             <label class="align">{{form.journal}}</label>
+            {% if form.journal.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-left: 6%;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.journal.errors.as_text}}</span>
+               </div>
+            {% endif %}
         </div>
         <div>
             <label class="align">Keywords:</label>
             <label class="align">{{form.keyword}}</label>
+            {% if form.keyword.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-left: 6%;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.keyword.errors.as_text}}</span>
+               </div>
+            {% endif %}
         </div>
         <div>
             <label class="align">Url:</label>
             <label class="align">{{form.url}}</label>
+            {% if form.url.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-left: 6%;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.url.errors.as_text}}</span>
+               </div>
+            {% endif %}
         </div>
         <br>
-        {% if error %}
-					<div class="alert alert-danger" role="alert" style="width:20%">
-						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-						<span>{{error}}</span>
-					</div>
-				{% endif %}
         <input type="submit" class="btn btn-danger" value="Add" />
     </form>
 

@@ -9,23 +9,43 @@
         </div>
         <div class="modal-body">
             <p>Feel free to contact us for any issues you might have.</p>
-            <div class="row">
-                <div class="col-xs-6">
-                    <label for="id_subject">Subject:</label>
-                    <input class="form-control" placeholder="Subject" id="id_subject" name="subject" maxlength="100">
-                </div>
-                <div class="col-xs-6">
-                    <label for="id_sender" >Sender:</label>
-                    <input class="form-control" placeholder="Email" name="sender" id="id_sender">
-                </div>
 
-            </div>
+            {% if form.non_field_errors %}
+                <p class="error">
+                      {% for error in form.non_field_errors %}
+                            {{error}}
+                      {% endfor %}
+                </p>
+           {% endif %}
+           <!-- Iterate over the fields in a form and render them  -->
+           {% for field in form %}
             <div class="row">
-                <div class="col-xs-12">
-                    <label for="id_message">Message</label><textarea class="form-control" rows="3" name="message" id="id_message"></textarea>
+                <div class="col-xs-6">
+                    <!-- Render the field label tag -->
+                    {{ field.label_tag }}
+                    <!-- If the field is required, display a * next to the field label -->
+                    {% if field.field.required %}
+                        *
+                    {% endif %}
+                    <br/>
+                    <!-- Render the input field -->
+
+                    {{ field }}
+
+                    <!-- Iterate over the field's errors, if any and display
+                     them one by one in a error alert-->
+                    {% if field.errors %}
+                        <p class="error">
+                        {% for error in field.errors %}
+                            {{ error }}
+                        {% endfor %}
+                        </p>
+                    {% endif %}
                 </div>
             </div>
+            {% endfor%}
         </div>
+
         <div class="modal-footer">
             <button type="submit" class="btn btn-success">Send</button>
         </div>

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
+import base64
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -39,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'endless_pagination',
+    'captcha',
 
 )
 
@@ -126,4 +128,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'eanagnosto@gmail.com'
-EMAIL_HOST_PASSWORD = 'evangelia90'
+EMAIL_HOST_PASSWORD = base64.b64decode('ZXZhbmdlbGlhOTA=')
+
+
+SOUTH_MIGRATION_MODULES = {
+    'captcha': 'captcha.south_migrations',
+}

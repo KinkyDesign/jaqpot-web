@@ -5,7 +5,7 @@ from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, Contac
 import requests
 import json
 import subprocess
-from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, URL
+from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, URL, EMAIL_HOST_USER
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.mail import send_mail
@@ -537,7 +537,6 @@ def predict_model(request):
     #my_models = [ "model1", "data2", "data3"]
     my_models = json.dumps(my_models)
     my_models = json.loads(my_models)
-
     if request.method == 'GET':
         if request.GET.get('predict_params'):
             predict_params = request.GET.get('predict_params')
@@ -570,14 +569,14 @@ def contact(request):
             message = form.cleaned_data['message']
             sender = form.cleaned_data['sender']
 
-            recipients = ['evangelie_5@hotmail.com']
+            recipients = [ EMAIL_HOST_USER ]
             #css the sender mail
             recipients.append(sender)
             send_mail(subject, message, sender, recipients)
             return HttpResponseRedirect('/thanks/') # Redirect after POST
         else:
-            error = "Invalid value"
-            return render_to_response('contact_form.html', {'form': form, 'token': token, 'username': username, 'error': error}, context_instance=RequestContext(request))
+
+            return render_to_response('contact_form.html', {'form': form, 'token': token, 'username': username}, context_instance=RequestContext(request))
     else:
         form = ContactForm() # An unbound form
 
