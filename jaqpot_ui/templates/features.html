@@ -6,12 +6,12 @@
     <br>
     <h4>Features</h4>
     {% load endless %}
-    <ul>
+    <div class="list-group">
         {% paginate 20 features %}
         {% for f in features %}
-        <li><a href="/feature_detail?name={{f.name}}">{{f.name}}</a></li>
+            <a href="/feature_detail?name={{f.name}}" class="list-group-item list-group-item-success">{{f.name}}</a>
         {% endfor %}
-    </ul>
+    </div>
     {% get_pages %}
     <div id="pageNavPosition" class="pagination">
                 <span class="step-links">

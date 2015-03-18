@@ -2,9 +2,9 @@
 
 {% block content %}
 <form method="post" id="form1"> {% csrf_token %}
-<div class="div-table" style="width:100%; display: inline-block; min-height:650px;">
+<div class="div-table" style="width:100%; display: inline-block;">
     <h1>Train model</h1>
-    <div class="form-search search-only" style="float:right; right:5%;"><i class="search-icon glyphicon glyphicon-search"></i> <input class="form-control search-query green-form"></div>
+    <div class="form-search search-only" style="float:right; right:5%;"><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
     <h4>Choose Algorithm(s)</h4>
     <div style="float:left; width:33%;">
         <h3>Jaqpot</h3>
@@ -12,7 +12,7 @@
         <div>
              {% paginate 20 entries %}
              {% for e in entries %}
-                <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                     <input type="checkbox" name="checkbox" id= "check" value="{{e}}">{{e}}</label>
             {% endfor %}
 
@@ -53,7 +53,7 @@
          <div>
              {% paginate 20 entries_2 using "other_page" %}
              {% for e in entries_2 %}
-                <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block;width:99%;">
+                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block;width:99%;">
                     <input type="checkbox" name="checkbox" value="{{e}}">{{e}}</label>
             {% endfor %}
             {% get_pages %}
@@ -93,7 +93,7 @@
         <div>
             {% paginate 20 entries_3 using "other_object_page" %}
             {% for e in entries_3 %}
-                <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block;width:99%;">
+                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block;width:99%;">
                     <input type="checkbox" name="checkbox" value="{{e}}">{{e}}</label>
             {% endfor %}
             {% get_pages %}
@@ -170,5 +170,31 @@ $('#choose_alg').bind('click', function(e){
 
 });
 
+//search
+$(document).ready(function(){
+    $("#filter").keyup(function(){
+
+        // Retrieve the input field text and reset the count to zero
+        var filter = $(this).val(), count = 0;
+
+        // Loop through the comment list
+        $(".algorithms").each(function(){
+
+            // If the list item does not contain the text phrase fade it out
+            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
+                $(this).fadeOut();
+
+            // Show the list item if the phrase matches and increase the count by 1
+            } else {
+                $(this).show();
+                count++;
+            }
+        });
+
+        // Update the count
+        var numberItems = count;
+        $("#filter-count").text("Number of Comments = "+count);
+    });
+});
 </script>
 {% endblock %}

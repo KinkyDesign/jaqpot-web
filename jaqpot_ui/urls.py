@@ -36,6 +36,7 @@ urlpatterns = patterns('',
                        url(r'^source', views.source),
                        url(r'^documentation', views.documentation),
                        url(r'^explore', views.explore),
+                       url(r'^stoptask', views.stop_task),
 
                        # captcha
                        url(r'^captcha/', include('captcha.urls')),

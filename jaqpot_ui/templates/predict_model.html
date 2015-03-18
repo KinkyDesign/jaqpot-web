@@ -4,7 +4,7 @@
 <form method="post"> {% csrf_token %}
 <div class="div-table" style="width:100%;display:inline-block;">
     <h1>Search for models:</h1>
-    <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input class="form-control search-query green-form"></div>
+    <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
     <div style="width:50%; float:left;">
         <h1>Public Models:</h1>
         <div>
@@ -13,7 +13,7 @@
             {% paginate 18 my_models %}
             {% for e in my_models %}
                 <!--<li><a href="#">{{e.name}}</a></li> -->
-                <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                <label class="models" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                     <input type="checkbox" name="checkbox" id= "check" value="{{e.name}}">{{e.name}}</label>
 
             {% endfor %}
@@ -57,7 +57,7 @@
         {% paginate 15 my_models using "other_objects_page" %}
         {% for e in my_models %}
 
-             <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+             <label class="models" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                     <input type="checkbox" name="checkbox" value="{{e.name}}">{{e.name}}</label>
         {% endfor %}
 
@@ -116,5 +116,31 @@
     });
 
 }); */
+//search
+$(document).ready(function(){
+    $("#filter").keyup(function(){
+
+        // Retrieve the input field text and reset the count to zero
+        var filter = $(this).val(), count = 0;
+
+        // Loop through the comment list
+        $(".models").each(function(){
+
+            // If the list item does not contain the text phrase fade it out
+            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
+                $(this).fadeOut();
+
+            // Show the list item if the phrase matches and increase the count by 1
+            } else {
+                $(this).show();
+                count++;
+            }
+        });
+
+        // Update the count
+        var numberItems = count;
+        $("#filter-count").text("Number of Comments = "+count);
+    });
+});
 </script>
 {% endblock %}

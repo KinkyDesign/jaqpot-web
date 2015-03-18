@@ -7,13 +7,13 @@
         <div>
              <h1>Dataset:</h1>
              {% paginate 20 dataset %}
-             <ul>
-             {% for d in dataset %}
-                 <li>
-                    <a href="/data_detail?name={{d.name}}">{{d.name}}</a>
-                 </li>
-            {% endfor %}
-                 </ul>
+             <div class="list-group">
+                 {% for d in dataset %}
+
+                    <a href="/data_detail?name={{d.name}}" class="list-group-item list-group-item-success">{{d.name}}</a>
+
+                 {% endfor %}
+             </div>
 
             {% get_pages %}
          <div id="pageNavPosition" class="pagination">

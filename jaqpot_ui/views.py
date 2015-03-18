@@ -168,6 +168,17 @@ def taskdetail(request):
 
         return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'status': status, 'output': output})
 
+#stop running task
+def stop_task(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    name = request.GET.get('name')
+    if request.method == 'GET':
+        #stop task
+        headers = {'content-type': 'text/uri-list'}
+        res = requests.delete(URL+'/task/'+name, headers=headers)
+        return render(request, "mainPage.html", {'token': token, 'username': username })
+
 #List of all BibTex
 def bibtex(request):
     token = request.session.get('token', '')
@@ -366,7 +377,7 @@ def conformer(request):
         return render(request, "conformer.html", {'token': token, 'username': username})
     if request.method == 'POST':
         #add task for descriptors calculation
-        return render(request, "task.html", {'token': token, 'username': username})
+        return redirect('/task', {'token': token, 'username': username})
 
 def model(request):
     token = request.session.get('token', '')
@@ -553,8 +564,8 @@ def predict_model(request):
         data = json.dumps(data)
         print data
 
-        return render(request, "task.html", {'token': token, 'username': username})
-
+        #return render(request, "task.html", {'token': token, 'username': username})
+        return redirect('/task', {'token': token, 'username': username})
 #Contact form
 def contact(request):
     token = request.session.get('token', '')

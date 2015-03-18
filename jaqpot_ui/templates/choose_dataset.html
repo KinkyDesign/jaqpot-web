@@ -5,14 +5,16 @@
 <div class="div-table" style="width:100%;display:inline-block;">
     <div style="width:50%; float:left;">
         <h1>My datasets:</h1>
+        <br>
+        <br>
         <div>
             {% load endless %}
-            <ul>
+            <div class="list-item">
             {% paginate 18 entries %}
             {% for e in entries %}
-                <li><a id="dataset" href="/dataset?dataset={{e}}">{{e}}</a></li>
+                <a id="dataset" href="/dataset?dataset={{e}}" class="list-group-item list-group-item-success" style="width:90%;">{{e}}</a>
             {% endfor %}
-            </ul>
+            </div>
 
             {% get_pages %}
             <div id="pageNavPosition4" class="pagination">
@@ -48,15 +50,15 @@
     </div>
     <div style="width:50%; float:right;">
         <h1>Public datasets:</h1>
-        <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input class="form-control search-query green-form"></div>
+        <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
         <br>
 
-        <ul>
+        <div class="publicdataset list-group">
         {% paginate 15 entries2 using "other_objects_page" %}
         {% for e in entries2 %}
-             <li><a href="/dataset?dataset={{e}}">{{e}}</a></li>
+             <a href="/dataset?dataset={{e}}" class="list-group-item list-group-item-success">{{e}}</a>
         {% endfor %}
-            </ul>
+            </div>
             {% get_pages %}
             <div id="pageNavPosition5" class="pagination">
                 <span class="step-links">
@@ -105,6 +107,32 @@
     });
 
 });*/
+//search from public dataset
+$(document).ready(function(){
+    $("#filter").keyup(function(){
+
+        // Retrieve the input field text and reset the count to zero
+        var filter = $(this).val(), count = 0;
+
+        // Loop through the comment list
+        $(".publicdataset a").each(function(){
+
+            // If the list item does not contain the text phrase fade it out
+            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
+                $(this).fadeOut();
+
+            // Show the list item if the phrase matches and increase the count by 1
+            } else {
+                $(this).show();
+                count++;
+            }
+        });
+
+        // Update the count
+        var numberItems = count;
+        $("#filter-count").text("Number of Comments = "+count);
+    });
+});
 
 </script>
 {%endblock%}
