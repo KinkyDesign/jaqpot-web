@@ -324,3 +324,12 @@ border-radius: 4px;
 border-color:#8cc152;
 }
 
+.label-danger{
+min-width: 80px;
+display: inline-block;
+}
+
+.label-warning{
+min-width: 80px;
+display: inline-block;
+}

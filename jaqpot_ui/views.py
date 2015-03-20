@@ -323,6 +323,8 @@ def user(request):
     name = request.GET.get('name')
 
     if request.method == 'GET':
+        #curl command for getting user info
+        #curl -X GET http://enanomapper.ntua.gr:8880/jaqpot/services/user/hampos -H "Content-type: application/json" -H "Accept: application/json" -H subjectid:AQIC5wM2LY4SfcwVYB0lR6oY-G37NauRX4VvIGegOod7F_g.*AAJTSQACMDE.*
         #headers = {'content-type': 'text/uri-list'}
         #r = requests.get('http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/model', headers=headers)
         #print r.text

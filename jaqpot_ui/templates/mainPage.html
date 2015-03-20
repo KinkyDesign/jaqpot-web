@@ -26,7 +26,12 @@
                         </ul>
                     </div>
                     <div class="price-foot">
+                        {% if token %}
                         <a class="btn btn-primary" href="/explore">EXPLORE</a>
+                        {% else %}
+                        <a class="btn btn-primary" href="/login">EXPLORE</a>
+                        {% endif %}
+
                     </div>
                 </li>
                 <li class="unit price-success active">
@@ -42,7 +47,11 @@
                         </ul>
                     </div>
                     <div class="price-foot">
+                        {% if token %}
                         <a class="btn btn-success" href="/train">TRAIN</a>
+                        {% else %}
+                        <a class="btn btn-success" href="/login">TRAIN</a>
+                        {% endif %}
                     </div>
                 </li>
                 <li class="unit price-warning">
@@ -58,7 +67,11 @@
                         </ul>
                     </div>
                     <div class="price-foot">
+                        {% if token %}
                         <a class="btn btn-danger" href="/predict">PREDICT</a>
+                        {% else %}
+                        <a class="btn btn-danger" href="/login">PREDICT</a>
+                        {% endif %}
                     </div>
                 </li>
             </ul>
