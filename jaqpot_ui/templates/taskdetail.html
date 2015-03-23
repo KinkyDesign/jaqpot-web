@@ -12,30 +12,30 @@
     </div> -->
     <div>
         <label class="align">Status:</label>
-        <input type="text" readonly="readonly" style="margin:5px" value="{{output.hasStatus}}">
+        <input type="text" readonly="readonly" style="margin:5px" value="{{output.status}}">
     </div>
     <div><label class="align">ETA:</label>
             <input type="text" id="eta" readonly="readonly" style="margin:5px" value="{{output.duration}}">
     </div>
     <div>
         <label class="align">Date:</label>
-        <input type="text" readonly="readonly" style="margin:5px" value="{{output.date}}">
+        <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.date}}">
     </div>
     <div>
         <label class="align">Creator:</label>
-        <input type="text" readonly="readonly" style="margin:5px" value="{{output.creator}}">
+        <input type="text" readonly="readonly" style="margin:5px" value="{{output.createdBy}}">
     </div>
     <div>
         <label class="align">Http Status:</label>
         <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
     </div>
     <p><b>Comment:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{{output.comment}}
-
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
+            {{c}}{% endfor %}
         </textarea>
     <p><b>Description:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{{output.description}}
-
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for c in output.meta.descriptions %}
+            {{c}}{% endfor %}
         </textarea>
 
 
@@ -65,19 +65,19 @@
         <h3>Error </h3>
         <div >
             <label class="align">Creator:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.creator}}">
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.createdBy}}">
         </div>
         <div>
             <label class="align">Status:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.hasStatus}}" >
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.status}}" >
         </div>
         <div >
             <label class="align">Date:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.date}}">
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.date}}">
         </div>
         <div>
             <label class="align">Actor:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.actor}}" >
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.actor}}" >
         </div>
         <div>
             <label class="align">Http Status:</label>
@@ -85,23 +85,22 @@
         </div>
         <div>
             <label class="align">Code:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorCode}}">
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.code}}">
         </div>
         <p><b>Message:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="1">{{output.message}}
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="1">{{output.errorReport.message}}
 
         </textarea>
         <p><b>Comment:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{{output.comment}}
-
-        </textarea>
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
+            {{c}}{% endfor %}</textarea>
         <p><b>Description:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{{output.description}}
-
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for c in output.meta.descriptions %}
+            {{c}}{% endfor %}
         </textarea>
 
         <p><b>Details:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="10">{{output.details}}
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="10">{{output.errorReport.details}}
 
         </textarea>
         <br>
@@ -110,29 +109,30 @@
         <h3>Completed task </h3>
         <div>
             <label class="align">Creator:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.creator}}">
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.createdBy}}">
         </div>
         <div>
             <label class="align">Status:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.hasStatus}}">
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.status}}">
         </div>
         <div><label class="align">Duration:</label>
                 <input type="text" readonly="readonly" style="margin:5px" value="{{output.duration}}">
         </div>
         <div>
             <label class="align">Date:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.date}}">
+            <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.date}}">
         </div>
         <div>
             <label class="align">Http Status:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
         </div>
         <p><b>Comment:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{{output.comment}}
-
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
+            {{c}}{%endfor%}
         </textarea>
         <p><b>Description:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{{output.description}}
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for c in output.meta.descriptions%}
+            {{c}}{%endfor%}
 
         </textarea>
         <br>
@@ -156,8 +156,8 @@ $("#id1").val(params_json.id);
 $("#status").val('{{status}}');
 $("#eta").val(params_json.ETA);*/
 
-percentage = {{output.percentageCompleted}}
-
+//percentage = {{output.percentageCompleted}}
+var percentage=10
 
 //Create chart pie
 $(function () {

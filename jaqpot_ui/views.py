@@ -5,7 +5,7 @@ from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, Contac
 import requests
 import json
 import subprocess
-from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, URL, EMAIL_HOST_USER
+from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, URL, EMAIL_HOST_USER, URL_1
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.mail import send_mail
@@ -35,10 +35,11 @@ def login(request):
             password = form['password'].value()
 
             # send request to external authenticator
-            r = requests.post(EXT_AUTH_URL_LOGIN, data={'username': username, 'password': password})
-            if r.status_code == 200: #
-                token = r.text.split('=')[1]
-                token = token[:-1]
+            r = requests.post(URL_1 + '/aa/login', data={'username': username, 'password': password})
+            print r.text
+            if r.status_code == 200:
+                response = json.loads(r.text)
+                token = response['authToken']
 
                 # set session request
                 request.session['token'] = token
@@ -53,12 +54,11 @@ def logout(request):
     token = request.session.get('token', '')
     if token:
         # send request to logout from auth server
-        url = EXT_AUTH_URL_LOGOUT + '?subjectid=' + token
-        requests.get(url)
-
-        # remove from session
-        request.session['token'] = ''
-        request.session['username'] = ''
+        r = requests.post(URL_1 + '/aa/logout', headers={'subjectid': token})
+        if r.status_code == 200:
+            # remove from session
+            request.session['token'] = ''
+            request.session['username'] = ''
 
         # send to home page
         return redirect('/')
@@ -72,10 +72,10 @@ def task(request):
 
     all_tasks = []
     #get all tasks with status Running
-    headers = {'content-type': 'text/uri-list'}
-    res = requests.get(URL+'/tasks?status=Running&creator='+username, headers=headers)
+    headers = {'Accept': 'text/uri-list', 'subjectid': token}
+    res = requests.get(URL_1+'/task?creator='+username+'&status=RUNNING', headers=headers)
     list_resp = res.text
-    list_resp = list_resp.split('\n')[:-1]
+    list_resp = list_resp.splitlines()
     list_run=[]
     for l in list_resp:
         l = l.split('/task/')[1]
@@ -85,9 +85,9 @@ def task(request):
     list_run = json.loads(list_run)
 
     #get all tasks with status Completed
-    res = requests.get(URL+'/tasks?status=Completed&creator='+username, headers=headers)
+    res = requests.get(URL_1+'/task?status=COMPLETED&creator='+username, headers=headers)
     list_resp = res.text
-    list_resp = list_resp.split('\n')[:-1]
+    list_resp = list_resp.splitlines()
     list_complete=[]
     for l in list_resp:
         l = l.split('/task/')[1]
@@ -97,9 +97,9 @@ def task(request):
     list_complete = json.loads(list_complete)
 
     #get all tasks with status Cancelled
-    res = requests.get(URL+'/tasks?status=Cancelled&creator='+username, headers=headers)
+    res = requests.get(URL_1+'/task?status=CANCELLED&creator='+username, headers=headers)
     list_resp = res.text
-    list_resp = list_resp.split('\n')[:-1]
+    list_resp = list_resp.splitlines()
     list_cancelled=[]
     for l in list_resp:
         l = l.split('/task/')[1]
@@ -109,9 +109,9 @@ def task(request):
     list_cancelled = json.loads(list_cancelled)
 
     #get all tasks with status Error
-    res = requests.get(URL+'/tasks?status=Error&creator='+username, headers=headers)
+    res = requests.get(URL_1+'/task?status=ERROR&creator='+username, headers=headers)
     list_resp = res.text
-    list_resp = list_resp.split('\n')[:-1]
+    list_resp = list_resp.splitlines()
     list_error=[]
     for l in list_resp:
         l = l.split('/task/')[1]
@@ -122,9 +122,9 @@ def task(request):
 
 
     #get all tasks with status Queued
-    res = requests.get(URL+'/tasks?status=Queued&creator='+username, headers=headers)
+    res = requests.get(URL_1+'/task?status=QUEUED&creator='+username, headers=headers)
     list_resp = res.text
-    list_resp = list_resp.split('\n')[:-1]
+    list_resp = list_resp.splitlines()
     list_queued=[]
     for l in list_resp:
         l = l.split('/task/')[1]
@@ -147,9 +147,10 @@ def taskdetail(request):
 
     if request.method == 'GET':
         #get task details in rdf format
-        headers = {'content-type': 'text/uri-list'}
-        res = requests.get(URL+'/task/'+name, headers=headers)
-        g = Graph().parse(URL+'/task/'+name)
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.get(URL_1+'/task/'+name, headers=headers)
+        print res.text
+        '''g = Graph().parse(URL+'/task/'+name)
         output = {}
         k=''
         for s, p, o in g:
@@ -160,11 +161,11 @@ def taskdetail(request):
                 if '#' in p:
                     k = p.split('#')[1]
                     print k
-                output.update({k: o.toPython()})
+                output.update({k: o.toPython()})'''
 
 
-        output = json.dumps(output)
-        output = json.loads(output)
+        #output = json.dumps(res.text)
+        output = json.loads(res.text)
 
         return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'status': status, 'output': output})
 
@@ -328,13 +329,14 @@ def user(request):
         #headers = {'content-type': 'text/uri-list'}
         #r = requests.get('http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/model', headers=headers)
         #print r.text
-        headers = {'content-type': 'text/uri-list', 'subjectid': token}
+        headers = {'content-type': 'application/json', 'subjectid': token}
         #headers = {'subjectid': token}
-        res = requests.get(URL+'/user/'+ '?subjectid='+ token, headers=headers)
-        rw=requests.get('http://opentox.ntua.gr:8080/user/'+ username +'@opensso.in-silico.ch/quota', headers=headers)
+        res = requests.get(URL_1+'/user/'+ username, headers=headers)
+        #rw=requests.get('http://opentox.ntua.gr:8080/user/'+ username +'@opensso.in-silico.ch/quota', headers=headers)
         print res.text
-        print rw.text
-        contacts = {'name': username, 'maxtasks': 5, 'maxmodels': 2000, 'maxalgorithms': 2000, 'models': 100, 'tasks':2, 'alg': 1000}
+        contacts = json.loads(res.text)
+        #print rw.text
+        #contacts = {'name': username, 'maxtasks': 5, 'maxmodels': 2000, 'maxalgorithms': 2000, 'models': 100, 'tasks':2, 'alg': 1000}
         contacts = json.dumps(contacts)
 
         return render(request, "user_details.html", {'token': token, 'username': username, 'name': name, 'contacts': contacts})
