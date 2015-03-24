@@ -3,7 +3,16 @@
 {% block content %}
 
 <div class="div-table" style="width:100%; min-height:650px;">
-    <h1>{{name}}</h1>
+    <h1>Dataset #{{name}}</h1>
+    <!-- {{data_detail.datasetURI}} -->
+    <ul class="list-group">
+        {% for d in data_detail.dataEntry%}
+            <li class="list-group-item" style="background-color: #A0D468;">Properties of compound {{d.compound.URI}}</li>
+            {% for key in d.values%}
+                <li class="list-group-item" style="background-color: #F5F7FA;">{{key}}</li>
+             {% endfor %}
+        {% endfor %}
+    </ul>
 </div>
 
 {% endblock %}

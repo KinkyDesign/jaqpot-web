@@ -11,6 +11,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.mail import send_mail
 from rdflib import Graph, plugin, term
 from rdflib.serializer import Serializer
+from jaqpot_ui.templatetags import templates_extras
 
 
 # Home page
@@ -69,7 +70,10 @@ def task(request):
     username = request.session.get('username', '')
     if token:
         request.session.get('token', '')
+    #validate token
+    #if token is not valid redirect to login page
 
+    #else go to tasks
     all_tasks = []
     #get all tasks with status Running
     headers = {'Accept': 'text/uri-list', 'subjectid': token}
@@ -187,50 +191,19 @@ def bibtex(request):
     name = request.GET.get('name')
 
     if request.method == 'GET':
-
+        final_output=[]
         #get all bibtex
-        headers = {'content-type': 'text/uri-list'}
-        res = requests.get(URL+'/bibtex', headers=headers)
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers1 = {'Accept': 'text/uri-list', 'subjectid': token}
+        res = requests.get(URL_1+'/bibtex?bibtype=Entry&creator='+username, headers=headers1)
         list_resp = res.text
-        list_resp = list_resp.split('\n')[:-1]
-        print list_resp
-        b=[]
-        final_output= []
-        #create json with bibtex urls.
+        list_resp = list_resp.splitlines()
         for l in list_resp:
-            b.append({"url":l})
-            res = requests.get(l, headers=headers)
-            list_resp = res.text
-            g = Graph().parse(l)
-
-            output = {}
-            k=''
-            print g
-
-            for s, p, o in g:
-                if type(o) == rdflib.term.Literal:
-                    if '/bibtex#' in p:
-                        k = p.split('/bibtex#')[1]
-                        if k=="hasTitle":
-                            output.update({k: o.toPython()})
-                        if k=="hasAuthor":
-                            output.update({k: o.toPython()})
             id = l.split('/bibtex/')[1]
-            output.update({"id" : id})
-            final_output.append(output)
-
-        #get json data
-        final_output = json.dumps(final_output)
-        final_output = json.loads(final_output)
-
-        '''list_run=[]
-        for l in list_resp:
-            l = l.split('/task/')[1]
-            list_run.append({'name': l, 'status': "running"})
-            all_tasks.append({'name': l, 'status': "running"})
-        list_run = json.dumps(list_run)
-        list_run = json.loads(list_run) '''
-
+            r = requests.get(l, headers=headers)
+            #get json data
+            info=json.loads(r.text)
+            final_output.append( {"id":id, "info": info })
 
         return render(request, "bibtex.html", {'token': token, 'username': username, 'name': name, 'final_output': final_output})
 
@@ -241,45 +214,12 @@ def bib_detail(request):
     name = request.GET.get('name')
     id = request.GET.get('id')
     #send request
-    headers = {'content-type': 'text/uri-list'}
-    res = requests.get(URL+'/bibtex/'+id, headers=headers)
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    res = requests.get(URL_1+'/bibtex/'+id, headers=headers)
     list_resp = res.text
-    #get rdf response and convert to json data with details for bibtex
-    g = Graph().parse(URL+'/bibtex/'+id)
-    details = {}
-    k=''
-    print g
-
-    for s, p, o in g:
-        if type(o) == rdflib.term.Literal:
-            if '/bibtex#' in p:
-                k = p.split('/bibtex#')[1]
-                if k=="hasTitle":
-                    details.update({"Title": o.toPython()})
-                if k=="hasAuthor":
-                    details.update({"author": o.toPython()})
-                if k=="hasKeywords":
-                    details.update({"Keywords": o.toPython()})
-                if k=="hasVolume":
-                    details.update({"Volume": o.toPython()})
-                if k=="hasCopyright":
-                    details.update({"Copyright": o.toPython()})
-                if k=="hasJournal":
-                    details.update({"Journal": o.toPython()})
-                if k=="hasAbstract":
-                    details.update({"Abstract": o.toPython()})
-                if k=="hasPages":
-                    details.update({"Pages": o.toPython()})
-                if k=="hasAddress":
-                    details.update({"Address": o.toPython()})
-                if k=="hasYear":
-                    details.update({"Year": o.toPython()})
-                if k=="hasURL":
-                    details.update({"Url": o.toPython()})
-
     #get json data
-    details = json.dumps(details)
-    details = json.loads(details)
+    details = json.loads(res.text)
+    print details
     if request.method == 'GET':
 
         return render(request, "bibdetail.html", {'token': token, 'username': username, 'name': name, 'details': details })
@@ -527,8 +467,15 @@ def algorithm_detail(request):
 def dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    dataset=[]
     if request.method == 'GET':
-        dataset= [{'name':'dataset1'}, {'name':'dataset2'}, {'name':'dataset3'}, {'name':'dataset4'}]
+        headers = {'Accept': 'text/uri-list', "subjectid": token}
+        res = requests.get(URL_1+'/dataset', headers=headers)
+        data= res.text
+        data = data.splitlines()
+        for l in data:
+            l = l.split('/dataset/')[1]
+            dataset.append({'name': l})
         return render(request, "dataset.html", {'token': token, 'username': username, 'dataset': dataset})
 
 def dataset_detail(request):
@@ -536,7 +483,11 @@ def dataset_detail(request):
     username = request.session.get('username', '')
     name = request.GET.get('name', '')
     if request.method == 'GET':
-        return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name})
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.get(URL_1+'/dataset/'+name, headers=headers)
+        data_detail=json.loads(res.text)
+        print data_detail
+        return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail': data_detail})
 
 def predict(request):
     token = request.session.get('token', '')

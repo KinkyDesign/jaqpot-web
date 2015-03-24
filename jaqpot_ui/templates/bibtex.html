@@ -2,6 +2,8 @@
 
 {% block content %}
 
+{% load templates_extras %}
+
 <div class="div-table" style="width:100%;">
     <a href="/add_bibtex" class="btn btn-danger" data-toggle="tooltip" title="Add BibTex"><i class="glyphicon glyphicon-plus-sign"></i></a>
     {% load endless %}
@@ -16,8 +18,8 @@
         {% paginate 20 final_output %}
         {% for l in final_output %}
         <tr>
-            <td>{{l.hasAuthor}}</td>
-            <td><a href="/bib_detail?id={{l.id}}">{{l.hasTitle}}</a></td>
+            <td>{{l.info.author}}</td>
+            <td><a href="/bib_detail?id={{l.id}}">{{l.info.title}}</a></td>
         </tr>
         {% endfor%}
         </tbody>

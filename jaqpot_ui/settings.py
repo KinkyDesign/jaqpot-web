@@ -41,7 +41,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'endless_pagination',
     'captcha',
-
+    'jaqpot_ui',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -108,6 +108,7 @@ TEMPLATE_DIRS = (
   'jaqpot_ui/templates',
 )
 
+
 # External Authenticator
 EXT_AUTH_URL_LOGIN = 'https://opensso.in-silico.ch:443/auth/authenticate?uri=service=openldap'
 EXT_AUTH_URL_LOGOUT = 'http://opensso.in-silico.ch/opensso/identity/logout'
@@ -135,3 +136,8 @@ EMAIL_HOST_PASSWORD = base64.b64decode('ZXZhbmdlbGlhOTA=')
 SOUTH_MIGRATION_MODULES = {
     'captcha': 'captcha.south_migrations',
 }
+
+TEMPLATE_LOADERS = (
+    #'django.template.loaders.app_directories.load_template_source',
+    'django.template.loaders.app_directories.Loader',
+)
