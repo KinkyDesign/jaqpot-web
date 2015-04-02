@@ -46,8 +46,11 @@ def login(request):
                 request.session['token'] = token
                 request.session['username'] = username
                 return redirect('/')
-            else:
+            elif r.status_code == 401:
                 error = "Wrong username or password"
+                return render(request, "login.html", {'form': form, 'error': error})
+            else:
+                error = "An error occurred. Please try again later."
                 return render(request, "login.html", {'form': form, 'error': error})
 
 #User logout
@@ -61,8 +64,13 @@ def logout(request):
             request.session['token'] = ''
             request.session['username'] = ''
 
-        # send to home page
+            # send to home page
+            return redirect('/')
+        else:
+            return redirect('/login')
+    else:
         return redirect('/')
+
 
 #List of all tasks
 def task(request):
@@ -195,17 +203,27 @@ def bibtex(request):
         #get all bibtex
         headers = {'Accept': 'application/json', 'subjectid': token}
         headers1 = {'Accept': 'text/uri-list', 'subjectid': token}
-        res = requests.get(URL_1+'/bibtex?bibtype=Entry&creator='+username, headers=headers1)
+        res = requests.get(URL_1+'/bibtex?bibtype=Entry&creator='+username+'&&&start=0&max=10000', headers=headers1)
         list_resp = res.text
-        list_resp = list_resp.splitlines()
-        for l in list_resp:
-            id = l.split('/bibtex/')[1]
-            r = requests.get(l, headers=headers)
-            #get json data
-            info=json.loads(r.text)
-            final_output.append( {"id":id, "info": info })
+        if res.status_code == 403:
+            error = "This request is forbidden (e.g., no authentication token is provided)"
+            return render(request, "bibtex.html",{'token': token, 'username': username, 'name': name, 'error': error})
+        if res.status_code == 401:
+            error = "You are not authorized to access this resource"
+            return render(request, "bibtex.html",{'token': token, 'username': username, 'name': name, 'error': error})
+        if res.status_code == 500:
+            error = "Internal server error - this request cannot be served."
+            return render(request, "bibtex.html",{'token': token, 'username': username, 'name': name, 'error': error})
+        if res.status_code == 200:
+            list_resp = list_resp.splitlines()
+            for l in list_resp:
+                id = l.split('/bibtex/')[1]
+                r = requests.get(l, headers=headers)
+                #get json data
+                info=json.loads(r.text)
+                final_output.append( {"id":id, "info": info })
 
-        return render(request, "bibtex.html", {'token': token, 'username': username, 'name': name, 'final_output': final_output})
+            return render(request, "bibtex.html", {'token': token, 'username': username, 'name': name, 'final_output': final_output})
 
 #Details of each bibtex
 def bib_detail(request):
@@ -365,15 +383,43 @@ def features(request):
     username = request.session.get('username', '')
 
     if request.method == 'GET':
-        features = [{ 'name':'feature1'}, {'name':'feature2'}, {'name':'feature3'},{'name':'feature4' }]
-        return render(request, "features.html", {'token': token, 'username': username, 'features': features})
+        headers = {'Accept': 'text/uri-list', "subjectid": token}
+        res = requests.get(URL_1+'/feature?creator='+username+'&&start=0&max=10000', headers=headers)
+        features=[]
+        if res.status_code == 403:
+            error = "This request is forbidden (e.g., no authentication token is provided)"
+            return render(request, "features.html",{'token': token, 'username': username,'error': error})
+
+        if res.status_code == 401:
+            error = "You are not authorized to access this resource"
+            return render(request, "features.html",{'token': token, 'username': username, 'error': error})
+
+        if res.status_code == 500:
+            error = "Internal server error - this request cannot be served."
+            return render(request, "features.html",{'token': token, 'username': username, 'error': error})
+
+        if res.status_code == 200:
+            #get list of features
+            feature= res.text
+            #get each line
+            feature = feature.splitlines()
+            #for each line get fauture name and append it to features
+            for f in feature:
+                f = f.split('/feature/')[1]
+                features.append({'name': f})
+            return render(request, "features.html", {'token': token, 'username': username, 'features': features})
+
 def feature_details(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     name = request.GET.get('name')
 
     if request.method == 'GET':
-        return render(request, "feature_details.html", {'token': token, 'username': username, 'name': name})
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.get(URL_1+'/feature/'+name, headers=headers)
+        feature_detail=json.loads(res.text)
+        print feature_detail
+        return render(request, "feature_details.html", {'token': token, 'username': username, 'name': name, 'feature_detail': feature_detail})
 
 #Add feature
 def add_feature(request):
@@ -470,8 +516,9 @@ def dataset(request):
     dataset=[]
     if request.method == 'GET':
         headers = {'Accept': 'text/uri-list', "subjectid": token}
-        res = requests.get(URL_1+'/dataset', headers=headers)
+        res = requests.get(URL_1+'/dataset?start=0&max=10000', headers=headers)
         data= res.text
+
         data = data.splitlines()
         for l in data:
             l = l.split('/dataset/')[1]
@@ -486,8 +533,31 @@ def dataset_detail(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(URL_1+'/dataset/'+name, headers=headers)
         data_detail=json.loads(res.text)
-        print data_detail
-        return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail': data_detail})
+        properties=[]
+        a=[]
+        # a contains all compound's properties
+        for key in data_detail['dataEntry']:
+            for k, value in key.items():
+                if k !='compound':
+                    for m,n in value.items():
+                        if m not in a:
+                            a.append(m)
+        properties={}
+        #get response json
+        for key in data_detail['dataEntry']:
+            properties[key['compound']['URI']] = []
+            properties[key['compound']['URI']].append({"compound": key['compound']['URI']})
+            #for each compound
+            for k, value in key.items():
+                if k !='compound':
+                    for i in range(len(a)):
+                        #if a compound haven't value for a property add its value Null
+                        if a[i] in value:
+                            properties[key['compound']['URI']].append({"prop": a[i], "value": value[a[i]]})
+                        else:
+                            properties[key['compound']['URI']].append({"prop": a[i], "value": "NULL"})
+
+        return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail': data_detail, 'properties': properties, 'a': a})
 
 def predict(request):
     token = request.session.get('token', '')

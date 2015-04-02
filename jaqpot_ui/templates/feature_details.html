@@ -4,6 +4,77 @@
 
 <div class="div-table" style="width:100%;">
     <h1>{{name}}</h1>
+    {% if feature_detail.meta.titles %}
+    <div>
+        <label class="align">Title:</label>
+        <input type="text" readonly="readonly" style="margin:5px;width: 450px;" value="{{feature_detail.meta.titles.0}}">
+    </div>
+    {% endif %}
+    {% if feature_detail.createdBy %}
+    <div>
+        <label class="align">Creator:</label>
+        <input type="text" readonly="readonly" style="margin:5px; width: 450px;" value="{{feature_detail.createdBy}}">
+    </div>
+    {% endif %}
+    {% if feature_detail.meta.predictorFor %}
+    <div>
+        <label class="align">Predictor for:</label>
+        <input type="text" readonly="readonly" style="margin:5px; width: 450px;" value="{{feature_detail.meta.predictorFor.0}}">
+    </div>
+    {% endif %}
+    {% if feature_detail.predictorFor %}
+    <div>
+        <label class="align">Predictor for:</label>
+        <input type="text" readonly="readonly" style="margin:5px; width: 450px;" value="{{feature_detail.predictorFor}}">
+    </div>
+    {% endif %}
+    {% if feature_detail.units %}
+    <div>
+        <label class="align">Units:</label>
+        <input type="text" readonly="readonly" style="margin:5px;width: 450px;" value="{{feature_detail.units}}">
+    </div>
+    {% endif %}
+    {% if feature_detail.meta.date %}
+    <div>
+        <label class="align">Date:</label>
+        <input type="text" readonly="readonly" style="margin:5px;width: 450px;" value="{{feature_detail.meta.date}}">
+    </div>
+    {% endif %}
+    {% if feature_detail.meta.descriptions %}
+    <div>
+        <h6><b>Description:</b></h6>
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for d in feature_detail.meta.descriptions %}
+            {{d}}{% endfor %}</textarea>
+    </div>
+    {% endif %}
+    {% if feature_detail.meta.subjects %}
+    <div>
+    <h6><b>Subjects:</b></h6>
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for k in feature_detail.meta.subjects %}
+            {{k}}{% endfor %}</textarea>
+    </div>
+    {% endif %}
+    {% if feature_detail.ontologicalClasses %}
+    <div>
+    <h6><b>Ontological classes:</b></h6>
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for o in feature_detail.ontologicalClasses %}
+            {{o}}{% endfor %}</textarea>
+    </div>
+    {% endif %}
+    {% if feature_detail.meta.hasSources %}
+    <div>
+        <h6><b>Sources:</b></h6>
+        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for s in feature_detail.meta.hasSources %}
+            {{s}}{% endfor %}</textarea>
+    </div>
+    {% endif %}
+    <!-- {% if feature_detail.meta.seeAlso %}
+    <div>
+    <h6><b>See also:</b></h6>
+        <a href="{{feature_detail.meta.seeAlso.0}}">{{feature_detail.meta.seeAlso.0}}</a>
+    </div>
+    {% endif %}  -->
+
 </div>
 
 {% endblock %}

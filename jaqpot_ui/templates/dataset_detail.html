@@ -3,16 +3,64 @@
 {% block content %}
 
 <div class="div-table" style="width:100%; min-height:650px;">
+    {% load endless %}
     <h1>Dataset #{{name}}</h1>
-    <!-- {{data_detail.datasetURI}} -->
-    <ul class="list-group">
-        {% for d in data_detail.dataEntry%}
-            <li class="list-group-item" style="background-color: #A0D468;">Properties of compound {{d.compound.URI}}</li>
-            {% for key in d.values%}
-                <li class="list-group-item" style="background-color: #F5F7FA;">{{key}}</li>
+
+    <div id="details">
+         <table id="dataset" class="div-form-table display" >
+             <thead>
+                 <tr>
+                     <th style="background-color: #A0D468; min-width: 300px;">Compounds</th>
+                     {% for prop in a %}
+                        {% if prop %}
+                        <th style="background-color: #A0D468;">
+                            <p data-toggle="tooltip" data-placement="top" data-container="body" title="{{prop}}">x{{forloop.counter}}</p>
+                        </th>
+                        {% endif %}
+                     {% endfor %}
+                 </tr>
+             </thead>
+             <tbody>
+             {% for key, value in properties.items %}
+                    <tr>
+                        <td>{{key}}</td>
+                        {% for v in value %}
+                            {% if v.prop%}
+                                <td>{{v.value}}</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
              {% endfor %}
-        {% endfor %}
-    </ul>
+
+             </tbody>
+         </table>
+    </div>
 </div>
+
+<script>
+     $(document).ready( function () {
+        $('#dataset').DataTable( {
+        "scrollX": true,
+         "fnDrawCallback": function( oSettings )
+         {
+            $('.dataTables_scrollBody table thead tr').css({ 'height' : '0px' });
+        },
+        "fnInitComplete": function(oSettings, json)
+         {
+            $('.dataTables_scrollBody table thead tr').css({ 'height' : '0px' });
+        },
+
+        });
+
+    } );
+
+
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip({
+    container : 'body'
+  });
+});
+
+</script>
 
 {% endblock %}

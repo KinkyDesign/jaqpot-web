@@ -333,3 +333,12 @@ display: inline-block;
 min-width: 80px;
 display: inline-block;
 }
+
+.dataTables_scrollBody table thead tr{
+height : 0px;
+}
+
+/*Change tooltip size */
+div.tooltip-inner {
+    max-width: 750px;
+}

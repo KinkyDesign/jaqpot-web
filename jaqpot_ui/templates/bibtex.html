@@ -5,56 +5,59 @@
 {% load templates_extras %}
 
 <div class="div-table" style="width:100%;">
-    <a href="/add_bibtex" class="btn btn-danger" data-toggle="tooltip" title="Add BibTex"><i class="glyphicon glyphicon-plus-sign"></i></a>
-    {% load endless %}
-    <table id="results" class="display">
-        <thead>
-        <tr>
-            <th style="background-color: #A0D468;">Author</th>
-            <th style="background-color: #A0D468;">Title</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% paginate 20 final_output %}
-        {% for l in final_output %}
-        <tr>
-            <td>{{l.info.author}}</td>
-            <td><a href="/bib_detail?id={{l.id}}">{{l.info.title}}</a></td>
-        </tr>
-        {% endfor%}
-        </tbody>
-    </table>
-    {% get_pages %}
-    <div id="pageNavPosition" class="pagination">
-                <span class="step-links">
-                    <ul class="pagination">
-                        {% if pages.previous %}
+    {% if error %}
+        <h1>{{error}}</h1>
+    {% else %}
+        <a href="/add_bibtex" class="btn btn-danger" data-toggle="tooltip" title="Add BibTex"><i class="glyphicon glyphicon-plus-sign"></i></a>
+        {% load endless %}
+        <table id="results" class="display">
+            <thead>
+            <tr>
+                <th style="background-color: #A0D468;">Author</th>
+                <th style="background-color: #A0D468;">Title</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% paginate 20 final_output %}
+            {% for l in final_output %}
+            <tr>
+                <td>{{l.info.author}}</td>
+                <td><a href="/bib_detail?id={{l.id}}">{{l.info.title}}</a></td>
+            </tr>
+            {% endfor%}
+            </tbody>
+        </table>
+        {% get_pages %}
+        <div id="pageNavPosition" class="pagination">
+                    <span class="step-links">
+                        <ul class="pagination">
+                            {% if pages.previous %}
+                                <li class="active">
+                                    {{ pages.previous}}
+                                </li>
+                            {% else%}
                             <li class="active">
-                                {{ pages.previous}}
-                            </li>
-                        {% else%}
-                        <li class="active">
-                                <a href="#">Previous</a>
-                            </li>
-                        {%endif%}
-                        {% for page in pages %}
-                        <li>{{page}}</li>
-                        {%endfor%}
+                                    <a href="#">Previous</a>
+                                </li>
+                            {%endif%}
+                            {% for page in pages %}
+                            <li>{{page}}</li>
+                            {%endfor%}
 
-                        {% if pages.next %}
+                            {% if pages.next %}
+                                <li class="active">
+                                    {{ pages.next}}
+                                </li>
+                            {% else%}
                             <li class="active">
-                                {{ pages.next}}
-                            </li>
-                        {% else%}
-                        <li class="active">
-                                <a href="#">Next </a>
-                            </li>
-                        {%endif%}
+                                    <a href="#">Next </a>
+                                </li>
+                            {%endif%}
 
-                   </ul>
-                </span>
-            </div>
-
+                       </ul>
+                    </span>
+                </div>
+        {% endif %}
 </div>
 
 <script>
