@@ -351,10 +351,12 @@ def model(request):
         #print r.text
         models = []
         #get all models
-        headers = {'content-type': 'text/uri-list'}
-        res = requests.get(URL+'/model', headers=headers)
+        headers = {'Accept': 'text/uri-list', "subjectid": token}
+        res = requests.get(URL_1+'/model?start=0&max=10000', headers=headers)
         list_resp = res.text
-        list_resp = list_resp.split('\n')[:-1]
+        #get each line
+        list_resp = list_resp.splitlines()
+        print list_resp
         for l in list_resp:
             l = l.split('/model/')[1]
             models.append({'name': l})
@@ -418,7 +420,6 @@ def feature_details(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(URL_1+'/feature/'+name, headers=headers)
         feature_detail=json.loads(res.text)
-        print feature_detail
         return render(request, "feature_details.html", {'token': token, 'username': username, 'name': name, 'feature_detail': feature_detail})
 
 #Add feature
