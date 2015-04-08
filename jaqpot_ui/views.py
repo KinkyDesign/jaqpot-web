@@ -4,6 +4,7 @@ import rdflib
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm
 import requests
 import json
+import datetime
 import subprocess
 from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, URL, EMAIL_HOST_USER, URL_1
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -85,7 +86,7 @@ def task(request):
     all_tasks = []
     #get all tasks with status Running
     headers = {'Accept': 'text/uri-list', 'subjectid': token}
-    res = requests.get(URL_1+'/task?creator='+username+'&status=RUNNING', headers=headers)
+    res = requests.get(URL_1+'/task?creator='+username+'&status=RUNNING&start=0&max=10000', headers=headers)
     list_resp = res.text
     list_resp = list_resp.splitlines()
     list_run=[]
@@ -97,7 +98,7 @@ def task(request):
     list_run = json.loads(list_run)
 
     #get all tasks with status Completed
-    res = requests.get(URL_1+'/task?status=COMPLETED&creator='+username, headers=headers)
+    res = requests.get(URL_1+'/task?status=COMPLETED&creator='+username+'&start=0&max=10000', headers=headers)
     list_resp = res.text
     list_resp = list_resp.splitlines()
     list_complete=[]
@@ -109,7 +110,7 @@ def task(request):
     list_complete = json.loads(list_complete)
 
     #get all tasks with status Cancelled
-    res = requests.get(URL_1+'/task?status=CANCELLED&creator='+username, headers=headers)
+    res = requests.get(URL_1+'/task?status=CANCELLED&creator='+username+'&start=0&max=10000', headers=headers)
     list_resp = res.text
     list_resp = list_resp.splitlines()
     list_cancelled=[]
@@ -121,7 +122,7 @@ def task(request):
     list_cancelled = json.loads(list_cancelled)
 
     #get all tasks with status Error
-    res = requests.get(URL_1+'/task?status=ERROR&creator='+username, headers=headers)
+    res = requests.get(URL_1+'/task?status=ERROR&creator='+username+'&start=0&max=10000', headers=headers)
     list_resp = res.text
     list_resp = list_resp.splitlines()
     list_error=[]
@@ -134,7 +135,7 @@ def task(request):
 
 
     #get all tasks with status Queued
-    res = requests.get(URL_1+'/task?status=QUEUED&creator='+username, headers=headers)
+    res = requests.get(URL_1+'/task?status=QUEUED&creator='+username+'&start=0&max=10000', headers=headers)
     list_resp = res.text
     list_resp = list_resp.splitlines()
     list_queued=[]
@@ -161,7 +162,7 @@ def taskdetail(request):
         #get task details in rdf format
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(URL_1+'/task/'+name, headers=headers)
-        print res.text
+
         '''g = Graph().parse(URL+'/task/'+name)
         output = {}
         k=''
@@ -178,6 +179,9 @@ def taskdetail(request):
 
         #output = json.dumps(res.text)
         output = json.loads(res.text)
+        if output['meta']['date']:
+            date=output['meta']['date'].split('T')[0]
+            output['meta']['date'] = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%m/%d/%y')
 
         return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'status': status, 'output': output})
 
@@ -185,11 +189,11 @@ def taskdetail(request):
 def stop_task(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    name = request.GET.get('name')
+    id = request.GET.get('id')
     if request.method == 'GET':
         #stop task
-        headers = {'content-type': 'text/uri-list'}
-        res = requests.delete(URL+'/task/'+name, headers=headers)
+        headers = {'content-type': 'text/uri-list', 'subjectid': token}
+        res = requests.delete(URL_1+'/task/'+id, headers=headers)
         return render(request, "mainPage.html", {'token': token, 'username': username })
 
 #List of all BibTex

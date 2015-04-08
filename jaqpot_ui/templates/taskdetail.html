@@ -41,10 +41,33 @@
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for c in output.meta.descriptions %}
             {{c}}{% endfor %}
         </textarea>
+        <a class="advanced btn btn-danger" data-toggle="tooltip" title="Advanced info"><i class="glyphicon glyphicon-plus-sign"></i></a>
+        <br>
+        <div id='advancedOptions1' >
+            <!-- Advanced info -->
+            {% if output.resultUri %}
+            <div>
+                <label class="align">URI:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.resultUri}}">
+            </div>
+            {% endif %}
+            {% if output.result %}
+            <div>
+                <label class="align">Result:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.result}}">
+            </div>
+            {% endif %}
+            {% if output.meta.hasSources %}
+            <div>
+                <label class="align">Sources:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.hasSources.0}}">
+            </div>
+            {% endif %}
 
+        </div>
 
         <br>
-        <a href="/stoptask" class="btn btn-danger" data-toggle="tooltip" title="Stop task"><i class="glyphicon glyphicon-remove-sign"></i></a>
+        <a href="/stoptask?id={{name}}" class="btn btn-danger" data-toggle="tooltip" title="Stop task"><i class="glyphicon glyphicon-remove-sign"></i></a>
     {%elif status == "cancelled" %}
         <h3>This task has failed </h3>
         <div>
@@ -70,6 +93,30 @@
         <div>
             <label class="align">Details:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.details}}">
+        </div>
+        <a class="advanced btn btn-danger" data-toggle="tooltip" title="Advanced info"><i class="glyphicon glyphicon-plus-sign"></i></a>
+        <br>
+        <div id='advancedOptions2' >
+            <!-- Advanced info -->
+            {% if output.resultUri %}
+            <div>
+                <label class="align">URI:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.resultUri}}">
+            </div>
+            {% endif %}
+            {% if output.result %}
+            <div>
+                <label class="align">Result:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.result}}">
+            </div>
+            {% endif %}
+            {% if output.meta.hasSources %}
+            <div>
+                <label class="align">Sources:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.hasSources.0}}">
+            </div>
+            {% endif %}
+
         </div>
         <br>
         <a href="/" class="btn btn-danger" title="Report it">Report it</a>
@@ -119,6 +166,30 @@
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="10">{{output.errorReport.details}}
 
         </textarea>
+        <a class="advanced btn btn-danger" data-toggle="tooltip" title="Advanced info"><i class="glyphicon glyphicon-plus-sign"></i></a>
+        <br>
+        <div id='advancedOptions3' >
+            <!-- Advanced info -->
+            {% if output.resultUri %}
+            <div>
+                <label class="align">URI:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.resultUri}}">
+            </div>
+            {% endif %}
+            {% if output.result %}
+            <div>
+                <label class="align">Result:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.result}}">
+            </div>
+            {% endif %}
+            {% if output.meta.hasSources %}
+            <div>
+                <label class="align">Sources:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.hasSources.0}}">
+            </div>
+            {% endif %}
+
+        </div>
         <br>
         <a href="/" class="btn btn-danger" title="Report it">Report it</a>
     {%elif status == "queued" %}
@@ -152,6 +223,29 @@
             {{c}}{%endfor%}
 
         </textarea>
+        <a class="advanced btn btn-danger" data-toggle="tooltip" title="Advanced info"><i class="glyphicon glyphicon-plus-sign"></i></a>
+        <div id='advancedOptions4' >
+            <!-- Advanced info -->
+            {% if output.resultUri %}
+            <div>
+                <label class="align">URI:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.resultUri}}">
+            </div>
+            {% endif %}
+            {% if output.result %}
+            <div>
+                <label class="align">Result:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.result}}">
+            </div>
+            {% endif %}
+            {% if output.meta.hasSources %}
+            <div>
+                <label class="align">Sources:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.hasSources.0}}">
+            </div>
+            {% endif %}
+
+        </div>
     {%elif status == "rejected" %}
         <h3>Completed task </h3>
         <div>
@@ -173,65 +267,141 @@
             <label class="align">Date:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.date}}">
         </div>
+        {% if output.errorReport.actor %}
         <div>
             <label class="align">Actor:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.actor}}" >
         </div>
+        {% endif %}
+        {% if output.httpStatus %}
         <div>
             <label class="align">Http Status:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
         </div>
+        {% endif %}
+        {% if output.errorReport.code %}
         <div>
             <label class="align">Code:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.code}}">
         </div>
+        {% endif %}
+         {% if output.errorReport.message %}
         <p><b>Message:</b></p>
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="1">{{output.errorReport.message}}
 
         </textarea>
+        {% endif %}
+         {% if output.meta.comments %}
         <p><b>Comment:</b></p>
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
             {{c}}{%endfor%}
         </textarea>
+        {% endif %}
+         {% if output.meta.descriptions %}
         <p><b>Description:</b></p>
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for c in output.meta.descriptions%}
             {{c}}{%endfor%}
 
         </textarea>
+        {% endif %}
+        <a class="advanced btn btn-danger" data-toggle="tooltip" title="Advanced info"><i class="glyphicon glyphicon-plus-sign"></i></a>
+        <div id='advancedOptions5' >
+            <!-- Advanced info -->
+            {% if output.resultUri %}
+            <div>
+                <label class="align">URI:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.resultUri}}">
+            </div>
+            {% endif %}
+            {% if output.result %}
+            <div>
+                <label class="align">Result:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.result}}">
+            </div>
+            {% endif %}
+            {% if output.meta.hasSources %}
+            <div>
+                <label class="align">Sources:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.hasSources.0}}">
+            </div>
+            {% endif %}
+
+        </div>
     {%elif status == "completed" %}
         <h3>Completed task </h3>
+        {% if output.createdBy %}
         <div>
             <label class="align">Creator:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.createdBy}}">
         </div>
+        {% endif %}
+        {% if output.status %}
         <div>
             <label class="align">Status:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.status}}">
         </div>
+        {% endif %}
+        {% if output.type %}
         <div>
             <label class="align">Type:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.type}}">
         </div>
+        {% endif %}
+        {% if output.duration %}
         <div><label class="align">Duration:</label>
                 <input type="text" readonly="readonly" style="margin:5px" value="{{output.duration}}">
         </div>
+        {% endif %}
+         {% if output.meta.date %}
         <div>
             <label class="align">Date:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.date}}">
         </div>
+         {% endif %}
+         {% if output.httpStatus %}
         <div>
             <label class="align">Http Status:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
         </div>
+        {% endif %}
+         {% if output.meta.comments %}
         <p><b>Comment:</b></p>
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
             {{c}}{%endfor%}
         </textarea>
+        {% endif %}
+        {% if output.meta.descriptions %}
         <p><b>Description:</b></p>
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for c in output.meta.descriptions%}
             {{c}}{%endfor%}
 
         </textarea>
+        {% endif %}
+        <br>
+        <a class="advanced btn btn-danger" data-toggle="tooltip" title="Advanced info"><i class="glyphicon glyphicon-plus-sign"></i></a>
+        <br>
+        <div id='advancedOptions' >
+            <!-- Advanced info -->
+            {% if output.resultUri %}
+            <div>
+                <label class="align">URI:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.resultUri}}">
+            </div>
+            {% endif %}
+            {% if output.result %}
+            <div>
+                <label class="align">Result:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.result}}">
+            </div>
+            {% endif %}
+            {% if output.meta.hasSources %}
+            <div>
+                <label class="align">Sources:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.hasSources.0}}">
+            </div>
+            {% endif %}
+
+        </div>
         <br>
     {% endif %}
         <input id="task" value="{{task_info}}" style="display:none">
@@ -253,8 +423,7 @@ $("#id1").val(params_json.id);
 $("#status").val('{{status}}');
 $("#eta").val(params_json.ETA);*/
 
-//percentage = {{output.percentageCompleted}}
-var percentage=10
+percentage = {{output.percentageCompleted}}
 
 //Create chart pie
 $(function () {
@@ -295,5 +464,47 @@ $(function () {
 });
 
 
+</script>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        $('#advancedOptions').hide();
+        $('#advancedOptions1').hide();
+        $('#advancedOptions2').hide();
+        $('#advancedOptions3').hide();
+        $('#advancedOptions4').hide();
+        $('#advancedOptions5').hide();
+        $('.advanced').click(function() {
+            if ($('#advancedOptions').is(':hidden')) {
+                 $('#advancedOptions').slideDown();
+            } else {
+                 $('#advancedOptions').slideUp();
+            }
+            if ($('#advancedOptions1').is(':hidden')) {
+                 $('#advancedOptions1').slideDown();
+            } else {
+                 $('#advancedOptions1').slideUp();
+            }
+            if ($('#advancedOptions2').is(':hidden')) {
+                 $('#advancedOptions2').slideDown();
+            } else {
+                 $('#advancedOptions2').slideUp();
+            }
+            if ($('#advancedOptions3').is(':hidden')) {
+                 $('#advancedOptions3').slideDown();
+            } else {
+                 $('#advancedOptions3').slideUp();
+            }
+            if ($('#advancedOptions4').is(':hidden')) {
+                 $('#advancedOptions4').slideDown();
+            } else {
+                 $('#advancedOptions4').slideUp();
+            }if ($('#advancedOptions5').is(':hidden')) {
+                 $('#advancedOptions5').slideDown();
+            } else {
+                 $('#advancedOptions5').slideUp();
+            }
+        });
+    });
 </script>
 {% endblock %}
