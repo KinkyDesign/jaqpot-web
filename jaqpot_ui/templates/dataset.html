@@ -10,7 +10,7 @@
              <div class="list-group">
                  {% for d in dataset %}
 
-                    <a href="/data_detail?name={{d.name}}" class="list-group-item list-group-item-success">{{d.name}}</a>
+                    <a href="/data_detail?name={{d.name}}" class="list-group-item list-group-item-success">{{d.name}}<span style="float: left; left:50%; position:absolute;">{{d.info.meta.comments.0}}</span> </a>
 
                  {% endfor %}
              </div>
@@ -24,13 +24,19 @@
                                 {{ pages.previous}}
                             </li>
                         {% else%}
-                        <li class="active">
-                                <a href="#">Previous</a>
-                            </li>
+                            <li class="active">
+                                {% if page >= "2" %}
+                                    <a href="/data?page={{page|add:-1 }}">Previous</a>
+                                {% else %}
+                                    <a href="/data?page={{page}}">Previous</a>
+                                {%endif %}
+                                </li>
                         {%endif%}
-                        {% for page in pages %}
+                        <!--{% for page in pages %}
                         <li>{{page}}</li>
-                        {%endfor%}
+                        {%endfor%} -->
+                        <li><a href="/data?page={{page}}"><strong>{{page}}</strong></a></li>
+
 
                         {% if pages.next %}
                             <li class="active">
@@ -38,7 +44,11 @@
                             </li>
                         {% else%}
                         <li class="active">
-                                <a href="#">Next </a>
+                            {% if last %}
+                                    <a href="/data?page={{last}}">Next</a>
+                            {%else%}
+                                <a href="/data?page={{page|add:1 }}">Next </a>
+                            {% endif %}
                             </li>
                         {%endif%}
 
@@ -47,5 +57,4 @@
          </div>
         </div>
 </div>
-
 {% endblock %}

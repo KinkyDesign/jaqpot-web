@@ -462,10 +462,18 @@ $(function () {
         }]
     });
 });
+//Update running task each 30 sec
+/*var seconds = 30;
 
+setInterval(function(){
+    $.ajax({
+        url: 'something.something',
+        data: 'something'
+    });
+}, seconds * 1000) */
 
 </script>
-
+<!-- Show-Hide advanced info  -->
 <script type='text/javascript'>
     $(document).ready(function () {
         $('#advancedOptions').hide();

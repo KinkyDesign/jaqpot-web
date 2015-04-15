@@ -79,8 +79,12 @@ def task(request):
     username = request.session.get('username', '')
     if token:
         request.session.get('token', '')
-    #validate token
-    #if token is not valid redirect to login page
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(URL_1 + '/aa/validate', headers={'subjectid': token})
+        print r.status_code
+        if r.status_code != 200:
+            return redirect('/login')
 
     #else go to tasks
     all_tasks = []
@@ -88,69 +92,70 @@ def task(request):
     headers = {'Accept': 'text/uri-list', 'subjectid': token}
     res = requests.get(URL_1+'/task?creator='+username+'&status=RUNNING&start=0&max=10000', headers=headers)
     list_resp = res.text
-    list_resp = list_resp.splitlines()
-    list_run=[]
-    for l in list_resp:
-        l = l.split('/task/')[1]
-        list_run.append({'name': l, 'status': "running"})
-        all_tasks.append({'name': l, 'status': "running"})
-    list_run = json.dumps(list_run)
-    list_run = json.loads(list_run)
+    if res.status_code == 200:
+        list_resp = list_resp.splitlines()
+        list_run=[]
 
-    #get all tasks with status Completed
-    res = requests.get(URL_1+'/task?status=COMPLETED&creator='+username+'&start=0&max=10000', headers=headers)
-    list_resp = res.text
-    list_resp = list_resp.splitlines()
-    list_complete=[]
-    for l in list_resp:
-        l = l.split('/task/')[1]
-        list_complete.append({'name': l, 'status': "completed"})
-        all_tasks.append({'name': l, 'status': "completed"})
-    list_complete= json.dumps(list_complete)
-    list_complete = json.loads(list_complete)
+        for l in list_resp:
+            l = l.split('/task/')[1]
+            list_run.append({'name': l, 'status': "running"})
+            all_tasks.append({'name': l, 'status': "running"})
+        list_run = json.dumps(list_run)
+        list_run = json.loads(list_run)
 
-    #get all tasks with status Cancelled
-    res = requests.get(URL_1+'/task?status=CANCELLED&creator='+username+'&start=0&max=10000', headers=headers)
-    list_resp = res.text
-    list_resp = list_resp.splitlines()
-    list_cancelled=[]
-    for l in list_resp:
-        l = l.split('/task/')[1]
-        list_cancelled.append({'name': l, 'status': "cancelled"})
-        all_tasks.append({'name': l, 'status': "cancelled"})
-    list_cancelled= json.dumps(list_cancelled)
-    list_cancelled = json.loads(list_cancelled)
+        #get all tasks with status Completed
+        res = requests.get(URL_1+'/task?status=COMPLETED&creator='+username+'&start=0&max=10000', headers=headers)
+        list_resp = res.text
+        list_resp = list_resp.splitlines()
+        list_complete=[]
+        for l in list_resp:
+            l = l.split('/task/')[1]
+            list_complete.append({'name': l, 'status': "completed"})
+            all_tasks.append({'name': l, 'status': "completed"})
+        list_complete= json.dumps(list_complete)
+        list_complete = json.loads(list_complete)
 
-    #get all tasks with status Error
-    res = requests.get(URL_1+'/task?status=ERROR&creator='+username+'&start=0&max=10000', headers=headers)
-    list_resp = res.text
-    list_resp = list_resp.splitlines()
-    list_error=[]
-    for l in list_resp:
-        l = l.split('/task/')[1]
-        list_error.append({'name': l, 'status': "error"})
-        all_tasks.append({'name': l, 'status': "error"})
-    list_error= json.dumps(list_error)
-    list_error = json.loads(list_error)
+        #get all tasks with status Cancelled
+        res = requests.get(URL_1+'/task?status=CANCELLED&creator='+username+'&start=0&max=10000', headers=headers)
+        list_resp = res.text
+        list_resp = list_resp.splitlines()
+        list_cancelled=[]
+        for l in list_resp:
+            l = l.split('/task/')[1]
+            list_cancelled.append({'name': l, 'status': "cancelled"})
+            all_tasks.append({'name': l, 'status': "cancelled"})
+        list_cancelled= json.dumps(list_cancelled)
+        list_cancelled = json.loads(list_cancelled)
+
+        #get all tasks with status Error
+        res = requests.get(URL_1+'/task?status=ERROR&creator='+username+'&start=0&max=10000', headers=headers)
+        list_resp = res.text
+        list_resp = list_resp.splitlines()
+        list_error=[]
+        for l in list_resp:
+            l = l.split('/task/')[1]
+            list_error.append({'name': l, 'status': "error"})
+            all_tasks.append({'name': l, 'status': "error"})
+        list_error= json.dumps(list_error)
+        list_error = json.loads(list_error)
 
 
-    #get all tasks with status Queued
-    res = requests.get(URL_1+'/task?status=QUEUED&creator='+username+'&start=0&max=10000', headers=headers)
-    list_resp = res.text
-    list_resp = list_resp.splitlines()
-    list_queued=[]
-    for l in list_resp:
-        l = l.split('/task/')[1]
-        list_queued.append({'name': l, 'status': "queued"})
-        all_tasks.append({'name': l, 'status': "queued"})
-    list_queued= json.dumps(list_queued)
-    list_queued = json.loads(list_queued)
-    all_tasks= json.dumps(all_tasks)
-    all_tasks = json.loads(all_tasks)
+        #get all tasks with status Queued
+        res = requests.get(URL_1+'/task?status=QUEUED&creator='+username+'&start=0&max=10000', headers=headers)
+        list_resp = res.text
+        list_resp = list_resp.splitlines()
+        list_queued=[]
+        for l in list_resp:
+            l = l.split('/task/')[1]
+            list_queued.append({'name': l, 'status': "queued"})
+            all_tasks.append({'name': l, 'status': "queued"})
+        list_queued= json.dumps(list_queued)
+        list_queued = json.loads(list_queued)
+        all_tasks= json.dumps(all_tasks)
+        all_tasks = json.loads(all_tasks)
 
-    if request.method == 'GET':
-        return render(request, "task.html", {'token': token, 'username': username, 'all_tasks': all_tasks ,'list_run': list_run, 'list_complete': list_complete, 'list_cancelled': list_cancelled, 'list_error': list_error, 'list_queued': list_queued})
-
+        if request.method == 'GET':
+            return render(request, "task.html", {'token': token, 'username': username, 'all_tasks': all_tasks ,'list_run': list_run, 'list_complete': list_complete, 'list_cancelled': list_cancelled, 'list_error': list_error, 'list_queued': list_queued})
 #More information about each task
 def taskdetail(request):
     token = request.session.get('token', '')
@@ -518,17 +523,42 @@ def algorithm_detail(request):
 def dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    page = request.GET.get('page')
+    last = request.GET.get('last')
     dataset=[]
     if request.method == 'GET':
+        dataset=[]
         headers = {'Accept': 'text/uri-list', "subjectid": token}
-        res = requests.get(URL_1+'/dataset?start=0&max=10000', headers=headers)
-        data= res.text
+        headers1 = {'Accept': 'application/json', 'subjectid': token}
 
+        if page:
+            page1=int(page) * 20 - 20
+            k=str(page1)
+            if page1 <= 1:
+                res = requests.get(URL_1+'/dataset?start=0&max=20', headers=headers)
+            elif last:
+                res = requests.get(URL_1+'/dataset?start='+last+'&max=20', headers=headers)
+            else:
+                res = requests.get(URL_1+'/dataset?start='+k+'&max=20', headers=headers)
+
+        else:
+            page = 1
+            res = requests.get(URL_1+'/dataset?start=0&max=20', headers=headers)
+
+        data= res.text
         data = data.splitlines()
+        if len(data)< 20:
+            last= page
         for l in data:
-            l = l.split('/dataset/')[1]
-            dataset.append({'name': l})
-        return render(request, "dataset.html", {'token': token, 'username': username, 'dataset': dataset})
+            name = l.split('/dataset/')[1]
+            print name
+            #dataset.append({'name': l})
+            r = requests.get(l, headers=headers1)
+            #get json data
+            info=json.loads(r.text)
+            dataset.append( {"name":name, "info": info })
+        return render(request, "dataset.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last})
+
 
 def dataset_detail(request):
     token = request.session.get('token', '')
