@@ -10,37 +10,53 @@
         <label class="align">ID:</label>
         <input type="text" id="id1" readonly="readonly" style="margin:5px" >
     </div> -->
+    {% if output.status %}
     <div>
         <label class="align">Status:</label>
         <input type="text" readonly="readonly" style="margin:5px" value="{{output.status}}">
     </div>
+    {% endif %}
+    {% if output.type %}
     <div>
         <label class="align">Type:</label>
         <input type="text" readonly="readonly" style="margin:5px" value="{{output.type}}">
     </div>
+    {% endif %}
+    {% if output.duration %}
     <div><label class="align">ETA:</label>
             <input type="text" id="eta" readonly="readonly" style="margin:5px" value="{{output.duration}}">
     </div>
+    {% endif %}
+    {% if output.meta.date %}
     <div>
         <label class="align">Date:</label>
         <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.date}}">
     </div>
+    {% endif %}
+    {% if output.createdBy %}
     <div>
         <label class="align">Creator:</label>
         <input type="text" readonly="readonly" style="margin:5px" value="{{output.createdBy}}">
     </div>
+    {% endif %}
+    {% if output.httpStatus %}
     <div>
         <label class="align">Http Status:</label>
         <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
     </div>
+    {% endif %}
+    {% if output.meta.comments %}
     <p><b>Comment:</b></p>
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
             {{c}}{% endfor %}
         </textarea>
+    {% endif %}
+    {% if output.meta.descriptions %}
     <p><b>Description:</b></p>
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for c in output.meta.descriptions %}
             {{c}}{% endfor %}
         </textarea>
+    {% endif %}
         <a class="advanced btn btn-danger" data-toggle="tooltip" title="Advanced info"><i class="glyphicon glyphicon-plus-sign"></i></a>
         <br>
         <div id='advancedOptions1' >
@@ -70,30 +86,42 @@
         <a href="/stoptask?id={{name}}" class="btn btn-danger" data-toggle="tooltip" title="Stop task"><i class="glyphicon glyphicon-remove-sign"></i></a>
     {%elif status == "cancelled" %}
         <h3>This task has failed </h3>
+        {% if output.actor %}
         <div>
             <label class="align">Actor:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.actor}}" >
         </div>
+        {% endif %}
+        {% if output.errorReport.message %}
         <div >
             <label class="align">Message:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.message}}">
         </div>
+        {% endif %}
+        {% if output.status %}
         <div >
             <label class="align">Status:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.status}}">
         </div>
+        {% endif %}
+        {% if output.type %}
         <div >
             <label class="align">Type:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.type}}">
         </div>
+        {% endif %}
+        {% if output.errorReport.code %}
         <div>
             <label class="align">Code:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.code}}">
         </div>
+        {% endif %}
+        {% if output.errorReport.details %}
         <div>
             <label class="align">Details:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.details}}">
         </div>
+        {% endif %}
         <a class="advanced btn btn-danger" data-toggle="tooltip" title="Advanced info"><i class="glyphicon glyphicon-plus-sign"></i></a>
         <br>
         <div id='advancedOptions2' >
@@ -122,50 +150,72 @@
         <a href="/" class="btn btn-danger" title="Report it">Report it</a>
     {%elif status == "error" %}
         <h3>Error </h3>
+        {% if output.createdBy %}
         <div >
             <label class="align">Creator:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.createdBy}}">
         </div>
+         {% endif %}
+        {% if output.status %}
         <div>
             <label class="align">Status:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.status}}" >
         </div>
+         {% endif %}
+        {% if output.type %}
         <div>
             <label class="align">Type:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.type}}" >
         </div>
+        {% endif %}
+        {% if output.meta.date %}
         <div >
             <label class="align">Date:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.date}}">
         </div>
+        {% endif %}
+        {% if output.errorReport.actor %}
         <div>
             <label class="align">Actor:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.actor}}" >
         </div>
+        {% endif %}
+        {% if output.httpStatus %}
         <div>
             <label class="align">Http Status:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}" >
         </div>
+        {% endif %}
+        {% if output.errorReport.code %}
         <div>
             <label class="align">Code:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.code}}">
         </div>
+        {% endif %}
+        {% if output.errorReport.message %}
         <p><b>Message:</b></p>
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="1">{{output.errorReport.message}}
 
         </textarea>
+        {% endif %}
+        {% if output.meta.comments %}
         <p><b>Comment:</b></p>
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
             {{c}}{% endfor %}</textarea>
+        {% endif %}
+        {% if output.meta.descriptions %}
         <p><b>Description:</b></p>
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for c in output.meta.descriptions %}
             {{c}}{% endfor %}
         </textarea>
-
+        {% endif %}
+        {% if output.errorReport.details %}
         <p><b>Details:</b></p>
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="10">{{output.errorReport.details}}
 
         </textarea>
+        {% endif %}
+
         <a class="advanced btn btn-danger" data-toggle="tooltip" title="Advanced info"><i class="glyphicon glyphicon-plus-sign"></i></a>
         <br>
         <div id='advancedOptions3' >
@@ -194,35 +244,49 @@
         <a href="/" class="btn btn-danger" title="Report it">Report it</a>
     {%elif status == "queued" %}
         <h3>Queued task </h3>
+        {% if output.createdBy %}
         <div>
             <label class="align">Creator:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.createdBy}}">
         </div>
+        {% endif %}
+        {% if output.status %}
         <div>
             <label class="align">Status:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.status}}">
         </div>
+        {% endif %}
+        {% if output.type %}
         <div>
             <label class="align">Type:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.type}}">
         </div>
+        {% endif %}
+        {% if output.meta.date %}
         <div>
             <label class="align">Date:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.date}}">
         </div>
+        {% endif %}
+        {% if output.httpStatus %}
         <div>
             <label class="align">Http Status:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
         </div>
+        {% endif %}
+        {% if output.meta.comments %}
         <p><b>Comment:</b></p>
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
             {{c}}{%endfor%}
         </textarea>
+        {% endif %}
+        {% if output.meta.descriptions %}
         <p><b>Description:</b></p>
         <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for c in output.meta.descriptions%}
             {{c}}{%endfor%}
 
         </textarea>
+        {% endif %}
         <a class="advanced btn btn-danger" data-toggle="tooltip" title="Advanced info"><i class="glyphicon glyphicon-plus-sign"></i></a>
         <div id='advancedOptions4' >
             <!-- Advanced info -->
@@ -247,26 +311,36 @@
 
         </div>
     {%elif status == "rejected" %}
-        <h3>Completed task </h3>
+        <h3>Rejected task </h3>
+        {% if output.createdBy %}
         <div>
             <label class="align">Creator:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.createdBy}}">
         </div>
+        {% endif %}
+        {% if output.status %}
         <div>
             <label class="align">Status:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.status}}">
         </div>
+        {% endif %}
+        {% if output.type %}
         <div>
             <label class="align">Type:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.type}}">
         </div>
+        {% endif %}
+        {% if output.duration %}
         <div><label class="align">Duration:</label>
-                <input type="text" readonly="readonly" style="margin:5px" value="{{output.duration}}">
+                <input type="text" id="duration_rej" readonly="readonly" style="margin:5px" value="{{output.duration}}">
         </div>
+        {% endif %}
+        {% if output.meta.date %}
         <div>
             <label class="align">Date:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.date}}">
         </div>
+        {% endif %}
         {% if output.errorReport.actor %}
         <div>
             <label class="align">Actor:</label>
@@ -349,7 +423,7 @@
         {% endif %}
         {% if output.duration %}
         <div><label class="align">Duration:</label>
-                <input type="text" readonly="readonly" style="margin:5px" value="{{output.duration}}">
+                <input type="text" id="duration" readonly="readonly" style="margin:5px" value="{{output.duration}}">
         </div>
         {% endif %}
          {% if output.meta.date %}
@@ -462,6 +536,10 @@ $(function () {
         }]
     });
 });
+//Add ms to duration input field
+$('#duration').val($('#duration').val() + 'ms');
+$('#duration_rej').val($('#duration_rej').val() + 'ms');
+
 //Update running task each 30 sec
 /*var seconds = 30;
 

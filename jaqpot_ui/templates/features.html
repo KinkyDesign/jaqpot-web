@@ -12,36 +12,37 @@
         <div class="list-group">
             {% paginate 20 features %}
             {% for f in features %}
-                <a href="/feature_detail?name={{f.name}}" class="list-group-item list-group-item-success">{{f.name}}</a>
+                <a href="/feature_detail?name={{f.name}}" class="list-group-item list-group-item-success">{{f.name}}<span style="float: left; left:50%; position:absolute;">{{f.meta.titles.0}}</span></a>
             {% endfor %}
         </div>
         {% get_pages %}
         <div id="pageNavPosition" class="pagination">
                     <span class="step-links">
                         <ul class="pagination">
-                            {% if pages.previous %}
-                                <li class="active">
-                                    {{ pages.previous}}
-                                </li>
-                            {% else%}
                             <li class="active">
-                                    <a href="#">Previous</a>
-                                </li>
-                            {%endif%}
-                            {% for page in pages %}
-                            <li>{{page}}</li>
-                            {%endfor%}
+                            {% if page|add:"0" >= 2 %}
+                            <a href="/features?page={{page|add:-1}}">Previous</a>
+                            {% else %}
+                            <a href="/features?page={{page}}">Previous</a>
+                            {%endif %}
+                        </li>
+                        <!--<li><a href="/features?page={{page}}"><strong>{{page}}</strong></a></li> -->
+                        {% load templates_extras %}
+                        {% for i in 15|get_range %}
+                            {% if i == page %}
+                                <li><a href="/features?page={{page}}"><strong>{{page}}</strong></a></li>
+                            {% else %}
+                             <li><a href="/features?page={{i}}">{{i}}</a></li>
+                            {% endif %}
+                            {% endfor %}
 
-                            {% if pages.next %}
-                                <li class="active">
-                                    {{ pages.next}}
-                                </li>
-                            {% else%}
-                            <li class="active">
-                                    <a href="#">Next </a>
-                                </li>
-                            {%endif%}
-
+                        <li class="active">
+                            {% if last %}
+                                    <a href="/features?page={{last}}">Next</a>
+                            {%else%}
+                                <a href="/features?page={{page|add:1 }}">Next </a>
+                            {% endif %}
+                        </li>
                        </ul>
                     </span>
                 </div>

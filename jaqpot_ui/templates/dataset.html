@@ -19,38 +19,25 @@
          <div id="pageNavPosition" class="pagination">
              <span class="step-links">
                     <ul class="pagination">
-                        {% if pages.previous %}
-                            <li class="active">
-                                {{ pages.previous}}
-                            </li>
-                        {% else%}
-                            <li class="active">
-                                {% if page >= "2" %}
-                                    <a href="/data?page={{page|add:-1 }}">Previous</a>
-                                {% else %}
-                                    <a href="/data?page={{page}}">Previous</a>
-                                {%endif %}
-                                </li>
-                        {%endif%}
-                        <!--{% for page in pages %}
-                        <li>{{page}}</li>
-                        {%endfor%} -->
+
+                        <li class="active">
+                            {% if page|add:"0" >= 2 %}
+                            <a href="/data?page={{page|add:-1}}">Previous</a>
+                            {% else %}
+                            <a href="/data?page={{page}}">Previous</a>
+                            {%endif %}
+                        </li>
+
                         <li><a href="/data?page={{page}}"><strong>{{page}}</strong></a></li>
 
 
-                        {% if pages.next %}
-                            <li class="active">
-                                {{ pages.next}}
-                            </li>
-                        {% else%}
                         <li class="active">
                             {% if last %}
                                     <a href="/data?page={{last}}">Next</a>
                             {%else%}
                                 <a href="/data?page={{page|add:1 }}">Next </a>
                             {% endif %}
-                            </li>
-                        {%endif%}
+                        </li>
 
                    </ul>
                 </span>

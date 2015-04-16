@@ -34,19 +34,23 @@
                         <thead>
                             <tr>
                                 <th style="background-color: #A0D468;">Task</th>
+                                <th style="background-color: #A0D468;">Title</th>
                                 <th style="background-color: #A0D468;">Status</th>
+
                             </tr>
                         </thead>
                         <tbody>
                         {% for l in all_tasks %}
                             <tr>
                                 <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
+                                <td>{{l.meta.titles.0}}</td>
                                 <td>{% if l.status == "cancelled" %}<span class="label label-danger"><i class="glyphicon glyphicon-warning-sign"></i> Cancelled </span>
                                     {% elif l.status == "running" %} <span class="label label-warning"><i class="glyphicon glyphicon-time"></i> Running</span>
                                     {% elif l.status == "error" %} <span class="label label-danger"><i class="glyphicon glyphicon-exclamation-sign"></i> Error</span>
-                                    {% elif l.status == "queued" %} <span class="label label-warning"><i class="glyphicon glyphicon-stopwatch"></i> Queued</span>
+                                    {% elif l.status == "queued" %} <span class="label label-warning"><i class="glyphicon glyphicon-sort"></i> Queued</span>
                                     {% else %} <span class="label label-success"><i class="glyphicon glyphicon-ok-sign"></i> Completed</span> {% endif%}
                                 </td>
+
                             </tr>
                         {%endfor%}
                         </tbody>
@@ -62,6 +66,7 @@
                         <thead>
                         <tr>
                             <th style="background-color: #A0D468;">Task</th>
+                            <th style="background-color: #A0D468;">Title</th>
                             <th style="background-color: #A0D468;">Status</th>
                         </tr>
                         </thead>
@@ -69,6 +74,7 @@
                         {% for l in list_complete %}
                         <tr>
                             <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
+                            <td>{{l.meta.titles.0}}</td>
                             <td>{% if l.status == "completed" %} <span class="label label-success"><i class="glyphicon glyphicon-ok-sign"></i> Completed</span> {% endif%}</td>
                         </tr>
                         {%endfor%}
@@ -85,6 +91,7 @@
                         <thead>
                             <tr>
                                 <th style="background-color: #FFCE54;">Task</th>
+                                <th style="background-color: #FFCE54;">Title</th>
                                 <th style="background-color: #FFCE54;">Status</th>
                             </tr>
                         </thead>
@@ -92,6 +99,7 @@
                             {% for l in list_run %}
                             <tr>
                                 <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
+                                <td>{{l.meta.titles.0}}</td>
                                 <td>{% if l.status == "running" %} <span class="label label-warning"><i class="glyphicon glyphicon-time"></i> Running</span> {% endif%}</td>
                             </tr>
                             {%endfor%}
@@ -108,6 +116,7 @@
                         <thead>
                             <tr>
                                 <th style="background-color: #A0D468;">Task</th>
+                                <th style="background-color: #A0D468;">Title</th>
                                 <th style="background-color: #A0D468;">Status</th>
                             </tr>
                         </thead>
@@ -115,6 +124,7 @@
                             {% for l in list_cancelled %}
                             <tr>
                                 <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
+                                <td>{{l.meta.titles.0}}</td>
                                 <td>{% if l.status == "cancelled" %}<span class="label label-danger"><i class="glyphicon glyphicon-warning-sign"></i> Cancelled </span>{% endif%}</td>
                             </tr>
 
@@ -132,6 +142,7 @@
                         <thead>
                             <tr>
                                 <th style="background-color: #DA4453;">Task</th>
+                                <th style="background-color: #DA4453;">Title</th>
                                 <th style="background-color: #DA4453;">Status</th>
                             </tr>
                         </thead>
@@ -139,6 +150,7 @@
                             {% for l in list_error %}
                             <tr>
                                 <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
+                                <td>{{l.meta.titles.0}}</td>
                                 <td>{%if l.status == "error" %} <span class="label label-danger"><i class="glyphicon glyphicon-exclamation-sign"></i> Error</span>{% endif%}</td>
                             </tr>
                             {%endfor%}
@@ -155,6 +167,7 @@
                         <thead>
                             <tr>
                                 <th style="background-color: #A0D468;">Task</th>
+                                <th style="background-color: #A0D468;">Title</th>
                                 <th style="background-color: #A0D468;">Status</th>
                             </tr>
                         </thead>
@@ -162,7 +175,8 @@
                             {% for l in list_queued %}
                             <tr>
                                 <td><a href="/t_detail?name={{l.name}}&status={{l.status}}" class="link">{{l.name}}</a></td>
-                                <td> {% if l.status == "queued" %} <span class="label label-warning"><i class="glyphicon glyphicon-stopwatch"></i> Queued</span>{% endif%}</td>
+                                <td>{{l.meta.titles.0}}</td>
+                                <td> {% if l.status == "queued" %} <span class="label label-warning"><i class="glyphicon glyphicon-sort"></i> Queued</span>{% endif%}</td>
                             </tr>
                             {%endfor%}
                         </tbody>
@@ -185,7 +199,7 @@
 
     } );
     $('#table_all').dataTable( {
-    "order": [ 1, 'desc' ]
+    "order": [ 2, 'desc' ]
 } );
 
 

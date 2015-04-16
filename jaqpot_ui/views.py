@@ -82,73 +82,69 @@ def task(request):
         #validate token
         #if token is not valid redirect to login page
         r = requests.post(URL_1 + '/aa/validate', headers={'subjectid': token})
-        print r.status_code
         if r.status_code != 200:
             return redirect('/login')
-
     #else go to tasks
     all_tasks = []
     #get all tasks with status Running
     headers = {'Accept': 'text/uri-list', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'subjectid': token}
     res = requests.get(URL_1+'/task?creator='+username+'&status=RUNNING&start=0&max=10000', headers=headers)
-    list_resp = res.text
+    list_resp = json.loads(res.text)
     if res.status_code == 200:
-        list_resp = list_resp.splitlines()
         list_run=[]
 
         for l in list_resp:
-            l = l.split('/task/')[1]
-            list_run.append({'name': l, 'status': "running"})
-            all_tasks.append({'name': l, 'status': "running"})
+            list_run.append({'name': l['_id'], 'status': "running", 'meta': l['meta']})
+            all_tasks.append({'name': l['_id'], 'status': "running", 'meta': l['meta']})
         list_run = json.dumps(list_run)
         list_run = json.loads(list_run)
 
         #get all tasks with status Completed
         res = requests.get(URL_1+'/task?status=COMPLETED&creator='+username+'&start=0&max=10000', headers=headers)
-        list_resp = res.text
-        list_resp = list_resp.splitlines()
+        list_resp = json.loads(res.text)
+
         list_complete=[]
         for l in list_resp:
-            l = l.split('/task/')[1]
-            list_complete.append({'name': l, 'status': "completed"})
-            all_tasks.append({'name': l, 'status': "completed"})
+            list_complete.append({'name': l['_id'], 'status': "completed", 'meta': l['meta']})
+            all_tasks.append({'name': l['_id'], 'status': "completed", 'meta': l['meta']})
         list_complete= json.dumps(list_complete)
         list_complete = json.loads(list_complete)
 
         #get all tasks with status Cancelled
         res = requests.get(URL_1+'/task?status=CANCELLED&creator='+username+'&start=0&max=10000', headers=headers)
-        list_resp = res.text
-        list_resp = list_resp.splitlines()
+        list_resp = json.loads(res.text)
+
         list_cancelled=[]
         for l in list_resp:
-            l = l.split('/task/')[1]
-            list_cancelled.append({'name': l, 'status': "cancelled"})
-            all_tasks.append({'name': l, 'status': "cancelled"})
+
+            list_cancelled.append({'name': l['_id'], 'status': "cancelled", 'meta': l['meta']})
+            all_tasks.append({'name': l['_id'], 'status': "cancelled", 'meta': l['meta']})
         list_cancelled= json.dumps(list_cancelled)
         list_cancelled = json.loads(list_cancelled)
 
         #get all tasks with status Error
         res = requests.get(URL_1+'/task?status=ERROR&creator='+username+'&start=0&max=10000', headers=headers)
-        list_resp = res.text
-        list_resp = list_resp.splitlines()
+        list_resp = json.loads(res.text)
+
         list_error=[]
         for l in list_resp:
-            l = l.split('/task/')[1]
-            list_error.append({'name': l, 'status': "error"})
-            all_tasks.append({'name': l, 'status': "error"})
+
+            list_error.append({'name': l['_id'], 'status': "error", 'meta': l['meta']})
+            all_tasks.append({'name': l['_id'], 'status': "error", 'meta': l['meta']})
         list_error= json.dumps(list_error)
         list_error = json.loads(list_error)
 
 
         #get all tasks with status Queued
         res = requests.get(URL_1+'/task?status=QUEUED&creator='+username+'&start=0&max=10000', headers=headers)
-        list_resp = res.text
-        list_resp = list_resp.splitlines()
+        list_resp = json.loads(res.text)
+
         list_queued=[]
         for l in list_resp:
-            l = l.split('/task/')[1]
-            list_queued.append({'name': l, 'status': "queued"})
-            all_tasks.append({'name': l, 'status': "queued"})
+
+            list_queued.append({'name': l['_id'], 'status': "queued", 'meta': l['meta']})
+            all_tasks.append({'name': l['_id'], 'status': "queued", 'meta': l['meta']})
         list_queued= json.dumps(list_queued)
         list_queued = json.loads(list_queued)
         all_tasks= json.dumps(all_tasks)
@@ -353,6 +349,12 @@ def conformer(request):
 def model(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(URL_1 + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
     if request.method == 'GET':
         #get all models
         #headers = {'Accept:text/uri-list'}
@@ -365,7 +367,6 @@ def model(request):
         list_resp = res.text
         #get each line
         list_resp = list_resp.splitlines()
-        print list_resp
         for l in list_resp:
             l = l.split('/model/')[1]
             models.append({'name': l})
@@ -392,33 +393,45 @@ def model_detail(request):
 def features(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    page = request.GET.get('page')
+    last = request.GET.get('last')
 
     if request.method == 'GET':
-        headers = {'Accept': 'text/uri-list', "subjectid": token}
-        res = requests.get(URL_1+'/feature?creator='+username+'&&start=0&max=10000', headers=headers)
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        if page:
+            page1=int(page) * 20 - 20
+            k=str(page1)
+            if page1 <= 1:
+                res = requests.get(URL_1+'/feature?creator='+username+'&&start=0&max=20', headers=headers)
+            elif last:
+                res = requests.get(URL_1+'/feature?creator='+username+'&&start='+last+'&max=20', headers=headers)
+            else:
+                res = requests.get(URL_1+'/feature?creator='+username+'&&start='+k+'&max=20', headers=headers)
+
+        else:
+            page = 1
+            res = requests.get(URL_1+'/feature?creator='+username+'&&start=0&max=20', headers=headers)
         features=[]
         if res.status_code == 403:
             error = "This request is forbidden (e.g., no authentication token is provided)"
-            return render(request, "features.html",{'token': token, 'username': username,'error': error})
+            return render(request, "features.html", {'token': token, 'username': username, 'error': error})
 
         if res.status_code == 401:
             error = "You are not authorized to access this resource"
-            return render(request, "features.html",{'token': token, 'username': username, 'error': error})
+            return render(request, "features.html", {'token': token, 'username': username, 'error': error})
 
         if res.status_code == 500:
             error = "Internal server error - this request cannot be served."
-            return render(request, "features.html",{'token': token, 'username': username, 'error': error})
+            return render(request, "features.html", {'token': token, 'username': username, 'error': error})
 
         if res.status_code == 200:
-            #get list of features
-            feature= res.text
-            #get each line
-            feature = feature.splitlines()
-            #for each line get fauture name and append it to features
+            #get json feautures
+            feature= json.loads(res.text)
             for f in feature:
-                f = f.split('/feature/')[1]
-                features.append({'name': f})
-            return render(request, "features.html", {'token': token, 'username': username, 'features': features})
+                features.append({'name': f['_id'], 'meta': f['meta']})
+            if len(features)< 20:
+                last= page
+            return render(request, "features.html", {'token': token, 'username': username, 'features': features, 'page': page, 'last': last})
 
 def feature_details(request):
     token = request.session.get('token', '')
@@ -551,7 +564,6 @@ def dataset(request):
             last= page
         for l in data:
             name = l.split('/dataset/')[1]
-            print name
             #dataset.append({'name': l})
             r = requests.get(l, headers=headers1)
             #get json data
