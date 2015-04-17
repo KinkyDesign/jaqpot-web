@@ -74,7 +74,15 @@
         <a href="{{feature_detail.meta.seeAlso.0}}">{{feature_detail.meta.seeAlso.0}}</a>
     </div>
     {% endif %}  -->
+    <a href="/feature_delete?id={{name}}" class="btn btn-danger" data-toggle="tooltip" title="Delete Feature" style="margin: 5px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
 
 </div>
+
+<script>
+     //display tooltip right
+    $('[data-toggle="tooltip"]').tooltip({
+        'placement': 'right'
+    });
+</script>
 
 {% endblock %}

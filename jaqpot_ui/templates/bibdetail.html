@@ -1,71 +1,130 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="div-table" style="width:100%;">
-    <h1>Bibtex Entry</h1>
-    <table id="bib-info" style="margin:10px;">
-        <tr>
-            <th>Author(s):</th>
-            <td>{{ details.author }}</td>
-        </tr>
-        <tr>
-            <th>Title:</th>
-            <td>{{ details.title }}</td>
-        </tr>
-        <tr>
-            <th>Type:</th>
-            <td>{{ details.bibType }}</td>
-        </tr>
-         <tr>
-            <th>Abstract:</th>
-            <td>{{ details.abstract }}</td>
-        </tr>
-         <tr>
-            <th>Copyright:</th>
-            <td>{{ details.copyright }}</td>
-        </tr>
-         <tr>
-            <th>Address:</th>
-            <td>{{ details.address }}</td>
-        </tr>
-        <tr>
-            <th>Year:</th>
-            <td>{{ details.year }}</td>
-        </tr>
-        <tr>
-            <th>Pages:</th>
-            <td>{{ details.pages }}</td>
-        </tr>
-        <tr>
-            <th>Volume:</th>
-            <td>{{ details.volume }}</td>
-        </tr>
-        <tr>
-            <th>Journal:</th>
-            <td>{{ details.journal }}</td>
-        </tr>
-        <tr>
-            <th>Keywords:</th>
-            <td>{{ details.keywords }}</td>
-        </tr>
+<div class="div-table" style="width:100%;" xmlns="http://www.w3.org/1999/html">
+    <h1>Bibtex Entry #{{id}}</h1>
+     <div>
+            <label class="align" >Author:</label>
+            <input type="text" id="in-author" class="align" readonly="readonly" value="{{details.author}}" style="margin:10px;">
+            <button type="button" id="btn-author" class="btn btn-success"><i class="glyphicon glyphicon-pencil"></i></button>
+            <button type="button" id="btn-author-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-author-cancel" class="btn btn-danger" style="display:none">Cancel</button>
+     </div>
+        <div>
+            <label class="align">Title:</label>
+            <input type="text" class="align" readonly="readonly" value="{{details.title}}" style="margin:10px;">
+            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+        </div>
+        <div>
+            <label class="align">Type:</label>
+            <input type="text" class="align" readonly="readonly" value="{{details.bibType}}" style="margin:10px;">
+            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+        </div>
+         <div>
+            <label class="align">Abstract:</label>
+            <input type="text" class="align" readonly="readonly" value="{{details.abstract}}" style="margin:10px;">
+            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+        </div>
+         <div>
+            <label class="align">Copyright:</label>
+            <input type="text" class="align" readonly="readonly" value="{{details.copyright}}" style="margin:10px;">
+            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+        </div>
+        <div>
+            <label class="align">Address:</label>
+            <input type="text" class="align" readonly="readonly" value="{{details.address}}" style="margin:10px;">
+            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+        </div>
+         <div>
+            <label class="align">Year:</label>
+            <input type="text" class="align" readonly="readonly" value="{{details.year}}" style="margin:10px;">
+            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+        </div>
+         <div>
+            <label class="align">Pages:</label>
+            <input type="text" class="align" readonly="readonly" value="{{details.pages}}" style="margin:10px;">
+            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+        </div>
+         <div>
+            <label class="align">Volume:</label>
+            <input type="text" class="align" readonly="readonly" value="{{details.volume}}" style="margin:10px;">
+            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+        </div>
+         <div>
+            <label class="align">Journal:</label>
+            <input type="text" class="align" readonly="readonly" value="{{details.journal}}" style="margin:10px;">
+            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+        </div>
+         <div>
+            <label class="align">Keywords:</label>
+            <input type="text" class="align" readonly="readonly" value="{{details.keywords}}" style="margin:10px;">
+            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+        </div>
+         <div>
+            <label class="align">Url:</label>
+            <input type="text" class="align" readonly="readonly" value="{{details.url}}" style="margin:10px;">
+            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+        </div>
+    <!--
         <tr>
             <th>Url:</th>
             <td><a href="{{ details.Url }}">{{ details.url }}</a></td>
         </tr>
-    </table>
-    <!--<p>BibTeX:</p>
+    <p>BibTeX:</p>
     <textarea id ="text" class="form-control" rows="4">
 
     </textarea> -->
-    <br>
 
+    <a href="/bibtex_delete?id={{id}}" class="btn btn-danger" data-toggle="tooltip" title="Delete Bibtex" style="margin: 5px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
+     <br>
 </div>
-
+<script>
+    //display tooltip right
+    $('[data-toggle="tooltip"]').tooltip({
+        'placement': 'right'
+    });
+</script>
 
 <script>
 
-// Inject the whole content string into our existing HTML table
-$('#bib-info').append(tableContent);
+$( '#btn-author' ).click(function() {
+    $( '#in-author' ).removeAttr("readonly");
+    $( '#btn-author' ).hide();
+    $( '#btn-author-save' ).show();
+    $( '#btn-author-cancel' ).show();
+});
+
+$( '#btn-author-cancel' ).click(function() {
+    $( '#btn-author-save' ).hide();
+    $( '#btn-author-cancel' ).hide();
+    $( '#btn-author' ).show();
+    $( '#in-author' ).attr("readonly","readonly");
+    $( '#in-author' ).val("{{details.author}}")
+
+});
+
+$( '#btn-author-save' ).click(function() {
+    $( '#btn-author-save' ).hide();
+    $( '#btn-author-cancel' ).hide();
+    $( '#btn-author' ).show();
+    $( '#in-author' ).attr("readonly","readonly");
+    //send via ajax new values
+    //ajax.post('/bib_detail', { "op": "add", "path": "/author", "value": " $( '#in-author' ).val() "}, function() {});
+    $.ajax({
+            type: "get",
+            url: "/bib_detail",
+            dataType: "json",
+            contentType: 'application/json;',
+            data: { 'op': 'add', 'path': '/author', 'value': 'A.N.Onymous3', 'id': '{{id}}', },
+            /*success: function(data){
+                alert(data);
+            },
+            error: function(){
+                alert("error");
+            } */
+        });
+
+});
 
 </script>
 

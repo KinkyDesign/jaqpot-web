@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 from rdflib import Graph, plugin, term
 from rdflib.serializer import Serializer
 from jaqpot_ui.templatetags import templates_extras
+import jsonpatch
 
 
 # Home page
@@ -236,16 +237,37 @@ def bib_detail(request):
     username = request.session.get('username', '')
     name = request.GET.get('name')
     id = request.GET.get('id')
-    #send request
-    headers = {'Accept': 'application/json', 'subjectid': token}
-    res = requests.get(URL_1+'/bibtex/'+id, headers=headers)
-    list_resp = res.text
-    #get json data
-    details = json.loads(res.text)
-    print details
-    if request.method == 'GET':
+    if request.is_ajax():
+        id = request.GET.getlist('id')[0]
+        op = request.GET.getlist('op')[0]
+        path = request.GET.getlist('path')[0]
+        value = request.GET.getlist('value')[0]
+        body = jsonpatch.JsonPatch({'op': op, 'path': path, 'value': value})
 
-        return render(request, "bibdetail.html", {'token': token, 'username': username, 'name': name, 'details': details })
+        headers = {'Accept': 'application/json-patch+json', 'subjectid': token}
+        res = requests.patch(url=URL_1+'/bibtex/'+id, data=body, headers=headers)
+        print res.text
+
+
+    if request.method == 'GET':
+        #send request
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.get(URL_1+'/bibtex/'+id, headers=headers)
+        list_resp = res.text
+        #get json data
+        details = json.loads(res.text)
+        return render(request, "bibdetail.html", {'token': token, 'username': username, 'name': name, 'details': details, 'id':details['_id'],})
+
+#Delete Bibtex
+def bib_delete(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    id = request.GET.get('id')
+    if request.method == 'GET':
+        #delete bibtex
+        headers = {'content-type': 'text/uri-list', 'subjectid': token}
+        res = requests.delete(URL_1+'/bibtex/'+id, headers=headers)
+        return render(request, "mainPage.html", {'token': token, 'username': username })
 
 #Add a Bibtex
 def add_bibtex(request):
@@ -466,6 +488,18 @@ def add_feature(request):
         #it should send request with the new entry for saving
         return render(request, "mainPage.html", {'token': token, 'username': username, 'name': name})
 
+#Delete feature
+def feature_delete(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    id = request.GET.get('id')
+    if request.method == 'GET':
+        #delete bibtex
+        headers = {'content-type': 'text/uri-list', 'subjectid': token}
+        res = requests.delete(URL_1+'/feature/'+id, headers=headers)
+        return render(request, "mainPage.html", {'token': token, 'username': username })
+
+
 def algorithm(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -473,8 +507,8 @@ def algorithm(request):
     if request.method == 'GET':
          algorithms = []
          #get all algorithms
-         headers = {'Accept': 'text/uri-list'}
-         res = requests.get(URL+'/algorithm', headers=headers)
+         headers = {'Accept': 'text/uri-list', 'subjectid': token}
+         res = requests.get(URL_1+'/algorithm?start=0&max=10', headers=headers)
          list_resp = res.text
          list_resp = list_resp.split('\n')[:-1]
          for l in list_resp:
@@ -493,44 +527,11 @@ def algorithm_detail(request):
 
     if request.method == 'GET':
         #get task details in rdf format
-        headers = {'content-type': 'text/uri-list'}
-        res = requests.get(URL+'/algorithm/'+algorithm, headers=headers)
+        headers = {'content-type': 'text/uri-list', 'subjectid': token}
+        res = requests.get(URL_1+'/algorithm/'+algorithm, headers=headers)
         #get rdf response and convert to json data with details for bibtex
-        g = Graph().parse(URL+'/algorithm/'+algorithm)
-        details = {}
-        sub= []
-        i=1
-        j=1
-        t=1
-        k=''
-        for s, p, o in g:
-            if type(o) == rdflib.term.Literal:
-                if 'algorithm/'+algorithm in s:
-
-                    if 'elements/1.1/' in p:
-                        k = p.split('elements/1.1/')[1]
-                        '''if k == 'subject':
-                            sub.append(o.toPython())
-                            i=i+1
-                            details.update(sub)
-                            details.update({'num_of_sub': i-1})'''
-                        '''if k == 'contributor':
-                            sub.update({"contributor"+str(j): o.toPython()})
-                            j=j+1
-                            details.update(sub)
-                            details.update({'num_of_cont': j-1})
-                        if k == 'title':
-                            sub.update({"title"+str(t): o.toPython()})
-                            t=t+1
-                            details.update(sub)
-                            details.update({'num_of_cont': t-1})'''
-
-
-                        details.update({k: o.toPython()})
-
-        #details.update({'subject': sub})
-        details = json.dumps(details)
-        details = json.loads(details)
+        print res.text
+        details = json.loads(res.text)
         return render(request, "algorithm_detail.html", {'token': token, 'username': username, 'details': details})
 
 def dataset(request):

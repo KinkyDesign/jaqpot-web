@@ -2,3 +2,4 @@ django-endless-pagination
 rdflib
 django-simple-captcha
 django-ratings
+jsonpatch
