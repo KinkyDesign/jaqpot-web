@@ -13,7 +13,6 @@ from django.core.mail import send_mail
 from rdflib import Graph, plugin, term
 from rdflib.serializer import Serializer
 from jaqpot_ui.templatetags import templates_extras
-import jsonpatch
 
 
 # Home page
@@ -242,7 +241,8 @@ def bib_detail(request):
         op = request.GET.getlist('op')[0]
         path = request.GET.getlist('path')[0]
         value = request.GET.getlist('value')[0]
-        body = jsonpatch.JsonPatch({'op': op, 'path': path, 'value': value})
+        body = json.dumps(({'op': op, 'path': path, 'value': value}))
+        #body = jsonpatch.JsonPatch({'op': op, 'path': path, 'value': value})
 
         headers = {'Accept': 'application/json-patch+json', 'subjectid': token}
         res = requests.patch(url=URL_1+'/bibtex/'+id, data=body, headers=headers)
