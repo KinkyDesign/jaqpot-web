@@ -9,37 +9,81 @@
             <label class="align">Identifier:</label>
             <input type="text" style="margin:5px;" value="{{details.identifier}}">
         </div>-->
-        <div>
-            <label class="align">Title:</label>
-            <input type="text" style="margin:5px;" value="{{details.meta.titles.0}}">
-        </div>
-        <div>
-            <label class="align">Subjects:</label>
-            <input type="text" style="margin:5px;" value="{{details.meta.subjects.0}}">
+        {% if details.meta.titles %}
+            <div>
+                <label class="align">Title:</label>
+                <input type="text" style="margin:5px;" value="{{details.meta.titles.0}}">
+            </div>
+        {% endif %}
+        {% if details.meta.subjects %}
+            <h6><b>Subjects:</b></h6>
+            {% for sub in details.meta.subjects %}
+                <div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{sub}}">
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if details.ontologicalClasses%}
+            <h6><b>Ontological classes:</b></h6>
+            {% for ont in details.ontologicalClasses %}
+                <div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{ont}}">
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if details.publisher %}
+            <div>
+                <label class="align">Publisher:</label>
+                <input type="text" style="margin:5px;" value="{{details.publisher}}">
+            </div>
+        {% endif %}
+        {% if details.contributor %}
+            <div>
+                <label class="align">Contributor:</label>
+                <input type="text" style="margin:5px;" value="{{details.contributor}}">
+            </div>
+        {% endif %}
+        {% if details.date %}
+            <div>
+                <label class="align">Date:</label>
+                <input type="text" style="margin:5px;" value="{{details.date}}">
+            </div>
+        {% endif %}
+        {% if details.parameters %}
+            <h6><b>Parameters:</b></h6>
+             {% for p in details.parameters%}
+                <div>
+                    <label class="align">{{p.name}}:</label>
+                    <input type="text" style="margin:5px;" value="{{p.value}}">
+                </div>
+             {% endfor %}
+        {% endif %}
+        {% if details.meta.descriptions %}
+            <p><b>Description:</b></p>
+            <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;">{{details.meta.descriptions.0}}
 
-        </div>
-        <div>
-            <label class="align">Publisher:</label>
-            <input type="text" style="margin:5px;" value="{{details.publisher}}">
-        </div>
-        <div>
-            <label class="align">Contributor:</label>
-            <input type="text" style="margin:5px;" value="{{details.contributor}}">
-        </div>
-        <div>
-            <label class="align">Date:</label>
-            <input type="text" style="margin:5px;" value="{{details.date}}">
-        </div>
-        <p><b>Description:</b></p>
-        <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;">{{details.meta.descriptions.0}}
+            </textarea>
+        {% endif %}
+        {% if details.rights %}
+            <p><b>Copyright:</b></p>
+            <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;">{{details.rights}}
 
-        </textarea>
-        <p><b>Copyright:</b></p>
-        <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;">{{details.rights}}
-
-        </textarea>
+            </textarea>
+        {% endif %}
+         <a href="/algorithm_delete?id={{id}}" class="btn btn-danger" data-toggle="tooltip" title="Delete Algorithn" style="margin: 5px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
+         <br>
         </div>
 
 
 </div>
+
+<script>
+    //display tooltip right
+    $('[data-toggle="tooltip"]').tooltip({
+        'placement': 'right'
+    });
+</script>
+
 {% endblock %}

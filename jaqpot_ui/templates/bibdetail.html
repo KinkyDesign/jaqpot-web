@@ -3,68 +3,114 @@
 {% block content %}
 <div class="div-table" style="width:100%;" xmlns="http://www.w3.org/1999/html">
     <h1>Bibtex Entry #{{id}}</h1>
+    {% if details.author %}
      <div>
             <label class="align" >Author:</label>
             <input type="text" id="in-author" class="align" readonly="readonly" value="{{details.author}}" style="margin:10px;">
-            <button type="button" id="btn-author" class="btn btn-success"><i class="glyphicon glyphicon-pencil"></i></button>
+            <button type="button" id="btn-author" data-toggle="tooltip" title="Edit author" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
             <button type="button" id="btn-author-save" class="btn btn-success" style="display:none">Save</button>
             <button type="button" id="btn-author-cancel" class="btn btn-danger" style="display:none">Cancel</button>
      </div>
+    {% endif %}
+    {% if details.title %}
         <div>
             <label class="align">Title:</label>
-            <input type="text" class="align" readonly="readonly" value="{{details.title}}" style="margin:10px;">
-            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+            <input type="text" id="in-title" class="align" readonly="readonly" value="{{details.title}}" style="margin:10px;">
+            <button type="button" id="btn-title" data-toggle="tooltip" title="Edit title" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+            <button type="button" id="btn-title-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-title-cancel" class="btn btn-danger" style="display:none">Cancel</button>
         </div>
+    {% endif %}
+    {% if details.bibType %}
         <div>
             <label class="align">Type:</label>
-            <input type="text" class="align" readonly="readonly" value="{{details.bibType}}" style="margin:10px;">
-            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+            <input type="text" id="in-type" class="align" readonly="readonly" value="{{details.bibType}}" style="margin:10px;">
+            <button type="button" id="btn-type" data-toggle="tooltip" title="Edit type" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+            <button type="button" id="btn-type-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-type-cancel" class="btn btn-danger" style="display:none">Cancel</button>
         </div>
+    {% endif %}
+    {% if details.abstract %}
          <div>
             <label class="align">Abstract:</label>
-            <input type="text" class="align" readonly="readonly" value="{{details.abstract}}" style="margin:10px;">
-            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+            <input type="text" id="in-abstract" class="align" readonly="readonly" value="{{details.abstract}}" style="margin:10px;">
+            <button type="button" id="btn-abstract" data-toggle="tooltip" title="Edit abstract" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+             <button type="button" id="btn-abstract-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-abstract-cancel" class="btn btn-danger" style="display:none">Cancel</button>
         </div>
+    {% endif %}
+    {% if details.copyright %}
          <div>
             <label class="align">Copyright:</label>
-            <input type="text" class="align" readonly="readonly" value="{{details.copyright}}" style="margin:10px;">
-            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+            <input type="text" id="in-copyright" class="align" readonly="readonly" value="{{details.copyright}}" style="margin:10px;">
+            <button type="button" id="btn-copyright" data-toggle="tooltip" title="Edit copyright" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+             <button type="button" id="btn-copyright-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-copyright-cancel" class="btn btn-danger" style="display:none">Cancel</button>
         </div>
+    {% endif %}
+    {% if details.address %}
         <div>
             <label class="align">Address:</label>
-            <input type="text" class="align" readonly="readonly" value="{{details.address}}" style="margin:10px;">
-            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+            <input type="text" id="in-address"class="align" readonly="readonly" value="{{details.address}}" style="margin:10px;">
+            <button type="button" id="btn-address" data-toggle="tooltip" title="Edit address" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+            <button type="button" id="btn-address-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-address-cancel" class="btn btn-danger" style="display:none">Cancel</button>
         </div>
+    {% endif %}
+    {% if details.year %}
          <div>
             <label class="align">Year:</label>
-            <input type="text" class="align" readonly="readonly" value="{{details.year}}" style="margin:10px;">
-            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+            <input type="text" id="in-year"class="align" readonly="readonly" value="{{details.year}}" style="margin:10px;">
+            <button type="button" id="btn-year" data-toggle="tooltip" title="Edit year" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+             <button type="button" id="btn-year-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-year-cancel" class="btn btn-danger" style="display:none">Cancel</button>
         </div>
+    {% endif %}
+    {% if details.pages %}
          <div>
             <label class="align">Pages:</label>
-            <input type="text" class="align" readonly="readonly" value="{{details.pages}}" style="margin:10px;">
-            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+            <input type="text" id="in-pages" class="align" readonly="readonly" value="{{details.pages}}" style="margin:10px;">
+            <button type="button" id="btn-pages" data-toggle="tooltip" title="Edit pages" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+             <button type="button" id="btn-pages-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-pages-cancel" class="btn btn-danger" style="display:none">Cancel</button>
         </div>
+    {% endif %}
+    {% if details.volume %}
          <div>
             <label class="align">Volume:</label>
-            <input type="text" class="align" readonly="readonly" value="{{details.volume}}" style="margin:10px;">
-            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+            <input type="text" id="in-volume" class="align" readonly="readonly" value="{{details.volume}}" style="margin:10px;">
+            <button type="button" id="btn-volume" data-toggle="tooltip" title="Edit volume" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+             <button type="button" id="btn-volume-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-volume-cancel" class="btn btn-danger" style="display:none">Cancel</button>
         </div>
+    {% endif %}
+    {% if details.journal %}
          <div>
             <label class="align">Journal:</label>
-            <input type="text" class="align" readonly="readonly" value="{{details.journal}}" style="margin:10px;">
-            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+            <input type="text" id="in-journal" class="align" readonly="readonly" value="{{details.journal}}" style="margin:10px;">
+            <button type="button" id="btn-journal" data-toggle="tooltip" title="Edit journal" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+             <button type="button" id="btn-journal-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-journal-cancel" class="btn btn-danger" style="display:none">Cancel</button>
         </div>
+    {% endif %}
+    {% if details.keywords %}
          <div>
             <label class="align">Keywords:</label>
-            <input type="text" class="align" readonly="readonly" value="{{details.keywords}}" style="margin:10px;">
-            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+            <input type="text" id="in-keywords" class="align" readonly="readonly" value="{{details.keywords}}" style="margin:10px;">
+            <button type="button" id="btn-keywords" data-toggle="tooltip" title="Edit keywords" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+             <button type="button" id="btn-keywords-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-keywords-cancel" class="btn btn-danger" style="display:none">Cancel</button>
         </div>
+    {% endif %}
+    {% if details.url %}
          <div>
             <label class="align">Url:</label>
-            <input type="text" class="align" readonly="readonly" value="{{details.url}}" style="margin:10px;">
-            <button type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+            <input type="text" id="in-url" class="align" readonly="readonly" value="{{details.url}}" style="margin:10px;">
+            <button type="button" id="btn-url" data-toggle="tooltip" title="Edit url" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i></button>
+             <button type="button" id="btn-url-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-url-cancel" class="btn btn-danger" style="display:none">Cancel</button>
         </div>
+    {% endif %}
     <!--
         <tr>
             <th>Url:</th>
@@ -87,45 +133,88 @@
 
 <script>
 
-$( '#btn-author' ).click(function() {
-    $( '#in-author' ).removeAttr("readonly");
-    $( '#btn-author' ).hide();
-    $( '#btn-author-save' ).show();
-    $( '#btn-author-cancel' ).show();
-});
+//Edit author field
+edit( $( '#btn-author' ), $( '#in-author' ), $( '#btn-author-save' ),  $( '#btn-author-cancel' ), '/author', "author", "{{details.author}}" );
 
-$( '#btn-author-cancel' ).click(function() {
-    $( '#btn-author-save' ).hide();
-    $( '#btn-author-cancel' ).hide();
-    $( '#btn-author' ).show();
-    $( '#in-author' ).attr("readonly","readonly");
-    $( '#in-author' ).val("{{details.author}}")
+//Edit title field
+edit( $( '#btn-title' ), $( '#in-title' ), $( '#btn-title-save' ),  $( '#btn-title-cancel' ), '/title', "title",  "{{details.title}}" );
 
-});
+//Edit type field
+edit( $( '#btn-type' ), $( '#in-type' ), $( '#btn-type-save' ),  $( '#btn-type-cancel' ), '/bibType', "bibType",  "{{details.bibType}}" );
 
-$( '#btn-author-save' ).click(function() {
-    $( '#btn-author-save' ).hide();
-    $( '#btn-author-cancel' ).hide();
-    $( '#btn-author' ).show();
-    $( '#in-author' ).attr("readonly","readonly");
+//Edit abstract field
+edit( $( '#btn-abstract' ), $( '#in-abstract' ), $( '#btn-abstract-save' ),  $( '#btn-abstract-cancel' ), '/abstract', "abstract",  "{{details.abstract}}" );
+
+//Edit copyright field
+edit( $( '#btn-copyright' ), $( '#in-copyright' ), $( '#btn-copyright-save' ),  $( '#btn-copyright-cancel' ), '/copyright', "copyright",  "{{details.copyright}}" );
+
+//Edit address field
+edit( $( '#btn-address' ), $( '#in-address' ), $( '#btn-address-save' ),  $( '#btn-address-cancel' ), '/address', "address",  "{{details.address}}" );
+
+//Edit year field
+edit( $( '#btn-year' ), $( '#in-year' ), $( '#btn-year-save' ),  $( '#btn-year-cancel' ), '/year', "year",  "{{details.year}}" );
+
+//Edit pages field
+edit( $( '#btn-pages' ), $( '#in-pages' ), $( '#btn-pages-save' ),  $( '#btn-pages-cancel' ), '/pages', "pages",  "{{details.pages}}" );
+
+//Edit volume field
+edit( $( '#btn-volume' ), $( '#in-volume' ), $( '#btn-volume-save' ),  $( '#btn-volume-cancel' ), '/volume', "volume",  "{{details.volume}}" );
+
+//Edit journal field
+edit( $( '#btn-journal' ), $( '#in-journal' ), $( '#btn-journal-save' ),  $( '#btn-journal-cancel' ), '/journal', "journal",  "{{details.journal}}" );
+
+//Edit keywords field
+edit( $( '#btn-keywords' ), $( '#in-keywords' ), $( '#btn-keywords-save' ),  $( '#btn-keywords-cancel' ), '/keywords', "keywords",  "{{details.keywords}}" );
+
+//Edit url field
+edit( $( '#btn-url' ), $( '#in-url' ), $( '#btn-url-save' ),  $( '#btn-url-cancel' ), '/url', "url",  "{{details.url}}" );
+
+
+//edit function is called when user push edit buttom and send via ajax the new value of field
+function edit(btn, id_field, save, cancel, path , field, previous_value) {
+
+    btn.click(function() {
+    id_field.removeAttr("readonly");
+    btn.hide();
+    save.show();
+    cancel.show();
+    });
+
+    cancel.click(function() {
+        save.hide();
+        cancel.hide();
+        btn.show();
+        id_field.attr("readonly","readonly");
+        id_field.val(previous_value)
+
+    });
+
+
+    save.click(function() {
+    save.hide();
+    cancel.hide();
+    btn.show();
+    id_field.attr("readonly","readonly");
     //send via ajax new values
-    //ajax.post('/bib_detail', { "op": "add", "path": "/author", "value": " $( '#in-author' ).val() "}, function() {});
     $.ajax({
             type: "get",
             url: "/bib_detail",
             dataType: "json",
             contentType: 'application/json;',
-            data: { 'op': 'add', 'path': '/author', 'value': 'A.N.Onymous3', 'id': '{{id}}', },
-            /*success: function(data){
-                alert(data);
+            data: { 'op': 'add', 'path': path, 'value': id_field.val() , 'id': '{{id}}', },
+            success: function(data){
+                var json = JSON.stringify(data);
+                var json = JSON.parse(json);
+                 id_field.val(json[field])
             },
             error: function(){
                 alert("error");
-            } */
+            }
         });
 
 });
 
+}
 </script>
 
 {% endblock %}

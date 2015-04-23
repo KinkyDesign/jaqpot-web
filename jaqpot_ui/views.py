@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 from rdflib import Graph, plugin, term
 from rdflib.serializer import Serializer
 from jaqpot_ui.templatetags import templates_extras
+import jsonpatch
 
 
 # Home page
@@ -241,12 +242,13 @@ def bib_detail(request):
         op = request.GET.getlist('op')[0]
         path = request.GET.getlist('path')[0]
         value = request.GET.getlist('value')[0]
-        body = json.dumps(({'op': op, 'path': path, 'value': value}))
-        #body = jsonpatch.JsonPatch({'op': op, 'path': path, 'value': value})
-
-        headers = {'Accept': 'application/json-patch+json', 'subjectid': token}
+        body = json.dumps([{'op': op, 'path': path, 'value': value}])
+        #body = jsonpatch.JsonPatch([{'op': op, 'path': path, 'value': value}])
+        headers = {"Content-Type":"application/json-patch+json",'subjectid': token }
+        #headers = {'Accept': 'application/json-patch+json', 'subjectid': token}
         res = requests.patch(url=URL_1+'/bibtex/'+id, data=body, headers=headers)
         print res.text
+        return HttpResponse(res.text)
 
 
     if request.method == 'GET':
@@ -402,11 +404,12 @@ def model_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     name = request.GET.get('name')
-    details = [{'a':'0.1','b':'0.2', 'description':'model'}]
+    #details = [{'a':'0.1','b':'0.2', 'description':'model'}]
     #get task details in rdf format
-    headers = {'content-type': 'text/uri-list'}
-    res = requests.get(URL+'/model/'+name, headers=headers)
-    #print res.text
+    headers = {'Accept': 'application/json', "subjectid": token}
+    res = requests.get(URL_1+'/model/'+name, headers=headers)
+    details = json.loads(res.text)
+    print res.text
 
 
     if request.method == 'GET':
@@ -530,9 +533,20 @@ def algorithm_detail(request):
         headers = {'content-type': 'text/uri-list', 'subjectid': token}
         res = requests.get(URL_1+'/algorithm/'+algorithm, headers=headers)
         #get rdf response and convert to json data with details for bibtex
-        print res.text
         details = json.loads(res.text)
-        return render(request, "algorithm_detail.html", {'token': token, 'username': username, 'details': details})
+        return render(request, "algorithm_detail.html", {'token': token, 'username': username, 'details': details, 'id': algorithm})
+
+#Delete algorithm
+def algorithm_delete(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    id = request.GET.get('id')
+    if request.method == 'GET':
+        #delete algorithm
+        headers = {'content-type': 'text/uri-list', 'subjectid': token}
+        res = requests.delete(URL_1+'/algorithm/'+id, headers=headers)
+        return render(request, "mainPage.html", {'token': token, 'username': username})
+
 
 def dataset(request):
     token = request.session.get('token', '')

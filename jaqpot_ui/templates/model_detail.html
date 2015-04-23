@@ -2,48 +2,153 @@
 
 {% block content %}
 
-<div class="div-table" style="width:100%; display:inline-block">
-
+<div class="div-table" style="width:100%; display:inline-block;">
     <h1>Model:</h1>
-    <div  style="float:left;">
+    <div  style="float:left;overflow:hidden; white-space:nowrap; text-overflow:ellipsis; width:100%; ">
     <div>
         <label class="align">Name:</label>
         <input type="text" style="margin:5px;" value="{{name}}">
     </div>
-    <div>
-        <label class="align">Description:</label>
-        <input type="text" style="margin:5px;" >
-    </div>
-    <h4>Parameters</h4>
-    {% for d in details%}
-    <div>
-        <label class="align">a</label>
-        <input type="text" style="margin:5px;" value="{{d.a}}" >
-    </div>
-    <div>
-        <label class="align">b</label>
-        <input type="text" style="margin:5px;" value="{{d.b}}" >
-    </div>
-    {% endfor %}
-        </div>
-    <div style="float:left; margin-left:30px; margin-bottom:5px; display:inline-block;">
+     {% if details.algorithm %}
+    <h4>Algorithm:</h4>
+        {% if details.algorithm.meta.titles %}
         <div>
-            <p><b>Some metadata:</b></p>
-            <textarea id ="text" class="form-control" rows="4"></textarea>
+            <label class="align">Title:</label>
+            <input type="text" style="margin:5px;" value="{{details.algorithm.meta.titles.0}}">
         </div>
+        {% endif %}
+        {% if details.algorithm.meta.subjects %}
+            <h6><b>Subjects:</b></h6>
+            {% for sub in details.algorithm.meta.subjects %}
+                <div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{sub}}">
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if details.algorithm.ontologicalClasses%}
+            <h6><b>Ontological classes:</b></h6>
+            {% for ont in details.algorithm.ontologicalClasses %}
+                <div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{ont}}">
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if details.algorithm.parameters %}
+            <h6><b>Parameters:</b></h6>
+             {% for p in details.algorithm.parameters%}
+                <div>
+                    <label class="align">{{p.name}}:</label>
+                    <input type="text" style="margin:5px;" value="{{p.value}}">
+                </div>
+             {% endfor %}
+        {% endif %}
+    {% endif %}
+    <br>
+     {% if details.dependentFeatures %}
+        <div class="panel" style="background-color: #a0d468;">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion2" href="#collapseFour" class="collapsed grey-link">Dependent Features</a>
+
+                </h4>
+            </div>
+            <div id="collapseFour" class="panel-collapse collapse" style="height: 0px;">
+                <div class="panel-body">
+                        <ul>
+                            {% for d_f in details.dependentFeatures %}
+                                <li><a href="{{d_f}}">{{d_f}}</a></li>
+                            {% endfor %}
+                        </ul>
+                </div>
+            </div>
+            </div>
+     {% endif %}
+     {% if details.independentFeatures %}
+        <div class="panel" style="background-color: #a0d468;">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion2" href="#collapseFive" class="collapsed grey-link">Independent Features</a>
+
+                </h4>
+            </div>
+            <div id="collapseFive" class="panel-collapse collapse" style="height: 0px;">
+                <div class="panel-body">
+
+                        <ul>
+                            {% for ind_f in details.independentFeatures %}
+                                <li><a href="{{ind_f}}">{{ind_f}}</a></li>
+                            {% endfor %}
+                        </ul>
+
+                </div>
+            </div>
+            </div>
+     {% endif %}
+     {% if details.independentFeatures %}
+        <div class="panel" style="background-color: #a0d468;">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion2" href="#collapseSix" class="collapsed grey-link">Predicted Features</a>
+
+                </h4>
+            </div>
+            <div id="collapseSix" class="panel-collapse collapse" style="height: 0px;">
+                <div class="panel-body">
+
+                        <ul>
+                            {% for pr_f in details.predictedFeatures %}
+                                <li><a href="{{pr_f}}">{{pr_f}}</a></li>
+                            {% endfor %}
+                        </ul>
+
+                </div>
+            </div>
+            </div>
+     {% endif %}
+     <!-- {% if details.dependentFeatures %}
+        <h4>Dependent Features:</h4>
+        <ul>
+            {% for d_f in details.dependentFeatures %}
+                <li><a href="{{d_f}}">{{d_f}}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if details.independentFeatures %}
+        <h4>Independent Features:</h4>
+        <ul>
+            {% for ind_f in details.independentFeatures %}
+                <li><a href="{{ind_f}}">{{ind_f}}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if details.predictedFeatures %}
+        <h4>Predicted Features:</h4>
+        <ul>
+            {% for pr_f in details.predictedFeatures %}
+                <li><a href="{{pr_f}}">{{pr_f}}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}  -->
         <br>
-        <a href="#" class="btn btn-success">PMML</a>
-        <a href="#" class="btn btn-success">Predict</a>
+        <a href="#" class="btn btn-success" data-toggle="toolleft" title="Download PMML">PMML</a>
+        <a href="#" class="btn btn-success" data-toggle="toolleft" title="Predict model" style="margin:3px;">Predict</a>
+        <a href="/model_delete?id={{name}}" class="btn btn-danger" data-toggle="tool" title="Delete Model" style="margin: 3px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
+         <br>
         <h4>Validations:</h4>
-        <div style="float:left;">
+        <div>
             <a href="#" class="btn btn-success" data-toggle="toolleft" title="Show all test-set validations">Test</a>
             <a href="#" class="btn btn-success" data-toggle="tool" title="Show all cross validations">Cross</a>
-            </div>
-        <div style="float:down;">
-        <a href="#" class="btn btn-success" style="margin:5px; margin-left:10px;" data-toggle="tool" title="Validate the model">Validate me</a>
         </div>
+        <div style="float:down;">
+            <a href="#" class="btn btn-success" style="margin:5px; margin-left:10px;" data-toggle="tool" title="Validate the model">Validate me</a>
+        </div>
+
     </div>
+
 </div>
+
 
 <script>
 
