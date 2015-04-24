@@ -4,6 +4,11 @@ from captcha.fields import CaptchaField
 class UserForm(forms.Form):
     username = forms.CharField(max_length=30)
     password = forms.CharField(widget=forms.PasswordInput())
+MY_CHOICES = (
+    ('Article', 'Article'),
+    ('Entry', 'Entry'),
+    ('Conference', 'Conference'),
+)
 
 class BibtexForm(forms.Form):
         author = forms.CharField(error_messages={'required': 'Please enter author.'})
@@ -17,6 +22,7 @@ class BibtexForm(forms.Form):
         journal = forms.CharField(error_messages={'required': 'Please enter journal.'})
         keyword = forms.CharField(error_messages={'required': 'Please enter keyword.'})
         url = forms.URLField(error_messages={'required': 'Please enter url.'})
+        type = forms.ChoiceField(choices=MY_CHOICES)
 
 class FeatureForm(forms.Form):
         feature = forms.CharField()

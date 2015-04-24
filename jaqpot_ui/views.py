@@ -287,13 +287,18 @@ def add_bibtex(request):
             params = {'form': form, 'error': error, 'token': token, 'username': username, 'name': name}
             return render(request, "addbibtex.html", params)
 
-        json_b= {'author': form['author'].value(), 'abstract': form['abstract'].value(), 'title': form['title'].value(),
+        json_b= { "bibType":form['type'].value(), 'author': form['author'].value(), 'abstract': form['abstract'].value(), 'title': form['title'].value(),
                  'copyright': form['copyright'].value(),'address':form['address'].value(), 'year': form['year'].value(),
-                 'pages':form['pages'].value(), 'volume':form['volume'].value(), 'journal': form['journal'].value(),
-                 'keyword':form['keyword'].value(), 'url':form['url'].value()}
+                 'pages':form['pages'].value(), 'volume':form['volume'].value(), 'journal': form['journal'].value(), 'keywords': form['keyword'].value(),
+                  'url':form['url'].value()}
+
         bibtex_entry = json.dumps(json_b)
-        print bibtex_entry
-        #it should send request with the new entry for saving
+        bibtex_entry = json.loads(bibtex_entry)
+        bibtex_entry = json.dumps(bibtex_entry)
+
+        #send request with the new entry for saving
+        headers = {'Content-Type': 'application/json', 'subjectid': token}
+        res = requests.post(URL_1+'/bibtex', data = bibtex_entry, headers=headers)
         return render(request, "mainPage.html", {'token': token, 'username': username, 'name': name})
 
 def sub(request):
@@ -556,8 +561,7 @@ def dataset(request):
     dataset=[]
     if request.method == 'GET':
         dataset=[]
-        headers = {'Accept': 'text/uri-list', "subjectid": token}
-        headers1 = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'subjectid': token}
 
         if page:
             page1=int(page) * 20 - 20
@@ -572,18 +576,12 @@ def dataset(request):
         else:
             page = 1
             res = requests.get(URL_1+'/dataset?start=0&max=20', headers=headers)
-
-        data= res.text
-        data = data.splitlines()
-        if len(data)< 20:
+        data= json.loads(res.text)
+        for d in data:
+            dataset.append({'name': d['_id'], 'meta': d['meta']})
+        if len(dataset)< 20:
             last= page
-        for l in data:
-            name = l.split('/dataset/')[1]
-            #dataset.append({'name': l})
-            r = requests.get(l, headers=headers1)
-            #get json data
-            info=json.loads(r.text)
-            dataset.append( {"name":name, "info": info })
+
         return render(request, "dataset.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last})
 
 
