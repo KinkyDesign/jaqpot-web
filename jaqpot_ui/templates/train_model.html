@@ -13,7 +13,7 @@
              {% paginate 20 entries %}
              {% for e in entries %}
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="checkbox" name="checkbox" id= "check" value="{{e}}">{{e}}</label>
+                    <input type="checkbox" name="checkbox" id= "check" value="{{e.name}}">{{e.name}}</label>
             {% endfor %}
 
             {% get_pages %}

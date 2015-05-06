@@ -159,6 +159,17 @@ def taskdetail(request):
     username = request.session.get('username', '')
     name = request.GET.get('name')
     status = request.GET.get('status')
+    if request.is_ajax():
+        output = request.GET.getlist('output')[0]
+        name = request.GET.getlist('name')[0]
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.get(URL_1+'/task/'+name, headers=headers)
+        data = json.loads(res.text)
+        if data['meta']['date']:
+            date=data['meta']['date'].split('T')[0]
+            data['meta']['date'] = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%m/%d/%y')
+        data = json.dumps(data)
+        return HttpResponse(data)
 
     if request.method == 'GET':
         #get task details in rdf format
@@ -336,11 +347,36 @@ def user(request):
 def trainmodel(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    page = request.GET.get('page')
+    last = request.GET.get('last')
 
     if request.method == 'GET':
-        entries = [ "data", "data2", "data3"]
-        entries2 = [ "data", "data2", "data3"]
-        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries': entries, 'entries2': entries2})
+        #headers = {'Accept': 'text/uri-list', 'subjectid': token}
+        #res = requests.get('http://enanomapper.ntua.gr:8880/jaqpot/services/dataset?start=0&max=10', headers=headers)
+        entries = [ "data", "data2", "data3","data4", "data5", "data6",]
+        dataset=[]
+        headers = {'Accept': 'application/json', 'subjectid': token}
+
+        if page:
+            page1=int(page) * 20 - 20
+            k=str(page1)
+            if page1 <= 1:
+                res = requests.get(URL_1+'/dataset?start=0&max=20', headers=headers)
+            elif last:
+                res = requests.get(URL_1+'/dataset?start='+last+'&max=20', headers=headers)
+            else:
+                res = requests.get(URL_1+'/dataset?start='+k+'&max=20', headers=headers)
+
+        else:
+            page = 1
+            res = requests.get(URL_1+'/dataset?start=0&max=20', headers=headers)
+        data= json.loads(res.text)
+        for d in data:
+            dataset.append({'name': d['_id']})
+        if len(dataset)< 20:
+            last= page
+
+        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries': entries , 'entries2': dataset, 'page': page, 'last':last})
 
 
 def choose_dataset(request):
@@ -349,21 +385,33 @@ def choose_dataset(request):
     form = TrainForm(initial={})
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
-        entries = [ "svm", "mlr", "alg_3"]
-        entries_2 = [ "a1", "a2", "a3"]
-        entries_3 = [ "1", "2", "3"]
-        return render(request, "train_model.html", {'token': token, 'username': username, 'entries': entries, 'entries_2': entries_2, 'entries_3': entries_3, 'form':form, 'dataset': dataset})
+        headers = {'Accept': 'text/uri-list', 'subjectid': token}
+        algorithms = []
+        res = requests.get(URL_1+'/algorithm?start=0&max=10', headers=headers)
+        list_resp = res.text
+        list_resp = list_resp.split('\n')[:-1]
+        for l in list_resp:
+            l = l.split('/algorithm/')[1]
+            algorithms.append({'name': l})
+        algorithms = json.dumps(algorithms)
+        algorithms = json.loads(algorithms)
+        entries_2 = [ "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8"]
+        entries_3 = [ "1", "2", "3", "4", "5", "6", "7", "8" ]
+        return render(request, "train_model.html", {'token': token, 'username': username, 'entries': algorithms, 'entries_2': entries_2, 'entries_3': entries_3, 'form':form, 'dataset': dataset})
     if request.method == 'POST':
         algorithms=[]
         for alg in request.POST.getlist('checkbox'):
-            algorithms.append({"alg":alg})
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            res = requests.get(URL_1+'/algorithm/'+alg, headers=headers)
+            info = json.loads(res.text)
+            algorithms.append({"alg":alg, "info": info})
         algorithms = json.dumps(algorithms)
         print algorithms
         dataset = request.GET.get('dataset')
         #alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1},{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1}]
         alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma': 0.5, 'e': 0.1}]
         print dataset
-        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'alg_param': alg_param})
+        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'alg_param': alg_param, 'algorithms': algorithms})
 
 #Conformer
 def conformer(request):
@@ -419,6 +467,19 @@ def model_detail(request):
 
     if request.method == 'GET':
         return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name })
+
+def model_pmml(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    name = request.GET.get('name')
+    headers = {'Accept': 'application/xml', "subjectid": token}
+    res = requests.get(URL_1+'/model/'+name+'/pmml', headers=headers)
+    #details = json.loads(res.text)
+    pmml = res.text
+    response = HttpResponse(pmml, content_type='application/xml')
+    response['Content-Disposition'] = 'attachment; filename="pmml_'+name+'.xml"'
+    return response
+
 
 def features(request):
     token = request.session.get('token', '')

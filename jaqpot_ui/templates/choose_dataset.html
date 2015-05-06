@@ -56,35 +56,32 @@
         <div class="publicdataset list-group">
         {% paginate 15 entries2 using "other_objects_page" %}
         {% for e in entries2 %}
-             <a href="/dataset?dataset={{e}}" class="list-group-item list-group-item-success">{{e}}</a>
+             <a href="/dataset?dataset={{e.name}}" class="list-group-item list-group-item-success">{{e.name}}</a>
         {% endfor %}
             </div>
             {% get_pages %}
             <div id="pageNavPosition5" class="pagination">
                 <span class="step-links">
                     <ul class="pagination">
-                        {% if pages.previous %}
-                            <li class="active">
-                                {{ pages.previous}}
-                            </li>
-                        {% else%}
                         <li class="active">
-                                <a href="#">Previous</a>
-                            </li>
-                        {%endif%}
-                        {% for other_objects_page in pages %}
-                        <li>{{other_objects_page}}</li>
-                        {%endfor%}
+                            {% if page|add:"0" >= 2 %}
+                            <a href="/train?page={{page|add:-1}}">Previous</a>
+                            {% else %}
+                            <a href="/train?page={{page}}">Previous</a>
+                            {%endif %}
+                        </li>
 
-                        {% if pages.next %}
-                            <li class="active">
-                                {{ pages.next}}
-                            </li>
-                        {% else%}
+                        <li><a href="/train?page={{page}}"><strong>{{page}}</strong></a></li>
+
+
                         <li class="active">
-                                <a href="#"> Next </a>
-                            </li>
-                        {%endif%}
+                            {% if last %}
+                                    <a href="/train?page={{last}}">Next</a>
+                            {%else%}
+                                <a href="/train?page={{page|add:1 }}">Next </a>
+                            {% endif %}
+                        </li>
+
 
                    </ul>
                 </span>

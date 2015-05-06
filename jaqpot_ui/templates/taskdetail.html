@@ -498,9 +498,7 @@ $("#status").val('{{status}}');
 $("#eta").val(params_json.ETA);*/
 
 percentage = {{output.percentageCompleted}}
-
-//Create chart pie
-$(function () {
+function chart(percentage){
     $('#container').highcharts({
         chart: {
             plotBackgroundColor: null,
@@ -535,20 +533,39 @@ $(function () {
                 ]
         }]
     });
+    }
+//Create chart pie
+$(function (){
+     chart(percentage);
 });
 //Add ms to duration input field
 $('#duration').val($('#duration').val() + 'ms');
 $('#duration_rej').val($('#duration_rej').val() + 'ms');
 
-//Update running task each 30 sec
-/*var seconds = 30;
+//Update running task percentage each 30 sec
+var seconds = 30;
 
 setInterval(function(){
+    //get via ajax new values
     $.ajax({
-        url: 'something.something',
-        data: 'something'
-    });
-}, seconds * 1000) */
+            type: "get",
+            url: "/t_detail",
+            dataType: "json",
+            contentType: 'application/json;',
+            data: { 'output': '{{output}}', 'name': '{{name}}', },
+            success: function(data){
+                //if percentageCompleted has changed then reload percentage chart
+                if (data.percentageCompleted != percentage){
+                chart(data.percentageCompleted);
+                percentage = data.percentageCompleted
+                }
+            },
+            error: function(){
+                alert("error");
+            }
+        });
+
+}, seconds * 1000)
 
 </script>
 <!-- Show-Hide advanced info  -->
