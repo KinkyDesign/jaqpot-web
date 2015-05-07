@@ -144,19 +144,18 @@
 <script>
     //get json
     var data = {{ contacts | safe }};
+    var per =  {{percentage | safe}};
 
     $('#idc').val(data._id)
 
     //calculate percentages
     //this values should be changed
     var percentage_substances = 10;
-    var percentage_models = 30;
-    var percentage_tasks = 50;
-    var percentage_bibtex = 40;
+    //var percentage_tasks = 50;
 
-    //var percentage_substances = (data.alg/data.maxsubstances)*100;
-    //var percentage_models = (data.models/data.maxmodels)*100;
-    //var percentage_tasks = (data.tasks/data.maxtasks)*100;
+    var percentage_bibtex = (per.bibtex/data.capabilities.bibtex)*100;
+    var percentage_models = (per.models/data.capabilities.models)*100;
+    var percentage_tasks = (per.tasksRunning/data.capabilities.tasksParallel)*100;
     $("#perc-tasks").text( percentage_tasks+'%');
     $("#perc-model").text( percentage_models+'%');
     $("#perc-sub").text( percentage_substances+'%');

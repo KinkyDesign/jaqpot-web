@@ -48,5 +48,9 @@ urlpatterns = patterns('',
 
 
                        # Administration page
+                       #url(r'^admin/$', 'jaqpot_ui.views.task'),
                        url(r'^admin/', include(admin.site.urls)),
+
+
+
 )

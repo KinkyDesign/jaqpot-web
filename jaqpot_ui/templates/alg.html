@@ -4,27 +4,83 @@
 
 <div class="div-table" style="width:100%; display: inline-block">
 
-    {% for al in alg_param %}
+    {% for al in algorithms %}
         <h1>Algorithm</h1>
         <h3>Title: {{al.alg}}</h3>
+        {% if al.info.meta.titles %}
+            <div>
+                <label class="align">Title:</label>
+                <input type="text" style="margin:5px;" value="{{al.info.meta.titles.0}}">
+            </div>
+        {% endif %}
+        {% if  al.info.meta.subjects %}
+            <h6><b>Subjects:</b></h6>
+            {% for sub in  al.info.meta.subjects %}
+                <div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{sub}}">
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if  al.info.ontologicalClasses%}
+            <h6><b>Ontological classes:</b></h6>
+            {% for ont in  al.info.ontologicalClasses %}
+                <div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{ont}}">
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if al.info.publisher %}
+            <div>
+                <label class="align">Publisher:</label>
+                <input type="text" style="margin:5px;" value="{{al.info.publisher}}">
+            </div>
+        {% endif %}
+        {% if al.info.contributor %}
+            <div>
+                <label class="align">Contributor:</label>
+                <input type="text" style="margin:5px;" value="{{al.info.contributor}}">
+            </div>
+        {% endif %}
+        {% if al.info.date %}
+            <div>
+                <label class="align">Date:</label>
+                <input type="text" style="margin:5px;" value="{{al.info.date}}">
+            </div>
+        {% endif %}
+        {% if al.info.parameters %}
+            <h6><b>Parameters:</b></h6>
+             {% for p in al.info.parameters%}
+                <div>
+                    <label class="align">{{p.name}}:</label>
+                    <input type="text" style="margin:5px;" value="{{p.value}}">
+                </div>
+             {% endfor %}
+        {% endif %}
+        {% if al.info.rights %}
+            <p><b>Copyright:</b></p>
+            <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;">{{al.info.rights}}
+
+            </textarea>
+        {% endif %}
+        <h6><b>Parameters:</b></h6>
             <div>
                 <label class="align">Kernel:</label>
-                <input type="text" style="margin:5px;" value="{{al.kernel}}" >
+                <input type="text" style="margin:5px;" >
             </div>
             <div>
                 <label  class="align">Gamma:</label>
-                <input type="text" style="margin:5px;" value="{{al.gamma}}" >
+                <input type="text" style="margin:5px;">
             </div>
             <div>
                 <label  class="align">e:</label>
-                <input type="text" style="margin:5px;" value="{{al.e}}" >
+                <input type="text" style="margin:5px;">
             </div>
-        <h5>Upload a PMML with transformations:</h5><input type="file" name="img">
-        <h5>Define transformations:</h5><input type="file" name="img">
-
-
 
     {% endfor %}
+    <h5>Upload a PMML with transformations:</h5><input type="file" name="img">
+    <h5>Define transformations:</h5><input type="file" name="img">
     <br>
     <a href="/tasks" class="btn btn-success" style="width:10%; float:left; left:10%;" >Train</a>
     </div>

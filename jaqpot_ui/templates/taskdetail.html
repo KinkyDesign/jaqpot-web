@@ -84,6 +84,7 @@
 
         <br>
         <a href="/stoptask?id={{name}}" class="btn btn-danger" data-toggle="tooltip" title="Stop task"><i class="glyphicon glyphicon-remove-sign"></i></a>
+
     {%elif status == "cancelled" %}
         <h3>This task has failed </h3>
         {% if output.actor %}
@@ -534,10 +535,12 @@ function chart(percentage){
         }]
     });
     }
+{% if status == "running"%}
 //Create chart pie
 $(function (){
      chart(percentage);
 });
+{% endif %}
 //Add ms to duration input field
 $('#duration').val($('#duration').val() + 'ms');
 $('#duration_rej').val($('#duration_rej').val() + 'ms');

@@ -338,11 +338,14 @@ def user(request):
         #rw=requests.get('http://opentox.ntua.gr:8080/user/'+ username +'@opensso.in-silico.ch/quota', headers=headers)
         print res.text
         contacts = json.loads(res.text)
-        #print rw.text
+        res1 = requests.get(URL_1+'/user/'+ username+'/quota', headers=headers)
+        print res1.text
+        percentage = json.loads(res1.text)
+        percentage = json.dumps(percentage)
         #contacts = {'name': username, 'maxtasks': 5, 'maxmodels': 2000, 'maxalgorithms': 2000, 'models': 100, 'tasks':2, 'alg': 1000}
         contacts = json.dumps(contacts)
 
-        return render(request, "user_details.html", {'token': token, 'username': username, 'name': name, 'contacts': contacts})
+        return render(request, "user_details.html", {'token': token, 'username': username, 'name': name, 'contacts': contacts, 'percentage': percentage})
 
 def trainmodel(request):
     token = request.session.get('token', '')
@@ -396,7 +399,7 @@ def choose_dataset(request):
         algorithms = json.dumps(algorithms)
         algorithms = json.loads(algorithms)
         entries_2 = [ "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8"]
-        entries_3 = [ "1", "2", "3", "4", "5", "6", "7", "8" ]
+        entries_3 = [ "1", "2", "3", "4", "5", "6", "7", "8"]
         return render(request, "train_model.html", {'token': token, 'username': username, 'entries': algorithms, 'entries_2': entries_2, 'entries_3': entries_3, 'form':form, 'dataset': dataset})
     if request.method == 'POST':
         algorithms=[]
@@ -404,8 +407,8 @@ def choose_dataset(request):
             headers = {'Accept': 'application/json', 'subjectid': token}
             res = requests.get(URL_1+'/algorithm/'+alg, headers=headers)
             info = json.loads(res.text)
-            algorithms.append({"alg":alg, "info": info})
-        algorithms = json.dumps(algorithms)
+            algorithms.append({"alg":alg, "info":info })
+        #algorithms = json.dumps(algorithms)
         print algorithms
         dataset = request.GET.get('dataset')
         #alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1},{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1}]

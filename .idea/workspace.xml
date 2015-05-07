@@ -24,12 +24,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="urls.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="810">
-              <caret line="11" column="34" selection-start-line="11" selection-start-column="30" selection-end-line="11" selection-end-column="38" />
-              <folding />
+            <state vertical-scroll-proportion="0.78365386" vertical-offset="261" max-vertical-offset="930">
+              <caret line="50" column="24" selection-start-line="50" selection-start-column="24" selection-end-line="50" selection-end-column="24" />
+              <folding>
+                <element signature="e#0#51#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -37,8 +39,8 @@
       <file leaf-file-name="taskdetail.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/taskdetail.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.625" vertical-offset="8025" max-vertical-offset="9270">
-              <caret line="544" column="33" selection-start-line="544" selection-start-column="33" selection-end-line="544" selection-end-column="33" />
+            <state vertical-scroll-proportion="-34.375" vertical-offset="6570" max-vertical-offset="9315">
+              <caret line="493" column="23" selection-start-line="493" selection-start-column="23" selection-end-line="493" selection-end-column="23" />
               <folding>
                 <element signature="n#style#0;n#input#0;n#div#1;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#2;n#div#0;n#!!top" expanded="true" />
@@ -46,92 +48,86 @@
                 <element signature="n#style#0;n#input#0;n#div#4;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#5;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#6;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#textarea#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#textarea#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#0;n#div#7;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#1;n#div#7;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#2;n#div#7;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#8;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#9;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#10;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#11;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#12;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#13;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#0;n#div#14;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#1;n#div#14;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#2;n#div#14;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#15;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#16;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#17;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#18;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#19;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#20;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#21;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#textarea#2;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#textarea#3;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#0;n#div#22;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#1;n#div#22;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#2;n#div#22;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#textarea#5;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#23;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#24;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#25;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#26;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#27;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#textarea#6;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#textarea#7;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#0;n#div#28;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#1;n#div#28;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#2;n#div#28;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#29;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#30;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#31;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#32;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#33;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#34;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#35;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#36;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#textarea#8;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#textarea#9;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#textarea#10;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#0;n#div#37;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#1;n#div#37;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#2;n#div#37;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#38;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#39;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#41;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#42;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#input#0;n#div#43;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#0;n#div#44;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#1;n#div#44;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#input#0;n#div#2;n#div#44;n#div#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="dataset_detail.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/dataset_detail.html">
+      <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jaqpot_ui/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-19.125" vertical-offset="171" max-vertical-offset="1065">
-              <caret line="42" column="24" selection-start-line="42" selection-start-column="24" selection-end-line="42" selection-end-column="24" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="260" max-vertical-offset="2205">
+              <caret line="132" column="38" selection-start-line="132" selection-start-column="19" selection-end-line="132" selection-end-column="39" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="dataset.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/dataset.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-15.625" vertical-offset="135" max-vertical-offset="780">
-              <caret line="34" column="41" selection-start-line="22" selection-start-column="24" selection-end-line="39" selection-end-column="29" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.63175124" vertical-offset="5554" max-vertical-offset="11625">
-              <caret line="411" column="77" selection-start-line="411" selection-start-column="77" selection-end-line="411" selection-end-column="77" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2629" max-vertical-offset="11670">
+              <caret line="210" column="0" selection-start-line="210" selection-start-column="0" selection-end-line="210" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="user_details.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/user_details.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-98.125" vertical-offset="0" max-vertical-offset="2790">
+              <caret line="157" column="44" selection-start-line="157" selection-start-column="44" selection-end-line="157" selection-end-column="44" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="algorithm.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/algorithm.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-4.375" vertical-offset="60" max-vertical-offset="795">
+              <caret line="11" column="85" selection-start-line="11" selection-start-column="64" selection-end-line="11" selection-end-column="111" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="algorithm_detail.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/algorithm_detail.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-28.125" vertical-offset="435" max-vertical-offset="1410">
+              <caret line="74" column="66" selection-start-line="74" selection-start-column="66" selection-end-line="74" selection-end-column="66" />
               <folding />
             </state>
           </provider>
@@ -140,9 +136,21 @@
       <file leaf-file-name="alg.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/alg.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.75" vertical-offset="0" max-vertical-offset="570">
-              <caret line="6" column="29" selection-start-line="6" selection-start-column="29" selection-end-line="6" selection-end-column="29" />
-              <folding />
+            <state vertical-scroll-proportion="-41.25" vertical-offset="0" max-vertical-offset="1410">
+              <caret line="66" column="35" selection-start-line="66" selection-start-column="35" selection-end-line="66" selection-end-column="35" />
+              <folding>
+                <element signature="n#style#0;n#input#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#1;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#2;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#3;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#4;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#5;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#6;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#textarea#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#7;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#8;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#9;n#div#0;n#!!top" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -150,7 +158,7 @@
       <file leaf-file-name="train_model.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/train_model.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.125" vertical-offset="30" max-vertical-offset="3075">
+            <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="3075">
               <caret line="15" column="98" selection-start-line="15" selection-start-column="98" selection-end-line="15" selection-end-column="98" />
               <folding />
             </state>
@@ -160,28 +168,8 @@
       <file leaf-file-name="choose_dataset.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="23.125" vertical-offset="1440" max-vertical-offset="2100">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1440" max-vertical-offset="2100">
               <caret line="59" column="20" selection-start-line="59" selection-start-column="20" selection-end-line="59" selection-end-column="20" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="bibtex.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/bibtex.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="5.0" vertical-offset="240" max-vertical-offset="1290">
-              <caret line="8" column="21" selection-start-line="8" selection-start-column="21" selection-end-line="8" selection-end-column="21" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="bibdetail.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/bibdetail.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-19.375" vertical-offset="2655" max-vertical-offset="3375">
-              <caret line="208" column="14" selection-start-line="197" selection-start-column="4" selection-end-line="213" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -200,7 +188,6 @@
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/add_feature.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/static/editor.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/conformer.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/alg.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/util/menu.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/thanks.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/documentation.html" />
@@ -218,7 +205,6 @@
         <option value="$PROJECT_DIR$/jaqpot_ui/templatetags/tags.py" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templatetags/_init_.py" />
         <option value="$PROJECT_DIR$/jaqpot_ui/__init__.py" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/user_details.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/settings.py" />
         <option value="$PROJECT_DIR$/jaqpot_ui/static/css/style.css" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/bibtex.html" />
@@ -236,13 +222,15 @@
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/dataset.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/addbibtex.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/forms.py" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/urls.py" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/model_detail.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/pmml.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/taskdetail.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/train_model.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/alg.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/user_details.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/views.py" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/taskdetail.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/urls.py" />
       </list>
     </option>
   </component>
@@ -275,7 +263,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -386,6 +373,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -578,7 +566,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="47" y="-4" width="1873" height="1084" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
@@ -588,17 +576,17 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20234917" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39939025" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32884902" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.33638212" sideWeight="0.49919915" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.33638212" sideWeight="0.49919915" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33638212" sideWeight="0.50080085" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33028457" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33028457" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -625,6 +613,14 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/bibdetail.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2655" max-vertical-offset="3375">
+          <caret line="208" column="14" selection-start-line="197" selection-start-column="4" selection-end-line="213" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file:///usr/lib/python2.7/socket.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33333334" vertical-offset="4277" max-vertical-offset="8640">
@@ -824,25 +820,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/algorithm.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="795">
-          <caret line="11" column="85" selection-start-line="11" selection-start-column="64" selection-end-line="11" selection-end-column="111" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/user_details.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="675" max-vertical-offset="2805">
-          <caret line="45" column="35" selection-start-line="45" selection-start-column="35" selection-end-line="45" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/forms.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="615">
           <caret line="9" column="30" selection-start-line="9" selection-start-column="30" selection-end-line="9" selection-end-column="30" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -857,7 +838,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="270" max-vertical-offset="5235">
           <caret line="29" column="8" selection-start-line="29" selection-start-column="0" selection-end-line="31" selection-end-column="1" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -865,15 +845,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="140" max-vertical-offset="1095">
           <caret line="33" column="15" selection-start-line="33" selection-start-column="11" selection-end-line="34" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1250" max-vertical-offset="2205">
-          <caret line="132" column="38" selection-start-line="132" selection-start-column="19" selection-end-line="132" selection-end-column="39" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -881,9 +852,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="78.125" vertical-offset="1935" max-vertical-offset="2535">
           <caret line="4" column="30" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="65" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -891,24 +859,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="1.425" vertical-offset="1125" max-vertical-offset="2265">
           <caret line="132" column="39" selection-start-line="132" selection-start-column="39" selection-end-line="132" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/algorithm_detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.525" vertical-offset="810" max-vertical-offset="1410">
-          <caret line="75" column="13" selection-start-line="74" selection-start-column="9" selection-end-line="75" selection-end-column="13" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#input#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#input#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#input#0;n#div#3;n#div#0;n#div#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#input#0;n#div#5;n#div#0;n#div#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#input#0;n#div#6;n#div#0;n#div#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#textarea#0;n#div#0;n#div#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#a#0;n#div#0;n#div#0;n#!!top" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -916,13 +866,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.15" vertical-offset="0" max-vertical-offset="1965">
           <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/bibtex.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="5.0" vertical-offset="240" max-vertical-offset="1290">
+        <state vertical-scroll-proportion="0.0" vertical-offset="240" max-vertical-offset="1290">
           <caret line="8" column="21" selection-start-line="8" selection-start-column="21" selection-end-line="8" selection-end-column="21" />
           <folding />
         </state>
@@ -930,86 +879,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/bibdetail.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-19.375" vertical-offset="2655" max-vertical-offset="3375">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2655" max-vertical-offset="3375">
           <caret line="208" column="14" selection-start-line="197" selection-start-column="4" selection-end-line="213" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/taskdetail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.625" vertical-offset="8025" max-vertical-offset="9270">
-          <caret line="544" column="33" selection-start-line="544" selection-start-column="33" selection-end-line="544" selection-end-column="33" />
-          <folding>
-            <element signature="n#style#0;n#input#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#2;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#3;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#4;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#5;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#6;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#textarea#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#textarea#1;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#0;n#div#7;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#1;n#div#7;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#2;n#div#7;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#8;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#9;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#10;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#11;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#12;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#13;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#0;n#div#14;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#1;n#div#14;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#2;n#div#14;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#15;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#16;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#17;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#18;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#20;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#21;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#textarea#2;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#textarea#3;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#0;n#div#22;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#1;n#div#22;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#2;n#div#22;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#23;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#24;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#25;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#26;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#27;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#textarea#6;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#textarea#7;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#0;n#div#28;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#1;n#div#28;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#2;n#div#28;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#29;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#30;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#31;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#32;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#33;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#34;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#35;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#36;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#textarea#8;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#textarea#9;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#textarea#10;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#0;n#div#37;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#1;n#div#37;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#2;n#div#37;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#38;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#39;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#41;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#43;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#0;n#div#44;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#1;n#div#44;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#2;n#div#44;n#div#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/dataset_detail.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-19.125" vertical-offset="171" max-vertical-offset="1065">
+        <state vertical-scroll-proportion="0.0" vertical-offset="171" max-vertical-offset="1065">
           <caret line="42" column="24" selection-start-line="42" selection-start-column="24" selection-end-line="42" selection-end-column="24" />
           <folding />
         </state>
@@ -1017,23 +895,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/dataset.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-15.625" vertical-offset="135" max-vertical-offset="780">
+        <state vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="780">
           <caret line="34" column="41" selection-start-line="22" selection-start-column="24" selection-end-line="39" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="810">
-          <caret line="11" column="34" selection-start-line="11" selection-start-column="30" selection-end-line="11" selection-end-column="38" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="23.125" vertical-offset="1440" max-vertical-offset="2100">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1440" max-vertical-offset="2100">
           <caret line="59" column="20" selection-start-line="59" selection-start-column="20" selection-end-line="59" selection-end-column="20" />
           <folding />
         </state>
@@ -1041,25 +911,124 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/train_model.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.125" vertical-offset="30" max-vertical-offset="3075">
+        <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="3075">
           <caret line="15" column="98" selection-start-line="15" selection-start-column="98" selection-end-line="15" selection-end-column="98" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/algorithm.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.375" vertical-offset="60" max-vertical-offset="795">
+          <caret line="11" column="85" selection-start-line="11" selection-start-column="64" selection-end-line="11" selection-end-column="111" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/alg.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.75" vertical-offset="0" max-vertical-offset="570">
-          <caret line="6" column="29" selection-start-line="6" selection-start-column="29" selection-end-line="6" selection-end-column="29" />
+        <state vertical-scroll-proportion="-41.25" vertical-offset="0" max-vertical-offset="1410">
+          <caret line="66" column="35" selection-start-line="66" selection-start-column="35" selection-end-line="66" selection-end-column="35" />
+          <folding>
+            <element signature="n#style#0;n#input#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#1;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#2;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#3;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#4;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#5;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#6;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#textarea#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#7;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#8;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#9;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/algorithm_detail.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-28.125" vertical-offset="435" max-vertical-offset="1410">
+          <caret line="74" column="66" selection-start-line="74" selection-start-column="66" selection-end-line="74" selection-end-column="66" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.63175124" vertical-offset="5554" max-vertical-offset="11625">
-          <caret line="411" column="77" selection-start-line="411" selection-start-column="77" selection-end-line="411" selection-end-column="77" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2629" max-vertical-offset="11670">
+          <caret line="210" column="0" selection-start-line="210" selection-start-column="0" selection-end-line="210" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/user_details.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-98.125" vertical-offset="0" max-vertical-offset="2790">
+          <caret line="157" column="44" selection-start-line="157" selection-start-column="44" selection-end-line="157" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/taskdetail.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-34.375" vertical-offset="6570" max-vertical-offset="9315">
+          <caret line="493" column="23" selection-start-line="493" selection-start-column="23" selection-end-line="493" selection-end-column="23" />
+          <folding>
+            <element signature="n#style#0;n#input#0;n#div#1;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#2;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#3;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#4;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#5;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#6;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#textarea#1;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#8;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#9;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#10;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#11;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#12;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#13;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#15;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#16;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#17;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#18;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#19;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#20;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#21;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#textarea#5;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#23;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#25;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#26;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#27;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#textarea#7;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#0;n#div#28;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#1;n#div#28;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#2;n#div#28;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#29;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#35;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#36;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#textarea#10;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#38;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#42;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#43;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="260" max-vertical-offset="2205">
+          <caret line="132" column="38" selection-start-line="132" selection-start-column="19" selection-end-line="132" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.78365386" vertical-offset="261" max-vertical-offset="930">
+          <caret line="50" column="24" selection-start-line="50" selection-start-column="24" selection-end-line="50" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#51#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
