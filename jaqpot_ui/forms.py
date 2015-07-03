@@ -35,3 +35,6 @@ class ContactForm(forms.Form):
     sender = forms.EmailField(error_messages={'required': 'Please enter your mail'},widget=forms.EmailInput(attrs={'placeholder':'Email'}))
     message = forms.CharField(widget=forms.Textarea(attrs={'class':'form-control', 'rows':'3'}), error_messages={'required': 'Please enter your message'})
     captcha = CaptchaField()
+
+class SubstanceownerForm(forms.Form):
+        substanceowner = forms.CharField()

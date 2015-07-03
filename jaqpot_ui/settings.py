@@ -112,8 +112,9 @@ TEMPLATE_DIRS = (
 # External Authenticator
 EXT_AUTH_URL_LOGIN = 'https://opensso.in-silico.ch:443/auth/authenticate?uri=service=openldap'
 EXT_AUTH_URL_LOGOUT = 'http://opensso.in-silico.ch/opensso/identity/logout'
-URL = 'http://opentox.ntua.gr:8080'
-URL_1 = 'http://enanomapper.ntua.gr:8880/jaqpot/services'
+
+#URL_1 = 'http://enanomapper.ntua.gr:8880/jaqpot/services'
+SERVER_URL = 'http://test.jaqpot.org:8880/jaqpot/services'
 
 
 TEMPLATE_CONTEXT_PROCESSORS += (

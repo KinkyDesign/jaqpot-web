@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post"> {% csrf_token %}
+<div class="div-table" style="width:100%; display: inline-block;">
+    <h1>Create Dataset</h1>
+    <div>
+        <label class="align">Substance owner id:</label>
+        <label class="align">{{form.substanceowner}}</label>
+    </div>
+    <br>
+    <!--<div>
+        <a type="button" class="btn btn-success" style="width:10%; float:right; right:10%;" href="/sub">Next</a>
+    </div>  -->
+    <input type="submit" value="Save" class="btn btn-success" style="width: 10%; float:right; right:10%;">
+</div>
+    </form>
+
+{% endblock %}

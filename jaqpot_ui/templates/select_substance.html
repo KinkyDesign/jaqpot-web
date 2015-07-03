@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post">{% csrf_token %}
+<div class="div-table" style="width:100%; display: inline-block;">
+    {% if error %}
+        <h1>{{error}}</h1>
+    {% else %}
+        <h4>Substances</h4>
+        {% load endless %}
+        <div>
+            <label>
+                <input type="checkbox" id= "selectall" >Select All</label>
+            {% paginate 20 substances %}
+            {% for s in substances %}
+                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input class="checkbox1" type="checkbox" name="checkbox" id= "check" value="{{s.URI}}">{{s.URI}}</label>
+            {% endfor %}
+            {% get_pages %}
+             <div id="pageNavPosition" class="pagination">
+                 <span class="step-links">
+                        <ul class="pagination">
+                            {% if pages.previous %}
+                                <li class="active">
+                                    {{ pages.previous}}
+                                </li>
+                            {% else%}
+                            <li class="active">
+                                    <a href="#">Previous</a>
+                                </li>
+                            {%endif%}
+                            {% for page in pages %}
+                            <li>{{page}}</li>
+                            {%endfor%}
+
+                            {% if pages.next %}
+                                <li class="active">
+                                    {{ pages.next}}
+                                </li>
+                            {% else%}
+                            <li class="active">
+                                    <a href="#">Next </a>
+                                </li>
+                            {%endif%}
+
+                       </ul>
+                    </span>
+            </div>
+        </div>
+
+        <input id="choose_alg" type="submit" value="Save" class="btn btn-success" style="width: 10%; float:right; right:10%;">
+
+        {% endif %}
+</div>
+    </form>
+<script>
+    $(document).ready(function() {
+    $('#selectall').click(function(event) {  //on click
+        if(this.checked) { // check select status
+            $('.checkbox1').each(function() { //loop through each checkbox
+                this.checked = true;  //select all checkboxes with class "checkbox1"
+            });
+        }else{
+            $('.checkbox1').each(function() { //loop through each checkbox
+                this.checked = false; //deselect all checkboxes with class "checkbox1"
+            });
+        }
+    });
+
+});
+</script>
+{% endblock %}

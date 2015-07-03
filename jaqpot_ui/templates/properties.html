@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="div-table" style="width:100%; display: inline-block">
+    <h4>Select Properties</h4>
+
+     <label>
+         <input type="checkbox" id= "selectall" >Select All</label>
+    <br>
+    {% for p, v in properties.items %}
+              <div class="panel">
+                <div class="panel-heading" style="background-color:#da4453 ">
+                  <h4 class="panel-title">
+                      <input class="checkbox{{forloop.counter}}" type="checkbox" name="checkbox" id= "check_box{{forloop.counter}}" value="{{p}}">
+                      <a data-toggle="collapse" data-parent="#accordion2" href="#collapse{{forloop.counter}}" class="collapsed">
+                          <b>{{p}}</b>
+                      </a>
+                  </h4>
+                </div>
+                <div id="collapse{{forloop.counter}}" class="panel-collapse collapse" style="height: 0px;">
+                  <div class="panel-body">
+                      {% for sub in v %}
+                        <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                            <input class="check{{forloop.parentloop.counter}}" type="checkbox" name="checkbox"  value="{{sub}}">{{sub}}</label>
+                      {% endfor%}
+                  </div>
+                </div>
+              </div>
+    {%endfor%}
+</div>
+
+<script>
+    $(document).ready(function() {
+    $('#selectall').click(function(event) {  //on click
+        if(this.checked) { // check select status
+            $('.checkbox1').each(function() { //loop through each checkbox
+                $('#check_box1').click() //select all checkboxes with class "checkbox1"
+            });
+            $('.checkbox2').each(function() { //loop through each checkbox
+                $('#check_box2').click()  //select all checkboxes with class "checkbox1"
+            });
+            $('.checkbox3').each(function() { //loop through each checkbox
+                $('#check_box3').click()  //select all checkboxes with class "checkbox1"
+            });
+            $('.checkbox4').each(function() { //loop through each checkbox
+                $('#check_box4').click()  //select all checkboxes with class "checkbox1"
+            });
+        }else{
+            $('.checkbox1').each(function() { //loop through each checkbox
+                $('#check_box1').click() //deselect all checkboxes with class "checkbox1"
+            });
+            $('.checkbox2').each(function() { //loop through each checkbox
+                 $('#check_box2').click() //deselect all checkboxes with class "checkbox1"
+            });
+            $('.checkbox3').each(function() { //loop through each checkbox
+                 $('#check_box3').click() //deselect all checkboxes with class "checkbox1"
+            });
+            $('.checkbox4').each(function() { //loop through each checkbox
+                 $('#check_box4').click(); //deselect all checkboxes with class "checkbox1"
+            });
+        }
+    });
+
+     $('#check_box1').click(function(event) {  //on click
+        if(this.checked) { // check select status
+            $('.check1').each(function() { //loop through each checkbox
+                this.checked = true;  //select all checkboxes with class "checkbox1"
+            });
+        }else{
+            $('.check1').each(function() { //loop through each checkbox
+                this.checked = false; //deselect all checkboxes with class "checkbox1"
+            });
+        }
+    });
+    $('#check_box2').click(function(event) {  //on click
+        if(this.checked) { // check select status
+            $('.check2').each(function() { //loop through each checkbox
+                this.checked = true;  //select all checkboxes with class "checkbox1"
+            });
+        }else{
+            $('.check2').each(function() { //loop through each checkbox
+                this.checked = false; //deselect all checkboxes with class "checkbox1"
+            });
+        }
+    });
+    $('#check_box3').click(function(event) {  //on click
+        if(this.checked) { // check select status
+            $('.check3').each(function() { //loop through each checkbox
+                this.checked = true;  //select all checkboxes with class "checkbox1"
+            });
+        }else{
+            $('.check3').each(function() { //loop through each checkbox
+                this.checked = false; //deselect all checkboxes with class "checkbox1"
+            });
+        }
+    });
+    $('#check_box4').click(function(event) {  //on click
+        if(this.checked) { // check select status
+            $('.check4').each(function() { //loop through each checkbox
+                this.checked = true;  //select all checkboxes with class "checkbox1"
+            });
+        }else{
+            $('.check4').each(function() { //loop through each checkbox
+                this.checked = false; //deselect all checkboxes with class "checkbox1"
+            });
+        }
+    });
+
+});
+</script>
+{% endblock%}

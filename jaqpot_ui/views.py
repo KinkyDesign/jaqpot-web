@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
 import rdflib
-from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm
+from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm
 import requests
 import json
 import datetime
 import subprocess
-from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, URL, EMAIL_HOST_USER, URL_1
+from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, EMAIL_HOST_USER, SERVER_URL
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.mail import send_mail
@@ -38,7 +38,7 @@ def login(request):
             password = form['password'].value()
 
             # send request to external authenticator
-            r = requests.post(URL_1 + '/aa/login', data={'username': username, 'password': password})
+            r = requests.post(SERVER_URL + '/aa/login', data={'username': username, 'password': password})
             print r.text
             if r.status_code == 200:
                 response = json.loads(r.text)
@@ -60,7 +60,7 @@ def logout(request):
     token = request.session.get('token', '')
     if token:
         # send request to logout from auth server
-        r = requests.post(URL_1 + '/aa/logout', headers={'subjectid': token})
+        r = requests.post(SERVER_URL + '/aa/logout', headers={'subjectid': token})
         if r.status_code == 200:
             # remove from session
             request.session['token'] = ''
@@ -82,7 +82,7 @@ def task(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(URL_1 + '/aa/validate', headers={'subjectid': token})
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
             return redirect('/login')
     #else go to tasks
@@ -90,7 +90,7 @@ def task(request):
     #get all tasks with status Running
     headers = {'Accept': 'text/uri-list', 'subjectid': token}
     headers = {'Accept': 'application/json', 'subjectid': token}
-    res = requests.get(URL_1+'/task?creator='+username+'&status=RUNNING&start=0&max=10000', headers=headers)
+    res = requests.get(SERVER_URL+'/task?creator='+username+'&status=RUNNING&start=0&max=10000', headers=headers)
     list_resp = json.loads(res.text)
     if res.status_code == 200:
         list_run=[]
@@ -102,7 +102,7 @@ def task(request):
         list_run = json.loads(list_run)
 
         #get all tasks with status Completed
-        res = requests.get(URL_1+'/task?status=COMPLETED&creator='+username+'&start=0&max=10000', headers=headers)
+        res = requests.get(SERVER_URL+'/task?status=COMPLETED&creator='+username+'&start=0&max=10000', headers=headers)
         list_resp = json.loads(res.text)
 
         list_complete=[]
@@ -113,7 +113,7 @@ def task(request):
         list_complete = json.loads(list_complete)
 
         #get all tasks with status Cancelled
-        res = requests.get(URL_1+'/task?status=CANCELLED&creator='+username+'&start=0&max=10000', headers=headers)
+        res = requests.get(SERVER_URL+'/task?status=CANCELLED&creator='+username+'&start=0&max=10000', headers=headers)
         list_resp = json.loads(res.text)
 
         list_cancelled=[]
@@ -125,7 +125,7 @@ def task(request):
         list_cancelled = json.loads(list_cancelled)
 
         #get all tasks with status Error
-        res = requests.get(URL_1+'/task?status=ERROR&creator='+username+'&start=0&max=10000', headers=headers)
+        res = requests.get(SERVER_URL+'/task?status=ERROR&creator='+username+'&start=0&max=10000', headers=headers)
         list_resp = json.loads(res.text)
 
         list_error=[]
@@ -138,7 +138,7 @@ def task(request):
 
 
         #get all tasks with status Queued
-        res = requests.get(URL_1+'/task?status=QUEUED&creator='+username+'&start=0&max=10000', headers=headers)
+        res = requests.get(SERVER_URL+'/task?status=QUEUED&creator='+username+'&start=0&max=10000', headers=headers)
         list_resp = json.loads(res.text)
 
         list_queued=[]
@@ -163,7 +163,7 @@ def taskdetail(request):
         output = request.GET.getlist('output')[0]
         name = request.GET.getlist('name')[0]
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(URL_1+'/task/'+name, headers=headers)
+        res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
         data = json.loads(res.text)
         if data['meta']['date']:
             date=data['meta']['date'].split('T')[0]
@@ -174,7 +174,7 @@ def taskdetail(request):
     if request.method == 'GET':
         #get task details in rdf format
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(URL_1+'/task/'+name, headers=headers)
+        res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
 
         '''g = Graph().parse(URL+'/task/'+name)
         output = {}
@@ -206,7 +206,7 @@ def stop_task(request):
     if request.method == 'GET':
         #stop task
         headers = {'content-type': 'text/uri-list', 'subjectid': token}
-        res = requests.delete(URL_1+'/task/'+id, headers=headers)
+        res = requests.delete(SERVER_URL+'/task/'+id, headers=headers)
         return render(request, "mainPage.html", {'token': token, 'username': username })
 
 #List of all BibTex
@@ -220,7 +220,7 @@ def bibtex(request):
         #get all bibtex
         headers = {'Accept': 'application/json', 'subjectid': token}
         headers1 = {'Accept': 'text/uri-list', 'subjectid': token}
-        res = requests.get(URL_1+'/bibtex?bibtype=Entry&creator='+username+'&&&start=0&max=10000', headers=headers1)
+        res = requests.get(SERVER_URL+'/bibtex?bibtype=Entry&creator='+username+'&&&start=0&max=10000', headers=headers1)
         list_resp = res.text
         if res.status_code == 403:
             error = "This request is forbidden (e.g., no authentication token is provided)"
@@ -257,7 +257,7 @@ def bib_detail(request):
         #body = jsonpatch.JsonPatch([{'op': op, 'path': path, 'value': value}])
         headers = {"Content-Type":"application/json-patch+json",'subjectid': token }
         #headers = {'Accept': 'application/json-patch+json', 'subjectid': token}
-        res = requests.patch(url=URL_1+'/bibtex/'+id, data=body, headers=headers)
+        res = requests.patch(url=SERVER_URL+'/bibtex/'+id, data=body, headers=headers)
         print res.text
         return HttpResponse(res.text)
 
@@ -265,7 +265,7 @@ def bib_detail(request):
     if request.method == 'GET':
         #send request
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(URL_1+'/bibtex/'+id, headers=headers)
+        res = requests.get(SERVER_URL+'/bibtex/'+id, headers=headers)
         list_resp = res.text
         #get json data
         details = json.loads(res.text)
@@ -279,7 +279,7 @@ def bib_delete(request):
     if request.method == 'GET':
         #delete bibtex
         headers = {'content-type': 'text/uri-list', 'subjectid': token}
-        res = requests.delete(URL_1+'/bibtex/'+id, headers=headers)
+        res = requests.delete(SERVER_URL+'/bibtex/'+id, headers=headers)
         return render(request, "mainPage.html", {'token': token, 'username': username })
 
 #Add a Bibtex
@@ -309,7 +309,7 @@ def add_bibtex(request):
 
         #send request with the new entry for saving
         headers = {'Content-Type': 'application/json', 'subjectid': token}
-        res = requests.post(URL_1+'/bibtex', data = bibtex_entry, headers=headers)
+        res = requests.post(SERVER_URL+'/bibtex', data = bibtex_entry, headers=headers)
         return render(request, "mainPage.html", {'token': token, 'username': username, 'name': name})
 
 def sub(request):
@@ -334,11 +334,11 @@ def user(request):
         #print r.text
         headers = {'content-type': 'application/json', 'subjectid': token}
         #headers = {'subjectid': token}
-        res = requests.get(URL_1+'/user/'+ username, headers=headers)
+        res = requests.get(SERVER_URL+'/user/'+ username, headers=headers)
         #rw=requests.get('http://opentox.ntua.gr:8080/user/'+ username +'@opensso.in-silico.ch/quota', headers=headers)
         print res.text
         contacts = json.loads(res.text)
-        res1 = requests.get(URL_1+'/user/'+ username+'/quota', headers=headers)
+        res1 = requests.get(SERVER_URL+'/user/'+ username+'/quota', headers=headers)
         print res1.text
         percentage = json.loads(res1.text)
         percentage = json.dumps(percentage)
@@ -352,7 +352,10 @@ def trainmodel(request):
     username = request.session.get('username', '')
     page = request.GET.get('page')
     last = request.GET.get('last')
-
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
     if request.method == 'GET':
         #headers = {'Accept': 'text/uri-list', 'subjectid': token}
         #res = requests.get('http://enanomapper.ntua.gr:8880/jaqpot/services/dataset?start=0&max=10', headers=headers)
@@ -364,15 +367,15 @@ def trainmodel(request):
             page1=int(page) * 20 - 20
             k=str(page1)
             if page1 <= 1:
-                res = requests.get(URL_1+'/dataset?start=0&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
             elif last:
-                res = requests.get(URL_1+'/dataset?start='+last+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start='+last+'&max=20', headers=headers)
             else:
-                res = requests.get(URL_1+'/dataset?start='+k+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
 
         else:
             page = 1
-            res = requests.get(URL_1+'/dataset?start=0&max=20', headers=headers)
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         data= json.loads(res.text)
         for d in data:
             dataset.append({'name': d['_id']})
@@ -390,7 +393,7 @@ def choose_dataset(request):
         dataset = request.GET.get('dataset')
         headers = {'Accept': 'text/uri-list', 'subjectid': token}
         algorithms = []
-        res = requests.get(URL_1+'/algorithm?start=0&max=10', headers=headers)
+        res = requests.get(SERVER_URL+'/algorithm?start=0&max=10', headers=headers)
         list_resp = res.text
         list_resp = list_resp.split('\n')[:-1]
         for l in list_resp:
@@ -405,16 +408,32 @@ def choose_dataset(request):
         algorithms=[]
         for alg in request.POST.getlist('checkbox'):
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res = requests.get(URL_1+'/algorithm/'+alg, headers=headers)
+            res = requests.get(SERVER_URL+'/algorithm/'+alg, headers=headers)
             info = json.loads(res.text)
             algorithms.append({"alg":alg, "info":info })
         #algorithms = json.dumps(algorithms)
         print algorithms
         dataset = request.GET.get('dataset')
         #alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1},{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1}]
-        alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma': 0.5, 'e': 0.1}]
+        #alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma': 0.5, 'e': 0.1}]
         print dataset
-        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'alg_param': alg_param, 'algorithms': algorithms})
+        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms': algorithms})
+
+def change_params(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if request.method == 'GET':
+        dataset = request.GET.get('data')
+        print dataset
+        algorithms = request.GET.get('alg')
+        print algorithms
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        #print res.text
+        #info = json.loads(res.text)
+        #print info
+        return redirect('/task', {'token': token, 'username': username})
+
 
 #Conformer
 def conformer(request):
@@ -432,7 +451,7 @@ def model(request):
     if token:
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(URL_1 + '/aa/validate', headers={'subjectid': token})
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
             return redirect('/login')
     if request.method == 'GET':
@@ -443,7 +462,7 @@ def model(request):
         models = []
         #get all models
         headers = {'Accept': 'text/uri-list', "subjectid": token}
-        res = requests.get(URL_1+'/model?start=0&max=10000', headers=headers)
+        res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
         list_resp = res.text
         #get each line
         list_resp = list_resp.splitlines()
@@ -463,7 +482,7 @@ def model_detail(request):
     #details = [{'a':'0.1','b':'0.2', 'description':'model'}]
     #get task details in rdf format
     headers = {'Accept': 'application/json', "subjectid": token}
-    res = requests.get(URL_1+'/model/'+name, headers=headers)
+    res = requests.get(SERVER_URL+'/model/'+name, headers=headers)
     details = json.loads(res.text)
     print res.text
 
@@ -476,7 +495,7 @@ def model_pmml(request):
     username = request.session.get('username', '')
     name = request.GET.get('name')
     headers = {'Accept': 'application/xml', "subjectid": token}
-    res = requests.get(URL_1+'/model/'+name+'/pmml', headers=headers)
+    res = requests.get(SERVER_URL+'/model/'+name+'/pmml', headers=headers)
     #details = json.loads(res.text)
     pmml = res.text
     response = HttpResponse(pmml, content_type='application/xml')
@@ -496,15 +515,15 @@ def features(request):
             page1=int(page) * 20 - 20
             k=str(page1)
             if page1 <= 1:
-                res = requests.get(URL_1+'/feature?creator='+username+'&&start=0&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/feature?creator='+username+'&&start=0&max=20', headers=headers)
             elif last:
-                res = requests.get(URL_1+'/feature?creator='+username+'&&start='+last+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/feature?creator='+username+'&&start='+last+'&max=20', headers=headers)
             else:
-                res = requests.get(URL_1+'/feature?creator='+username+'&&start='+k+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/feature?creator='+username+'&&start='+k+'&max=20', headers=headers)
 
         else:
             page = 1
-            res = requests.get(URL_1+'/feature?creator='+username+'&&start=0&max=20', headers=headers)
+            res = requests.get(SERVER_URL+'/feature?creator='+username+'&&start=0&max=20', headers=headers)
         features=[]
         if res.status_code == 403:
             error = "This request is forbidden (e.g., no authentication token is provided)"
@@ -534,7 +553,7 @@ def feature_details(request):
 
     if request.method == 'GET':
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(URL_1+'/feature/'+name, headers=headers)
+        res = requests.get(SERVER_URL+'/feature/'+name, headers=headers)
         feature_detail=json.loads(res.text)
         return render(request, "feature_details.html", {'token': token, 'username': username, 'name': name, 'feature_detail': feature_detail})
 
@@ -568,7 +587,7 @@ def feature_delete(request):
     if request.method == 'GET':
         #delete bibtex
         headers = {'content-type': 'text/uri-list', 'subjectid': token}
-        res = requests.delete(URL_1+'/feature/'+id, headers=headers)
+        res = requests.delete(SERVER_URL+'/feature/'+id, headers=headers)
         return render(request, "mainPage.html", {'token': token, 'username': username })
 
 
@@ -580,7 +599,7 @@ def algorithm(request):
          algorithms = []
          #get all algorithms
          headers = {'Accept': 'text/uri-list', 'subjectid': token}
-         res = requests.get(URL_1+'/algorithm?start=0&max=10', headers=headers)
+         res = requests.get(SERVER_URL+'/algorithm?start=0&max=10', headers=headers)
          list_resp = res.text
          list_resp = list_resp.split('\n')[:-1]
          for l in list_resp:
@@ -600,7 +619,7 @@ def algorithm_detail(request):
     if request.method == 'GET':
         #get task details in rdf format
         headers = {'content-type': 'text/uri-list', 'subjectid': token}
-        res = requests.get(URL_1+'/algorithm/'+algorithm, headers=headers)
+        res = requests.get(SERVER_URL+'/algorithm/'+algorithm, headers=headers)
         #get rdf response and convert to json data with details for bibtex
         details = json.loads(res.text)
         return render(request, "algorithm_detail.html", {'token': token, 'username': username, 'details': details, 'id': algorithm})
@@ -613,7 +632,7 @@ def algorithm_delete(request):
     if request.method == 'GET':
         #delete algorithm
         headers = {'content-type': 'text/uri-list', 'subjectid': token}
-        res = requests.delete(URL_1+'/algorithm/'+id, headers=headers)
+        res = requests.delete(SERVER_URL+'/algorithm/'+id, headers=headers)
         return render(request, "mainPage.html", {'token': token, 'username': username})
 
 
@@ -631,15 +650,15 @@ def dataset(request):
             page1=int(page) * 20 - 20
             k=str(page1)
             if page1 <= 1:
-                res = requests.get(URL_1+'/dataset?start=0&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
             elif last:
-                res = requests.get(URL_1+'/dataset?start='+last+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start='+last+'&max=20', headers=headers)
             else:
-                res = requests.get(URL_1+'/dataset?start='+k+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
 
         else:
             page = 1
-            res = requests.get(URL_1+'/dataset?start=0&max=20', headers=headers)
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         data= json.loads(res.text)
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
@@ -655,7 +674,7 @@ def dataset_detail(request):
     name = request.GET.get('name', '')
     if request.method == 'GET':
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(URL_1+'/dataset/'+name, headers=headers)
+        res = requests.get(SERVER_URL+'/dataset/'+name, headers=headers)
         data_detail=json.loads(res.text)
         properties=[]
         a=[]
@@ -785,3 +804,66 @@ def explore(request):
     entries3 = [ "conformer", "conformer2", "conformer3"]
     if request.method == 'GET':
         return render(request, "explore.html", {'token': token, 'username': username, 'entries': entries, 'entries_2':entries2, 'entries_3':entries3})
+
+def all_substance(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    if request.method == 'GET':
+        form = SubstanceownerForm(initial={'substanceowner': ''})
+        return render(request, "substance.html", {'token': token, 'username': username, 'form':form})
+    if request.method == 'POST':
+        form = SubstanceownerForm(request.POST)
+        if form.is_valid(): # All validation rules pass
+            substanceowner = form.cleaned_data['substanceowner']
+            print substanceowner
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            res = requests.get(substanceowner+'/substance/?page=0&pagesize=10', headers=headers)
+            substances=json.loads(res.text)
+            request.session['substances'] = substances
+            return redirect('/select_substance', {'token': token, 'username': username})
+        else:
+            return render(request, "substance.html", {'token': token, 'username': username, 'form':form})
+
+def select_substance(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+        if request.method == 'GET':
+            substances = request.session.get('substances', '')
+            return render(request, "select_substance.html", {'token': token, 'username': username, 'substances':substances['substance']})
+        if request.method == 'POST':
+            sub= request.POST.getlist('checkbox')
+            request.session['selected_substances'] = sub
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            res1 = requests.get(SERVER_URL+'/enm/property/categories', headers=headers)
+            properties=json.loads(res1.text)
+            print properties
+            request.session['properties'] = properties
+            return redirect('/properties', {'token': token, 'username': username})
+            #return render(request, "properties.html", {'token': token, 'username': username})
+
+def select_properties(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+        if request.method == 'GET':
+            properties = request.session.get('properties', '')
+            return render(request, "properties.html", {'token': token, 'username': username, 'properties':properties})
+        if request.method == 'POST':
+            sub= request.POST.getlist('checkbox')
+            #request.session['selected_substances'] = sub
+            headers = {'Accept': 'application/json', 'subjectid': token}
+
+            return redirect('/task', {'token': token, 'username': username})
