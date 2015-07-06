@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+<form method="post">{% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block">
     <h4>Select Properties</h4>
 
@@ -28,7 +28,9 @@
                 </div>
               </div>
     {%endfor%}
+    <input id="choose_alg" type="submit" value="Save" class="btn btn-danger" style="width: 10%; float:right; right:10%;">
 </div>
+     </form>
 
 <script>
     $(document).ready(function() {

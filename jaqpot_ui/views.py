@@ -601,7 +601,7 @@ def algorithm(request):
          headers = {'Accept': 'text/uri-list', 'subjectid': token}
          res = requests.get(SERVER_URL+'/algorithm?start=0&max=10', headers=headers)
          list_resp = res.text
-         list_resp = list_resp.split('\n')[:-1]
+         list_resp = list_resp.split('\n')[:]
          for l in list_resp:
              l = l.split('/algorithm/')[1]
              algorithms.append({'name': l})
@@ -820,6 +820,7 @@ def all_substance(request):
         if form.is_valid(): # All validation rules pass
             substanceowner = form.cleaned_data['substanceowner']
             print substanceowner
+            request.session['substanceowner']=substanceowner
             headers = {'Accept': 'application/json', 'subjectid': token}
             res = requests.get(substanceowner+'/substance/?page=0&pagesize=10', headers=headers)
             substances=json.loads(res.text)
@@ -863,7 +864,38 @@ def select_properties(request):
             return render(request, "properties.html", {'token': token, 'username': username, 'properties':properties})
         if request.method == 'POST':
             sub= request.POST.getlist('checkbox')
-            #request.session['selected_substances'] = sub
-            headers = {'Accept': 'application/json', 'subjectid': token}
-
+            final={}
+            pr=[]
+            if "P-CHEM" in sub:
+                pr.append("P-CHEM")
+            if "ENV FATE" in sub:
+                pr.append("ENV FATE")
+            if "TOX" in sub:
+                pr.append("TOX")
+            if "ECOTOX" in sub:
+                pr.append("ECOTOX")
+            i=0
+            j=1
+            for p in pr:
+                sunbst=[]
+                if j<len(pr):
+                    while sub[i] != pr[j]:
+                        sunbst.append(sub[i])
+                        i=i+1
+                    final.update({p : sunbst[1:]})
+                else:
+                     while i<len(sub):
+                         sunbst.append(sub[i])
+                         i=i+1
+                     final.update({p : sunbst[1:]})
+                j=j+1
+            print final
+            substanceowner = request.session.get('substanceowner', '')
+            selected_substances = request.session.get('selected_substances', '')
+            headers = {'content-type': 'application/json', 'subjectid': token}
+            body = json.dumps({'description': 'a bundle with protein corona data', 'substanceOwner': substanceowner, 'substances': selected_substances, 'properties': final})
+            res = requests.post(url=SERVER_URL+'/enm/bundle', data=body, headers=headers)
+            headers = {'Accept': 'application/json', 'subjectid': token,}
+            data={'bundle_uri':res.text}
+            res = requests.post(url=SERVER_URL+'/enm/dataset', headers=headers, data=data)
             return redirect('/task', {'token': token, 'username': username})
