@@ -6,7 +6,50 @@
     <h1>Train model</h1>
     <div class="form-search search-only" style="float:right; right:5%;"><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
     <h4>Choose Algorithm(s)</h4>
-    <div style="float:left; width:33%;">
+
+    <div>
+        <h3>Jaqpot</h3>
+        {% load endless %}
+        <div>
+             {% paginate 20 entries %}
+             {% for e in entries %}
+                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="checkbox" name="checkbox" id= "check" value="{{e.name}}">{{e.name}}</label>
+            {% endfor %}
+
+            {% get_pages %}
+         <div id="pageNavPosition" class="pagination">
+             <span class="step-links">
+                    <ul class="pagination">
+                        {% if pages.previous %}
+                            <li class="active">
+                                {{ pages.previous}}
+                            </li>
+                        {% else%}
+                        <li class="active">
+                                <a href="#">Previous</a>
+                            </li>
+                        {%endif%}
+                        {% for page in pages %}
+                        <li>{{page}}</li>
+                        {%endfor%}
+
+                        {% if pages.next %}
+                            <li class="active">
+                                {{ pages.next}}
+                            </li>
+                        {% else%}
+                        <li class="active">
+                                <a href="#">Next </a>
+                            </li>
+                        {%endif%}
+
+                   </ul>
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- <div style="float:left; width:33%;">
         <h3>Jaqpot</h3>
         {% load endless %}
         <div>
@@ -128,9 +171,9 @@
             </div>
 
         </div>
-    </div>
+    </div> -->
    <!--<a href="/dataset" class="btn btn-success" style="width:10%; float:right; right:10%;" >Save</a> -->
-     <input id="choose_alg" type="submit" value="Save" class="btn btn-success" style="width: 10%; float:right; right:10%;">
+     <input id="choose_alg" type="submit" value="Save" class="btn bt-red" style="width: 10%; float:right; right:10%;">
 
 
     <input id="id_alg" style="display:none">

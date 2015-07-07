@@ -395,7 +395,7 @@ def choose_dataset(request):
         algorithms = []
         res = requests.get(SERVER_URL+'/algorithm?start=0&max=10', headers=headers)
         list_resp = res.text
-        list_resp = list_resp.split('\n')[:-1]
+        list_resp = list_resp.split('\n')[:]
         for l in list_resp:
             l = l.split('/algorithm/')[1]
             algorithms.append({'name': l})

@@ -9,7 +9,7 @@
              {% paginate 20 algorithms %}
              <div class="list-group">
                 {% for a in algorithms %}
-                    <a href="/algorithm_detail?name={{a.name}}" class="list-group-item list-group-item-success">{{a.name}}</a>
+                    <a href="/algorithm_detail?name={{a.name}}" class="list-group-item">{{a.name}}</a>
                 {% endfor %}
             </div>
             {% get_pages %}

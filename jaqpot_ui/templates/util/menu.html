@@ -1,4 +1,4 @@
-<nav class="navbar navbar-inverse" role="navigation">
+<nav class="navbar navbar-inverse" role="navigation" style="background-color: #cf2323; border-color: #cf2323;">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-5">
@@ -6,7 +6,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
-            </button> <a class="navbar-brand" href="/"><img src="/static/img/red.png" class="logo">Jaqpot</a>
+            </button> <a class="navbar-brand" href="/"><img src="/static/img/red.png" style="background-color:#666666;" class="logo"> Jaqpot</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-5">
             {% if token %} <!-- If user is logged in -->
@@ -72,7 +72,7 @@
                     </li>
 
                 </ul>
-                <a href="/task" class="btn btn-danger" data-toggle="tooltip" title="Tasks" style="margin: 7px;">
+                <a href="/task" class="bt-grey btn" data-toggle="tooltip" title="Tasks" style="margin: 7px; background-color:#666666; border-color:#666666;">
                     <i class="glyphicon glyphicon-align-left"></i>
                 </a>
                  <span class="user-info">
@@ -80,8 +80,8 @@
                         <a href="/logout"><span class="glyphicon glyphicon-off"></span></a>
                         </span>
             {% else %} <!-- If user hasn't logged in -->
-                <a class="btn btn-danger navbar-btn" href="/login">Sign in</a>
-                <a class="btn btn-danger navbar-btn" href="http://www.opentox.org/join_form">Create Account</a>
+                <a class="btn bt-grey navbar-btn" href="/login">Sign in</a>
+                <a class="btn bt-grey navbar-btn" href="http://www.opentox.org/join_form">Create Account</a>
                 <form class="navbar-form navbar-right" role="search">
                     <div class="form-search search-only"><i class="search-icon glyphicon glyphicon-search hoverable"></i>
                         <input class="form-control search-query">

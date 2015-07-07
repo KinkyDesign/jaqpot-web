@@ -3,7 +3,48 @@
 {% block content %}
 
 <div class="div-table" style="width:100%;display:inline-block;">
-    <div style="width:50%; float:left;">
+
+     <div>
+        <h1>Select dataset:</h1>
+        <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
+        <br>
+        {% load endless %}
+        <div class="publicdataset list-group">
+        {% paginate 15 entries2 using "other_objects_page" %}
+        {% for e in entries2 %}
+             <a href="/dataset?dataset={{e.name}}" class="list-group-item">{{e.name}}</a>
+        {% endfor %}
+            </div>
+            {% get_pages %}
+            <div id="pageNavPosition5" class="pagination">
+                <span class="step-links">
+                    <ul class="pagination">
+                        <li class="active">
+                            {% if page|add:"0" >= 2 %}
+                            <a href="/train?page={{page|add:-1}}">Previous</a>
+                            {% else %}
+                            <a href="/train?page={{page}}">Previous</a>
+                            {%endif %}
+                        </li>
+
+                        <li><a href="/train?page={{page}}"><strong>{{page}}</strong></a></li>
+
+
+                        <li class="active">
+                            {% if last %}
+                                    <a href="/train?page={{last}}">Next</a>
+                            {%else%}
+                                <a href="/train?page={{page|add:1 }}">Next </a>
+                            {% endif %}
+                        </li>
+
+
+                   </ul>
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- <div style="width:50%; float:left;">
         <h1>My datasets:</h1>
         <br>
         <br>
@@ -87,7 +128,7 @@
                 </span>
             </div>
         </div>
-    </div>
+    </div>  -->
 
 <script>
 //console.log(data)

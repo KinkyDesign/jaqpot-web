@@ -1,6 +1,30 @@
 .dropdown-menu {
-background-color: #da4453
+background-color: #666666
 }
+.dropdown-menu li a:hover{
+background-color: #cf2323;
+}
+.navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:focus, .navbar-inverse .navbar-nav>.open>a:hover{
+background-color:#666666
+}
+
+.navbar-inverse .navbar-nav>li>a, .navbar-inverse .navbar-text{
+color:#aab2bd;
+}
+.navbar-inverse .btn-link, .navbar-inverse .navbar-brand, .navbar-inverse .navbar-link {
+color: #aab2bd;
+}
+.list-group-item, .list-group-item:focus, .list-group-item:hover{
+background-color:#aab2bd;
+border-color:#aab2bd;
+}
+
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+color: #fff;
+background-color: #cf2323;
+border-color: #cf2323;
+}
+
 //login css
 * {
 box-sizing: border-box;
@@ -34,14 +58,16 @@ body {
 body {
 font-family: Arial;
 //background-color: #d43f3a;
-//background-color: #BFBFBF;
+//background-color: #666666;
 background-position: center 30%;
-background-image: url('/static/img/background.jpg');
-//background-repeat: no-repeat;
+background-image: url('/static/img/nanotube.jpg');
+//background: rgba(195, 195, 195, 0.8);
+background-size: 2000px 1500px;
+background-repeat: no-repeat;
 padding: 50px;
 }
 .footer{
-background-color:#333;
+background-color:#cf2323;
 border-radius: 5px;
 width:100%;
 }
@@ -86,13 +112,13 @@ overflow-y: auto;
 
 }
 a{
-color: #da4453;
+color: #666666;
 }
 a:hover{
-color: #ED5565;
+color: #989797;
 }
 a:focus{
-color: #ED5565;
+color: #989797;
 }
 
 
@@ -116,7 +142,9 @@ nav .logo {
     height: 30px;
     margin-top: -5px;
 }
-
+.navbar-brand{
+    color:#666666;
+}
 .login-form {
 text-align: center;
 }
@@ -204,6 +232,29 @@ background-color:#434A54;
 background-color:#656D78;
 }
 
+//Grey bottom
+
+.bt-grey{
+background-color:#666666;
+border-color:#666666;
+}
+
+.bt-grey:hover{
+background-color:#989797;
+border-color:#989797;
+}
+
+.bt-red{
+background-color:#cf2323;
+border-color:#cf2323;
+
+}
+
+.bt-red:hover{
+background-color:#7f7c7c;
+border-color:#7f7c7c;
+
+}
 .user-info {
     color: #fff;
     padding: 10px;
@@ -290,10 +341,10 @@ color: #656D78;
 }
 
 .green-form:hover{
-border-color: #8CC152;
+border-color: #cf2323;
 }
 .green-form:focus{
-border-color: #8CC152;
+border-color: #cf2323;
 }
 
 .pagination>.active>a,
@@ -341,4 +392,12 @@ height : 0px;
 /*Change tooltip size */
 div.tooltip-inner {
     max-width: 750px;
+}
+
+.color-black:hover{
+color:#656D78;
+}
+
+.color-black:focus{
+color:#656D78;
 }

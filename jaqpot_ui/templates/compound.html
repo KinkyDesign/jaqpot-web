@@ -9,7 +9,7 @@
              {% paginate 20 compound %}
              <div class="list-group">
                 {% for c in compound %}
-                    <a href="/compound_detail?name={{c.name}}" class="list-group-item list-group-item-success">{{c.name}}</a>
+                    <a href="/compound_detail?name={{c.name}}" class="list-group-item">{{c.name}}</a>
                 {% endfor %}
              </div>
 
