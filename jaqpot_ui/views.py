@@ -895,7 +895,12 @@ def select_properties(request):
             headers = {'content-type': 'application/json', 'subjectid': token}
             body = json.dumps({'description': 'a bundle with protein corona data', 'substanceOwner': substanceowner, 'substances': selected_substances, 'properties': final})
             res = requests.post(url=SERVER_URL+'/enm/bundle', data=body, headers=headers)
-            headers = {'Accept': 'application/json', 'subjectid': token,}
-            data={'bundle_uri':res.text}
-            res = requests.post(url=SERVER_URL+'/enm/dataset', headers=headers, data=data)
-            return redirect('/task', {'token': token, 'username': username})
+            headers = {'content-type': 'application/json', 'subjectid': token,}
+            body = json.dumps({'bundle':res.text})
+            res = requests.post(url=SERVER_URL+'/enm/dataset', headers=headers, data=body)
+            print res.text
+            response = json.loads(res.text)
+            print response['_id']
+            task = response['_id']
+            #return redirect('/task', {'token': token, 'username': username})
+            return render(request, "new_task.html", {'token': token, 'username': username, 'task':task})
