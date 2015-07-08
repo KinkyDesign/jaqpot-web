@@ -48,7 +48,7 @@
             </div>
         </div>
 
-        <input id="choose_alg" type="submit" value="Save" class="btn bt-red" style="width: 10%; float:right; right:10%;">
+        <input id="select_sub" type="submit" value="Save" class="btn bt-red" style="width: 10%; float:right; right:10%;">
 
         {% endif %}
 </div>
@@ -59,14 +59,104 @@
         if(this.checked) { // check select status
             $('.checkbox1').each(function() { //loop through each checkbox
                 this.checked = true;  //select all checkboxes with class "checkbox1"
+                add_remove_to_selected_items($(this));
+	            update_local_selected_items();
             });
         }else{
             $('.checkbox1').each(function() { //loop through each checkbox
                 this.checked = false; //deselect all checkboxes with class "checkbox1"
+                add_remove_to_selected_items($(this));
+	            update_local_selected_items();
             });
         }
     });
 
 });
+
+// this uses jQuery
+// Create a new array to hold selected contacts
+var selected_items = []
+
+// Try to grab any from storage and append/push them to the newly created 'selected_items' array
+try {
+	var previously_selected_items = JSON.parse(localStorage.getItem('selected_items'));
+	selected_items.push.apply(selected_items, previously_selected_items);
+} catch (ignore) {
+	// this just means that there are no previously selected items.. no biggie.
+}
+
+function add_remove_to_selected_items(item) {
+	if (item.is(":checked")) {
+		selected_items.push(item.val());
+	} else {
+		var index = selected_items.indexOf(item.val());
+		if (index > -1) {
+			selected_items.splice(index, 1);
+		} else {
+			try {
+                // this has never happened to me...
+				console.log('ERROR: Contact not in selected contacts.');
+			} catch(ignore) {};
+		}
+	}
+}
+
+function force_remove_local_selected_items() {
+	localStorage.removeItem('selected_items');
+}
+
+function update_local_selected_items() {
+	if (selected_items.length > 0) {
+		localStorage.setItem('selected_items', JSON.stringify(selected_items));
+	} else {
+		force_remove_local_selected_items(false);
+	}
+	$(".selected_contacts_html").remove();
+
+	var selected_html = $("<em/>", {
+		'html': "Total Selected: " + selected_items.length,
+		'class': 'selected_items_html text-info'
+	});
+	var clear_all_btn = $("<button/>", {
+		'type': 'button',
+		'class': 'btn btn-link',
+		'html': 'Clear Selection',
+		click: function() {
+			force_remove_local_selected_items();
+		}
+	}).appendTo(selected_html);
+
+	$("form > .text-center.form-group.text-muted").append(selected_html);
+}
+
+
+
+selected_items.forEach(function(value){
+	// find a checkbox with the value and 'check' it OR create a hidden input with the name of 'item_action'
+	var existing_checkbox_input = $("input[value='"+value+"']");
+
+	if (existing_checkbox_input.length > 0) {
+		// it found the checkbox, mark it as checked.
+		existing_checkbox_input.prop('checked', true);
+	} else {
+		// create a hidden input so when they submit the form that is submitted.
+		var new_hidden_input = $("<input/>", {
+			'type': 'hidden',
+			'class': 'added_in_background',
+			'name': 'item_action',
+			'value': value
+		}).appendTo($("form#my_form_id"));
+	}
+});
+
+$('.checkbox1').on('click', function(){
+	add_remove_to_selected_items($(this));
+	update_local_selected_items();
+});
+
+ $("#select_sub").click(function(event) {
+	localStorage.removeItem('selected_items');
+	window.localStorage.clear()
+	});
 </script>
 {% endblock %}

@@ -3,7 +3,7 @@
 {% block content %}
 <form method="post">{% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block">
-    <h4>Select Properties</h4>
+    <h4>Select Experimental Properties</h4>
 
      <label>
          <input type="checkbox" id= "selectall" >Select All</label>
@@ -63,6 +63,7 @@
             });
         }
     });
+//If user clicks check_box1 (P-CHEM) all its properties selected etc.
 
      $('#check_box1').click(function(event) {  //on click
         if(this.checked) { // check select status
@@ -110,5 +111,35 @@
     });
 
 });
+//If user clicks a property, its category is selected
+
+ $('.check1').click(function(event) {  //on click
+        if(this.checked) { // check select status
+             $('#check_box1').each(function() { //loop through each checkbox
+                this.checked = true;  //select all checkboxes with class "checkbox1"
+            });
+        }
+    });
+ $('.check2').click(function(event) {  //on click
+        if(this.checked) { // check select status
+             $('#check_box2').each(function() { //loop through each checkbox
+                this.checked = true;  //select all checkboxes with class "checkbox1"
+            });
+        }
+    });
+ $('.check3').click(function(event) {  //on click
+        if(this.checked) { // check select status
+             $('#check_box3').each(function() { //loop through each checkbox
+                this.checked = true;  //select all checkboxes with class "checkbox1"
+            });
+        }
+    });
+ $('.check4').click(function(event) {  //on click
+        if(this.checked) { // check select status
+             $('#check_box4').each(function() { //loop through each checkbox
+                this.checked = true;  //select all checkboxes with class "checkbox1"
+            });
+        }
+    });
 </script>
 {% endblock%}

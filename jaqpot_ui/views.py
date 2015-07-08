@@ -804,7 +804,7 @@ def explore(request):
     entries3 = [ "conformer", "conformer2", "conformer3"]
     if request.method == 'GET':
         return render(request, "explore.html", {'token': token, 'username': username, 'entries': entries, 'entries_2':entries2, 'entries_3':entries3})
-
+#Create dataset
 def all_substance(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -822,8 +822,9 @@ def all_substance(request):
             print substanceowner
             request.session['substanceowner']=substanceowner
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res = requests.get(substanceowner+'/substance/?page=0&pagesize=10', headers=headers)
+            res = requests.get(substanceowner+'/substance', headers=headers)
             substances=json.loads(res.text)
+            print substances
             request.session['substances'] = substances
             return redirect('/select_substance', {'token': token, 'username': username})
         else:
@@ -843,6 +844,7 @@ def select_substance(request):
         if request.method == 'POST':
             sub= request.POST.getlist('checkbox')
             request.session['selected_substances'] = sub
+            print sub
             headers = {'Accept': 'application/json', 'subjectid': token}
             res1 = requests.get(SERVER_URL+'/enm/property/categories', headers=headers)
             properties=json.loads(res1.text)
@@ -890,17 +892,36 @@ def select_properties(request):
                      final.update({p : sunbst[1:]})
                 j=j+1
             print final
+            request.session['selected_properties'] = final
+            return redirect('/descriptors', {'token': token, 'username': username})
+
+def select_descriptors(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+        if request.method == 'GET':
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            res1 = requests.get(SERVER_URL+'/enm/descriptor/categories', headers=headers)
+            descriptors=json.loads(res1.text)
+            print descriptors
+            return render(request, "descriptors.html", {'token': token, 'username': username, 'descriptors':descriptors})
+        if request.method == 'POST':
+            select_descriptors = request.POST.getlist('checkbox')
             substanceowner = request.session.get('substanceowner', '')
             selected_substances = request.session.get('selected_substances', '')
+            selected_properties = request.session.get('selected_properties', '')
             headers = {'content-type': 'application/json', 'subjectid': token}
-            body = json.dumps({'description': 'a bundle with protein corona data', 'substanceOwner': substanceowner, 'substances': selected_substances, 'properties': final})
+            body = json.dumps({'description': 'a bundle with protein corona data', 'substanceOwner': substanceowner, 'substances': selected_substances, 'properties': selected_properties})
             res = requests.post(url=SERVER_URL+'/enm/bundle', data=body, headers=headers)
             headers = {'content-type': 'application/json', 'subjectid': token,}
-            body = json.dumps({'bundle':res.text})
+            body = json.dumps({'bundle':res.text, 'descriptors':select_descriptors})
             res = requests.post(url=SERVER_URL+'/enm/dataset', headers=headers, data=body)
-            print res.text
             response = json.loads(res.text)
-            print response['_id']
             task = response['_id']
             #return redirect('/task', {'token': token, 'username': username})
             return render(request, "new_task.html", {'token': token, 'username': username, 'task':task})
+

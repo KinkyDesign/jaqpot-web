@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post">{% csrf_token %}
+<div class="div-table" style="width:100%; display: inline-block">
+    <h4>Select Calculated Descriptors</h4>
+
+     <label>
+         <input type="checkbox" id= "selectall" >Select All</label>
+    <br>
+    <div>
+    {% for desc in descriptors %}
+             <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="checkbox" class="check" name="checkbox" id= "check" value="{{desc.id}}">{{desc.name}}. {{desc.description}}</label>
+    {%endfor%}
+    </div>
+    <input id="choose_desc" type="submit" value="Save" class="btn bt-red" style="width: 10%; float:right; right:10%;">
+</div>
+</form>
+
+<script>
+    $(document).ready(function() {
+    $('#selectall').click(function(event) {  //on click
+        if(this.checked) { // check select status
+            $('.check').each(function() { //loop through each checkbox
+                this.checked = true;
+            });
+        }
+        else{
+            $('.check').each(function() { //loop through each checkbox
+                this.checked = false;
+        });
+        }
+    });
+    });
+</script>
+{% endblock %}
