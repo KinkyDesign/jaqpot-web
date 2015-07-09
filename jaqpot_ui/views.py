@@ -406,17 +406,16 @@ def choose_dataset(request):
         return render(request, "train_model.html", {'token': token, 'username': username, 'entries': algorithms, 'entries_2': entries_2, 'entries_3': entries_3, 'form':form, 'dataset': dataset})
     if request.method == 'POST':
         algorithms=[]
-        for alg in request.POST.getlist('checkbox'):
+        for alg in request.POST.getlist('radio'):
             headers = {'Accept': 'application/json', 'subjectid': token}
             res = requests.get(SERVER_URL+'/algorithm/'+alg, headers=headers)
             info = json.loads(res.text)
             algorithms.append({"alg":alg, "info":info })
-        #algorithms = json.dumps(algorithms)
-        print algorithms
         dataset = request.GET.get('dataset')
-        #alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1},{'alg':'svm ', 'kernel': 'rdf', 'gamma':0.5, 'e':0.1}]
-        #alg_param = [{'alg':'svm ', 'kernel': 'rdf', 'gamma': 0.5, 'e': 0.1}]
         print dataset
+        #request.session['alg'] = algorithms[0]
+        #request.session['data'] = dataset
+        #return redirect('/change_params', {'token': token, 'username': username, 'dataset':dataset, 'algorithms': algorithms})
         return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms': algorithms})
 
 def change_params(request):
@@ -427,11 +426,16 @@ def change_params(request):
         print dataset
         algorithms = request.GET.get('alg')
         print algorithms
+        print ("---")
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         #print res.text
         #info = json.loads(res.text)
         #print info
+        #return redirect('/task', {'token': token, 'username': username})
+    if request.method == 'POST':
+        print request.POST.getlist('radio')
+        print request.POST.getlist('select')
         return redirect('/task', {'token': token, 'username': username})
 
 

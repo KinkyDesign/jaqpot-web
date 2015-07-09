@@ -1,77 +1,130 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+<form method="post" id="form1"> {% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block">
-
-    {% for al in algorithms %}
-        <h1>Algorithm</h1>
-        <h3>Title: {{al.alg}}</h3>
-        {% if al.info.meta.titles %}
-            <div>
-                <label class="align">Title:</label>
-                <input type="text" style="margin:5px;" value="{{al.info.meta.titles.0}}">
-            </div>
-        {% endif %}
-        {% if  al.info.meta.subjects %}
-            <h6><b>Subjects:</b></h6>
-            {% for sub in  al.info.meta.subjects %}
+    <div style="float:left; width:50%;">
+        {% for al in algorithms %}
+            <h1>Algorithm</h1>
+            <h3>Title: {{al.alg}}</h3>
+            {% if al.info.meta.titles %}
                 <div>
-                    <label class="align"></label>
-                    <input type="text" style="margin:5px;" value="{{sub}}">
+                    <label class="align">Title:</label>
+                    <input type="text" style="margin:5px;" value="{{al.info.meta.titles.0}}">
                 </div>
-            {% endfor %}
-        {% endif %}
-        {% if  al.info.ontologicalClasses%}
-            <h6><b>Ontological classes:</b></h6>
-            {% for ont in  al.info.ontologicalClasses %}
+            {% endif %}
+            {% if al.info.publisher %}
                 <div>
-                    <label class="align"></label>
-                    <input type="text" style="margin:5px;" value="{{ont}}">
+                    <label class="align">Publisher:</label>
+                    <input type="text" style="margin:5px;" value="{{al.info.publisher}}">
                 </div>
-            {% endfor %}
-        {% endif %}
-        {% if al.info.publisher %}
-            <div>
-                <label class="align">Publisher:</label>
-                <input type="text" style="margin:5px;" value="{{al.info.publisher}}">
-            </div>
-        {% endif %}
-        {% if al.info.contributor %}
-            <div>
-                <label class="align">Contributor:</label>
-                <input type="text" style="margin:5px;" value="{{al.info.contributor}}">
-            </div>
-        {% endif %}
-        {% if al.info.date %}
-            <div>
-                <label class="align">Date:</label>
-                <input type="text" style="margin:5px;" value="{{al.info.date}}">
-            </div>
-        {% endif %}
-        {% if al.info.parameters %}
-            <h6><b>Parameters:</b></h6>
-             {% for p in al.info.parameters%}
+            {% endif %}
+            {% if al.info.contributor %}
                 <div>
-                    <label class="align">{{p.name}}:</label>
-                    <input type="text" style="margin:5px;" value="{{p.value}}">
+                    <label class="align">Contributor:</label>
+                    <input type="text" style="margin:5px;" value="{{al.info.contributor}}">
                 </div>
-             {% endfor %}
-        {% endif %}
-        {% if al.info.rights %}
-            <p><b>Copyright:</b></p>
-            <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;">{{al.info.rights}}
+            {% endif %}
+            {% if al.info.date %}
+                <div>
+                    <label class="align">Date:</label>
+                    <input type="text" style="margin:5px;" value="{{al.info.date}}">
+                </div>
+            {% endif %}
+            {% if al.info.parameters %}
+                <h6><b>Parameters:</b></h6>
+                 {% for p in al.info.parameters%}
+                    <div>
+                        <label class="align">{{p.name}}:</label>
+                        <input type="text" style="margin:5px;" value="{{p.value}}">
+                    </div>
+                 {% endfor %}
+            {% endif %}
+            {% if al.info.rights %}
+                <p><b>Copyright:</b></p>
+                <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;">{{al.info.rights}}
 
-            </textarea>
-        {% endif %}
+                </textarea>
+            {% endif %}
 
 
-    {% endfor %}
-    <h5>Upload a PMML with transformations:</h5><input type="file" name="img">
-    <h5>Define transformations:</h5><input type="file" name="img">
+        {% endfor %}
+        <h3>Transformations</h3>
+        <h6><input type="checkbox" name="checkbox" value="scaling" ><b>Scaling</b></h6>
+        <h6><input type="checkbox" name="checkbox" value="doa" ><b>Doa</b></h6>
+
+    </div>
+    <div style="float:right; width:50%;">
+        <h5>Select method(optional):</h5>
+        <input type="radio" name="radio_pmml" id="pmml1"> Select Input variable and endpoint<br>
+        <input type="radio" name="radio_pmml" id="pmml2">Select PMML<br>
+        <input type="radio" name="radio_pmml" id="pmml3">Upload PMML file<br>
+        <input type="radio" name="radio_pmml" id="pmml4">None
+        </div>
+
+    <div id="input" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
+
+        <h4><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable and endpoint:</h4>
+        <div style="float:left; width:50%;">
+        <h5>Input</h5>
+        <div>
+                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="radio" name="radio" value="{{e.name}}">Option1</label>
+                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="radio" name="radio" value="{{e.name}}">Option2</label>
+            </div>
+
+            </div>
+        <div style="float:left; width:50%">
+        <h5>Output</h5>
+        <div>
+                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="radio" name="radio2" value="{{e.name}}">Option1</label>
+                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="radio" name="radio2" value="{{e.name}}">Option2</label>
+            </div>
+
+            </div>
+    </div>
+    <div id="PMML" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
+
+        <div>
+            <h5><input type="radio" name="radio1" value="PMML" style="display:none;">Select PMML:</h5>
+            <select>
+                  <option value="Option1">Option1</option>
+                  <option value="Option2">Option2</option>
+                  <option value="Option3">Option3</option>
+                  <option value="Option4">Option4</option>
+            </select>
+            <br>
+        </div>
+    </div>
+    <div id="file" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
+        <h5><input type="radio" name="radio1" value="PMML file" style="display:none;">Upload a PMML with transformations(optional):</h5><input type="file" name="img">
+    </div>
     <br>
     <a href="/change_params?data={{dataset}}&alg={{algorithms}}" class="btn bt-red" style="width:10%; float:left; left:10%;" >Train</a>
-    </div>
+     <!-- <input id="choose_alg" type="submit" value="Train" class="btn bt-red" style="width: 10%; float:right; right:10%;"> -->
 
+    </div>
+</form>
+
+<script>
+     $('#pmml1').click(function() {
+            $("#input").show();
+            $("#file").hide();
+            $("#PMML").hide();
+     });
+     $('#pmml2').click(function() {
+            $("#input").hide();
+            $("#file").hide();
+            $("#PMML").show();
+     });
+      $('#pmml3').click(function() {
+            $("#input").hide();
+            $("#file").show();
+            $("#PMML").hide();
+     });
+</script>
 
 {%endblock%}

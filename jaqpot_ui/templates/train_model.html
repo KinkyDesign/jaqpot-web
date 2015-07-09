@@ -14,7 +14,7 @@
              {% paginate 20 entries %}
              {% for e in entries %}
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="checkbox" name="checkbox" id= "check" value="{{e.name}}">{{e.name}}</label>
+                    <input type="radio" name="radio" value="{{e.name}}">{{e.name}}</label>
             {% endfor %}
 
             {% get_pages %}
@@ -56,7 +56,7 @@
              {% paginate 20 entries %}
              {% for e in entries %}
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="checkbox" name="checkbox" id= "check" value="{{e.name}}">{{e.name}}</label>
+                    <input type="radio" name="radio" value="{{e.name}}">{{e.name}}</label>
             {% endfor %}
 
             {% get_pages %}
@@ -72,8 +72,8 @@
                                 <a href="#">Previous</a>
                             </li>
                         {%endif%}
-                        {% for page in pages %}
-                        <li>{{page}}</li>
+                        {% for other_page in pages %}
+                        <li>{{other_page}}</li>
                         {%endfor%}
 
                         {% if pages.next %}
@@ -225,7 +225,7 @@
 
 <script>
 
-    $('input[name=checkbox]').click(function(){
+    /* $('input[name=checkbox]').click(function(){
         //get value of all checked checkboxes
         var checkedAlg = $('input[name=checkbox]:checked').map(function() {
         return this.value;
@@ -238,7 +238,6 @@
         checkedAlg = JSON.stringify(data)
         $('#id_alg').val(checkedAlg)
         })
-
 
 $('#choose_alg').bind('click', function(e){
 
@@ -253,7 +252,7 @@ $('#choose_alg').bind('click', function(e){
                         }
     });
 
-});
+});  */
 
 //search
 $(document).ready(function(){

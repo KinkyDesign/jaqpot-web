@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form method="post">{% csrf_token %}
+<form name="form" method="post">{% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block;">
     {% if error %}
         <h1>{{error}}</h1>
@@ -10,11 +10,11 @@
         {% load endless %}
         <div>
             <label>
-                <input type="checkbox" id= "selectall" >Select All</label>
+                <input type="checkbox" name="selectall" id= "selectall" >Select All</label>
             {% paginate 20 substances %}
             {% for s in substances %}
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input class="checkbox1" type="checkbox" name="checkbox" id= "check" value="{{s.URI}}">{{s.URI}}</label>
+                     <input class="checkbox" type="checkbox" name="checkbox" id= "check" value="{{s.URI}}">{{s.URI}} </label>
             {% endfor %}
             {% get_pages %}
              <div id="pageNavPosition" class="pagination">
@@ -55,6 +55,7 @@
     </form>
 <script>
     $(document).ready(function() {
+
     $('#selectall').click(function(event) {  //on click
         if(this.checked) { // check select status
             $('.checkbox1').each(function() { //loop through each checkbox
