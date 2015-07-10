@@ -5,16 +5,15 @@
 <div class="div-table" style="width:100%;display:inline-block;">
     <h1>Search for models:</h1>
     <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
-    <div style="width:50%; float:left;">
-        <h1>Public Models:</h1>
+    <div style="width:99%; float:left;">
+        <h1>Select a model:</h1>
         <div>
             {% load endless %}
 
             {% paginate 18 my_models %}
             {% for e in my_models %}
-                <!--<li><a href="#">{{e.name}}</a></li> -->
                 <label class="models" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="checkbox" name="checkbox" id= "check" value="{{e.name}}">{{e.name}}</label>
+                    <input type="radio" name="radio" value="{{e.name}}">{{e.name}}</label>
 
             {% endfor %}
 
@@ -51,6 +50,7 @@
             </div>
         </div>
     </div>
+    <!--
     <div style="width:50%; float:right;">
         <h1>My models:</h1>
 
@@ -91,7 +91,7 @@
                    </ul>
                 </span>
             </div>
-        </div>
+        </div> -->
     <input id="choose_alg1" type="submit" value="Save" class="btn bt-red" style="width: 10%; float:right; right:10%;">
 </div>
 </form>

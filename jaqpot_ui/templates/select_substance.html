@@ -14,7 +14,7 @@
             {% paginate 20 substances %}
             {% for s in substances %}
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                     <input class="checkbox" type="checkbox" name="checkbox" id= "check" value="{{s.URI}}">{{s.URI}} </label>
+                     <input class="checkbox1" type="checkbox" name="checkbox" id= "check" value="{{s.URI}}">{{s.name}} <span style="padding: 0 10px;"></span>{{s.URI}}</label>
             {% endfor %}
             {% get_pages %}
              <div id="pageNavPosition" class="pagination">

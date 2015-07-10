@@ -413,28 +413,24 @@ def choose_dataset(request):
             algorithms.append({"alg":alg, "info":info })
         dataset = request.GET.get('dataset')
         print dataset
-        #request.session['alg'] = algorithms[0]
-        #request.session['data'] = dataset
-        #return redirect('/change_params', {'token': token, 'username': username, 'dataset':dataset, 'algorithms': algorithms})
-        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms': algorithms})
+        request.session['alg'] = algorithms[0]['alg']
+        request.session['data'] = dataset
+        return redirect('/change_params', {'token': token, 'username': username,})
 
 def change_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     if request.method == 'GET':
-        dataset = request.GET.get('data')
-        print dataset
-        algorithms = request.GET.get('alg')
-        print algorithms
-        print ("---")
+        dataset = request.session.get('data', '')
+        algorithms = request.session.get('alg', '')
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
-        #print res.text
-        #info = json.loads(res.text)
-        #print info
-        #return redirect('/task', {'token': token, 'username': username})
+        res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        al = json.loads(res.text)
+        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms})
     if request.method == 'POST':
-        print request.POST.getlist('radio')
+        print request.POST
+        print request.POST.getlist('radio_pmml')
+        print request.POST.getlist('checkbox')
         print request.POST.getlist('select')
         return redirect('/task', {'token': token, 'username': username})
 
@@ -705,37 +701,79 @@ def dataset_detail(request):
                             properties[key['compound']['URI']].append({"prop": a[i], "value": "NULL"})
 
         return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail': data_detail, 'properties': properties, 'a': a})
-
+#Predict model
 def predict(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-
+    #Get the current page
+    page = request.GET.get('page')
+    #Get the last page
+    last = request.GET.get('last')
+    #Check if user is authenticated. Else redirect to login page
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
     if request.method == 'GET':
-        return render(request, "predict.html", {'token': token, 'username': username})
+        dataset=[]
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        #Firstly, get the datasets of first page if user selects different page get the datasets of the selected page
+        if page:
+            page1=int(page) * 20 - 20
+            k=str(page1)
+            if page1 <= 1:
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            elif last:
+                res = requests.get(SERVER_URL+'/dataset?start='+last+'&max=20', headers=headers)
+            else:
+                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+
+        else:
+            page = 1
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        data= json.loads(res.text)
+        for d in data:
+            dataset.append({'name': d['_id']})
+        if len(dataset)< 20:
+            last= page
+        #Display all datasets for selection
+        return render(request, "predict.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last})
 
 def predict_model(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+
     my_models = [{'name':'model1'}, {'name':'model2'}, {'name':'model3'}, {'name':'model4'}]
-    #my_models = [ "model1", "data2", "data3"]
     my_models = json.dumps(my_models)
     my_models = json.loads(my_models)
     if request.method == 'GET':
-        if request.GET.get('predict_params'):
-            predict_params = request.GET.get('predict_params')
-            print predict_params
-            request.session['predict_params'] = predict_params
-
-        return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models': my_models})
+        #Get the selected dataset for prediction
+        dataset = request.GET.get('dataset')
+        #Save selected dataset at session dataset
+        request.session['dataset'] = dataset
+        models = []
+        #get all models
+        headers = {'Accept': 'text/uri-list', "subjectid": token}
+        res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+        list_resp = res.text
+        #get each line
+        list_resp = list_resp.splitlines()
+        for l in list_resp:
+            l = l.split('/model/')[1]
+            models.append({'name': l})
+        models = json.dumps(models)
+        models = json.loads(models)
+        #Display all models for selection
+        return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models': models})
     if request.method == 'POST':
-        predict_params= request.session.get('predict_params', '')
-        print predict_params
-        data=[]
-        for model in request.POST.getlist('checkbox'):
-            data.append({"model": model})
-        data = json.dumps(data)
-        print data
-
+        #Get the selected dataset for prediction from session
+        dataset= request.session.get('dataset', '')
+        #Get the selected model
+        selected_model = request.POST.get('radio')
+        headers = {'Accept': 'application/json', "subjectid": token}
+        res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=SERVER_URL+'/dataset/'+dataset)
+        list_resp = res.text
+        print list_resp
         #return render(request, "task.html", {'token': token, 'username': username})
         return redirect('/task', {'token': token, 'username': username})
 #Contact form
