@@ -13,6 +13,14 @@
              <label style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                     <input type="checkbox" class="check" name="checkbox" id= "check" value="{{desc.id}}">{{desc.name}}. {{desc.description}}</label>
     {%endfor%}
+        <br>
+    <h4>Fill in the title and description of the produced dataset</h4>
+        <div>
+            <label class="align" >Title:</label>
+            <input type="text" name="title" class="align">
+        </div>
+         <p><b>Description:</b></p>
+        <textarea class="form-control" name="description" style="width:30%;" rows="5"></textarea>
     </div>
     <input id="choose_desc" type="submit" value="Save" class="btn bt-red" style="width: 10%; float:right; right:10%;">
 </div>

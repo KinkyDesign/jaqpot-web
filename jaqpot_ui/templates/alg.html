@@ -2,7 +2,7 @@
 
 {% block content %}
 <form method="post" id="form1"> {% csrf_token %}
-<div class="div-table" style="width:100%; display: inline-block">
+<div class="div-table" style="width:100%; display: inline-block; padding:10px;">
     <div style="float:left; width:50%;">
             <h1>Algorithm</h1>
             <h3>Title: {{algorithms}}</h3>
@@ -35,7 +35,7 @@
                  {% for p in al.parameters%}
                     <div>
                         <label class="align">{{p.name}}:</label>
-                        <input type="text" style="margin:5px;" value="{{p.value}}">
+                        <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
                     </div>
                  {% endfor %}
             {% endif %}
@@ -45,15 +45,19 @@
 
                 </textarea>
             {% endif %}
-
-
-        <h3>Transformations</h3>
-        <h6><input type="checkbox" name="checkbox" value="scaling" ><b>Scaling</b></h6>
-        <h6><input type="checkbox" name="checkbox" value="doa" ><b>Doa</b></h6>
+        <br>
+         <h3>Fill in the title and description of the produced model</h3>
+        <div>
+            <label class="align" >Model name:</label>
+            <input type="text" name="title" class="align">
+        </div>
+        <br>
+         <p><b>Model description:</b></p>
+        <textarea class="form-control" name="description" style="width:30%;" rows="6"></textarea>
 
     </div>
     <div style="float:right; width:50%;">
-        <h5>Select method(optional):</h5>
+        <h5>Select variables (optional):</h5>
         <input type="radio" name="radio_pmml" id="pmml1" value="input"> Select Input variable and endpoint<br>
         <input type="radio" name="radio_pmml" id="pmml2" value="pm">Select PMML<br>
         <input type="radio" name="radio_pmml" id="pmml3" value="file">Upload PMML file<br>
@@ -62,14 +66,14 @@
 
     <div id="input" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
 
-        <h4><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable and endpoint:</h4>
+        <h3><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable and endpoint:</h3>
         <div style="float:left; width:50%;">
         <h5>Input</h5>
         <div>
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio" value="option1">Option1</label>
+                    <input type="radio" name="radio" value="option1">Variable1</label>
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio" value="option2">Option2</label>
+                    <input type="radio" name="radio" value="option2">Variable2</label>
             </div>
 
             </div>
@@ -77,9 +81,9 @@
         <h5>Output</h5>
         <div>
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio2" value="out_option1">Option1</label>
+                    <input type="radio" name="radio2" value="out_option1">Variable1</label>
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio2" value="out_option2">Option2</label>
+                    <input type="radio" name="radio2" value="out_option2">Variable2</label>
             </div>
 
             </div>
@@ -100,6 +104,21 @@
     <div id="file" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
         <h5><input type="radio" name="radio1" value="PMML file" style="display:none;">Upload a PMML with transformations(optional):</h5><input type="file" name="img">
     </div>
+    <br>
+    <br>
+    <h3>Select scaling method:</h3>
+    <select>
+                  <option value="scaling1">None</option>
+                  <option value="scaling2">Scaling between zero and one</option>
+                  <option value="scaling3">Normalization</option>
+    </select>
+    <h3>Select domain of applicability method:</h3>
+    <select>
+                  <option value="doa1">None</option>
+                  <option value="doa2">Leverage method</option>
+                  <option value="doa3">Other method</option>
+    </select>
+    <br>
     <br>
      <!-- <a href="/change_params?data={{dataset}}&alg={{algorithms}}" class="btn bt-red" style="width:10%; float:left; left:10%;" >Train</a> -->
     <input id="choose_alg" type="submit" value="Train" class="btn bt-red" style="width: 10%; float:left; left:10%;">

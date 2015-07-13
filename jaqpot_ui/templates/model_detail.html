@@ -47,7 +47,7 @@
     {% endif %}
     <br>
      {% if details.dependentFeatures %}
-        <div class="panel" style="background-color: #a0d468;">
+        <div class="panel" style="background-color: #e6e9ed;">
             <div class="panel-heading">
                 <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion2" href="#collapseFour" class="collapsed grey-link">Dependent Features</a>
@@ -66,7 +66,7 @@
             </div>
      {% endif %}
      {% if details.independentFeatures %}
-        <div class="panel" style="background-color: #a0d468;">
+        <div class="panel" style="background-color: #e6e9ed;">
             <div class="panel-heading">
                 <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion2" href="#collapseFive" class="collapsed grey-link">Independent Features</a>
@@ -87,7 +87,7 @@
             </div>
      {% endif %}
      {% if details.independentFeatures %}
-        <div class="panel" style="background-color: #a0d468;">
+        <div class="panel" style="background-color: #e6e9ed;">
             <div class="panel-heading">
                 <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion2" href="#collapseSix" class="collapsed grey-link">Predicted Features</a>
@@ -133,7 +133,7 @@
     {% endif %}  -->
         <br>
         <a href="m_pmml?name={{name}}" class="btn bt-red" data-toggle="toolleft" title="Download PMML">PMML</a>
-        <a href="#" class="btn btn-success" data-toggle="toolleft" title="Predict model" style="margin:3px;">Predict</a>
+        <a href="#" class="btn bt-red" data-toggle="toolleft" title="Predict model" style="margin:3px;">Predict</a>
         <a href="/model_delete?id={{name}}" class="btn bt-red" data-toggle="tool" title="Delete Model" style="margin: 3px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
          <br>
         <h4>Validations:</h4>

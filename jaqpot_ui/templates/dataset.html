@@ -10,7 +10,7 @@
              <div class="list-group">
                  {% for d in dataset %}
 
-                    <a href="/data_detail?name={{d.name}}" class="list-group-item">{{d.name}}<span style="float: left; left:50%; position:absolute;">{{d.meta.comments.0}}</span> </a>
+                    <a href="/data_detail?name={{d.name}}" class="list-group-item">{{d.name}}<span style="float: left; left:20%; position:absolute;">{{d.meta.titles.0}}</span> <span style="float: left; left:50%; position:absolute;">{{d.meta.descriptions.0}}</span> </a>
 
                  {% endfor %}
              </div>

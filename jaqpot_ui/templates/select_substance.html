@@ -13,8 +13,13 @@
                 <input type="checkbox" name="selectall" id= "selectall" >Select All</label>
             {% paginate 20 substances %}
             {% for s in substances %}
+                {% if checkall %}
+                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                     <input class="checkbox1" type="checkbox" name="checkbox" id= "check3" value="{{s.URI}}">{{s.name}} <span style="padding: 0 10px;"></span>{{s.URI}}</label>
+                {% else %}
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                      <input class="checkbox1" type="checkbox" name="checkbox" id= "check" value="{{s.URI}}">{{s.name}} <span style="padding: 0 10px;"></span>{{s.URI}}</label>
+                {% endif %}
             {% endfor %}
             {% get_pages %}
              <div id="pageNavPosition" class="pagination">
@@ -55,8 +60,19 @@
     </form>
 <script>
     $(document).ready(function() {
-
     $('#selectall').click(function(event) {  //on click
+         /* $.ajax({
+                type: 'POST',
+                url: '/select_substance',
+                data: { checkall: 'True'},
+                success: function(result) {
+                        //document.write(result)
+                        alert("yes");
+                        },
+                 error: function(){
+                alert("error");
+            }
+            }); */
         if(this.checked) { // check select status
             $('.checkbox1').each(function() { //loop through each checkbox
                 this.checked = true;  //select all checkboxes with class "checkbox1"

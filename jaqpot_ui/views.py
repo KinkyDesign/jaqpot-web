@@ -346,7 +346,7 @@ def user(request):
         contacts = json.dumps(contacts)
 
         return render(request, "user_details.html", {'token': token, 'username': username, 'name': name, 'contacts': contacts, 'percentage': percentage})
-
+#Train model
 def trainmodel(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -357,8 +357,6 @@ def trainmodel(request):
         if r.status_code != 200:
             return redirect('/login')
     if request.method == 'GET':
-        #headers = {'Accept': 'text/uri-list', 'subjectid': token}
-        #res = requests.get('http://enanomapper.ntua.gr:8880/jaqpot/services/dataset?start=0&max=10', headers=headers)
         entries = [ "data", "data2", "data3","data4", "data5", "data6",]
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
@@ -392,18 +390,27 @@ def choose_dataset(request):
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
         headers = {'Accept': 'text/uri-list', 'subjectid': token}
-        algorithms = []
-        res = requests.get(SERVER_URL+'/algorithm?start=0&max=10', headers=headers)
+        classification_alg = []
+        res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
         list_resp = res.text
         list_resp = list_resp.split('\n')[:]
         for l in list_resp:
             l = l.split('/algorithm/')[1]
-            algorithms.append({'name': l})
-        algorithms = json.dumps(algorithms)
-        algorithms = json.loads(algorithms)
+            classification_alg.append({'name': l})
+        classification_alg = json.dumps(classification_alg)
+        classification_alg = json.loads(classification_alg)
+        regression_alg = []
+        res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
+        list_resp = res.text
+        list_resp = list_resp.split('\n')[:]
+        for l in list_resp:
+            l = l.split('/algorithm/')[1]
+            regression_alg.append({'name': l})
+        regression_alg = json.dumps(regression_alg)
+        regression_alg = json.loads(regression_alg)
         entries_2 = [ "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8"]
         entries_3 = [ "1", "2", "3", "4", "5", "6", "7", "8"]
-        return render(request, "train_model.html", {'token': token, 'username': username, 'entries': algorithms, 'entries_2': entries_2, 'entries_3': entries_3, 'form':form, 'dataset': dataset})
+        return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'entries_3': entries_3, 'form':form, 'dataset': dataset})
     if request.method == 'POST':
         algorithms=[]
         for alg in request.POST.getlist('radio'):
@@ -772,10 +779,11 @@ def predict_model(request):
         selected_model = request.POST.get('radio')
         headers = {'Accept': 'application/json', "subjectid": token}
         res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=SERVER_URL+'/dataset/'+dataset)
-        list_resp = res.text
-        print list_resp
-        #return render(request, "task.html", {'token': token, 'username': username})
-        return redirect('/task', {'token': token, 'username': username})
+        response = json.loads(res.text)
+        task = response['_id']
+        #Redirect to the produced task
+        return render(request, "new_task.html", {'token': token, 'username': username, 'task': task})
+
 #Contact form
 def contact(request):
     token = request.session.get('token', '')
@@ -875,7 +883,11 @@ def all_substance(request):
 def select_substance(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-
+    if request.is_ajax():
+            checkall = request.GET('checkall')
+            print checkall
+            print('is ajax')
+            return HttpResponse(checkall)
     if token:
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
@@ -883,6 +895,11 @@ def select_substance(request):
         if request.method == 'GET':
             substances = request.session.get('substances', '')
             return render(request, "select_substance.html", {'token': token, 'username': username, 'substances':substances['substance']})
+        '''if request.is_ajax():
+                checkall = request.GET('checkall')
+                print checkall
+                print('is ajax')
+                return HttpResponse(checkall)'''
         if request.method == 'POST':
             sub= request.POST.getlist('checkbox')
             request.session['selected_substances'] = sub
@@ -952,6 +969,8 @@ def select_descriptors(request):
             print descriptors
             return render(request, "descriptors.html", {'token': token, 'username': username, 'descriptors':descriptors})
         if request.method == 'POST':
+            title = request.POST.get('title')
+            description = request.POST.get('description')
             select_descriptors = request.POST.getlist('checkbox')
             substanceowner = request.session.get('substanceowner', '')
             selected_substances = request.session.get('selected_substances', '')
@@ -960,7 +979,7 @@ def select_descriptors(request):
             body = json.dumps({'description': 'a bundle with protein corona data', 'substanceOwner': substanceowner, 'substances': selected_substances, 'properties': selected_properties})
             res = requests.post(url=SERVER_URL+'/enm/bundle', data=body, headers=headers)
             headers = {'content-type': 'application/json', 'subjectid': token,}
-            body = json.dumps({'bundle':res.text, 'descriptors':select_descriptors})
+            body = json.dumps({'bundle':res.text, 'descriptors':select_descriptors, 'title': title, 'description':description})
             res = requests.post(url=SERVER_URL+'/enm/dataset', headers=headers, data=body)
             response = json.loads(res.text)
             task = response['_id']

@@ -11,8 +11,8 @@
         <h3>Regression</h3>
         {% load endless %}
         <div>
-             {% paginate 20 entries %}
-             {% for e in entries %}
+             {% paginate 20 regression_alg  %}
+             {% for e in regression_alg %}
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                     <input type="radio" name="radio" value="{{e.name}}">{{e.name}}</label>
             {% endfor %}
@@ -53,8 +53,8 @@
         <h3>Classification</h3>
         {% load endless %}
         <div>
-             {% paginate 20 entries %}
-             {% for e in entries %}
+             {% paginate 20 classification_alg %}
+             {% for e in classification_alg %}
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                     <input type="radio" name="radio" value="{{e.name}}">{{e.name}}</label>
             {% endfor %}
@@ -91,129 +91,7 @@
             </div>
         </div>
     </div>
-    <!-- <div style="float:left; width:33%;">
-        <h3>Jaqpot</h3>
-        {% load endless %}
-        <div>
-             {% paginate 20 entries %}
-             {% for e in entries %}
-                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="checkbox" name="checkbox" id= "check" value="{{e.name}}">{{e.name}}</label>
-            {% endfor %}
 
-            {% get_pages %}
-         <div id="pageNavPosition" class="pagination">
-             <span class="step-links">
-                    <ul class="pagination">
-                        {% if pages.previous %}
-                            <li class="active">
-                                {{ pages.previous}}
-                            </li>
-                        {% else%}
-                        <li class="active">
-                                <a href="#">Previous</a>
-                            </li>
-                        {%endif%}
-                        {% for page in pages %}
-                        <li>{{page}}</li>
-                        {%endfor%}
-
-                        {% if pages.next %}
-                            <li class="active">
-                                {{ pages.next}}
-                            </li>
-                        {% else%}
-                        <li class="active">
-                                <a href="#">Next </a>
-                            </li>
-                        {%endif%}
-
-                   </ul>
-                </span>
-            </div>
-        </div>
-    </div>
-    <div style="float:left; width:33%;">
-        <h3>Public</h3>
-         <div>
-             {% paginate 20 entries_2 using "other_page" %}
-             {% for e in entries_2 %}
-                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block;width:99%;">
-                    <input type="checkbox" name="checkbox" value="{{e}}">{{e}}</label>
-            {% endfor %}
-            {% get_pages %}
-            <div id="pageNavPosition2" class="pagination">
-                <span class="step-links">
-                    <ul class="pagination">
-                        {% if pages.previous %}
-                            <li class="active">
-                                {{ pages.previous}}
-                            </li>
-                        {% else%}
-                        <li class="active">
-                                <a href="#">Previous</a>
-                            </li>
-                        {%endif%}
-                        {% for other_page in pages %}
-                        <li>{{other_page}}</li>
-                        {%endfor%}
-
-                        {% if pages.next %}
-                            <li class="active">
-                                {{ pages.next}}
-                            </li>
-                        {% else%}
-                        <li class="active">
-                                <a href="#"> Next </a>
-                            </li>
-                        {%endif%}
-
-                   </ul>
-                </span>
-            </div>
-        </div>
-    </div>
-    <div style="float:left; width:33%;">
-       <h3>Mine</h3>
-        <div>
-            {% paginate 20 entries_3 using "other_object_page" %}
-            {% for e in entries_3 %}
-                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block;width:99%;">
-                    <input type="checkbox" name="checkbox" value="{{e}}">{{e}}</label>
-            {% endfor %}
-            {% get_pages %}
-            <div id="pageNavPosition3" class="pagination">
-                <span class="step-links">
-                    <ul class="pagination">
-                        {% if pages.previous %}
-                            <li class="active">
-                                {{ pages.previous}}
-                            </li>
-                        {% else%}
-                        <li class="active">
-                                <a href="#">Previous</a>
-                            </li>
-                        {%endif%}
-                        {% for other_objects_page in pages %}
-                        <li>{{other_objects_page}}</li>
-                        {%endfor%}
-
-                        {% if pages.next %}
-                            <li class="active">
-                                {{ pages.next}}
-                            </li>
-                        {% else%}
-                        <li class="active">
-                                <a href="#"> Next </a>
-                            </li>
-                        {%endif%}
-
-                   </ul>
-                </span>
-            </div>
-
-        </div>
-    </div> -->
    <!--<a href="/dataset" class="btn btn-success" style="width:10%; float:right; right:10%;" >Save</a> -->
      <input id="choose_alg" type="submit" value="Next" class="btn bt-red" style="width: 10%; float:right; right:10%;">
 
