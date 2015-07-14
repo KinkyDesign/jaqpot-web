@@ -61,12 +61,12 @@
         <input type="radio" name="radio_pmml" id="pmml1" value="input"> Select Input variable and endpoint<br>
         <input type="radio" name="radio_pmml" id="pmml2" value="pm">Select PMML<br>
         <input type="radio" name="radio_pmml" id="pmml3" value="file">Upload PMML file<br>
-        <input type="radio" name="radio_pmml" id="pmml4">None
+        <input type="radio" name="radio_pmml" id="pmml4" value="none" checked >None
         </div>
 
     <div id="input" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
 
-        <h3><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable and endpoint:</h3>
+        <h5><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable and endpoint:</h5>
         <div style="float:left; width:50%;">
         <h5>Input</h5>
         <div>
@@ -92,11 +92,14 @@
 
         <div>
             <h5><input type="radio" name="radio1" value="PMML" style="display:none;">Select PMML:</h5>
-            <select>
-                  <option value="Option1">Option1</option>
-                  <option value="Option2">Option2</option>
-                  <option value="Option3">Option3</option>
-                  <option value="Option4">Option4</option>
+            <select name="pmml_file">
+                {% if not pmml %}
+                 <option value="">no pmml</option>
+                {% else %}
+                {% for p in pmml %}
+                  <option value="{{p}}">{{p}}</option>
+                {% endfor %}
+                {% endif %}
             </select>
             <br>
         </div>
@@ -107,13 +110,13 @@
     <br>
     <br>
     <h3>Select scaling method:</h3>
-    <select>
+    <select name="scaling">
                   <option value="scaling1">None</option>
                   <option value="scaling2">Scaling between zero and one</option>
                   <option value="scaling3">Normalization</option>
     </select>
     <h3>Select domain of applicability method:</h3>
-    <select>
+    <select name="doa">
                   <option value="doa1">None</option>
                   <option value="doa2">Leverage method</option>
                   <option value="doa3">Other method</option>

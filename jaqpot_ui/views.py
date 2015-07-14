@@ -357,7 +357,7 @@ def trainmodel(request):
         if r.status_code != 200:
             return redirect('/login')
     if request.method == 'GET':
-        entries = [ "data", "data2", "data3","data4", "data5", "data6",]
+        entries = [ "data", "data2", "data3", "data4", "data5", "data6",]
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
 
@@ -408,9 +408,7 @@ def choose_dataset(request):
             regression_alg.append({'name': l})
         regression_alg = json.dumps(regression_alg)
         regression_alg = json.loads(regression_alg)
-        entries_2 = [ "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8"]
-        entries_3 = [ "1", "2", "3", "4", "5", "6", "7", "8"]
-        return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'entries_3': entries_3, 'form':form, 'dataset': dataset})
+        return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset})
     if request.method == 'POST':
         algorithms=[]
         for alg in request.POST.getlist('radio'):
@@ -433,8 +431,48 @@ def change_params(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         al = json.loads(res.text)
-        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms})
+        headers1 = {'Accept': 'text/uri-list', 'subjectid': token}
+        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=10', headers=headers1)
+        pmml=res1.text
+        pmml = pmml.splitlines()
+        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml})
     if request.method == 'POST':
+        #get transformations
+        transformations=""
+        if request.POST.get('radio_pmml') == "none":
+            transformations = ""
+        elif request.POST.get('radio_pmml') == "pm":
+            transformations = request.POST.get('pmml_file')
+            print transformations
+        elif request.POST.get('radio_pmml') == "input":
+            print('---')
+        elif request.POST.get('radio_pmml') == "file":
+            print('---')
+        #get scaling
+        scaling=""
+        if request.POST.get('scaling') == "scaling1":
+            scaling=""
+        elif request.POST.get('scaling') == "scaling2":
+            scaling=SERVER_URL+'/algorithm/scaling'
+        elif request.POST.get('scaling') == "scaling3":
+            scaling=SERVER_URL+'/algorithm/standarization'
+        #get doa
+        doa=""
+        if request.POST.get('doa') == "doa1":
+            doa=""
+        elif request.POST.get('scaling') == "doa2":
+            doa=SERVER_URL+'/algorithm/leverage'
+        elif request.POST.get('scaling') == "doa3":
+            doa=SERVER_URL+'/algorithm/leverage'
+        algorithms = request.session.get('alg', '')
+        dataset = request.session.get('data', '')
+        print dataset
+        uri = SERVER_URL+'/algorithm/'+algorithms
+        body = json.dumps({'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling':scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a'})
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
+        print res.text
+        #print res.status_code
         print request.POST
         print request.POST.getlist('radio_pmml')
         print request.POST.getlist('checkbox')
