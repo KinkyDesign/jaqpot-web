@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
 import rdflib
@@ -14,6 +15,7 @@ from rdflib import Graph, plugin, term
 from rdflib.serializer import Serializer
 from jaqpot_ui.templatetags import templates_extras
 import jsonpatch
+import xmltodict
 
 
 # Home page
@@ -447,7 +449,15 @@ def change_params(request):
         elif request.POST.get('radio_pmml') == "input":
             print('---')
         elif request.POST.get('radio_pmml') == "file":
-            print('---')
+            file = request.POST.get('file')
+            os.chdir(r'/home/gkaimakas/Desktop')
+            with open(file) as f:
+                 content = f.readlines()
+            print content
+            '''headers = {'Accept': 'application/json', 'subjectid': token}
+            res = requests.post(SERVER_URL+'/pmml', headers=headers, data=json.dumps(content))
+            print res.text'''
+
         #get scaling
         scaling=""
         if request.POST.get('scaling') == "scaling1":
@@ -466,14 +476,14 @@ def change_params(request):
             doa=SERVER_URL+'/algorithm/leverage'
         algorithms = request.session.get('alg', '')
         dataset = request.session.get('data', '')
-        print dataset
-        uri = SERVER_URL+'/algorithm/'+algorithms
-        body = json.dumps({'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling':scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a'})
+
+        body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling':scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a'}
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
         print res.text
-        #print res.status_code
+
         print request.POST
+        print request.POST.get('file')
         print request.POST.getlist('radio_pmml')
         print request.POST.getlist('checkbox')
         print request.POST.getlist('select')

@@ -10,13 +10,15 @@
          <table id="dataset" class="div-form-table display" >
              <thead>
                  <tr>
+
                      <th style="background-color: #cf2323; min-width: 300px;">Compounds</th>
-                     {% for prop in a %}
+                      {% for prop in a %}
                         {% if prop %}
                         <th style="background-color: #cf2323;">
                             <p data-toggle="tooltip" data-placement="top" data-container="body" title="{{prop}}">x{{forloop.counter}}</p>
                         </th>
-                        {% endif %}
+
+                         {% endif %}
                      {% endfor %}
                  </tr>
              </thead>
