@@ -451,17 +451,12 @@ def change_params(request):
             content=[]
             if form.is_valid:
                 pmml= request.FILES['file'].read()
-                o = xmltodict.parse(pmml)
-                body = json.dumps(o)
-                #body = json.dumps(pmml)
-                body = json.loads(body)
-                print body
                 '''for chunk in request.FILES['file'].chunks():
                     content.append(chunk)
                 content=json.dumps(content)
                 print content'''
-                headers = {'Accept': 'application/json', 'subjectid': token}
-                res = requests.post(SERVER_URL+'/pmml', headers=headers, data=body)
+                headers = {'Content-Type': 'application/xml',  'subjectid': token}
+                res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
                 print res.text
 
         #get scaling
@@ -485,8 +480,8 @@ def change_params(request):
 
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling':scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a'}
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
-        print res.text
+        #res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
+        #print res.text
 
         print request.POST
         print request.POST.get('file')
