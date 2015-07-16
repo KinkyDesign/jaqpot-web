@@ -1,8 +1,7 @@
 import os
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
-import rdflib
-from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm
+from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm
 import requests
 import json
 import datetime
@@ -11,8 +10,6 @@ from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, EMAIL_HOST_USER, S
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.mail import send_mail
-from rdflib import Graph, plugin, term
-from rdflib.serializer import Serializer
 from jaqpot_ui.templatetags import templates_extras
 import jsonpatch
 import xmltodict
@@ -428,6 +425,7 @@ def change_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     if request.method == 'GET':
+        form = UploadFileForm()
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
         headers = {'Accept': 'application/json', 'subjectid': token}
@@ -437,7 +435,7 @@ def change_params(request):
         res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=10', headers=headers1)
         pmml=res1.text
         pmml = pmml.splitlines()
-        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml})
+        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml,'uploadform':form})
     if request.method == 'POST':
         #get transformations
         transformations=""
@@ -449,14 +447,22 @@ def change_params(request):
         elif request.POST.get('radio_pmml') == "input":
             print('---')
         elif request.POST.get('radio_pmml') == "file":
-            file = request.POST.get('file')
-            os.chdir(r'/home/gkaimakas/Desktop')
-            with open(file) as f:
-                 content = f.readlines()
-            print content
-            '''headers = {'Accept': 'application/json', 'subjectid': token}
-            res = requests.post(SERVER_URL+'/pmml', headers=headers, data=json.dumps(content))
-            print res.text'''
+            form = UploadFileForm(request.POST, request.FILES)
+            content=[]
+            if form.is_valid:
+                pmml= request.FILES['file'].read()
+                o = xmltodict.parse(pmml)
+                body = json.dumps(o)
+                #body = json.dumps(pmml)
+                body = json.loads(body)
+                print body
+                '''for chunk in request.FILES['file'].chunks():
+                    content.append(chunk)
+                content=json.dumps(content)
+                print content'''
+                headers = {'Accept': 'application/json', 'subjectid': token}
+                res = requests.post(SERVER_URL+'/pmml', headers=headers, data=body)
+                print res.text
 
         #get scaling
         scaling=""

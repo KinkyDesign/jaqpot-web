@@ -38,3 +38,7 @@ class ContactForm(forms.Form):
 
 class SubstanceownerForm(forms.Form):
         substanceowner = forms.CharField()
+
+class UploadFileForm(forms.Form):
+    title = forms.CharField(max_length=50)
+    file = forms.FileField()

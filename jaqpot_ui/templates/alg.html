@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form method="post" id="form1"> {% csrf_token %}
+<form method="post" id="form1" enctype="multipart/form-data"> {% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block; padding:10px;">
     <div style="float:left; width:50%;">
             <h1>Algorithm</h1>
@@ -105,7 +105,7 @@
         </div>
     </div>
     <div id="file" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
-        <h5><input type="radio" name="radio1" value="PMML file" style="display:none;">Upload a PMML with transformations(optional):</h5><input type="file" name="file">
+        <h5><input type="radio" name="radio1" value="PMML file" style="display:none;">Upload a PMML with transformations(optional):</h5>{{uploadform.file}}
     </div>
     <br>
     <br>
