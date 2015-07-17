@@ -28,12 +28,16 @@
                 </div>
               </div>
     {%endfor%}
-    <input id="choose_alg" type="submit" value="Save" class="btn bt-red" style="width: 10%; float:right; right:10%;">
+    <input id="previous" type="button" value="Previous" class="btn bt-red" style="width: 10%; float:left; left:10%;">
+    <input id="choose_alg" type="submit" value="Next" class="btn bt-red" style="width: 10%; float:right; right:10%;">
 </div>
      </form>
 
 <script>
     $(document).ready(function() {
+    $('#previous').click(function(event) {  //on click
+        history.go(-1);
+    });
     $('#selectall').click(function(event) {  //on click
         if(this.checked) { // check select status
             $('.checkbox1').each(function() { //loop through each checkbox

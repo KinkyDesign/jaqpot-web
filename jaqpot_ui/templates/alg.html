@@ -59,7 +59,7 @@
     <div style="float:right; width:50%;">
         <h5>Select variables (optional):</h5>
         <input type="radio" name="radio_pmml" id="pmml1" value="input"> Select Input variable and endpoint<br>
-        <input type="radio" name="radio_pmml" id="pmml2" value="pm">Select PMML<br>
+        <input type="radio" name="radio_pmml" id="pmml2" value="pm" >Select PMML<br>
         <input type="radio" name="radio_pmml" id="pmml3" value="file">Upload PMML file<br>
         <input type="radio" name="radio_pmml" id="pmml4" value="none" checked >None
         </div>
@@ -109,27 +109,31 @@
     </div>
     <br>
     <br>
-    <h3>Select scaling method:</h3>
-    <select name="scaling">
-                  <option value="scaling1">None</option>
-                  <option value="scaling2">Scaling between zero and one</option>
-                  <option value="scaling3">Normalization</option>
-    </select>
-    <h3>Select domain of applicability method:</h3>
-    <select name="doa">
-                  <option value="doa1">None</option>
-                  <option value="doa2">Leverage method</option>
-                  <option value="doa3">Other method</option>
-    </select>
-    <br>
-    <br>
-     <!-- <a href="/change_params?data={{dataset}}&alg={{algorithms}}" class="btn bt-red" style="width:10%; float:left; left:10%;" >Train</a> -->
-    <input id="choose_alg" type="submit" value="Train" class="btn bt-red" style="width: 10%; float:left; left:10%;">
+    <div style="float:right; width:50%;">
+        <h3>Select scaling method:</h3>
+        <select name="scaling">
+                      <option value="scaling1" >None</option>
+                      <option value="scaling2" >Scaling between zero and one</option>
+                      <option value="scaling3" >Normalization</option>
+        </select>
+        <h3>Select domain of applicability method:</h3>
+        <select name="doa">
+                      <option value="doa1">None</option>
+                      <option value="doa2">Leverage method</option>
+                      <option value="doa3" >Other method</option>
+        </select>
+        <br>
+        <br>
+         <!-- <a href="/change_params?data={{dataset}}&alg={{algorithms}}" class="btn bt-red" style="width:10%; float:left; left:10%;" >Train</a> -->
+        <input id="choose_alg" type="submit" value="Train" class="btn bt-red" style="width: 10%; float:left; left:10%;">
+    </div>
 
     </div>
 </form>
 
 <script>
+
+     $("select").selecter();
      $('#pmml1').click(function() {
             $("#input").show();
             $("#file").hide();

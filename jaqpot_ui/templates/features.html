@@ -12,7 +12,7 @@
         <div class="list-group">
             {% paginate 20 features %}
             {% for f in features %}
-                <a href="/feature_detail?name={{f.name}}" class="list-group-item">{{f.name}}<span style="float: left; left:50%; position:absolute;">{{f.meta.titles.0}}</span></a>
+                <a href="/feature_detail?name={{f.name}}" class="list-group-item">{{f.name}}<span style="float: left; left:50%; position:absolute; overflow: hidden; white-space: nowrap;width: 50%;text-overflow: ellipsis;">{{f.meta.titles.0}}</span></a>
             {% endfor %}
         </div>
         {% get_pages %}

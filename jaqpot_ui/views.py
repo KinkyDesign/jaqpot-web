@@ -356,7 +356,6 @@ def trainmodel(request):
         if r.status_code != 200:
             return redirect('/login')
     if request.method == 'GET':
-        entries = [ "data", "data2", "data3", "data4", "data5", "data6",]
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
 
@@ -375,11 +374,11 @@ def trainmodel(request):
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         data= json.loads(res.text)
         for d in data:
-            dataset.append({'name': d['_id']})
+            dataset.append({'name': d['_id'], 'meta': d['meta']})
         if len(dataset)< 20:
             last= page
 
-        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries': entries , 'entries2': dataset, 'page': page, 'last':last})
+        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last})
 
 
 def choose_dataset(request):

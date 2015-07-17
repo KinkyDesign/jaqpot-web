@@ -11,8 +11,9 @@
         {% load endless %}
         <div class="publicdataset list-group">
         {% paginate 15 entries2 using "other_objects_page" %}
+            <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
         {% for e in entries2 %}
-             <a href="/dataset?dataset={{e.name}}" class="list-group-item">{{e.name}}</a>
+             <a href="/dataset?dataset={{e.name}}" class="list-group-item">{{e.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{e.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{e.meta.descriptions.0}}</span> </a>
         {% endfor %}
             </div>
             {% get_pages %}
@@ -44,91 +45,7 @@
             </div>
         </div>
     </div>
-    <!-- <div style="width:50%; float:left;">
-        <h1>My datasets:</h1>
-        <br>
-        <br>
-        <div>
-            {% load endless %}
-            <div class="list-item">
-            {% paginate 18 entries %}
-            {% for e in entries %}
-                <a id="dataset" href="/dataset?dataset={{e}}" class="list-group-item list-group-item-success" style="width:90%;">{{e}}</a>
-            {% endfor %}
-            </div>
 
-            {% get_pages %}
-            <div id="pageNavPosition4" class="pagination">
-                <span class="step-links">
-                    <ul class="pagination">
-                        {% if pages.previous %}
-                            <li class="active">
-                                {{ pages.previous}}
-                            </li>
-                        {% else%}
-                        <li class="active">
-                                <a href="#">Previous</a>
-                            </li>
-                        {%endif%}
-                        {% for page in pages %}
-                        <li>{{page}}</li>
-                        {%endfor%}
-
-                        {% if pages.next %}
-                            <li class="active">
-                                {{ pages.next}}
-                            </li>
-                        {% else%}
-                        <li class="active">
-                                <a href="#">Next </a>
-                            </li>
-                        {%endif%}
-
-                   </ul>
-                </span>
-            </div>
-        </div>
-    </div>
-    <div style="width:50%; float:right;">
-        <h1>Public datasets:</h1>
-        <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
-        <br>
-
-        <div class="publicdataset list-group">
-        {% paginate 15 entries2 using "other_objects_page" %}
-        {% for e in entries2 %}
-             <a href="/dataset?dataset={{e.name}}" class="list-group-item list-group-item-success">{{e.name}}</a>
-        {% endfor %}
-            </div>
-            {% get_pages %}
-            <div id="pageNavPosition5" class="pagination">
-                <span class="step-links">
-                    <ul class="pagination">
-                        <li class="active">
-                            {% if page|add:"0" >= 2 %}
-                            <a href="/train?page={{page|add:-1}}">Previous</a>
-                            {% else %}
-                            <a href="/train?page={{page}}">Previous</a>
-                            {%endif %}
-                        </li>
-
-                        <li><a href="/train?page={{page}}"><strong>{{page}}</strong></a></li>
-
-
-                        <li class="active">
-                            {% if last %}
-                                    <a href="/train?page={{last}}">Next</a>
-                            {%else%}
-                                <a href="/train?page={{page|add:1 }}">Next </a>
-                            {% endif %}
-                        </li>
-
-
-                   </ul>
-                </span>
-            </div>
-        </div>
-    </div>  -->
 
 <script>
 //console.log(data)

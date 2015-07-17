@@ -391,7 +391,7 @@ height : 0px;
 
 /*Change tooltip size */
 div.tooltip-inner {
-    max-width: 750px;
+    max-width: 2500px;
 }
 
 .color-black:hover{
@@ -400,4 +400,24 @@ color:#656D78;
 
 .color-black:focus{
 color:#656D78;
+}
+
+/* selector red color */
+
+.selecter .selecter-item.selected{
+background-color: #cf2323;
+border-bottom-color: #cf2323;}
+
+.selecter .selecter-item.selected:hover{
+background-color: #cf2323;
+border-bottom-color: #cf2323;}
+
+
+.selecter.open .selecter-selected {
+border: 1px solid #cf2323;
+}
+.overflow-span{
+overflow: hidden;
+white-space: nowrap;
+text-overflow: ellipsis;
 }
