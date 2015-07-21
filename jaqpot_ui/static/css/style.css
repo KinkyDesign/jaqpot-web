@@ -421,3 +421,7 @@ overflow: hidden;
 white-space: nowrap;
 text-overflow: ellipsis;
 }
+
+.selecter-selected {
+    width: 100%;
+}

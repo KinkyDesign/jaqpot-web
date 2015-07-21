@@ -9,17 +9,16 @@
         <h4>Substances</h4>
         {% load endless %}
         <div>
-            <label>
+             <label>
                 <input type="checkbox" name="selectall" id= "selectall" >Select All</label>
+
+
             {% paginate 20 substances %}
             {% for s in substances %}
-                {% if checkall %}
-                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                     <input class="checkbox1" type="checkbox" name="checkbox" id= "check3" value="{{s.URI}}">{{s.name}} <span style="padding: 0 10px;"></span>{{s.URI}}</label>
-                {% else %}
+            <div id="normal">
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                      <input class="checkbox1" type="checkbox" name="checkbox" id= "check" value="{{s.URI}}">{{s.name}} <span style="padding: 0 10px;"></span>{{s.URI}}</label>
-                {% endif %}
+                </div>
             {% endfor %}
             {% get_pages %}
              <div id="pageNavPosition" class="pagination">
@@ -51,7 +50,9 @@
                        </ul>
                     </span>
             </div>
-        </div>
+            </div>
+
+
         <input id="previous" type="button" value="Previous" class="btn bt-red" style="width: 10%; float:left; left:10%;">
         <input id="select_sub" type="submit" value="Next" class="btn bt-red" style="width: 10%; float:right; right:10%;">
 
@@ -65,31 +66,40 @@
      $('#previous').click(function(event) {
        history.go(-1);
      });
+     //If user clicks select all
     $('#selectall').click(function(event) {  //on click
-         /* $.ajax({
-                type: 'POST',
+
+        if(this.checked) { // check select status
+            //remove previous selections
+            localStorage.removeItem('selected_items');
+            window.localStorage.clear()
+            //get all the substances via ajax call and check all checkboxes
+             $.ajax({
+                type: 'GET',
                 url: '/select_substance',
                 data: { checkall: 'True'},
                 success: function(result) {
-                        //document.write(result)
-                        alert("yes");
+                        var r = JSON.parse(result);
+	                    selected_items.push.apply(selected_items, r);
+	                    update_local_selected_items();
                         },
+
                  error: function(){
                 alert("error");
             }
-            }); */
-        if(this.checked) { // check select status
+            });
             $('.checkbox1').each(function() { //loop through each checkbox
                 this.checked = true;  //select all checkboxes with class "checkbox1"
-                add_remove_to_selected_items($(this));
-	            update_local_selected_items();
             });
+
         }else{
+            //deselect all checkboxes
+            localStorage.removeItem('selected_items');
+            window.localStorage.clear()
             $('.checkbox1').each(function() { //loop through each checkbox
                 this.checked = false; //deselect all checkboxes with class "checkbox1"
-                add_remove_to_selected_items($(this));
-	            update_local_selected_items();
             });
+
         }
     });
 
@@ -98,7 +108,6 @@
 // this uses jQuery
 // Create a new array to hold selected contacts
 var selected_items = []
-
 // Try to grab any from storage and append/push them to the newly created 'selected_items' array
 try {
 	var previously_selected_items = JSON.parse(localStorage.getItem('selected_items'));
@@ -177,6 +186,7 @@ $('.checkbox1').on('click', function(){
 });
 
  $("#select_sub").click(function(event) {
+    //$.post('/select_substance', { data: selected_items});
 	localStorage.removeItem('selected_items');
 	window.localStorage.clear()
 	});

@@ -450,13 +450,12 @@ def change_params(request):
             content=[]
             if form.is_valid:
                 pmml= request.FILES['file'].read()
-                '''for chunk in request.FILES['file'].chunks():
-                    content.append(chunk)
-                content=json.dumps(content)
-                print content'''
+
                 headers = {'Content-Type': 'application/xml',  'subjectid': token}
                 res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
                 print res.text
+                response = json.loads(res.text)
+                transformations = SERVER_URL+'/pmml/'+response['_id']
 
         #get scaling
         scaling=""
@@ -479,8 +478,8 @@ def change_params(request):
 
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling':scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a'}
         headers = {'Accept': 'application/json', 'subjectid': token}
-        #res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
-        #print res.text
+        res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
+        print res.text
 
         print request.POST
         print request.POST.get('file')
@@ -828,9 +827,9 @@ def predict_model(request):
         headers = {'Accept': 'application/json', "subjectid": token}
         res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=SERVER_URL+'/dataset/'+dataset)
         response = json.loads(res.text)
-        task = response['_id']
-        #Redirect to the produced task
-        return render(request, "new_task.html", {'token': token, 'username': username, 'task': task})
+        #Redirect to the welcome page
+        #return render(request, "new_task.html", {'token': token, 'username': username, 'task': task})
+        return redirect('/')
 
 #Contact form
 def contact(request):
@@ -932,9 +931,17 @@ def select_substance(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     if request.is_ajax():
-            checkall = request.GET('checkall')
+            checkall = request.GET.get('checkall')
             print checkall
             print('is ajax')
+            substances = request.session.get('substances', '')
+            sel = substances['substance']
+            checkall=[]
+            for s in sel:
+                checkall.append(s['URI'])
+            print checkall
+            checkall=json.dumps(checkall)
+            #return redirect('/select_substance', {'token': token, 'username': username, 'checkall':checkall})
             return HttpResponse(checkall)
     if token:
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
@@ -943,13 +950,10 @@ def select_substance(request):
         if request.method == 'GET':
             substances = request.session.get('substances', '')
             return render(request, "select_substance.html", {'token': token, 'username': username, 'substances':substances['substance']})
-        '''if request.is_ajax():
-                checkall = request.GET('checkall')
-                print checkall
-                print('is ajax')
-                return HttpResponse(checkall)'''
         if request.method == 'POST':
             sub= request.POST.getlist('checkbox')
+            s=request.POST
+            print s
             request.session['selected_substances'] = sub
             print sub
             headers = {'Accept': 'application/json', 'subjectid': token}

@@ -557,10 +557,9 @@ setInterval(function(){
             contentType: 'application/json;',
             data: { 'output': '{{output}}', 'name': '{{name}}', },
             success: function(data){
-                //if percentageCompleted has changed then reload percentage chart
+                //if percentageCompleted has changed then reload page
                 if (data.percentageCompleted != percentage){
-                chart(data.percentageCompleted);
-                percentage = data.percentageCompleted
+                location.reload();
                 }
             },
             error: function(){
