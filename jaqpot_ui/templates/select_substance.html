@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form name="form" method="post">{% csrf_token %}
+<form name="form" id="form" method="post">{% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block;">
     {% if error %}
         <h1>{{error}}</h1>
@@ -54,8 +54,7 @@
 
 
         <input id="previous" type="button" value="Previous" class="btn bt-red" style="width: 10%; float:left; left:10%;">
-        <input id="select_sub" type="submit" value="Next" class="btn bt-red" style="width: 10%; float:right; right:10%;">
-
+        <input id="select_sub" type="button" value="Next" class="btn bt-red" style="width: 10%; float:right; right:10%;">
         {% endif %}
 </div>
     </form>
@@ -186,9 +185,27 @@ $('.checkbox1').on('click', function(){
 });
 
  $("#select_sub").click(function(event) {
-    //$.post('/select_substance', { data: selected_items});
+    $.ajax({
+        type: 'GET',
+        url: '/get_substance/',
+        data: { data: selected_items },
+        success: function() {
+            alert('send it!')
+            window.location.href="/properties"
+        }
+    });
+    //$('input[name="checkbox"]').val(selected_items);
+    /* $.ajax({
+            url: $('form').attr('action'),
+            type: 'POST',
+            data: selected_items,
+        }) */
 	localStorage.removeItem('selected_items');
 	window.localStorage.clear()
 	});
+
+
+
+
 </script>
 {% endblock %}

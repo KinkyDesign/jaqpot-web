@@ -730,6 +730,7 @@ def dataset_detail(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/dataset/'+name, headers=headers)
         data_detail=json.loads(res.text)
+        print data_detail
         properties=[]
         a=[]
         # a contains all compound's properties
@@ -951,6 +952,11 @@ def select_substance(request):
             substances = request.session.get('substances', '')
             return render(request, "select_substance.html", {'token': token, 'username': username, 'substances':substances['substance']})
         if request.method == 'POST':
+
+            data= request.POST.get('data', '')
+            print data
+            print('-----')
+
             sub= request.POST.getlist('checkbox')
             s=request.POST
             print s
@@ -961,8 +967,19 @@ def select_substance(request):
             properties=json.loads(res1.text)
             print properties
             request.session['properties'] = properties
-            return redirect('/properties', {'token': token, 'username': username})
-            #return render(request, "properties.html", {'token': token, 'username': username})
+            return HttpResponse(data)
+
+def get_substance(request):
+     token = request.session.get('token', '')
+     username = request.session.get('username', '')
+     if request.method == 'GET':
+            data= request.GET.getlist('data[]')
+            request.session['selected_substances'] = data
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            res1 = requests.get(SERVER_URL+'/enm/property/categories', headers=headers)
+            properties=json.loads(res1.text)
+            request.session['properties'] = properties
+            return HttpResponse(data)
 
 def select_properties(request):
     token = request.session.get('token', '')
