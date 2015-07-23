@@ -728,34 +728,41 @@ def dataset_detail(request):
     name = request.GET.get('name', '')
     if request.method == 'GET':
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/dataset/'+name, headers=headers)
+        print('----')
+        res = requests.get(SERVER_URL+'/dataset/'+name, headers=headers, timeout=10000, stream=True)
+        print('----')
         data_detail=json.loads(res.text)
-        print data_detail
+        #print data_detail['dataEntry']
         properties=[]
         a=[]
         # a contains all compound's properties
         for key in data_detail['dataEntry']:
             for k, value in key.items():
-                if k !='compound':
+                if k =='values':
                     for m,n in value.items():
                         if m not in a:
                             a.append(m)
         properties={}
+        new=[]
+        for i in range(len(a)):
+            s=a[i].split('enmtest/',1)[1]
+            new.append(data_detail['features'][s])
         #get response json
         for key in data_detail['dataEntry']:
             properties[key['compound']['URI']] = []
             properties[key['compound']['URI']].append({"compound": key['compound']['URI']})
+
             #for each compound
             for k, value in key.items():
-                if k !='compound':
+                if k =='values':
                     for i in range(len(a)):
                         #if a compound haven't value for a property add its value Null
                         if a[i] in value:
                             properties[key['compound']['URI']].append({"prop": a[i], "value": value[a[i]]})
                         else:
-                            properties[key['compound']['URI']].append({"prop": a[i], "value": "NULL"})
-
-        return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail': data_detail, 'properties': properties, 'a': a})
+                            properties[key['compound']['URI']].append({"prop":  a[i], "value": "NULL"})
+        print properties
+        return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail': data_detail, 'properties': properties, 'a': a, 'new': new})
 #Predict model
 def predict(request):
     token = request.session.get('token', '')
@@ -951,23 +958,6 @@ def select_substance(request):
         if request.method == 'GET':
             substances = request.session.get('substances', '')
             return render(request, "select_substance.html", {'token': token, 'username': username, 'substances':substances['substance']})
-        if request.method == 'POST':
-
-            data= request.POST.get('data', '')
-            print data
-            print('-----')
-
-            sub= request.POST.getlist('checkbox')
-            s=request.POST
-            print s
-            request.session['selected_substances'] = sub
-            print sub
-            headers = {'Accept': 'application/json', 'subjectid': token}
-            res1 = requests.get(SERVER_URL+'/enm/property/categories', headers=headers)
-            properties=json.loads(res1.text)
-            print properties
-            request.session['properties'] = properties
-            return HttpResponse(data)
 
 def get_substance(request):
      token = request.session.get('token', '')

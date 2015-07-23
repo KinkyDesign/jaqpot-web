@@ -190,16 +190,10 @@ $('.checkbox1').on('click', function(){
         url: '/get_substance/',
         data: { data: selected_items },
         success: function() {
-            alert('send it!')
             window.location.href="/properties"
         }
     });
-    //$('input[name="checkbox"]').val(selected_items);
-    /* $.ajax({
-            url: $('form').attr('action'),
-            type: 'POST',
-            data: selected_items,
-        }) */
+
 	localStorage.removeItem('selected_items');
 	window.localStorage.clear()
 	});
