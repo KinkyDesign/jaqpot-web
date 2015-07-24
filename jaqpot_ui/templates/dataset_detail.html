@@ -15,7 +15,7 @@
                       {% for prop in new %}
                         {% if prop %}
                         <th style="background-color: #cf2323;">
-                            <p data-toggle="tooltip" data-placement="top" data-container="body" title="{{prop}}">{{prop}}{{forloop.counter}}</p>
+                            <p data-toggle="tooltip" data-placement="top" data-container="body" title="{{prop}}">{{prop}}</p>
                         </th>
 
                          {% endif %}
@@ -25,7 +25,7 @@
              <tbody>
              {% for key, value in properties.items %}
                     <tr>
-                        <td>{{key}}</td>
+                        <td>{{value.1.name}}</td>
                         {% for v in value %}
                             {% if v.prop%}
                                 <td>{{v.value}}</td>

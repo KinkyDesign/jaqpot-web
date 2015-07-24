@@ -728,9 +728,7 @@ def dataset_detail(request):
     name = request.GET.get('name', '')
     if request.method == 'GET':
         headers = {'Accept': 'application/json', 'subjectid': token}
-        print('----')
         res = requests.get(SERVER_URL+'/dataset/'+name, headers=headers, timeout=10000, stream=True)
-        print('----')
         data_detail=json.loads(res.text)
         #print data_detail['dataEntry']
         properties=[]
@@ -751,6 +749,7 @@ def dataset_detail(request):
         for key in data_detail['dataEntry']:
             properties[key['compound']['URI']] = []
             properties[key['compound']['URI']].append({"compound": key['compound']['URI']})
+            properties[key['compound']['URI']].append({"name": key['compound']['name']})
 
             #for each compound
             for k, value in key.items():
@@ -762,7 +761,7 @@ def dataset_detail(request):
                         else:
                             properties[key['compound']['URI']].append({"prop":  a[i], "value": "NULL"})
         print properties
-        return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail': data_detail, 'properties': properties, 'a': a, 'new': new})
+        return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail': json.loads(res.text), 'properties': properties, 'a': a, 'new': new})
 #Predict model
 def predict(request):
     token = request.session.get('token', '')
