@@ -1,6 +1,8 @@
 import os
+from xlrd.xlsx import ET
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
+from elasticsearch import Elasticsearch
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm
 import requests
 import json
@@ -13,6 +15,7 @@ from django.core.mail import send_mail
 from jaqpot_ui.templatetags import templates_extras
 import jsonpatch
 import xmltodict
+import elasticsearch
 
 
 # Home page
@@ -450,8 +453,8 @@ def change_params(request):
             content=[]
             if form.is_valid:
                 pmml= request.FILES['file'].read()
-
-                headers = {'Content-Type': 'application/xml',  'subjectid': token}
+                print pmml
+                headers = {'Content-Type': 'application/xml',  'subjectid': token }
                 res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
                 print res.text
                 response = json.loads(res.text)
@@ -726,12 +729,42 @@ def dataset_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     name = request.GET.get('name', '')
+    page = request.GET.get('page', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    r = requests.get(SERVER_URL+'/dataset/'+name+'/partial?rowStart=0&rowMax=0&colStart=0&colMax=0', headers=headers)
+    data=json.loads(r.text)
+    totalRows = data['totalRows']
+    totalColumns = data['totalColumns']
+    last = (totalRows/10)
+    if last==0:
+        last=1
     if request.method == 'GET':
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/dataset/'+name, headers=headers, timeout=10000, stream=True)
-        data_detail=json.loads(res.text)
         #print data_detail['dataEntry']
-        properties=[]
+        if page:
+            page1=int(page) * 10 - 10
+            k=str(page1)
+            if page1 <= 1:
+                if totalColumns>10:
+                    res = requests.get(SERVER_URL+'/dataset/'+name+'/partial?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
+                    data_detail= json.loads(res.text)
+                else:
+                    res = requests.get(SERVER_URL+'/dataset/'+name+'/partial?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
+                    data_detail= json.loads(res.text)
+            else:
+                if totalColumns>int(k)+10 and totalRows>int(k)+10:
+                    res = requests.get(SERVER_URL+'/dataset/'+name+'/partial?rowStart='+k+'&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
+                    data_detail = json.loads(res.text)
+                else:
+                    res = requests.get(SERVER_URL+'/dataset/'+name+'/partial?rowStart='+k+'&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
+                    data_detail = json.loads(res.text)
+        else:
+            page = 1
+            if totalColumns>10 and totalRows>10:
+                res = requests.get(SERVER_URL+'/dataset/'+name+'/partial?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
+            else:
+                res = requests.get(SERVER_URL+'/dataset/'+name+'/partial?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
+        data_detail=json.loads(res.text)
         a=[]
         # a contains all compound's properties
         for key in data_detail['dataEntry']:
@@ -742,6 +775,7 @@ def dataset_detail(request):
                             a.append(m)
         properties={}
         new=[]
+        compound = []
         for i in range(len(a)):
             s=a[i].split('enmtest/',1)[1]
             new.append(data_detail['features'][s])
@@ -760,8 +794,8 @@ def dataset_detail(request):
                             properties[key['compound']['URI']].append({"prop": a[i], "value": value[a[i]]})
                         else:
                             properties[key['compound']['URI']].append({"prop":  a[i], "value": "NULL"})
-        print properties
-        return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail': json.loads(res.text), 'properties': properties, 'a': a, 'new': new})
+
+        return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail':data_detail, 'properties': properties, 'a': a, 'new': new, 'page':page, 'last':last})
 #Predict model
 def predict(request):
     token = request.session.get('token', '')
@@ -817,13 +851,22 @@ def predict_model(request):
         headers = {'Accept': 'text/uri-list', "subjectid": token}
         res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
         list_resp = res.text
+        es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
         #get each line
         list_resp = list_resp.splitlines()
+        r = requests.get('http://localhost:9200')
+        i=1
         for l in list_resp:
             l = l.split('/model/')[1]
             models.append({'name': l})
+            es.index(index='name', doc_type='models', id=i, body={'name': l})
+            i=i+1
         models = json.dumps(models)
         models = json.loads(models)
+        print es.get(index='name', doc_type='models', id=2)
+        #es.index(index='posts', doc_type='blog', id=1, body={'author': 'Santa Clause','blog': 'Slave Based Shippers of the North','title': 'Using Celery for distributing gift dispatch'})
+        #print es.search(index='posts', q='author:"Santa Clause"')
+
         #Display all models for selection
         return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models': models})
     if request.method == 'POST':
@@ -837,7 +880,29 @@ def predict_model(request):
         #Redirect to the welcome page
         #return render(request, "new_task.html", {'token': token, 'username': username, 'task': task})
         return redirect('/')
-
+#Search
+def search(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if request.method == 'GET':
+        search = request.GET.get('search')
+        models=[]
+        headers = {'Accept': 'text/uri-list', "subjectid": token}
+        res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+        list_resp = res.text
+        es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
+        #get each line
+        list_resp = list_resp.splitlines()
+        i=1
+        for l in list_resp:
+            l = l.split('/model/')[1]
+            models.append({'name': l})
+            es.index(index='name', doc_type='models', id=i, body={'name': l})
+            i=i+1
+        models = json.dumps(models)
+        models = json.loads(models)
+        print es.get(index='name', doc_type='models', id=2)
+        return HttpResponse(models)
 #Contact form
 def contact(request):
     token = request.session.get('token', '')

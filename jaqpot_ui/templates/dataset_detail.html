@@ -4,6 +4,7 @@
 
 <div class="div-table" style="width:100%; min-height:650px;">
     {% load endless %}
+     {% paginate 10 a %}
     <h1>Dataset #{{name}}</h1>
 
     <div id="details">
@@ -36,13 +37,108 @@
 
              </tbody>
          </table>
+
     </div>
+     {% get_pages %}
+         <div id="pageNavPosition" class="pagination">
+             <span class="step-links">
+                    <ul class="pagination">
+
+                        <li class="active">
+                            {% if page|add:"0" >= 2 %}
+                            <a href="/data_detail?name={{name}}&page={{page|add:-1}}">Previous</a>
+                            {% else %}
+                            <a href="/data_detail?name={{name}}&page={{page}}">Previous</a>
+                            {%endif %}
+                        </li>
+
+                        <li><a href="/data_detail?name={{name}}&page={{page}}"><strong>{{page}}</strong></a></li>
+                         {% if page|add:"1" < last%}
+                        <li><a href="/data_detail?name={{name}}&page={{page|add:1}}">{{page|add:1}}</a></li>
+                        {% endif %}
+                         {% if page|add:"2" < last%}
+                        <li><a href="/data_detail?name={{name}}&page={{page|add:2}}">{{page|add:2}}</a></li>
+                        {% endif %}
+                        {% if page|add:"3" < last%}
+                        <li><a><strong>...</strong></a></li>
+                        {% endif%}
+                         {% if page|add:1 <= last %}
+                        <li><a href="/data_detail?name={{name}}&page={{last}}">{{last}}</a></li>
+                        {% endif %}
+
+
+                        <li class="active">
+                            {% if page|add:"0" >= last %}
+                                    <a href="/data_detail?name={{name}}&page={{last}}">Next</a>
+                            {%else%}
+                                <a href="/data_detail?name={{name}}&page={{page|add:1 }}">Next </a>
+                            {% endif %}
+                        </li>
+
+                   </ul>
+                </span>
+         </div>
+
 </div>
 
 <script>
+
      $(document).ready( function () {
-        $('#dataset').DataTable( {
+
+        /* $('#dataset').DataTable( {
+            //"bProcessing": true,
+            "bServerSide": true,
+            "Paginate":true,
+            "serverSide": true,
+            "deferLoading": 57,
+            ajax: {
+                url: '/data_detail',
+                type: 'GET',
+                dataType: "json",
+                contentType: 'application/json;',
+                data: { 'page': '2' , 'name': '{{name}}' },
+                success: function(json)
+                {
+                        alert($(json));
+                        //$('#dataset').DataTable().ajax.reload();
+                        //$('html, body').animate({scrollTop:$(document).height()}, 'slow');
+                },
+            }
+
+        } );
+        $('.paginate_button').click( function () {
+
+            alert('hi')
+            $('#dataset').DataTable().ajax.reload();
+            var hidden = $('#dataset').dataTable().fnReloadAjax();
+            alert( hidden.length +' nodes were returned' );
+
+        } ); */
+        /*var table = $('#dataset').DataTable();
+        $('#dataset').on( 'page.dt', function () {
+            ajax: {
+                url: '/data_detail',
+                type: 'GET',
+                dataType: "json",
+                contentType: 'application/json;',
+                data: { 'page': '2' , 'name': '{{name}}' },
+                success: function(json)
+                {
+                        //alert("hi");
+                        //var oTable = $('#dataset').dataTable($(json));
+                        //$('html, body').animate({scrollTop:$(document).height()}, 'slow');
+                },
+            var info = table.page.info();
+            $('#pageInfo').html( 'Showing page: '+info.page+' of '+info.pages );
+        } );
+        $(".paginate_button").click(function() {
+            // Ajax call.
+
+        });*/
+         $('#dataset').DataTable( {
         "scrollX": true,
+        "bPaginate":false,
+        "dom": 'ft',
          "fnDrawCallback": function( oSettings )
          {
             $('.dataTables_scrollBody table thead tr').css({ 'height' : '0px' });
@@ -53,6 +149,11 @@
         },
 
         });
+        $("#search").keyup( function () {
+          // Filter on the column (the index) of this element
+          table.fnFilterAll(this.value);
+        } );
+
 
     } );
 
@@ -64,5 +165,7 @@ $(function () {
 });
 
 </script>
+
+
 
 {% endblock %}

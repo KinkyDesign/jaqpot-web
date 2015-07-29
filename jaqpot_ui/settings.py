@@ -42,6 +42,8 @@ INSTALLED_APPS = (
     'endless_pagination',
     'captcha',
     'jaqpot_ui',
+    'haystack',
+    'elasticsearch',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -143,3 +145,13 @@ TEMPLATE_LOADERS = (
     #'django.template.loaders.app_directories.load_template_source',
     'django.template.loaders.app_directories.Loader',
 )
+
+#Elastic Search
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'haystack',
+    },
+}
+

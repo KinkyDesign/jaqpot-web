@@ -50,6 +50,8 @@ urlpatterns = patterns('',
                         url(r'^descriptors', views.select_descriptors),
                        # captcha
                        url(r'^captcha/', include('captcha.urls')),
+                       #search
+                       (r'^search/', include('haystack.urls')),
 
 
 
