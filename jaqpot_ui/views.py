@@ -478,8 +478,9 @@ def change_params(request):
             doa=SERVER_URL+'/algorithm/leverage'
         algorithms = request.session.get('alg', '')
         dataset = request.session.get('data', '')
-
-        body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling':scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a'}
+        title= request.POST.get('title')
+        description= request.POST.get('description')
+        body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a'}
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
         print res.text
@@ -846,12 +847,12 @@ def predict_model(request):
         dataset = request.GET.get('dataset')
         #Save selected dataset at session dataset
         request.session['dataset'] = dataset
-        models = []
+        m = []
         #get all models
-        headers = {'Accept': 'text/uri-list', "subjectid": token}
+        headers = {'Accept': 'application/json', "subjectid": token}
         res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
         list_resp = res.text
-        es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
+        '''es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
         #get each line
         list_resp = list_resp.splitlines()
         r = requests.get('http://localhost:9200')
@@ -861,14 +862,17 @@ def predict_model(request):
             models.append({'name': l})
             es.index(index='name', doc_type='models', id=i, body={'name': l})
             i=i+1
-        models = json.dumps(models)
-        models = json.loads(models)
-        print es.get(index='name', doc_type='models', id=2)
+        models = json.dumps(models)'''
+        models = json.loads(res.text)
+        print models
+        for mod in models:
+                m.append({'name': mod['_id'], 'meta': mod['meta']})
+        #print es.get(index='name', doc_type='models', id=2)
         #es.index(index='posts', doc_type='blog', id=1, body={'author': 'Santa Clause','blog': 'Slave Based Shippers of the North','title': 'Using Celery for distributing gift dispatch'})
         #print es.search(index='posts', q='author:"Santa Clause"')
 
         #Display all models for selection
-        return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models': models})
+        return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models': m})
     if request.method == 'POST':
         #Get the selected dataset for prediction from session
         dataset= request.session.get('dataset', '')

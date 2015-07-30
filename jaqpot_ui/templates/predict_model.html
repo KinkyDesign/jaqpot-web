@@ -9,11 +9,12 @@
         <h1>Select a model:</h1>
         <div>
             {% load endless %}
-
+             <label class="models" style="background-color:#cf2323;border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </label>
             {% paginate 18 my_models %}
             {% for e in my_models %}
                 <label class="models" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio" value="{{e.name}}">{{e.name}}</label>
+                    <input type="radio" name="radio" value="{{e.name}}">{{e.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{e.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{e.meta.descriptions.0}}</span> </label>
 
             {% endfor %}
 
