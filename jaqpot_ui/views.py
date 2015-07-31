@@ -437,7 +437,10 @@ def change_params(request):
         res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=10', headers=headers1)
         pmml=res1.text
         pmml = pmml.splitlines()
-        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml,'uploadform':form})
+        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'/partial?rowStart=0&rowMax=1&colStart=0&colMax=2')
+        predicted_features = json.loads(res2.text)
+        features = predicted_features['features']
+        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml,'uploadform':form, 'features':features})
     if request.method == 'POST':
         #get transformations
         transformations=""

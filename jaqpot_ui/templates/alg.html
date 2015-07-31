@@ -70,20 +70,20 @@
         <div style="float:left; width:50%;">
         <h5>Input</h5>
         <div>
-                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio" value="option1">Variable1</label>
-                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio" value="option2">Variable2</label>
+            {% for key, v in features.items %}
+                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="radio" name="radio" value="key">{{v}}</label>
+            {% endfor %}
             </div>
 
             </div>
         <div style="float:left; width:50%">
         <h5>Output</h5>
         <div>
-                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio2" value="out_option1">Variable1</label>
-                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio2" value="out_option2">Variable2</label>
+               {% for key, v in features.items %}
+                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="radio" name="radio" value="key">{{v}}</label>
+            {% endfor %}
             </div>
 
             </div>
