@@ -433,25 +433,34 @@ def change_params(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         al = json.loads(res.text)
-        headers1 = {'Accept': 'text/uri-list', 'subjectid': token}
-        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=10', headers=headers1)
-        pmml=res1.text
-        pmml = pmml.splitlines()
+        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        pmml=json.loads(res1.text)
+        pmml_id=[]
+        for p in pmml:
+            pmml_id.append({'id': p['_id']})
         res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'/partial?rowStart=0&rowMax=1&colStart=0&colMax=2')
         predicted_features = json.loads(res2.text)
         features = predicted_features['features']
-        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml,'uploadform':form, 'features':features})
+        print features
+        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml_id, 'uploadform':form, 'features':features})
     if request.method == 'POST':
         #get transformations
         transformations=""
+        prediction_feature = ""
         if request.POST.get('radio_pmml') == "none":
             transformations = ""
+            prediction_feature = request.POST.get('prediction_feature')
         elif request.POST.get('radio_pmml') == "pm":
-            transformations = request.POST.get('pmml_file')
+            transformations = SERVER_URL+'/pmml/'+request.POST.get('pmml_file')
             print transformations
+            prediction_feature = request.POST.get('prediction_feature')
         elif request.POST.get('radio_pmml') == "input":
+            print request.POST.getlist('radio_input')
+            print request.POST.get('radio_output')
             print('---')
+            prediction_feature = request.POST.get('radio_output')
         elif request.POST.get('radio_pmml') == "file":
+            prediction_feature = request.POST.get('prediction_feature')
             form = UploadFileForm(request.POST, request.FILES)
             content=[]
             if form.is_valid:
@@ -483,7 +492,7 @@ def change_params(request):
         dataset = request.session.get('data', '')
         title= request.POST.get('title')
         description= request.POST.get('description')
-        body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a'}
+        body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/'+prediction_feature}
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
         print res.text
@@ -832,7 +841,7 @@ def predict(request):
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         data= json.loads(res.text)
         for d in data:
-            dataset.append({'name': d['_id']})
+            dataset.append({'name': d['_id'], 'title':d['meta']['titles'][0], 'description': d['meta']['descriptions'][0]})
         if len(dataset)< 20:
             last= page
         #Display all datasets for selection

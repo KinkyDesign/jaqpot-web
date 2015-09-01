@@ -10,8 +10,9 @@
         {% load endless %}
         <div class="publicdataset list-group">
         {% paginate 15 dataset using "other_objects_page" %}
+            <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
         {% for data in dataset %}
-             <a href="/predict_model?dataset={{data.name}}" class="list-group-item">{{data.name}}</a>
+            <a href="/predict_model?dataset={{data.name}}" class="list-group-item">{{data.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{data.title}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{data.description}}</span> </a>
         {% endfor %}
             </div>
             {% get_pages %}

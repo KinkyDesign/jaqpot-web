@@ -7,8 +7,8 @@
         <div>
              <h1>Models</h1>
              {% paginate 20 models %}
-
                  <div class="list-group">
+                     <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
                      {% for m in models %}
                              <a href="/m_detail?name={{m.name}}" class="list-group-item">{{m.name}}</a>
                          <!--<li>
