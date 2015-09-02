@@ -444,6 +444,12 @@ def change_params(request):
         print features
         return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml_id, 'uploadform':form, 'features':features})
     if request.method == 'POST':
+        #get parameters of algorithm
+        params=[]
+        parameters = request.POST.getlist('parameters')
+        for p in parameters:
+            params.append({p:request.POST.get(''+p)})
+        print params
         #get transformations
         transformations=""
         prediction_feature = ""
@@ -492,16 +498,17 @@ def change_params(request):
         dataset = request.session.get('data', '')
         title= request.POST.get('title')
         description= request.POST.get('description')
-        body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/'+prediction_feature}
+        body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/'+prediction_feature, 'parameters':params}
+
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
         print res.text
 
-        print request.POST
+        '''print request.POST
         print request.POST.get('file')
         print request.POST.getlist('radio_pmml')
         print request.POST.getlist('checkbox')
-        print request.POST.getlist('select')
+        print request.POST.getlist('select')'''
         return redirect('/task', {'token': token, 'username': username})
 
 
@@ -531,18 +538,14 @@ def model(request):
         #print r.text
         models = []
         #get all models
-        headers = {'Accept': 'text/uri-list', "subjectid": token}
+        headers = {'Accept': 'application/json', "subjectid": token}
         res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
-        list_resp = res.text
-        #get each line
-        list_resp = list_resp.splitlines()
+        list_resp = json.loads(res.text)
+        #for each model
         for l in list_resp:
-            l = l.split('/model/')[1]
-            models.append({'name': l})
+            models.append({'name': l['_id'], 'meta': l['meta'] })
         models = json.dumps(models)
         models = json.loads(models)
-
-        #models= [{'name':'model1'}, {'name':'model2'}, {'name':'model3'}, {'name':'model4'}]
         return render(request, "model.html", {'token': token, 'username': username, 'models':models })
 
 def model_detail(request):
