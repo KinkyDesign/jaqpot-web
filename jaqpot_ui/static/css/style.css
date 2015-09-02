@@ -191,6 +191,7 @@ transition: border .5s;
 input [type=search] {
 radius:4px;
 }
+
 #id_password{
 text-align: center;
 background-color: #ECF0F1;
@@ -365,14 +366,14 @@ border-radius: 4px;
 .dataTables_wrapper .dataTables_filter input:hover{
 border: 2px solid #ccc;
 border-radius: 4px;
-border-color:#8cc152;
+border-color: #cf2323;
 transition: 2s;
 }
 
 .dataTables_wrapper .dataTables_filter input:focus{
 border: 2px solid #ccc;
 border-radius: 4px;
-border-color:#8cc152;
+border-color: #cf2323;
 }
 
 .label-danger{

@@ -51,21 +51,26 @@
                             <a href="/data_detail?name={{name}}&page={{page}}">Previous</a>
                             {%endif %}
                         </li>
-
+                        {% if page|add:-1 >= 1 %}
+                        <li><a href="/data_detail?name={{name}}&page=1">1</a></li>
+                        {% endif %}
+                        {% if page|add:-2 >= 1%}
+                        <li><a><strong>...</strong></a></li>
+                        {% endif%}
+                        {% if page|add:-1 > 1%}
+                        <li><a href="/data_detail?name={{name}}&page={{page|add:-1}}">{{page|add:-1}}</a></li>
+                        {% endif %}
                         <li><a href="/data_detail?name={{name}}&page={{page}}"><strong>{{page}}</strong></a></li>
+
                          {% if page|add:"1" < last%}
                         <li><a href="/data_detail?name={{name}}&page={{page|add:1}}">{{page|add:1}}</a></li>
                         {% endif %}
-                         {% if page|add:"2" < last%}
-                        <li><a href="/data_detail?name={{name}}&page={{page|add:2}}">{{page|add:2}}</a></li>
-                        {% endif %}
-                        {% if page|add:"3" < last%}
+                        {% if page|add:"2" < last%}
                         <li><a><strong>...</strong></a></li>
                         {% endif%}
                          {% if page|add:1 <= last %}
                         <li><a href="/data_detail?name={{name}}&page={{last}}">{{last}}</a></li>
                         {% endif %}
-
 
                         <li class="active">
                             {% if page|add:"0" >= last %}

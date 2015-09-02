@@ -3,6 +3,8 @@
 {% block content %}
 <form method="post" id="form1" enctype="multipart/form-data"> {% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block; padding:10px;">
+    <a id="back" class="btn bt-red" style="width:3%;" ><i class="glyphicon glyphicon-circle-arrow-left"></i></a>
+    <br>
     <div style="float:left; width:50%;">
             <h1>Algorithm</h1>
             <h3>Title: {{algorithms}}</h3>
@@ -185,6 +187,9 @@
             $("#file").hide();
             $("#PMML").hide();
             $("#none").show();
+     });
+     $('#back').click(function(event) {
+       history.go(-1);
      });
 </script>
 
