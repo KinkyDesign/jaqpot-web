@@ -8,6 +8,7 @@
              <h1>Dataset:</h1>
              {% paginate 20 dataset %}
              <div class="list-group">
+                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
                  {% for d in dataset %}
 
                     <a href="/data_detail?name={{d.name}}" class="list-group-item">{{d.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{{d.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{d.meta.descriptions.0}}</span> </a>
@@ -28,11 +29,29 @@
                             {%endif %}
                         </li>
 
-                        <li><a href="/data?page={{page}}"><strong>{{page}}</strong></a></li>
+                        {% if page|add:-1 >= 1 %}
+                        <li><a href="/data_detail?name={{name}}&page=1">1</a></li>
+                        {% endif %}
+                        {% if page|add:-2 >= 1%}
+                        <li><a><strong>...</strong></a></li>
+                        {% endif%}
+                        {% if page|add:-1 > 1%}
+                        <li><a href="/data_detail?name={{name}}&page={{page|add:-1}}">{{page|add:-1}}</a></li>
+                        {% endif %}
+                        <li><a href="/data_detail?name={{name}}&page={{page}}"><strong>{{page}}</strong></a></li>
 
+                         {% if page|add:"1" < last%}
+                        <li><a href="/data_detail?name={{name}}&page={{page|add:1}}">{{page|add:1}}</a></li>
+                        {% endif %}
+                        {% if page|add:"2" < last%}
+                        <li><a><strong>...</strong></a></li>
+                        {% endif%}
+                         {% if page|add:1 <= last %}
+                        <li><a href="/data_detail?name={{name}}&page={{last}}">{{last}}</a></li>
+                        {% endif %}
 
                         <li class="active">
-                            {% if last %}
+                            {% if page >= last %}
                                     <a href="/data?page={{last}}">Next</a>
                             {%else%}
                                 <a href="/data?page={{page|add:1 }}">Next </a>

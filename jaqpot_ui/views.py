@@ -532,14 +532,14 @@ def model(request):
         if r.status_code != 200:
             return redirect('/login')
     if request.method == 'GET':
-        #get all models
-        #headers = {'Accept:text/uri-list'}
-        #r = requests.get('http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/model', headers=headers)
-        #print r.text
         models = []
         #get all models
         headers = {'Accept': 'application/json', "subjectid": token}
-        res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+        #get total number of models
+        headers1 = {'Accept': 'text/plain', 'subjectid': token}
+        res1= requests.get(SERVER_URL+'/model/count?creator='+username, headers=headers1)
+        total_models= res1.text
+        res = requests.get(SERVER_URL+'/model?creator='+username+'&start=0&max='+total_models, headers=headers)
         list_resp = json.loads(res.text)
         #for each model
         for l in list_resp:
@@ -718,25 +718,29 @@ def dataset(request):
     if request.method == 'GET':
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
+        #get total number of datasets
+        headers1 = {'Accept': 'text/plain', 'subjectid': token}
+        res1= requests.get(SERVER_URL+'/dataset/count?creator='+username, headers=headers1)
+        total_datasets= int(res1.text)
+        if total_datasets%20 == 0:
+            last = total_datasets/20
+        else:
+            last = (total_datasets/20)+1
 
         if page:
+            #page1 is the number of first dataset of page
             page1=int(page) * 20 - 20
             k=str(page1)
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
-            elif last:
-                res = requests.get(SERVER_URL+'/dataset?start='+last+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
             else:
-                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
-
+                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start='+k+'&max=20', headers=headers)
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
         data= json.loads(res.text)
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
-        if len(dataset)< 20:
-            last= page
 
         return render(request, "dataset.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last})
 

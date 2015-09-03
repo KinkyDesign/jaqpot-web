@@ -93,6 +93,7 @@
                 </span>
             </div>
         </div> -->
+    <a id="back" class="btn bt-red" style="width:10%; float:left;" >Back</a>
     <input id="choose_alg1" type="submit" value="Save" class="btn bt-red" style="width: 10%; float:right; right:10%;">
 </div>
 </form>
@@ -119,6 +120,11 @@
 }); */
 //search
 $(document).ready(function(){
+
+    $('#back').click(function(event) {
+       history.go(-1);
+     });
+
     $("#filter").keyup(function(){
 
         // Retrieve the input field text and reset the count to zero
