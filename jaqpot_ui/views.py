@@ -7,6 +7,7 @@ from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, Contac
 import requests
 import json
 import datetime
+import numpy as np
 import subprocess
 from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, EMAIL_HOST_USER, SERVER_URL
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -226,7 +227,8 @@ def bibtex(request):
         list_resp = res.text
         if res.status_code == 403:
             error = "This request is forbidden (e.g., no authentication token is provided)"
-            return render(request, "bibtex.html",{'token': token, 'username': username, 'name': name, 'error': error})
+            return render(request, "bibtex.html",
+                          {'token': token, 'username': username, 'name': name, 'error': error})
         if res.status_code == 401:
             error = "You are not authorized to access this resource"
             return render(request, "bibtex.html",{'token': token, 'username': username, 'name': name, 'error': error})
@@ -329,22 +331,14 @@ def user(request):
     name = request.GET.get('name')
 
     if request.method == 'GET':
-        #curl command for getting user info
-        #curl -X GET http://enanomapper.ntua.gr:8880/jaqpot/services/user/hampos -H "Content-type: application/json" -H "Accept: application/json" -H subjectid:AQIC5wM2LY4SfcwVYB0lR6oY-G37NauRX4VvIGegOod7F_g.*AAJTSQACMDE.*
-        #headers = {'content-type': 'text/uri-list'}
-        #r = requests.get('http://opentox.informatik.tu-muenchen.de:8080/OpenTox-dev/model', headers=headers)
-        #print r.text
         headers = {'content-type': 'application/json', 'subjectid': token}
-        #headers = {'subjectid': token}
         res = requests.get(SERVER_URL+'/user/'+ username, headers=headers)
-        #rw=requests.get('http://opentox.ntua.gr:8080/user/'+ username +'@opensso.in-silico.ch/quota', headers=headers)
         print res.text
         contacts = json.loads(res.text)
         res1 = requests.get(SERVER_URL+'/user/'+ username+'/quota', headers=headers)
         print res1.text
         percentage = json.loads(res1.text)
         percentage = json.dumps(percentage)
-        #contacts = {'name': username, 'maxtasks': 5, 'maxmodels': 2000, 'maxalgorithms': 2000, 'models': 100, 'tasks':2, 'alg': 1000}
         contacts = json.dumps(contacts)
 
         return render(request, "user_details.html", {'token': token, 'username': username, 'name': name, 'contacts': contacts, 'percentage': percentage})
@@ -383,7 +377,7 @@ def trainmodel(request):
 
         return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last})
 
-
+#choose dataset for training
 def choose_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -422,7 +416,7 @@ def choose_dataset(request):
         request.session['alg'] = algorithms[0]['alg']
         request.session['data'] = dataset
         return redirect('/change_params', {'token': token, 'username': username,})
-
+#change algorithms parameters, select pmml, prediction feature, scaling and doa for training
 def change_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -465,6 +459,12 @@ def change_params(request):
             print request.POST.get('radio_output')
             print('---')
             prediction_feature = request.POST.get('radio_output')
+            feature_list = request.POST.getlist('radio_input')
+            headers = {'Accept': 'application/json',  'subjectid': token }
+            body = {'features': feature_list }
+            res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
+            response = json.loads(res.text)
+            transformations = SERVER_URL+'/pmml/'+response['_id']
         elif request.POST.get('radio_pmml') == "file":
             prediction_feature = request.POST.get('prediction_feature')
             form = UploadFileForm(request.POST, request.FILES)
@@ -522,6 +522,7 @@ def conformer(request):
         #add task for descriptors calculation
         return redirect('/task', {'token': token, 'username': username})
 
+#list of models
 def model(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -548,6 +549,7 @@ def model(request):
         models = json.loads(models)
         return render(request, "model.html", {'token': token, 'username': username, 'models':models })
 
+#Display details for each model
 def model_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -575,7 +577,7 @@ def model_pmml(request):
     response['Content-Disposition'] = 'attachment; filename="pmml_'+name+'.xml"'
     return response
 
-
+#list of features
 def features(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -619,6 +621,7 @@ def features(request):
                 last= page
             return render(request, "features.html", {'token': token, 'username': username, 'features': features, 'page': page, 'last': last})
 
+#Display details of each feature
 def feature_details(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -663,7 +666,7 @@ def feature_delete(request):
         res = requests.delete(SERVER_URL+'/feature/'+id, headers=headers)
         return render(request, "mainPage.html", {'token': token, 'username': username })
 
-
+#List of algorithms
 def algorithm(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -684,6 +687,7 @@ def algorithm(request):
 
          return render(request, "algorithm.html", {'token': token, 'username': username, 'algorithms': algorithms})
 
+#Display details of each algorithm
 def algorithm_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -708,7 +712,7 @@ def algorithm_delete(request):
         res = requests.delete(SERVER_URL+'/algorithm/'+id, headers=headers)
         return render(request, "mainPage.html", {'token': token, 'username': username})
 
-
+#List of dataset
 def dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -744,7 +748,7 @@ def dataset(request):
 
         return render(request, "dataset.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last})
 
-
+#Display details of each dataset
 def dataset_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -816,6 +820,7 @@ def dataset_detail(request):
                             properties[key['compound']['URI']].append({"prop":  a[i], "value": "NULL"})
 
         return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail':data_detail, 'properties': properties, 'a': a, 'new': new, 'page':page, 'last':last})
+
 #Predict model
 def predict(request):
     token = request.session.get('token', '')
