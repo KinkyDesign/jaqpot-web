@@ -72,16 +72,19 @@
         <h5><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable and endpoint:</h5>
         <div style="float:left; width:50%;">
         <h5>Input</h5>
+                <input type="checkbox" name="selectallfeatures" id= "selectallfeatures" ><b>Select All</b>
         <div style="overflow:scroll; height:300px;">
+
             {% for key, v in features.items %}
                  <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="checkbox" name="radio_input" value="{{key}}">{{v}}</label>
+                    <input type="checkbox" name="radio_input" class="input" value="{{key}}">{{v}}</label>
             {% endfor %}
             </div>
 
             </div>
         <div style="float:left; width:50%">
         <h5>Output</h5>
+           <br>
         <div style="overflow:scroll; height:300px;">
                {% for key, v in features.items %}
                  <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
@@ -191,6 +194,21 @@
      $('#back').click(function(event) {
        history.go(-1);
      });
+
+   $(document).ready(function() {
+    $('#selectallfeatures').click(function(event) {  //on click
+        if(this.checked) { // check select status
+            $('.input').each(function() { //loop through each checkbox
+                this.checked = true;  //select all checkboxes with class "checkbox1"
+            });
+        }else{
+            $('.input').each(function() { //loop through each checkbox
+                this.checked = false; //deselect all checkboxes with class "checkbox1"
+            });
+        }
+    });
+
+});
 </script>
 
 {%endblock%}
