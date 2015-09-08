@@ -7,7 +7,6 @@ from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, Contac
 import requests
 import json
 import datetime
-import numpy as np
 import subprocess
 from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, EMAIL_HOST_USER, SERVER_URL
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -460,8 +459,9 @@ def change_params(request):
             print('---')
             prediction_feature = request.POST.get('radio_output')
             feature_list = request.POST.getlist('radio_input')
-            headers = {'Accept': 'application/json',  'subjectid': token }
-            body = {'features': feature_list }
+            headers = {'Accept': 'application/json',  'subjectid': token}
+            body = {'features': feature_list}
+            print body
             res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
             response = json.loads(res.text)
             transformations = SERVER_URL+'/pmml/'+response['_id']
@@ -501,8 +501,8 @@ def change_params(request):
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/'+prediction_feature, 'parameters':params}
 
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
-        print res.text
+        #res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
+        #print res.text
 
         '''print request.POST
         print request.POST.get('file')
@@ -554,16 +554,18 @@ def model_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     name = request.GET.get('name')
-    #details = [{'a':'0.1','b':'0.2', 'description':'model'}]
     #get task details in rdf format
     headers = {'Accept': 'application/json', "subjectid": token}
     res = requests.get(SERVER_URL+'/model/'+name, headers=headers)
     details = json.loads(res.text)
-    print res.text
-
-
+    algorithm=details['algorithm']['_id']
+    if algorithm:
+        res = requests.get(SERVER_URL+'/algorithm/'+algorithm, headers=headers)
+        alg_details=json.loads(res.text)
+    else:
+        alg_details = ""
     if request.method == 'GET':
-        return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name })
+        return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name, 'alg': alg_details })
 
 def model_pmml(request):
     token = request.session.get('token', '')
