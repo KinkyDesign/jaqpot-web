@@ -460,8 +460,10 @@ def change_params(request):
             prediction_feature = request.POST.get('radio_output')
             feature_list = request.POST.getlist('radio_input')
             headers = {'Accept': 'application/json',  'subjectid': token}
-            body = {'features': feature_list}
-            print body
+            feat=""
+            for f in feature_list:
+                feat += str(f)+','
+            body = {'features': feat}
             res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
             response = json.loads(res.text)
             transformations = SERVER_URL+'/pmml/'+response['_id']
@@ -501,8 +503,8 @@ def change_params(request):
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/'+prediction_feature, 'parameters':params}
 
         headers = {'Accept': 'application/json', 'subjectid': token}
-        #res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
-        #print res.text
+        res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
+        print res.text
 
         '''print request.POST
         print request.POST.get('file')
@@ -844,18 +846,19 @@ def predict(request):
             page1=int(page) * 20 - 20
             k=str(page1)
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
             elif last:
-                res = requests.get(SERVER_URL+'/dataset?start='+last+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start='+last+'&max=20', headers=headers)
             else:
-                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start='+k+'&max=20', headers=headers)
 
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
         data= json.loads(res.text)
         for d in data:
             dataset.append({'name': d['_id'], 'title':d['meta']['titles'][0], 'description': d['meta']['descriptions'][0]})
+
         if len(dataset)< 20:
             last= page
         #Display all datasets for selection
@@ -904,12 +907,22 @@ def predict_model(request):
         dataset= request.session.get('dataset', '')
         #Get the selected model
         selected_model = request.POST.get('radio')
-        headers = {'Accept': 'application/json', "subjectid": token}
-        res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=SERVER_URL+'/dataset/'+dataset)
-        response = json.loads(res.text)
-        #Redirect to the welcome page
-        #return render(request, "new_task.html", {'token': token, 'username': username, 'task': task})
-        return redirect('/')
+        if selected_model == "" or selected_model == None:
+            m = []
+            #get all models
+            headers = {'Accept': 'application/json', "subjectid": token}
+            res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+            models = json.loads(res.text)
+            for mod in models:
+                    m.append({'name': mod['_id'], 'meta': mod['meta']})
+            return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models': m ,'error':"You should select a model."})
+        else:
+            headers = {'Accept': 'application/json', "subjectid": token}
+            res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=SERVER_URL+'/dataset/'+dataset)
+            response = json.loads(res.text)
+            #Redirect to the welcome page
+            #return render(request, "new_task.html", {'token': token, 'username': username, 'task': task})
+            return redirect('/')
 #Search
 def search(request):
     token = request.session.get('token', '')

@@ -7,6 +7,9 @@
     <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
     <div style="width:99%; float:left;">
         <h1>Select a model:</h1>
+        {% if error %}
+            <h5 style="color:red;">{{error}}</h5>
+        {% endif %}
         <div>
             {% load endless %}
              <label class="models" style="background-color:#cf2323;border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
