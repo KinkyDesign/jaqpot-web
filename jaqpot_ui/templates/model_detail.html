@@ -20,6 +20,28 @@
 
     {% endif %}
     <br>
+
+     {% if required %}
+        <div class="panel" style="background-color: #e6e9ed;">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion2" href="#collapseTree" class="collapsed grey-link">Required Features</a>
+
+                </h4>
+            </div>
+            <div id="collapseTree" class="panel-collapse collapse" style="height: 0px;">
+                <div class="panel-body">
+
+                        <ul>
+                            {% for r_f in required %}
+                                <li><a href="{{r_f.feature}}">{{r_f.feature}}</a></li>
+                            {% endfor %}
+                        </ul>
+
+                </div>
+            </div>
+            </div>
+     {% endif %}
      {% if details.dependentFeatures %}
         <div class="panel" style="background-color: #e6e9ed;">
             <div class="panel-heading">
