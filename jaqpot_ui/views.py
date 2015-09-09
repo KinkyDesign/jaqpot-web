@@ -927,8 +927,10 @@ def predict_model(request):
             return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models': m ,'error':"You should select a model."})
         else:
             headers = {'Accept': 'application/json', "subjectid": token}
-            res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=SERVER_URL+'/dataset/'+dataset)
+            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset}
+            res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
             response = json.loads(res.text)
+            print response
             #Redirect to the welcome page
             #return render(request, "new_task.html", {'token': token, 'username': username, 'task': task})
             return redirect('/')
