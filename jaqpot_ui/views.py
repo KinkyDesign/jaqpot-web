@@ -412,9 +412,16 @@ def choose_dataset(request):
             algorithms.append({"alg":alg, "info":info })
         dataset = request.GET.get('dataset')
         print dataset
-        request.session['alg'] = algorithms[0]['alg']
-        request.session['data'] = dataset
-        return redirect('/change_params', {'token': token, 'username': username,})
+        print algorithms
+        if algorithms == []:
+            error = "Please select algorithm."
+            return redirect('/dataset?dataset='+request.session['data'], {'token': token, 'username': username, 'error':error})
+            #render
+            #return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset})
+        else:
+            request.session['alg'] = algorithms[0]['alg']
+            request.session['data'] = dataset
+            return redirect('/change_params', {'token': token, 'username': username,})
 #change algorithms parameters, select pmml, prediction feature, scaling and doa for training
 def change_params(request):
     token = request.session.get('token', '')
@@ -431,7 +438,7 @@ def change_params(request):
         pmml_id=[]
         for p in pmml:
             pmml_id.append({'id': p['_id']})
-        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'/partial?rowStart=0&rowMax=1&colStart=0&colMax=2')
+        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
         predicted_features = json.loads(res2.text)
         features = predicted_features['features']
         print features
@@ -768,7 +775,7 @@ def dataset_detail(request):
     name = request.GET.get('name', '')
     page = request.GET.get('page', '')
     headers = {'Accept': 'application/json', 'subjectid': token}
-    r = requests.get(SERVER_URL+'/dataset/'+name+'/partial?rowStart=0&rowMax=0&colStart=0&colMax=0', headers=headers)
+    r = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=0&colStart=0&colMax=0', headers=headers)
     data=json.loads(r.text)
     totalRows = data['totalRows']
     totalColumns = data['totalColumns']
@@ -783,24 +790,24 @@ def dataset_detail(request):
             k=str(page1)
             if page1 <= 1:
                 if totalColumns>10:
-                    res = requests.get(SERVER_URL+'/dataset/'+name+'/partial?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
+                    res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
                     data_detail= json.loads(res.text)
                 else:
-                    res = requests.get(SERVER_URL+'/dataset/'+name+'/partial?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
+                    res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
                     data_detail= json.loads(res.text)
             else:
                 if totalColumns>int(k)+10 and totalRows>int(k)+10:
-                    res = requests.get(SERVER_URL+'/dataset/'+name+'/partial?rowStart='+k+'&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
+                    res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart='+k+'&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
                     data_detail = json.loads(res.text)
                 else:
-                    res = requests.get(SERVER_URL+'/dataset/'+name+'/partial?rowStart='+k+'&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
+                    res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart='+k+'&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
                     data_detail = json.loads(res.text)
         else:
             page = 1
             if totalColumns>10 and totalRows>10:
-                res = requests.get(SERVER_URL+'/dataset/'+name+'/partial?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
+                res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
             else:
-                res = requests.get(SERVER_URL+'/dataset/'+name+'/partial?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
+                res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
         data_detail=json.loads(res.text)
         a=[]
         # a contains all compound's properties
@@ -813,6 +820,7 @@ def dataset_detail(request):
         properties={}
         new=[]
         compound = []
+        print a
         for i in range(len(a)):
             s=a[i].split('enmtest/',1)[1]
             new.append(data_detail['features'][s])

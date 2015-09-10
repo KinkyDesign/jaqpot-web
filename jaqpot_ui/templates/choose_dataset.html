@@ -8,6 +8,9 @@
         <h1>Select dataset:</h1>
         <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
         <br>
+        {% if error %}
+            {{error}}
+         {% endif%}
         {% load endless %}
         <div class="publicdataset list-group">
         {% paginate 15 entries2 using "other_objects_page" %}
