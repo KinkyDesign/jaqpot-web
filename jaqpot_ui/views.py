@@ -414,10 +414,27 @@ def choose_dataset(request):
         print dataset
         print algorithms
         if algorithms == []:
+            headers = {'Accept': 'text/uri-list', 'subjectid': token}
+            classification_alg = []
+            res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
+            list_resp = res.text
+            list_resp = list_resp.split('\n')[:]
+            for l in list_resp:
+                l = l.split('/algorithm/')[1]
+                classification_alg.append({'name': l})
+            classification_alg = json.dumps(classification_alg)
+            classification_alg = json.loads(classification_alg)
+            regression_alg = []
+            res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
+            list_resp = res.text
+            list_resp = list_resp.split('\n')[:]
+            for l in list_resp:
+                l = l.split('/algorithm/')[1]
+                regression_alg.append({'name': l})
+            regression_alg = json.dumps(regression_alg)
+            regression_alg = json.loads(regression_alg)
             error = "Please select algorithm."
-            return redirect('/dataset?dataset='+request.session['data'], {'token': token, 'username': username, 'error':error})
-            #render
-            #return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset})
+            return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset, 'error':error})
         else:
             request.session['alg'] = algorithms[0]['alg']
             request.session['data'] = dataset
@@ -440,9 +457,14 @@ def change_params(request):
             pmml_id.append({'id': p['_id']})
         res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
         predicted_features = json.loads(res2.text)
-        features = predicted_features['features']
-        print features
-        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml_id, 'uploadform':form, 'features':features})
+        print res2.text
+        if predicted_features['httpStatus'] == 200:
+            features = predicted_features['features']
+            print features
+            return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml_id, 'uploadform':form, 'features':features})
+        else:
+            #redirect to error page
+            return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
     if request.method == 'POST':
         #get parameters of algorithm
         params=[]
