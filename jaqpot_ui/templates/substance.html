@@ -4,6 +4,9 @@
 <form method="post"> {% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block;">
     <h1>Create Dataset</h1>
+    {% if error %}
+        <h6 style="color:red;">{{error}}</h6>
+    {% endif %}
     <div>
         <label class="align">Substance owner id:</label>
         <label class="align">{{form.substanceowner}}</label>

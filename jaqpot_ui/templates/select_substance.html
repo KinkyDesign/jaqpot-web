@@ -190,7 +190,12 @@ $('.checkbox1').on('click', function(){
         url: '/get_substance/',
         data: { data: selected_items },
         success: function() {
-            window.location.href="/properties"
+            if (selected_items == ""){
+                window.location.href="/select_substance"
+            }
+            else{
+                window.location.href="/properties"
+            }
         }
     });
 

@@ -811,14 +811,14 @@ def dataset_detail(request):
             page1=int(page) * 10 - 10
             k=str(page1)
             if page1 <= 1:
-                if totalColumns>10:
+                if totalRows>10:
                     res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
                     data_detail= json.loads(res.text)
                 else:
                     res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
                     data_detail= json.loads(res.text)
             else:
-                if totalColumns>int(k)+10 and totalRows>int(k)+10:
+                if totalRows>int(k)+10:
                     res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart='+k+'&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
                     data_detail = json.loads(res.text)
                 else:
@@ -826,7 +826,7 @@ def dataset_detail(request):
                     data_detail = json.loads(res.text)
         else:
             page = 1
-            if totalColumns>10 and totalRows>10:
+            if totalRows>10:
                 res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
             else:
                 res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
@@ -842,10 +842,11 @@ def dataset_detail(request):
         properties={}
         new=[]
         compound = []
-        print a
         for i in range(len(a)):
-            s=a[i].split('enmtest/',1)[1]
-            new.append(data_detail['features'][s])
+            for k in data_detail['features']:
+                if k['uri'] == a[i]:
+                    new.append(k['name'])
+
         #get response json
         for key in data_detail['dataEntry']:
             properties[key['compound']['URI']] = []
@@ -1081,7 +1082,8 @@ def all_substance(request):
             request.session['substances'] = substances
             return redirect('/select_substance', {'token': token, 'username': username})
         else:
-            return render(request, "substance.html", {'token': token, 'username': username, 'form':form})
+            error = "Fill in Substance owner id."
+            return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'error':error})
 
 def select_substance(request):
     token = request.session.get('token', '')
@@ -1117,6 +1119,7 @@ def get_substance(request):
             res1 = requests.get(SERVER_URL+'/enm/property/categories', headers=headers)
             properties=json.loads(res1.text)
             request.session['properties'] = properties
+            print data
             return HttpResponse(data)
 
 def select_properties(request):
