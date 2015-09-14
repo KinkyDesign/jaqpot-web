@@ -75,9 +75,9 @@
                 <input type="checkbox" name="selectallfeatures" id= "selectallfeatures" ><b>Select All</b>
         <div style="overflow:scroll; height:300px;">
 
-            {% for key, v in features.items %}
+            {% for f in features %}
                  <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="checkbox" name="radio_input" class="input" value="https://apps.ideaconsult.net/enmtest/{{key}}">{{v}}</label>
+                    <input type="checkbox" name="radio_input" class="input" value="{{f.uri}}">{{f.name}}</label>
             {% endfor %}
             </div>
 
@@ -86,9 +86,9 @@
         <h5>Output</h5>
            <br>
         <div style="overflow:scroll; height:300px;">
-               {% for key, v in features.items %}
-                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio_output" value="{{key}}">{{v}}</label>
+               {% for f in features %}
+                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 10px;display:block; width:99%;">
+                    <input type="radio" name="radio_output" value="{{f.uri}}">{{f.name}}</label>
             {% endfor %}
             </div>
 
@@ -112,8 +112,8 @@
         <div>
             <h5>Select Prediction Feature:</h5>
             <select name="prediction_feature">
-                {% for key, v in features.items %}
-                  <option value="{{key}}">{{v}}</option>
+                {% for f in features %}
+                  <option value="{{f.uri}}">{{f.name}}</option>
                 {% endfor %}
             </select>
             <br>
@@ -124,8 +124,8 @@
         <h5><input type="radio" name="radio1" value="PMML file" style="display:none;">Upload a PMML with transformations(optional):</h5>{{uploadform.file}}
         <h5>Select Prediction Feature:</h5>
         <select name="prediction_feature">
-            {% for key, v in features.items %}
-            <option value="{{key}}">{{v}}</option>
+            {% for f in features %}
+            <option value="{{f.uri}}">{{f.name}}</option>
             {% endfor %}
         </select>
 
@@ -134,8 +134,8 @@
 
         <h5>Select Prediction Feature:</h5>
         <select name="prediction_feature">
-            {% for key, v in features.items %}
-            <option value="{{key}}">{{v}}</option>
+            {% for f in features %}
+            <option value="{{f.uri}}">{{f.name}}</option>
             {% endfor %}
         </select>
 

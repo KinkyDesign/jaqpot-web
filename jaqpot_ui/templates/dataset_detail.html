@@ -54,7 +54,7 @@
                         {% if page|add:-1 >= 1 %}
                         <li><a href="/data_detail?name={{name}}&page=1">1</a></li>
                         {% endif %}
-                        {% if page|add:-2 >= 1%}
+                        {% if page|add:-2 > 1%}
                         <li><a><strong>...</strong></a></li>
                         {% endif%}
                         {% if page|add:-1 > 1%}
