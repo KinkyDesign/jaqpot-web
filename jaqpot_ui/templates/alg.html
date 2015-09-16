@@ -87,7 +87,7 @@
            <br>
         <div style="overflow:scroll; height:300px;">
                {% for f in features %}
-                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 10px;display:block; width:99%;">
+                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                     <input type="radio" name="radio_output" value="{{f.uri}}">{{f.name}}</label>
             {% endfor %}
             </div>
@@ -158,6 +158,9 @@
         <br>
         <br>
          <!-- <a href="/change_params?data={{dataset}}&alg={{algorithms}}" class="btn bt-red" style="width:10%; float:left; left:10%;" >Train</a> -->
+        {% if error %}
+            <h6 style="color:red">{{error}}</h6>
+        {% endif %}
         <input id="choose_alg" type="submit" value="Train" class="btn bt-red" style="width: 10%; float:left; left:10%;">
     </div>
 

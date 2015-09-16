@@ -1,4 +1,5 @@
 import os
+from urllib import urlencode
 from xlrd.xlsx import ET
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
@@ -448,6 +449,8 @@ def change_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     if request.method == 'GET':
+        error = request.GET.get('error')
+        print error
         form = UploadFileForm()
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
@@ -461,15 +464,13 @@ def change_params(request):
             pmml_id.append({'id': p['_id']})
         res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
         predicted_features = json.loads(res2.text)
-        print res2.text
-        print res2
         if str(res2) != "<Response [200]>":
             #redirect to error page
             return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
         else:
             features = predicted_features['features']
             print features
-            return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml_id, 'uploadform':form, 'features':features})
+            return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml_id, 'uploadform':form, 'features':features, 'error':error})
 
 
     if request.method == 'POST':
@@ -508,13 +509,18 @@ def change_params(request):
             form = UploadFileForm(request.POST, request.FILES)
             content=[]
             if form.is_valid:
-                pmml= request.FILES['file'].read()
-                print pmml
-                headers = {'Content-Type': 'application/xml',  'subjectid': token }
-                res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
-                print res.text
-                response = json.loads(res.text)
-                transformations = SERVER_URL+'/pmml/'+response['_id']
+                if 'file' in request.FILES:
+                    pmml= request.FILES['file'].read()
+                    print pmml
+                    headers = {'Content-Type': 'application/xml',  'subjectid': token }
+                    res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
+                    print res.text
+                    response = json.loads(res.text)
+                    transformations = SERVER_URL+'/pmml/'+response['_id']
+                else:
+                    error = "Please upload a file."
+                    #return redirect('/change_params', {'token': token, 'username': username, 'error':error})
+                    return HttpResponseRedirect('/change_params' + '?' + urlencode({'error':error}))
 
         #get scaling
         scaling=""
