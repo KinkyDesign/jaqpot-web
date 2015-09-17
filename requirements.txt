@@ -3,3 +3,5 @@ rdflib
 django-simple-captcha
 django-ratings
 jsonpatch
+django-haystack
+elasticsearch

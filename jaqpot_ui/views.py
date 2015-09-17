@@ -1,9 +1,9 @@
 import os
 from urllib import urlencode
-from xlrd.xlsx import ET
+#from xlrd.xlsx import ET
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
-from elasticsearch import Elasticsearch
+#from elasticsearch import Elasticsearch
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm
 import requests
 import json
@@ -16,7 +16,7 @@ from django.core.mail import send_mail
 from jaqpot_ui.templatetags import templates_extras
 import jsonpatch
 import xmltodict
-import elasticsearch
+#import elasticsearch
 
 
 # Home page
@@ -178,21 +178,6 @@ def taskdetail(request):
         #get task details in rdf format
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
-
-        '''g = Graph().parse(URL+'/task/'+name)
-        output = {}
-        k=''
-        for s, p, o in g:
-            if type(o) == rdflib.term.Literal:
-                if 'elements/1.1/' in p:
-                    k = p.split('elements/1.1/')[1]
-                    print k
-                if '#' in p:
-                    k = p.split('#')[1]
-                    print k
-                output.update({k: o.toPython()})'''
-
-
         #output = json.dumps(res.text)
         output = json.loads(res.text)
         if output['meta']['date']:
