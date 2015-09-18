@@ -3,8 +3,9 @@ from urllib import urlencode
 #from xlrd.xlsx import ET
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
-#from elasticsearch import Elasticsearch
-from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm
+from elasticsearch import Elasticsearch
+from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, \
+    TrainingForm
 import requests
 import json
 import datetime
@@ -16,7 +17,7 @@ from django.core.mail import send_mail
 from jaqpot_ui.templatetags import templates_extras
 import jsonpatch
 import xmltodict
-#import elasticsearch
+import elasticsearch
 
 
 # Home page
@@ -434,9 +435,8 @@ def change_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     if request.method == 'GET':
-        error = request.GET.get('error')
-        print error
         form = UploadFileForm()
+        tform = TrainingForm()
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
         headers = {'Accept': 'application/json', 'subjectid': token}
@@ -454,14 +454,15 @@ def change_params(request):
             return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
         else:
             features = predicted_features['features']
-            print features
-            return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml_id, 'uploadform':form, 'features':features, 'error':error})
+            form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
+            return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml_id, 'uploadform':form, 'tform':tform ,'features':features})
 
 
     if request.method == 'POST':
         #get parameters of algorithm
         params=[]
         parameters = request.POST.getlist('parameters')
+        tform = TrainingForm(request.POST)
         for p in parameters:
             params.append({p:request.POST.get(''+p)})
         print params
@@ -492,6 +493,7 @@ def change_params(request):
         elif request.POST.get('radio_pmml') == "file":
             prediction_feature = request.POST.get('prediction_feature')
             form = UploadFileForm(request.POST, request.FILES)
+            print form
             content=[]
             if form.is_valid:
                 if 'file' in request.FILES:
@@ -505,7 +507,30 @@ def change_params(request):
                 else:
                     error = "Please upload a file."
                     #return redirect('/change_params', {'token': token, 'username': username, 'error':error})
-                    return HttpResponseRedirect('/change_params' + '?' + urlencode({'error':error}))
+                    #return HttpResponseRedirect('/change_params' + '?' + urlencode({'error':error}))
+                    print request.POST
+                    dataset = request.session.get('data', '')
+                    algorithms = request.session.get('alg', '')
+                    headers = {'Accept': 'application/json', 'subjectid': token}
+                    res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+                    al = json.loads(res.text)
+                    #replace al parameters value with request.post
+                    res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+                    pmml=json.loads(res1.text)
+                    pmml_id=[]
+                    for p in pmml:
+                        pmml_id.append({'id': p['_id']})
+                    res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
+                    predicted_features = json.loads(res2.text)
+                    if str(res2) != "<Response [200]>":
+                        #redirect to error page
+                        return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
+                    else:
+                        features = predicted_features['features']
+                        print features
+                        form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
+                        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml_id, 'uploadform':form, 'tform':tform, 'features':features, 'error':error,})
+
 
         #get scaling
         scaling=""

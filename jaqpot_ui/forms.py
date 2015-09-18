@@ -42,3 +42,21 @@ class SubstanceownerForm(forms.Form):
 class UploadFileForm(forms.Form):
     title = forms.CharField(max_length=50)
     file = forms.FileField()
+    feature = forms.ChoiceField(widget = forms.Select(), choices=[])
+
+class SelectPmmlForm(forms.Form):
+    feature = forms.ChoiceField(widget = forms.Select(), choices=[])
+    pmml = forms.ChoiceField(widget = forms.Select(), choices=[])
+
+class InputForm(forms.Form):
+    input = forms.ChoiceField(widget = forms.CheckboxSelectMultiple(), choices=[])
+    output = forms.ChoiceField(widget = forms.RadioSelect(), choices=[])
+
+class NoPmmlForm(forms.Form):
+    feature = forms.ChoiceField(widget = forms.Select(), choices=[])
+
+class TrainingForm(forms.Form):
+    scaling = forms.ChoiceField(widget = forms.Select(), choices=[( 'scaling1', 'None' ), ('scaling2', 'Scaling between zero and one'), ('scaling3', 'Normalization')])
+    doa = forms.ChoiceField(widget = forms.Select(), choices=[( 'doa1', 'None' ), ('doa2', 'Leverage method'), ('doa3', 'Other method')])
+    modelname = forms.CharField(max_length=50, required= False)
+    description = forms.CharField(max_length=200, required= False)
