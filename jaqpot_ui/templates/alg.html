@@ -61,10 +61,7 @@
     </div>
     <div style="float:right; width:50%;">
         <h5>Select variables (optional):</h5>
-        <input type="radio" name="radio_pmml" id="pmml1" value="input"> Select Input variable and endpoint<br>
-        <input type="radio" name="radio_pmml" id="pmml2" value="pm" >Select PMML<br>
-        <input type="radio" name="radio_pmml" id="pmml3" value="file">Upload PMML file<br>
-        <input type="radio" name="radio_pmml" id="pmml4" value="none" checked >None
+        {{tform.variables}}
         </div>
 
     <div id="input" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
@@ -72,23 +69,34 @@
         <h5><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable and endpoint:</h5>
         <div style="float:left; width:50%;">
         <h5>Input</h5>
-                <input type="checkbox" name="selectallfeatures" id= "selectallfeatures" ><b>Select All</b>
+            {% if inputform.input.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-bottom: 0px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{inputform.input.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            <input type="checkbox" name="selectallfeatures" id= "selectallfeatures" ><b>Select All</b>
         <div style="overflow:scroll; height:300px;">
-
-            {% for f in features %}
-                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="checkbox" name="radio_input" class="input" value="{{f.uri}}">{{f.name}}</label>
+            {% for in in inputform.input.field.choices %}
+                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;" for="">
+                     <input type="checkbox" name="checkbox_input" class="input" value="{{in.0}}">{{in.1}}</label>
             {% endfor %}
             </div>
 
             </div>
         <div style="float:left; width:50%">
         <h5>Output</h5>
+             {% if inputform.output.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-bottom: 0px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{inputform.output.errors.as_text}}</span>
+               </div>
+            {% endif %}
            <br>
         <div style="overflow:scroll; height:300px;">
-               {% for f in features %}
-                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio_output" value="{{f.uri}}">{{f.name}}</label>
+            {% for out in inputform.output.field.choices %}
+                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;" for="">
+                     <input type="radio" name="radio_output" value="{{out.0}}">{{out.1}}</label>
             {% endfor %}
             </div>
 
@@ -98,24 +106,13 @@
 
         <div>
             <h5><input type="radio" name="radio1" value="PMML" style="display:none;">Select PMML:</h5>
-            <select name="pmml_file">
-                {% if not pmml %}
-                 <option value="">no pmml</option>
-                {% else %}
-                {% for p in pmml %}
-                  <option value="{{p.id}}">{{p.id}}</option>
-                {% endfor %}
-                {% endif %}
-            </select>
+            {{pmmlform.pmml}}
+
             <br>
         </div>
         <div>
             <h5>Select Prediction Feature:</h5>
-            <select name="prediction_feature">
-                {% for f in features %}
-                  <option value="{{f.uri}}">{{f.name}}</option>
-                {% endfor %}
-            </select>
+               {{pmmlform.feature}}
             <br>
         </div>
     </div>
@@ -126,14 +123,10 @@
             {{uploadform.feature}}
 
     </div>
-     <div id="none" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;">
+     <div id="none" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
 
         <h5>Select Prediction Feature:</h5>
-        <select name="prediction_feature">
-            {% for f in features %}
-            <option value="{{f.uri}}">{{f.name}}</option>
-            {% endfor %}
-        </select>
+            {{nform.feature}}
 
     </div>
     <br>
@@ -158,25 +151,43 @@
 <script>
 
      $("select").selecter();
-     $('#pmml1').click(function() {
+     $('#id_variables_0').click(function() {
             $("#input").show();
             $("#file").hide();
             $("#PMML").hide();
             $("#none").hide();
      });
-     $('#pmml2').click(function() {
+      if($('#id_variables_1').is(':checked')) {
+            $("#input").hide();
+            $("#file").hide();
+            $("#PMML").show();
+            $("#none").hide();
+     }
+     $('#id_variables_1').click(function() {
             $("#input").hide();
             $("#file").hide();
             $("#PMML").show();
             $("#none").hide();
      });
-      $('#pmml3').click(function() {
+      if($('#id_variables_2').is(':checked')) {
+            $("#input").hide();
+            $("#file").show();
+            $("#PMML").hide();
+            $("#none").hide();
+     }
+      $('#id_variables_2').click(function() {
             $("#input").hide();
             $("#file").show();
             $("#PMML").hide();
             $("#none").hide();
      });
-     $('#pmml4').click(function() {
+      if($('#id_variables_3').is(':checked')) {
+            $("#input").hide();
+            $("#file").hide();
+            $("#PMML").hide();
+            $("#none").show();
+     }
+     $('#id_variables_3').click(function() {
             $("#input").hide();
             $("#file").hide();
             $("#PMML").hide();
@@ -198,6 +209,13 @@
             });
         }
     });
+
+    if($('#id_variables_0').is(':checked')) {
+        $("#input").show();
+        $("#file").hide();
+        $("#PMML").hide();
+        $("#none").hide();
+     }
 
 });
 </script>

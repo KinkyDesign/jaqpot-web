@@ -49,8 +49,8 @@ class SelectPmmlForm(forms.Form):
     pmml = forms.ChoiceField(widget = forms.Select(), choices=[])
 
 class InputForm(forms.Form):
-    input = forms.ChoiceField(widget = forms.CheckboxSelectMultiple(), choices=[])
-    output = forms.ChoiceField(widget = forms.RadioSelect(), choices=[])
+    input = forms.ChoiceField(widget = forms.CheckboxSelectMultiple(), choices=[], required=True)
+    output = forms.ChoiceField(widget = forms.RadioSelect(), choices=[], required= True)
 
 class NoPmmlForm(forms.Form):
     feature = forms.ChoiceField(widget = forms.Select(), choices=[])
@@ -60,3 +60,4 @@ class TrainingForm(forms.Form):
     doa = forms.ChoiceField(widget = forms.Select(), choices=[( 'doa1', 'None' ), ('doa2', 'Leverage method'), ('doa3', 'Other method')])
     modelname = forms.CharField(max_length=50, required= False)
     description = forms.CharField(max_length=200, required= False)
+    variables = forms.ChoiceField(widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'None')])

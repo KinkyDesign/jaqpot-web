@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
 from elasticsearch import Elasticsearch
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, \
-    TrainingForm
+    TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm
 import requests
 import json
 import datetime
@@ -437,6 +437,9 @@ def change_params(request):
     if request.method == 'GET':
         form = UploadFileForm()
         tform = TrainingForm()
+        inputform = InputForm()
+        nform = NoPmmlForm()
+        pmmlform = SelectPmmlForm()
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
         headers = {'Accept': 'application/json', 'subjectid': token}
@@ -444,9 +447,10 @@ def change_params(request):
         al = json.loads(res.text)
         res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
         pmml=json.loads(res1.text)
-        pmml_id=[]
-        for p in pmml:
-            pmml_id.append({'id': p['_id']})
+        if pmml:
+            pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
+        else:
+            pmmlform.fields['pmml'].choices = [("",'No pmml')]
         res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
@@ -455,33 +459,72 @@ def change_params(request):
         else:
             features = predicted_features['features']
             form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
-            return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml_id, 'uploadform':form, 'tform':tform ,'features':features})
+            inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
+            inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
+            nform.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
+            pmmlform.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
+            return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'uploadform':form, 'tform':tform ,'features':features, 'inputform':inputform, 'nform':nform, 'pmmlform': pmmlform})
 
 
     if request.method == 'POST':
         #get parameters of algorithm
         params=[]
         parameters = request.POST.getlist('parameters')
-        tform = TrainingForm(request.POST)
         for p in parameters:
             params.append({p:request.POST.get(''+p)})
         print params
+
+        tform = TrainingForm(request.POST)
+        inputform = InputForm(request.POST)
+        form = UploadFileForm(request.POST, request.FILES)
+        nform = NoPmmlForm(request.POST)
+        pmmlform = SelectPmmlForm(request.POST)
+
+        dataset = request.session.get('data', '')
+        algorithms = request.session.get('alg', '')
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        al = json.loads(res.text)
+        #replace al parameters value with request.post
+        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        pmml=json.loads(res1.text)
+        if pmml:
+            pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
+        else:
+            pmmlform.fields['pmml'].choices = [("",'No pmml')]
+        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
+        predicted_features = json.loads(res2.text)
+        if str(res2) != "<Response [200]>":
+            #redirect to error page
+            return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
+        else:
+            features = predicted_features['features']
+            form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
+            inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
+            inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
+            nform.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
+            pmmlform.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
+
         #get transformations
         transformations=""
         prediction_feature = ""
-        if request.POST.get('radio_pmml') == "none":
+        if request.POST.get('variables') == "none":
+            if not nform.is_valid():
+                return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
             transformations = ""
             prediction_feature = request.POST.get('prediction_feature')
-        elif request.POST.get('radio_pmml') == "pm":
+        elif request.POST.get('variables') == "pm":
             transformations = SERVER_URL+'/pmml/'+request.POST.get('pmml_file')
             print transformations
             prediction_feature = request.POST.get('prediction_feature')
-        elif request.POST.get('radio_pmml') == "input":
+        elif request.POST.get('variables') == "input":
             print request.POST.getlist('radio_input')
             print request.POST.get('radio_output')
             print('---')
             prediction_feature = request.POST.get('radio_output')
             feature_list = request.POST.getlist('radio_input')
+            if not inputform.is_valid():
+                return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
             headers = {'Accept': 'application/json',  'subjectid': token}
             feat=""
             for f in feature_list:
@@ -490,7 +533,8 @@ def change_params(request):
             res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
             response = json.loads(res.text)
             transformations = SERVER_URL+'/pmml/'+response['_id']
-        elif request.POST.get('radio_pmml') == "file":
+
+        elif request.POST.get('variables') == "file":
             prediction_feature = request.POST.get('prediction_feature')
             form = UploadFileForm(request.POST, request.FILES)
             print form
@@ -506,30 +550,7 @@ def change_params(request):
                     transformations = SERVER_URL+'/pmml/'+response['_id']
                 else:
                     error = "Please upload a file."
-                    #return redirect('/change_params', {'token': token, 'username': username, 'error':error})
-                    #return HttpResponseRedirect('/change_params' + '?' + urlencode({'error':error}))
-                    print request.POST
-                    dataset = request.session.get('data', '')
-                    algorithms = request.session.get('alg', '')
-                    headers = {'Accept': 'application/json', 'subjectid': token}
-                    res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
-                    al = json.loads(res.text)
-                    #replace al parameters value with request.post
-                    res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
-                    pmml=json.loads(res1.text)
-                    pmml_id=[]
-                    for p in pmml:
-                        pmml_id.append({'id': p['_id']})
-                    res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
-                    predicted_features = json.loads(res2.text)
-                    if str(res2) != "<Response [200]>":
-                        #redirect to error page
-                        return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
-                    else:
-                        features = predicted_features['features']
-                        print features
-                        form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
-                        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmml': pmml_id, 'uploadform':form, 'tform':tform, 'features':features, 'error':error,})
+                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'error':error, 'inputform': inputform, 'nform': nform})
 
 
         #get scaling
@@ -560,7 +581,7 @@ def change_params(request):
 
         '''print request.POST
         print request.POST.get('file')
-        print request.POST.getlist('radio_pmml')
+        print request.POST.getlist('variables')
         print request.POST.getlist('checkbox')
         print request.POST.getlist('select')'''
         return redirect('/task', {'token': token, 'username': username})
