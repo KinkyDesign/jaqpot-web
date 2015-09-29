@@ -40,8 +40,8 @@ class SubstanceownerForm(forms.Form):
         substanceowner = forms.CharField()
 
 class UploadFileForm(forms.Form):
-    title = forms.CharField(max_length=50)
-    file = forms.FileField()
+    #title = forms.CharField(max_length=50)
+    file = forms.FileField(error_messages={'required': 'Please choose a file.'})
     feature = forms.ChoiceField(widget = forms.Select(), choices=[])
 
 class SelectPmmlForm(forms.Form):
@@ -49,9 +49,9 @@ class SelectPmmlForm(forms.Form):
     pmml = forms.ChoiceField(widget = forms.Select(), choices=[])
 
 class InputForm(forms.Form):
-    input = forms.ChoiceField(widget = forms.CheckboxSelectMultiple(), choices=[], required=True)
-    output = forms.ChoiceField(widget = forms.RadioSelect(), choices=[], required= True)
-
+    input = forms.MultipleChoiceField(error_messages={'required': 'Please select input.'}, widget = forms.CheckboxSelectMultiple(), choices=[], required=True)
+    input.widget.attrs.update({'class' : "input"})
+    output = forms.ChoiceField(error_messages={'required': 'Please select output.'}, widget = forms.RadioSelect(), choices=[], required= True)
 class NoPmmlForm(forms.Form):
     feature = forms.ChoiceField(widget = forms.Select(), choices=[])
 
@@ -59,5 +59,6 @@ class TrainingForm(forms.Form):
     scaling = forms.ChoiceField(widget = forms.Select(), choices=[( 'scaling1', 'None' ), ('scaling2', 'Scaling between zero and one'), ('scaling3', 'Normalization')])
     doa = forms.ChoiceField(widget = forms.Select(), choices=[( 'doa1', 'None' ), ('doa2', 'Leverage method'), ('doa3', 'Other method')])
     modelname = forms.CharField(max_length=50, required= False)
-    description = forms.CharField(max_length=200, required= False)
-    variables = forms.ChoiceField(widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'None')])
+    description = forms.CharField(widget=forms.Textarea, required= False)
+    description.widget.attrs.update({'style' : "border-radius: 4px;"})
+    variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'None')])

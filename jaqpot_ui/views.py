@@ -471,21 +471,20 @@ def change_params(request):
         params=[]
         parameters = request.POST.getlist('parameters')
         for p in parameters:
-            params.append({p:request.POST.get(''+p)})
-        print params
+            params.append({'name': p, 'value': request.POST.get(''+p)})
 
         tform = TrainingForm(request.POST)
         inputform = InputForm(request.POST)
         form = UploadFileForm(request.POST, request.FILES)
         nform = NoPmmlForm(request.POST)
         pmmlform = SelectPmmlForm(request.POST)
-
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         al = json.loads(res.text)
         #replace al parameters value with request.post
+        al['parameters']= params
         res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
         pmml=json.loads(res1.text)
         if pmml:
@@ -505,6 +504,8 @@ def change_params(request):
             nform.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
             pmmlform.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
 
+        if not tform.is_valid():
+            return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
         #get transformations
         transformations=""
         prediction_feature = ""
@@ -512,17 +513,13 @@ def change_params(request):
             if not nform.is_valid():
                 return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
             transformations = ""
-            prediction_feature = request.POST.get('prediction_feature')
+            prediction_feature = nform['feature'].value()
         elif request.POST.get('variables') == "pm":
-            transformations = SERVER_URL+'/pmml/'+request.POST.get('pmml_file')
-            print transformations
-            prediction_feature = request.POST.get('prediction_feature')
+            transformations = SERVER_URL+'/pmml/'+pmmlform['pmml'].value()
+            prediction_feature = pmmlform['feature'].value()
         elif request.POST.get('variables') == "input":
-            print request.POST.getlist('radio_input')
-            print request.POST.get('radio_output')
-            print('---')
-            prediction_feature = request.POST.get('radio_output')
-            feature_list = request.POST.getlist('radio_input')
+            prediction_feature = inputform['output'].value()
+            feature_list = inputform['input'].value()
             if not inputform.is_valid():
                 return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
             headers = {'Accept': 'application/json',  'subjectid': token}
@@ -535,10 +532,7 @@ def change_params(request):
             transformations = SERVER_URL+'/pmml/'+response['_id']
 
         elif request.POST.get('variables') == "file":
-            prediction_feature = request.POST.get('prediction_feature')
-            form = UploadFileForm(request.POST, request.FILES)
-            print form
-            content=[]
+            prediction_feature = form['feature'].value()
             if form.is_valid:
                 if 'file' in request.FILES:
                     pmml= request.FILES['file'].read()
@@ -549,11 +543,9 @@ def change_params(request):
                     response = json.loads(res.text)
                     transformations = SERVER_URL+'/pmml/'+response['_id']
                 else:
-                    error = "Please upload a file."
-                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'error':error, 'inputform': inputform, 'nform': nform})
+                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'nform': nform})
 
-
-        #get scaling
+         #get scaling
         scaling=""
         if request.POST.get('scaling') == "scaling1":
             scaling=""
@@ -565,25 +557,23 @@ def change_params(request):
         doa=""
         if request.POST.get('doa') == "doa1":
             doa=""
-        elif request.POST.get('scaling') == "doa2":
+        elif request.POST.get('doa') == "doa2":
             doa=SERVER_URL+'/algorithm/leverage'
-        elif request.POST.get('scaling') == "doa3":
+        elif request.POST.get('doa') == "doa3":
             doa=SERVER_URL+'/algorithm/leverage'
         algorithms = request.session.get('alg', '')
         dataset = request.session.get('data', '')
         title= request.POST.get('title')
         description= request.POST.get('description')
-        body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/'+prediction_feature, 'parameters':params}
+        print prediction_feature
+        print dataset
+        print doa
+        print scaling
+        body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params}
 
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
         print res.text
-
-        '''print request.POST
-        print request.POST.get('file')
-        print request.POST.getlist('variables')
-        print request.POST.getlist('checkbox')
-        print request.POST.getlist('select')'''
         return redirect('/task', {'token': token, 'username': username})
 
 

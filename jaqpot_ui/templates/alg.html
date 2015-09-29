@@ -52,15 +52,21 @@
          <h3>Fill in the title and description of the produced model</h3>
         <div>
             <label class="align" >Model name:</label>
-            <input type="text" name="title" class="align">
+            {{tform.modelname}}
         </div>
         <br>
-         <p><b>Model description:</b></p>
-        <textarea class="form-control" name="description" style="width:30%;" rows="6"></textarea>
+        <p><b>Model description:</b></p>
+        {{tform.description}}
 
     </div>
     <div style="float:right; width:50%;">
         <h5>Select variables (optional):</h5>
+        {% if tform.variables.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{tform.variables.errors.as_text}}</span>
+               </div>
+            {% endif %}
         {{tform.variables}}
         </div>
 
@@ -77,9 +83,9 @@
             {% endif %}
             <input type="checkbox" name="selectallfeatures" id= "selectallfeatures" ><b>Select All</b>
         <div style="overflow:scroll; height:300px;">
-            {% for in in inputform.input.field.choices %}
+            {% for in in inputform.input %}
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;" for="">
-                     <input type="checkbox" name="checkbox_input" class="input" value="{{in.0}}">{{in.1}}</label>
+                     {{in}}</label>
             {% endfor %}
             </div>
 
@@ -94,9 +100,9 @@
             {% endif %}
            <br>
         <div style="overflow:scroll; height:300px;">
-            {% for out in inputform.output.field.choices %}
+             {% for output in inputform.output %}
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;" for="">
-                     <input type="radio" name="radio_output" value="{{out.0}}">{{out.1}}</label>
+                     {{output}}</label>
             {% endfor %}
             </div>
 
@@ -118,7 +124,14 @@
     </div>
     <div id="file" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
 
-        <h5><input type="radio" name="radio1" value="PMML file" style="display:none;">Upload a PMML with transformations(optional):</h5>{{uploadform.file}}
+        <h5><input type="radio" name="radio1" value="PMML file" style="display:none;">Upload a PMML with transformations(optional):</h5>
+        {% if uploadform.file.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{uploadform.file.errors.as_text}}</span>
+               </div>
+            {% endif %}
+        {{uploadform.file}}
         <h5>Select Prediction Feature:</h5>
             {{uploadform.feature}}
 
@@ -139,9 +152,6 @@
         <br>
         <br>
          <!-- <a href="/change_params?data={{dataset}}&alg={{algorithms}}" class="btn bt-red" style="width:10%; float:left; left:10%;" >Train</a> -->
-        {% if error %}
-            <h6 style="color:red">{{error}}</h6>
-        {% endif %}
         <input id="choose_alg" type="submit" value="Train" class="btn bt-red" style="width: 10%; float:left; left:10%;">
     </div>
 
@@ -151,6 +161,7 @@
 <script>
 
      $("select").selecter();
+
      $('#id_variables_0').click(function() {
             $("#input").show();
             $("#file").hide();
