@@ -563,8 +563,8 @@ def change_params(request):
             doa=SERVER_URL+'/algorithm/leverage'
         algorithms = request.session.get('alg', '')
         dataset = request.session.get('data', '')
-        title= request.POST.get('title')
-        description= request.POST.get('description')
+        title= tform['modelname'].value()
+        description= tform['description'].value()
 
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params}
 
