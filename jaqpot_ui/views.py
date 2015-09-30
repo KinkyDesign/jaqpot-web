@@ -461,14 +461,15 @@ def change_params(request):
             form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
             inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
             inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
-            nform.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
-            pmmlform.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
+            nform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
+            pmmlform.fields['predicted_feature'].choices = [(f['uri'],f['name']) for f in features]
             return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'uploadform':form, 'tform':tform ,'features':features, 'inputform':inputform, 'nform':nform, 'pmmlform': pmmlform})
 
 
     if request.method == 'POST':
         #get parameters of algorithm
         params=[]
+        print request.POST
         parameters = request.POST.getlist('parameters')
         for p in parameters:
             params.append({'name': p, 'value': request.POST.get(''+p)})
@@ -499,11 +500,10 @@ def change_params(request):
         else:
             features = predicted_features['features']
             form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
-            inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
             inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
-            nform.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
-            pmmlform.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
-
+            inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
+            nform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
+            pmmlform.fields['predicted_feature'].choices = [(f['uri'],f['name']) for f in features]
         if not tform.is_valid():
             return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
         #get transformations
@@ -513,10 +513,10 @@ def change_params(request):
             if not nform.is_valid():
                 return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
             transformations = ""
-            prediction_feature = nform['feature'].value()
+            prediction_feature = nform['pred_feature'].value()
         elif request.POST.get('variables') == "pm":
             transformations = SERVER_URL+'/pmml/'+pmmlform['pmml'].value()
-            prediction_feature = pmmlform['feature'].value()
+            prediction_feature = pmmlform['predicted_feature'].value()
         elif request.POST.get('variables') == "input":
             prediction_feature = inputform['output'].value()
             feature_list = inputform['input'].value()
@@ -565,10 +565,7 @@ def change_params(request):
         dataset = request.session.get('data', '')
         title= request.POST.get('title')
         description= request.POST.get('description')
-        print prediction_feature
-        print dataset
-        print doa
-        print scaling
+
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params}
 
         headers = {'Accept': 'application/json', 'subjectid': token}

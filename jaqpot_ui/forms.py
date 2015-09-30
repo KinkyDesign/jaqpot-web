@@ -45,7 +45,7 @@ class UploadFileForm(forms.Form):
     feature = forms.ChoiceField(widget = forms.Select(), choices=[])
 
 class SelectPmmlForm(forms.Form):
-    feature = forms.ChoiceField(widget = forms.Select(), choices=[])
+    predicted_feature = forms.ChoiceField(widget = forms.Select(), choices=[])
     pmml = forms.ChoiceField(widget = forms.Select(), choices=[])
 
 class InputForm(forms.Form):
@@ -53,7 +53,7 @@ class InputForm(forms.Form):
     input.widget.attrs.update({'class' : "input"})
     output = forms.ChoiceField(error_messages={'required': 'Please select output.'}, widget = forms.RadioSelect(), choices=[], required= True)
 class NoPmmlForm(forms.Form):
-    feature = forms.ChoiceField(widget = forms.Select(), choices=[])
+    pred_feature = forms.ChoiceField(widget = forms.Select(), choices=[])
 
 class TrainingForm(forms.Form):
     scaling = forms.ChoiceField(widget = forms.Select(), choices=[( 'scaling1', 'None' ), ('scaling2', 'Scaling between zero and one'), ('scaling3', 'Normalization')])
