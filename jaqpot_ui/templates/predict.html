@@ -1,40 +1,50 @@
 {% extends "base.html" %}
 
 {% block content %}
+<form method="post"> {% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block;">
-
+    <a id="back" class="btn bt-red" style="width:3%; float:left;" ><i class="glyphicon glyphicon-circle-arrow-left"></i></a>
+    <br>
    <div>
+       <h1>Choose method:</h1>
+
+       <input type="radio" name="radio_method" id="radio1" checked > Select dataset.<br>
+       <input type="radio" name="radio_method" id="radio2" >Upload dataset.<br>
+   </div>
+
+   <div id="select_dataset" style="display:none;">
         <h1>Select dataset for prediction:</h1>
         <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
         <br>
         {% load endless %}
-        <div class="publicdataset list-group">
-        {% paginate 15 dataset using "other_objects_page" %}
-            <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
-        {% for data in dataset %}
-            <a href="/predict_model?dataset={{data.name}}" class="list-group-item">{{data.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{data.title}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{data.description}}</span> </a>
-        {% endfor %}
-            </div>
+        <label class="models" style="background-color:#cf2323;border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </label>
+            {% paginate 18 dataset %}
+            {% for data in dataset %}
+                <label class="models" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="radio" name="radio" value="{{data.name}}">{{data.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{data.title}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{data.description}}</span> </label>
+
+            {% endfor %}
             {% get_pages %}
             <div id="pageNavPosition5" class="pagination">
                 <span class="step-links">
                     <ul class="pagination">
                         <li class="active">
                             {% if page|add:"0" >= 2 %}
-                            <a href="/predict?page={{page|add:-1}}">Previous</a>
+                            <a href="/predict_model?page={{page|add:-1}}">Previous</a>
                             {% else %}
-                            <a href="/predict?page={{page}}">Previous</a>
+                            <a href="/predict_model?page={{page}}">Previous</a>
                             {%endif %}
                         </li>
 
-                        <li><a href="/predict?page={{page}}"><strong>{{page}}</strong></a></li>
+                        <li><a href="/predict_model?page={{page}}"><strong>{{page}}</strong></a></li>
 
 
                         <li class="active">
                             {% if last %}
-                                    <a href="/predict?page={{last}}">Next</a>
+                                    <a href="/predict_model?page={{last}}">Next</a>
                             {%else%}
-                                <a href="/predict?page={{page|add:1 }}">Next </a>
+                                <a href="/predict_model?page={{page|add:1 }}">Next </a>
                             {% endif %}
                         </li>
 
@@ -43,6 +53,51 @@
                 </span>
             </div>
         </div>
-</div>
+    <div id="upload_dataset" style="display:none;">
 
+    </div>
+    <br>
+    <input id="choose_alg1" type="submit" value="Predict" class="btn bt-red" style="width: 10%; float:right; right:10%;">
+</div>
+</form>
+<script>
+    $('#radio1').click(function() {
+            $("#select_dataset").show();
+            $("#upload_dataset").hide();
+     });
+      if($('#radio1').is(':checked')) {
+            $("#select_dataset").show();
+            $("#upload_dataset").hide();
+     }
+     $('#radio2').click(function() {
+            $("#select_dataset").hide();
+            $("#upload_dataset").show();
+     });
+      if($('#radio2').is(':checked')) {
+            $("#select_dataset").hide();
+            $("#upload_dataset").show();
+     }
+
+     //Back buttom
+     $('#back').click(function(event) {
+       history.go(-1);
+     });
+
+    // Create excel sheet
+
+     var data = function () {
+            return Handsontable.helper.createSpreadsheetData(20, 7);
+     };
+
+    var container = document.getElementById('upload_dataset');
+    var hot = new Handsontable(container, {
+      data: data(),
+      height: 396,
+      rowHeaders: true,
+      colHeaders: true,
+      contextMenu: true,
+      colHeaders: ['feature1', 'feature2 ', 'feature3', 'feature4', 'feature5', 'feature6', 'feature7'],
+      stretchH: 'all',
+    });
+</script>
 {% endblock%}

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form method="post"> {% csrf_token %}
+
 <div class="div-table" style="width:100%;display:inline-block;">
     <h1>Search for models:</h1>
     <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
@@ -10,61 +10,14 @@
         {% if error %}
             <h5 style="color:red;">{{error}}</h5>
         {% endif %}
-        <div>
-            {% load endless %}
-             <label class="models" style="background-color:#cf2323;border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </label>
-            {% paginate 18 my_models %}
-            {% for e in my_models %}
-                <label class="models" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio" value="{{e.name}}">{{e.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{e.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{e.meta.descriptions.0}}</span> </label>
-
-            {% endfor %}
-
-
-            {% get_pages %}
-            <div id="pageNavPosition4" class="pagination">
-                <span class="step-links">
-                    <ul class="pagination">
-                        {% if pages.previous %}
-                            <li class="active">
-                                {{ pages.previous}}
-                            </li>
-                        {% else%}
-                        <li class="active">
-                                <a href="#">Previous</a>
-                            </li>
-                        {%endif%}
-                        {% for page in pages %}
-                        <li>{{page}}</li>
-                        {%endfor%}
-
-                        {% if pages.next %}
-                            <li class="active">
-                                {{ pages.next}}
-                            </li>
-                        {% else%}
-                        <li class="active">
-                                <a href="#">Next </a>
-                            </li>
-                        {%endif%}
-
-                   </ul>
-                </span>
-            </div>
-        </div>
-    </div>
-    <!--
-    <div style="width:50%; float:right;">
-        <h1>My models:</h1>
-
+        {% load endless %}
+        <div class="publicdataset list-group">
         {% paginate 15 my_models using "other_objects_page" %}
-        {% for e in my_models %}
-
-             <label class="models" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="checkbox" name="checkbox" value="{{e.name}}">{{e.name}}</label>
+            <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+        {% for m in my_models %}
+            <a href="/predict_model?model={{m.name}}" class="list-group-item">{{m.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{m.title}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{m.description}}</span> </a>
         {% endfor %}
-
+            </div>
             {% get_pages %}
             <div id="pageNavPosition5" class="pagination">
                 <span class="step-links">
@@ -78,9 +31,9 @@
                                 <a href="#">Previous</a>
                             </li>
                         {%endif%}
-                        {% for other_objects_page in pages %}
-                        <li>{{other_objects_page}}</li>
-                        {%endfor%}
+                        {% for page in pages %}
+                        <li>{{page}}</li>
+                        {% endfor %}
 
                         {% if pages.next %}
                             <li class="active">
@@ -88,45 +41,20 @@
                             </li>
                         {% else%}
                         <li class="active">
-                                <a href="#"> Next </a>
+                                <a href="#">Next </a>
                             </li>
                         {%endif%}
+
 
                    </ul>
                 </span>
             </div>
-        </div> -->
-    <a id="back" class="btn bt-red" style="width:10%; float:left;" >Back</a>
-    <input id="choose_alg1" type="submit" value="Save" class="btn bt-red" style="width: 10%; float:right; right:10%;">
+        </div>
 </div>
-</form>
 
 <script>
-/*    $('#choose_alg1').bind('click', function(e){
-
-
-    //convert to json format
-    data = JSON.stringify(data)
-
-            $.ajax({
-                type: 'POST',
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8',
-                url: '/predict_model/',
-                data: {'predict_params': {{predict_params}},
-                    },
-                success: function(result) {
-                        document.write(result)
-                        }
-    });
-
-}); */
 //search
 $(document).ready(function(){
-
-    $('#back').click(function(event) {
-       history.go(-1);
-     });
 
     $("#filter").keyup(function(){
 

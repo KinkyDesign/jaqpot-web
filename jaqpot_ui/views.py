@@ -900,16 +900,39 @@ def dataset_detail(request):
 def predict(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    #Get the current page
-    page = request.GET.get('page')
-    #Get the last page
-    last = request.GET.get('last')
+
     #Check if user is authenticated. Else redirect to login page
     if token:
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
             return redirect('/login')
     if request.method == 'GET':
+        m = []
+        #get all models
+        headers = {'Accept': 'application/json', "subjectid": token}
+        res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+        list_resp = res.text
+        models = json.loads(res.text)
+        print models
+        for mod in models:
+                m.append({'name': mod['_id'], 'meta': mod['meta']})
+
+        #Display all models for selection
+        return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models': m})
+
+
+def predict_model(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    #Get the current page
+    page = request.GET.get('page')
+    #Get the last page
+    last = request.GET.get('last')
+    if request.method == 'GET':
+        #Get the selected model for prediction
+        model = request.GET.get('model')
+        #Save selected model at session model
+        request.session['model'] = model
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
         #Firstly, get the datasets of first page if user selects different page get the datasets of the selected page
@@ -934,51 +957,12 @@ def predict(request):
             last= page
         #Display all datasets for selection
         return render(request, "predict.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last})
-
-def predict_model(request):
-    token = request.session.get('token', '')
-    username = request.session.get('username', '')
-
-    my_models = [{'name':'model1'}, {'name':'model2'}, {'name':'model3'}, {'name':'model4'}]
-    my_models = json.dumps(my_models)
-    my_models = json.loads(my_models)
-    if request.method == 'GET':
-        #Get the selected dataset for prediction
-        dataset = request.GET.get('dataset')
-        #Save selected dataset at session dataset
-        request.session['dataset'] = dataset
-        m = []
-        #get all models
-        headers = {'Accept': 'application/json', "subjectid": token}
-        res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
-        list_resp = res.text
-        '''es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
-        #get each line
-        list_resp = list_resp.splitlines()
-        r = requests.get('http://localhost:9200')
-        i=1
-        for l in list_resp:
-            l = l.split('/model/')[1]
-            models.append({'name': l})
-            es.index(index='name', doc_type='models', id=i, body={'name': l})
-            i=i+1
-        models = json.dumps(models)'''
-        models = json.loads(res.text)
-        print models
-        for mod in models:
-                m.append({'name': mod['_id'], 'meta': mod['meta']})
-        #print es.get(index='name', doc_type='models', id=2)
-        #es.index(index='posts', doc_type='blog', id=1, body={'author': 'Santa Clause','blog': 'Slave Based Shippers of the North','title': 'Using Celery for distributing gift dispatch'})
-        #print es.search(index='posts', q='author:"Santa Clause"')
-
-        #Display all models for selection
-        return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models': m})
     if request.method == 'POST':
-        #Get the selected dataset for prediction from session
-        dataset= request.session.get('dataset', '')
-        #Get the selected model
-        selected_model = request.POST.get('radio')
-        if selected_model == "" or selected_model == None:
+        #Get the selected model for prediction from session
+        selected_model= request.session.get('model', '')
+        #Get the selected dataset
+        dataset = request.POST.get('radio')
+        if dataset == "" or dataset == None:
             m = []
             #get all models
             headers = {'Accept': 'application/json', "subjectid": token}
@@ -986,15 +970,13 @@ def predict_model(request):
             models = json.loads(res.text)
             for mod in models:
                     m.append({'name': mod['_id'], 'meta': mod['meta']})
-            return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models': m ,'error':"You should select a model."})
+            return render(request, "predict.html", {'token': token, 'username': username,'selected_model': selected_model, 'page': page, 'last':last,'error':"You should select a dataset."})
         else:
             headers = {'Accept': 'application/json', "subjectid": token}
             body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset}
             res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
             response = json.loads(res.text)
             print response
-            #Redirect to the welcome page
-            #return render(request, "new_task.html", {'token': token, 'username': username, 'task': task})
             return redirect('/')
 #Search
 def search(request):
