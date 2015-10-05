@@ -11,17 +11,18 @@
        <input type="radio" name="radio_method" id="radio1" checked > Select dataset.<br>
        <input type="radio" name="radio_method" id="radio2" >Upload dataset.<br>
    </div>
+   <br>
 
    <div id="select_dataset" style="display:none;">
         <h1>Select dataset for prediction:</h1>
         <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
         <br>
         {% load endless %}
-        <label class="models" style="background-color:#cf2323;border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+        <label class="datasets" style="background-color:#cf2323;border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                 Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </label>
             {% paginate 18 dataset %}
             {% for data in dataset %}
-                <label class="models" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                <label class="datasets" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                     <input type="radio" name="radio" value="{{data.name}}">{{data.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{data.title}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{data.description}}</span> </label>
 
             {% endfor %}
@@ -54,12 +55,13 @@
             </div>
         </div>
     <div id="upload_dataset" style="display:none;">
-
+        <input type="text" style="display:none" id="data">
     </div>
     <br>
     <input id="choose_alg1" type="submit" value="Predict" class="btn bt-red" style="width: 10%; float:right; right:10%;">
 </div>
 </form>
+
 <script>
     $('#radio1').click(function() {
             $("#select_dataset").show();
@@ -84,20 +86,45 @@
      });
 
     // Create excel sheet
-
-     var data = function () {
-            return Handsontable.helper.createSpreadsheetData(20, 7);
-     };
+    var a=[]
+    {% for m in model_req %}
+        a.push("{{m}}")
+    {% endfor %}
 
     var container = document.getElementById('upload_dataset');
     var hot = new Handsontable(container, {
-      data: data(),
+
+      startRows: 15,
+      startCols: a.length,
       height: 396,
       rowHeaders: true,
       colHeaders: true,
       contextMenu: true,
-      colHeaders: ['feature1', 'feature2 ', 'feature3', 'feature4', 'feature5', 'feature6', 'feature7'],
+      colHeaders: a,
       stretchH: 'all',
     });
+
+    //search the selected dataset from the list
+$(document).ready(function(){
+    search("#filter", ".datasets", "#filter-count");
+});
+
+   // Send hot.getData() via ajax before submit.
+   $('#choose_alg1').bind('click', function(e)
+        {
+            if($('#radio2').is(':checked')){
+                $.ajax({
+                    url: '/predict_model',
+                    type: 'POST',
+                    data: {
+                    csrfmiddlewaretoken: '{{csrf_token}}' ,
+                    data: hot.getData()
+                    },
+                    cache: 'false',
+                });
+            }
+        });
+
+
 </script>
 {% endblock%}

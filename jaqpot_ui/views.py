@@ -934,7 +934,12 @@ def predict_model(request):
         #Save selected model at session model
         request.session['model'] = model
         dataset=[]
+        #Get required feature of selected model
         headers = {'Accept': 'application/json', 'subjectid': token}
+        required_res = requests.get(SERVER_URL+'/model/'+model+'/required', headers=headers)
+        model_req = []
+        for m_r in json.loads(required_res.text):
+            model_req.append(str(m_r['name']))
         #Firstly, get the datasets of first page if user selects different page get the datasets of the selected page
         if page:
             page1=int(page) * 20 - 20
@@ -956,12 +961,13 @@ def predict_model(request):
         if len(dataset)< 20:
             last= page
         #Display all datasets for selection
-        return render(request, "predict.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last})
+        return render(request, "predict.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last, 'model_req': model_req})
     if request.method == 'POST':
         #Get the selected model for prediction from session
         selected_model= request.session.get('model', '')
         #Get the selected dataset
         dataset = request.POST.get('radio')
+        print request.POST
         if dataset == "" or dataset == None:
             m = []
             #get all models
