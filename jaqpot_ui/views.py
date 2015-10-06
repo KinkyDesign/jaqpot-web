@@ -965,25 +965,100 @@ def predict_model(request):
     if request.method == 'POST':
         #Get the selected model for prediction from session
         selected_model= request.session.get('model', '')
-        #Get the selected dataset
-        dataset = request.POST.get('radio')
-        print request.POST
-        if dataset == "" or dataset == None:
-            m = []
-            #get all models
-            headers = {'Accept': 'application/json', "subjectid": token}
-            res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
-            models = json.loads(res.text)
-            for mod in models:
-                    m.append({'name': mod['_id'], 'meta': mod['meta']})
-            return render(request, "predict.html", {'token': token, 'username': username,'selected_model': selected_model, 'page': page, 'last':last,'error':"You should select a dataset."})
-        else:
-            headers = {'Accept': 'application/json', "subjectid": token}
-            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset}
-            res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
-            response = json.loads(res.text)
-            print response
-            return redirect('/')
+        #Get the method of prediction
+        method = request.POST.get('radio_method')
+        if request.is_ajax():
+            if 'excel_data' in request.POST:
+                data = request.POST.get('excel_data')
+                data = json.loads(data)
+                print data
+                '''d = {
+                  "meta" : {
+                    "comments" : [ "" ],
+                    "descriptions" : [ "" ],
+                    "titles" : [ "new dataset" ],
+                    "creators" : [ username ],
+                    "hasSources" : [ "" ]
+                  },
+                  "dataEntry" : [ {
+                    "compound" : {
+                      "name" : "G15.AC_5",
+                      "URI" : "https://apps.ideaconsult.net/enmtest/substance/FCSV-8b479138-4775-3aba-b9cc-f01cc967d42b"
+                    },
+                    "values" : {
+                      "http://test.jaqpot.org:8080/jaqpot/services/feature/zJMm40aDBdlw" : 0.0,
+                      "https://apps.ideaconsult.net/enmtest/property/TOX/PROTEOMICS_SECTION/Spectral+counts/03194EA3833640EC100CE87322D5A40AB160B579/3ed642f9-1b42-387a-9966-dea5b91e5f8a/P27482" : 0
+                    }
+                  }, ],
+                  "totalRows" : 84,
+                  "totalColumns" : 2,
+                  "descriptors" : [ "EXPERIMENTAL" ],
+                  }'''
+                data1 = {}
+                data2 = {}
+                data3 = {}
+                data4 = {}
+                data5 = []
+                data6 = {}
+                data7 = {}
+                data8 = {}
+                data9 = {}
+                data10 = {}
+
+                data1['comments'] = [""]
+                data1['descriptions'] = [""]
+                data1['titles'] = ["new dataset"]
+                data1['creators'] = [username]
+                data1['hasSources'] = [""]
+                data2['meta'] = data1
+
+                data4["name"] = "name"
+                for d in data:
+                    data3["values"] = d
+                    data3["compound"] = data4
+                    data5.append(data3)
+                    totalColumns= len(d)
+
+                data8["dataEntry"]= data5
+
+                data6["descriptors"] = [ "EXPERIMENTAL" ]
+                data9["totalColumns"] = totalColumns
+                data10["totalRows"] = len(data)
+                data7.update(data2)
+                data7.update(data8)
+                data7.update(data6)
+                data7.update(data9)
+                data7.update(data10)
+
+                json_data = json.dumps(data7)
+                print json_data
+                headers = {'Accept': 'application/json', 'subjectid': token}
+                res = requests.post(SERVER_URL+'/dataset', headers=headers)
+                print res.text
+            message="ajax"
+            print message
+            return HttpResponse(message)
+        if method == 'select_dataset':
+            #Get the selected dataset
+            dataset = request.POST.get('radio')
+            print request.POST
+            if dataset == "" or dataset == None:
+                m = []
+                #get all models
+                headers = {'Accept': 'application/json', "subjectid": token}
+                res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+                models = json.loads(res.text)
+                for mod in models:
+                        m.append({'name': mod['_id'], 'meta': mod['meta']})
+                return render(request, "predict.html", {'token': token, 'username': username,'selected_model': selected_model, 'page': page, 'last':last,'error':"You should select a dataset."})
+            else:
+                headers = {'Accept': 'application/json', "subjectid": token}
+                body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset}
+                res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
+                response = json.loads(res.text)
+                print response
+                return redirect('/')
+
 #Search
 def search(request):
     token = request.session.get('token', '')

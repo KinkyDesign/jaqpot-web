@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form method="post"> {% csrf_token %}
+<form id= "predict_form" method="post"> {% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block;">
     <a id="back" class="btn bt-red" style="width:3%; float:left;" ><i class="glyphicon glyphicon-circle-arrow-left"></i></a>
     <br>
    <div>
        <h1>Choose method:</h1>
 
-       <input type="radio" name="radio_method" id="radio1" checked > Select dataset.<br>
-       <input type="radio" name="radio_method" id="radio2" >Upload dataset.<br>
+       <input type="radio" name="radio_method" id="radio1" checked value="select_dataset"> Select dataset.<br>
+       <input type="radio" name="radio_method" id="radio2" value="upload_dataset">Upload dataset.<br>
    </div>
    <br>
 
@@ -91,9 +91,20 @@
         a.push("{{m}}")
     {% endfor %}
 
+    var data = [
+    {% for i in "123456789123456" %}
+        {
+            {% for m in model_req %}
+            "{{m}}": '',
+            {% endfor %}
+        },
+    {% endfor %}
+
+    ]
+
     var container = document.getElementById('upload_dataset');
     var hot = new Handsontable(container, {
-
+      data: data,
       startRows: 15,
       startCols: a.length,
       height: 396,
@@ -109,8 +120,32 @@ $(document).ready(function(){
     search("#filter", ".datasets", "#filter-count");
 });
 
+$(document).ready(function(){
+    $('#predict_form').on('submit', function(e){
+        e.preventDefault();
+        if($('#radio1').is(':checked')){
+            this.submit();
+        }
+        else{
+            $.ajax({
+                    url: '/predict_model',
+                    type: 'POST',
+                    data: {
+                    csrfmiddlewaretoken: '{{csrf_token}}' ,
+                    excel_data: JSON.stringify( hot.getData() ),
+                    },
+                    cache: 'false',
+                    success: function(){
+                    window.location.replace("/");
+                 }
+                });
+
+        }
+    });
+});
+
    // Send hot.getData() via ajax before submit.
-   $('#choose_alg1').bind('click', function(e)
+/*   $('#choose_alg1').bind('click', function(e)
         {
             if($('#radio2').is(':checked')){
                 $.ajax({
@@ -118,12 +153,13 @@ $(document).ready(function(){
                     type: 'POST',
                     data: {
                     csrfmiddlewaretoken: '{{csrf_token}}' ,
-                    data: hot.getData()
+                    excel_data: hot.getData(),
+                    header: hot.getColHeader(),
                     },
                     cache: 'false',
                 });
             }
-        });
+        });*/
 
 
 </script>
