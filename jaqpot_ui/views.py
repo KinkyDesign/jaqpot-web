@@ -937,9 +937,10 @@ def predict_model(request):
         #Get required feature of selected model
         headers = {'Accept': 'application/json', 'subjectid': token}
         required_res = requests.get(SERVER_URL+'/model/'+model+'/required', headers=headers)
-        model_req = []
+        model_req = json.loads(required_res.text)
+        '''model_req = []
         for m_r in json.loads(required_res.text):
-            model_req.append(str(m_r['name']))
+            model_req.append(str(m_r['name']))'''
         #Firstly, get the datasets of first page if user selects different page get the datasets of the selected page
         if page:
             page1=int(page) * 20 - 20
@@ -967,33 +968,30 @@ def predict_model(request):
         selected_model= request.session.get('model', '')
         #Get the method of prediction
         method = request.POST.get('radio_method')
+        #Get the required model
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        required_res = requests.get(SERVER_URL+'/model/'+selected_model+'/required', headers=headers)
+        required_res = json.loads(required_res.text)
         if request.is_ajax():
             if 'excel_data' in request.POST:
                 data = request.POST.get('excel_data')
                 data = json.loads(data)
-                print data
-                '''d = {
-                  "meta" : {
-                    "comments" : [ "" ],
-                    "descriptions" : [ "" ],
-                    "titles" : [ "new dataset" ],
-                    "creators" : [ username ],
-                    "hasSources" : [ "" ]
-                  },
-                  "dataEntry" : [ {
-                    "compound" : {
-                      "name" : "G15.AC_5",
-                      "URI" : "https://apps.ideaconsult.net/enmtest/substance/FCSV-8b479138-4775-3aba-b9cc-f01cc967d42b"
-                    },
-                    "values" : {
-                      "http://test.jaqpot.org:8080/jaqpot/services/feature/zJMm40aDBdlw" : 0.0,
-                      "https://apps.ideaconsult.net/enmtest/property/TOX/PROTEOMICS_SECTION/Spectral+counts/03194EA3833640EC100CE87322D5A40AB160B579/3ed642f9-1b42-387a-9966-dea5b91e5f8a/P27482" : 0
-                    }
-                  }, ],
-                  "totalRows" : 84,
-                  "totalColumns" : 2,
-                  "descriptors" : [ "EXPERIMENTAL" ],
-                  }'''
+                #replace name with uri
+                new_data=[]
+
+                for d in data:
+                    n_d={}
+                    n_d1={}
+                    for key, value in d.items():
+                        for r in required_res:
+                            if r['name'] == key:
+                                n=r['uri']
+                                n_d1[''+n+'']=value
+                                n_d.update(n_d1)
+                    new_data.append(n_d)
+                print new_data
+
+                #Create dataset json
                 data1 = {}
                 data2 = {}
                 data3 = {}
@@ -1004,6 +1002,8 @@ def predict_model(request):
                 data8 = {}
                 data9 = {}
                 data10 = {}
+                data11= {}
+
 
                 data1['comments'] = [""]
                 data1['descriptions'] = [""]
@@ -1012,31 +1012,36 @@ def predict_model(request):
                 data1['hasSources'] = [""]
                 data2['meta'] = data1
 
-                data4["name"] = "name"
-                for d in data:
+                counter=1
+                for d in new_data:
                     data3["values"] = d
+                    data4["name"] = 'compound'+str(counter)
                     data3["compound"] = data4
                     data5.append(data3)
                     totalColumns= len(d)
+                    counter = counter+1
+                    data3 = {}
+                    data4 = {}
 
                 data8["dataEntry"]= data5
 
                 data6["descriptors"] = [ "EXPERIMENTAL" ]
                 data9["totalColumns"] = totalColumns
-                data10["totalRows"] = len(data)
+                data10["totalRows"] = len(new_data)
+                data11["features"] = required_res
+
                 data7.update(data2)
                 data7.update(data8)
                 data7.update(data6)
                 data7.update(data9)
                 data7.update(data10)
+                data7.update(data11)
 
                 json_data = json.dumps(data7)
-                print json_data
-                headers = {'Accept': 'application/json', 'subjectid': token}
-                res = requests.post(SERVER_URL+'/dataset', headers=headers)
+                headers1 = {'Content-type': 'application/json', 'subjectid': token}
+                res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
                 print res.text
             message="ajax"
-            print message
             return HttpResponse(message)
         if method == 'select_dataset':
             #Get the selected dataset

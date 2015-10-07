@@ -54,7 +54,7 @@
                 </span>
             </div>
         </div>
-    <div id="upload_dataset" style="display:none;">
+    <div id="upload_dataset" style="display:none; overflow: auto">
         <input type="text" style="display:none" id="data">
     </div>
     <br>
@@ -88,14 +88,14 @@
     // Create excel sheet
     var a=[]
     {% for m in model_req %}
-        a.push("{{m}}")
+        a.push("{{m.name}}")
     {% endfor %}
 
     var data = [
-    {% for i in "123456789123456" %}
+    {% for i in "1" %}
         {
             {% for m in model_req %}
-            "{{m}}": '',
+            "{{m.name}}": '',
             {% endfor %}
         },
     {% endfor %}
@@ -105,22 +105,33 @@
     var container = document.getElementById('upload_dataset');
     var hot = new Handsontable(container, {
       data: data,
-      startRows: 15,
+      startRows: 1,
       startCols: a.length,
-      height: 396,
+      height: 150,
       rowHeaders: true,
       colHeaders: true,
       contextMenu: true,
-      colHeaders: a,
+      colHeaders:[
+                {% for m in model_req %}
+                   '<p id="tooltip" data-toggle="tooltip" data-placement="top" data-container="body" title="Units: {{m.units}}">{{m.name}}</p>',
+                {% endfor %}
+      ],
       stretchH: 'all',
+      contextMenuCopyPaste: {
+      swfPath: '/static/dist/zeroclipboard/ZeroClipboard.swf'
+    }
     });
+
 
     //search the selected dataset from the list
 $(document).ready(function(){
     search("#filter", ".datasets", "#filter-count");
 });
 
+
+
 $(document).ready(function(){
+
     $('#predict_form').on('submit', function(e){
         e.preventDefault();
         if($('#radio1').is(':checked')){
@@ -143,24 +154,9 @@ $(document).ready(function(){
         }
     });
 });
-
-   // Send hot.getData() via ajax before submit.
-/*   $('#choose_alg1').bind('click', function(e)
-        {
-            if($('#radio2').is(':checked')){
-                $.ajax({
-                    url: '/predict_model',
-                    type: 'POST',
-                    data: {
-                    csrfmiddlewaretoken: '{{csrf_token}}' ,
-                    excel_data: hot.getData(),
-                    header: hot.getColHeader(),
-                    },
-                    cache: 'false',
-                });
-            }
-        });*/
-
+    $('[data-toggle="tooltip"]').tooltip({
+            container : 'body'
+          });
 
 </script>
 {% endblock%}
