@@ -113,13 +113,20 @@
       contextMenu: true,
       colHeaders:[
                 {% for m in model_req %}
-                   '<p id="tooltip" data-toggle="tooltip" data-placement="top" data-container="body" title="Units: {{m.units}}">{{m.name}}</p>',
+                   '<p data-toggle="tooltip" data-placement="top" data-container="body" title="Units: {{m.units}} Conditions: {% for k,v in m.conditions.iteritems %}{{k}}:{{v}}, {% endfor %}">{{m.name}}</p>',
                 {% endfor %}
       ],
       stretchH: 'all',
       contextMenuCopyPaste: {
-      swfPath: '/static/dist/zeroclipboard/ZeroClipboard.swf'
-    }
+          swfPath: '/static/dist/zeroclipboard/ZeroClipboard.swf'
+      },
+      afterRender: function(){
+            //Display tooltip after handsontable render.
+            $('[data-toggle="tooltip"]').tooltip({
+                container : 'body'
+              });
+        },
+
     });
 
 
@@ -154,9 +161,7 @@ $(document).ready(function(){
         }
     });
 });
-    $('[data-toggle="tooltip"]').tooltip({
-            container : 'body'
-          });
+
 
 </script>
 {% endblock%}
