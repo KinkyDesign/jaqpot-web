@@ -963,7 +963,7 @@ def predict_model(request):
         if len(dataset)< 20:
             last= page
         #Display all datasets for selection
-        return render(request, "predict.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last, 'model_req': model_req})
+        return render(request, "predict.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last, 'model_req': model_req, 'model' : model})
     if request.method == 'POST':
         #Get the selected model for prediction from session
         selected_model= request.session.get('model', '')

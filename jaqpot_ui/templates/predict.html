@@ -20,7 +20,7 @@
         {% load endless %}
         <label class="datasets" style="background-color:#cf2323;border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                 Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </label>
-            {% paginate 18 dataset %}
+            {% paginate 20 dataset %}
             {% for data in dataset %}
                 <label class="datasets" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                     <input type="radio" name="radio" value="{{data.name}}">{{data.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{data.title}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{data.description}}</span> </label>
@@ -32,20 +32,20 @@
                     <ul class="pagination">
                         <li class="active">
                             {% if page|add:"0" >= 2 %}
-                            <a href="/predict_model?page={{page|add:-1}}">Previous</a>
+                            <a href="/predict_model?model={{model}}&page={{page|add:-1}}">Previous</a>
                             {% else %}
-                            <a href="/predict_model?page={{page}}">Previous</a>
+                            <a href="/predict_model?model={{model}}&page={{page}}">Previous</a>
                             {%endif %}
                         </li>
 
-                        <li><a href="/predict_model?page={{page}}"><strong>{{page}}</strong></a></li>
+                        <li><a href="/predict_model?model={{model}}&page={{page}}"><strong>{{page}}</strong></a></li>
 
 
                         <li class="active">
                             {% if last %}
-                                    <a href="/predict_model?page={{last}}">Next</a>
+                                    <a href="/predict_model?model={{model}}&page={{last}}">Next</a>
                             {%else%}
-                                <a href="/predict_model?page={{page|add:1 }}">Next </a>
+                                <a href="/predict_model?model={{model}}&page={{page|add:1 }}">Next </a>
                             {% endif %}
                         </li>
 
@@ -95,8 +95,13 @@
     {% for i in "1" %}
         {
             {% for m in model_req %}
-            "{{m.name}}": '',
+                {% if m.category == 'EXPERIMENTAL' %}
+                    "{{m.name}}": "0",
+                {% elif m.category == 'IMAGE' %}
+                    "{{m.name}}": '<input type="file" id="files" />',
+                {% endif %}
             {% endfor %}
+
         },
     {% endfor %}
 
@@ -116,6 +121,15 @@
                    '<p data-toggle="tooltip" data-placement="top" data-container="body" title="Units: {{m.units}} Conditions: {% for k,v in m.conditions.iteritems %}{{k}}:{{v}}, {% endfor %}">{{m.name}}</p>',
                 {% endfor %}
       ],
+      columns: [
+           {% for m in model_req %}
+                {% if m.category == 'EXPERIMENTAL' %}
+                    { data: "{{m.name}}", renderer: "html"},
+                {% elif m.category == 'IMAGE' %}
+                    { data: "{{m.name}}", renderer: "html"},
+                {% endif %}
+            {% endfor %}
+        ],
       stretchH: 'all',
       contextMenuCopyPaste: {
           swfPath: '/static/dist/zeroclipboard/ZeroClipboard.swf'
@@ -128,6 +142,9 @@
         },
 
     });
+
+
+
 
 
     //search the selected dataset from the list
