@@ -56,6 +56,7 @@
         </div>
     <div id="upload_dataset" style="display:none; overflow: auto">
         <input type="text" style="display:none" id="data">
+
     </div>
     <br>
     <input id="choose_alg1" type="submit" value="Predict" class="btn bt-red" style="width: 10%; float:right; right:10%;">
@@ -86,19 +87,19 @@
      });
 
     // Create excel sheet
-    var a=[]
-    {% for m in model_req %}
-        a.push("{{m.name}}")
-    {% endfor %}
 
     var data = [
     {% for i in "1" %}
         {
+            {% if image %}
+                "Image": '<input type="file" id="files"  accept="image/*" onchange="readURL(this)" /><img id="blah" src="#" alt="your image">',
+            {% endif %}
+            {% if mopac %}
+                "Mopac": '<input type="file" id="files" />',
+            {% endif %}
             {% for m in model_req %}
                 {% if m.category == 'EXPERIMENTAL' %}
                     "{{m.name}}": "0",
-                {% elif m.category == 'IMAGE' %}
-                    "{{m.name}}": '<input type="file" id="files" />',
                 {% endif %}
             {% endfor %}
 
@@ -111,21 +112,31 @@
     var hot = new Handsontable(container, {
       data: data,
       startRows: 1,
-      startCols: a.length,
+      startCols: data.length,
       height: 150,
       rowHeaders: true,
       colHeaders: true,
       contextMenu: true,
       colHeaders:[
+                {% if image %}
+                    '<p data-toggle="tooltip" data-placement="top" data-container="body" title="Upload an image">Image</p>',
+                {% endif %}
+                {% if mopac %}
+                    '<p data-toggle="tooltip" data-placement="top" data-container="body" title="Upload a Mopac file">Mopac</p>',
+                {% endif %}
                 {% for m in model_req %}
                    '<p data-toggle="tooltip" data-placement="top" data-container="body" title="Units: {{m.units}} Conditions: {% for k,v in m.conditions.iteritems %}{{k}}:{{v}}, {% endfor %}">{{m.name}}</p>',
                 {% endfor %}
       ],
       columns: [
+            {% if image %}
+               { data: "Image", renderer: "html"},
+            {% endif %}
+            {% if mopac %}
+               { data: "Mopac", renderer: "html"},
+            {% endif %}
            {% for m in model_req %}
                 {% if m.category == 'EXPERIMENTAL' %}
-                    { data: "{{m.name}}", renderer: "html"},
-                {% elif m.category == 'IMAGE' %}
                     { data: "{{m.name}}", renderer: "html"},
                 {% endif %}
             {% endfor %}
@@ -178,6 +189,21 @@ $(document).ready(function(){
         }
     });
 });
+
+function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#blah')
+                    .attr('src', e.target.result)
+                    .width(10)
+                    .height(10);
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 
 
 </script>

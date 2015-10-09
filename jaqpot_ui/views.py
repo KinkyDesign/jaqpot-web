@@ -4,7 +4,7 @@ from urllib import urlencode
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
 from elasticsearch import Elasticsearch
-from jaqpot_ui.create_dataset import create_dataset
+from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, \
     TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm
 import requests
@@ -939,9 +939,8 @@ def predict_model(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         required_res = requests.get(SERVER_URL+'/model/'+model+'/required', headers=headers)
         model_req = json.loads(required_res.text)
-        '''model_req = []
-        for m_r in json.loads(required_res.text):
-            model_req.append(str(m_r['name']))'''
+        #check if is needed image or mocap
+        image, mopac = chech_image_mopac(model_req)
         #Firstly, get the datasets of first page if user selects different page get the datasets of the selected page
         if page:
             page1=int(page) * 20 - 20
@@ -963,7 +962,7 @@ def predict_model(request):
         if len(dataset)< 20:
             last= page
         #Display all datasets for selection
-        return render(request, "predict.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last, 'model_req': model_req, 'model' : model})
+        return render(request, "predict.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last, 'model_req': model_req, 'model' : model, 'image':image, 'mopac':mopac})
     if request.method == 'POST':
         #Get the selected model for prediction from session
         selected_model= request.session.get('model', '')

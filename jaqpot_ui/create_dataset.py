@@ -62,3 +62,13 @@ def create_dataset( data, username, required_res ):
     data7.update(data10)
     data7.update(data11)
     return data7
+
+def chech_image_mopac(model_req):
+    image = False
+    mopac = False
+    for m in model_req:
+            if m['category'] == 'EXPERIMENTAL':
+                image = True
+            if m['category'] == 'MOPAC':
+                mopac = True
+    return image, mopac
