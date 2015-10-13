@@ -45,9 +45,10 @@ urlpatterns = patterns('',
                        url(r'^stoptask', views.stop_task),
                        url(r'^change_params', views.change_params),
                        url(r'^select_substance', views.select_substance),
-                        url(r'^get_substance', views.get_substance),
+                       url(r'^get_substance', views.get_substance),
                        url(r'^properties', views.select_properties),
-                        url(r'^descriptors', views.select_descriptors),
+                       url(r'^descriptors', views.select_descriptors),
+                       url(r'^calculate_image_descriptors', views.calculate_image_descriptors),
                        # captcha
                        url(r'^captcha/', include('captcha.urls')),
                        #search

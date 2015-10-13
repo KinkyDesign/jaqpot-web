@@ -64,6 +64,7 @@
 </form>
 
 <script>
+    var image_descriptors = []
     $('#radio1').click(function() {
             $("#select_dataset").show();
             $("#upload_dataset").hide();
@@ -87,12 +88,12 @@
      });
 
     // Create excel sheet
-
+    //var file = <input type="file" id="files"  accept="image/*" onchange="readURL(this, {{i}})" /><img id="img{{i}}" src="#" alt="your image" style= "display: none">
     var data = [
     {% for i in "1" %}
         {
             {% if image %}
-                "Image": '<input type="file" id="files"  accept="image/*" onchange="readURL(this)" /><img id="blah" src="#" alt="your image">',
+                "Image": '<input type="file" id="files"  accept="image/*" onchange="readURL(this, {{i}})" /><img id="img{{i}}" src="#" alt="your image" style= "display: none">',
             {% endif %}
             {% if mopac %}
                 "Mopac": '<input type="file" id="files" />',
@@ -130,14 +131,14 @@
       ],
       columns: [
             {% if image %}
-               { data: "Image", renderer: "html"},
+               { data: "Image", renderer: "html", type: 'checkbox' },
             {% endif %}
             {% if mopac %}
                { data: "Mopac", renderer: "html"},
             {% endif %}
            {% for m in model_req %}
                 {% if m.category == 'EXPERIMENTAL' %}
-                    { data: "{{m.name}}", renderer: "html"},
+                    { data: "{{m.name}}"},
                 {% endif %}
             {% endfor %}
         ],
@@ -151,11 +152,15 @@
                 container : 'body'
               });
         },
+      //create upload form in the first cell if user add row
+      afterCreateRow: function(index){
+        {% if image %}
+           var next = index+1
+           hot.setDataAtCell(index, 0, '<input type="file" id="files"  accept="image/*" onchange="readURL(this, '+next+')" /><img id="img'+next+'" src="#" alt="your image" style= "display: none">')
+        {% endif %}
+    },
 
     });
-
-
-
 
 
     //search the selected dataset from the list
@@ -179,6 +184,7 @@ $(document).ready(function(){
                     data: {
                     csrfmiddlewaretoken: '{{csrf_token}}' ,
                     excel_data: JSON.stringify( hot.getData() ),
+                    img_desc : image_descriptors,
                     },
                     cache: 'false',
                     success: function(){
@@ -190,19 +196,36 @@ $(document).ready(function(){
     });
 });
 
-function readURL(input) {
+function readURL(input, i) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
-
             reader.onload = function (e) {
-                $('#blah')
+                $('#img'+i)
                     .attr('src', e.target.result)
                     .width(10)
                     .height(10);
+                //send data uri via ajax
+                $.ajax({
+                    url: '/calculate_image_descriptors',
+                    type: 'GET',
+                    data: {
+                        row: i ,
+                        data_uri: e.target.result,
+                    },
+                    cache: 'false',
+                    success: function(data){
+                        alert(data)
+                        image_descriptors[i-1]=data
+                        console.log(i)
+                        console.log(image_descriptors)
+                 }
+                });
             };
 
             reader.readAsDataURL(input.files[0]);
+
         }
+
     }
 
 

@@ -1006,6 +1006,24 @@ def predict_model(request):
                 print response
                 return redirect('/')
 
+def calculate_image_descriptors(request):
+    #get row of image
+    row = request.GET.get('row')
+    #get data uri od upload image
+    data_uri = request.GET.get('data_uri')
+    print data_uri
+    #send request to data uri
+    body = {'image': data_uri, }
+    res = requests.post('http://test.jaqpot.org:8880/imageAnalysis/service/analyze', data=body)
+    response = json.loads(res.text)
+    for r in response:
+        if r['id'] == "Average Particle":
+            average_particle = r
+    average_particle.update({'row':row})
+    print average_particle
+    return HttpResponse(json.dumps(average_particle))
+
+
 #Search
 def search(request):
     token = request.session.get('token', '')
