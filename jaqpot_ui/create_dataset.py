@@ -1,7 +1,10 @@
 __author__ = 'evangelie'
 
+import json
+import urllib
+from settings import SERVER_URL
 
-def create_dataset( data, username, required_res ):
+def create_dataset( data, username, required_res, img_descriptors):
    #This function creates json dataset
 
    #replace name with uri
@@ -38,6 +41,10 @@ def create_dataset( data, username, required_res ):
 
     counter=1
     for d in new_data:
+        if img_descriptors:
+            if img_descriptors[counter-1]:
+                img_descriptors[counter-1] = reformat_key(json.loads(img_descriptors[counter-1]))
+                d.update(img_descriptors[counter-1])
         data3["values"] = d
         data4["name"] = 'compound'+str(counter)
         data4["URI"] = 'compound'+str(counter)
@@ -47,6 +54,7 @@ def create_dataset( data, username, required_res ):
         counter = counter+1
         data3 = {}
         data4 = {}
+
 
     data8["dataEntry"]= data5
 
@@ -67,8 +75,20 @@ def chech_image_mopac(model_req):
     image = False
     mopac = False
     for m in model_req:
-            if m['category'] == 'EXPERIMENTAL':
+            if m['category'] == 'IMAGE':
                 image = True
             if m['category'] == 'MOPAC':
                 mopac = True
     return image, mopac
+
+def reformat_key(d):
+    """
+    Delete keys with the key ``id`` in a dictionary and chane key format """
+    new = {}
+
+    for key, value in d.items():
+        if key != "id":
+            new_key = SERVER_URL+'/feature/'+urllib.quote_plus('image average particle '+key.encode('utf8') )
+            print new_key
+            new.update({new_key : value})
+    return new

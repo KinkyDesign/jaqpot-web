@@ -5,8 +5,7 @@ from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
 from elasticsearch import Elasticsearch
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac
-from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, \
-    TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm
+from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm
 import requests
 import json
 import datetime
@@ -973,12 +972,12 @@ def predict_model(request):
         required_res = requests.get(SERVER_URL+'/model/'+selected_model+'/required', headers=headers)
         required_res = json.loads(required_res.text)
         if request.is_ajax():
+            img_descriptors = request.POST.getlist('img_desc[]')
             if 'excel_data' in request.POST:
                 data = request.POST.get('excel_data')
                 data = json.loads(data)
                 #Get data from excel and create dataset to the appropriate format
-                new_data = create_dataset(data,username,required_res)
-
+                new_data = create_dataset(data,username,required_res, img_descriptors)
                 json_data = json.dumps(new_data)
                 headers1 = {'Content-type': 'application/json', 'subjectid': token}
                 res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
@@ -1007,8 +1006,6 @@ def predict_model(request):
                 return redirect('/')
 
 def calculate_image_descriptors(request):
-    #get row of image
-    row = request.GET.get('row')
     #get data uri od upload image
     data_uri = request.GET.get('data_uri')
     print data_uri
@@ -1019,7 +1016,6 @@ def calculate_image_descriptors(request):
     for r in response:
         if r['id'] == "Average Particle":
             average_particle = r
-    average_particle.update({'row':row})
     print average_particle
     return HttpResponse(json.dumps(average_particle))
 
