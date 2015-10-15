@@ -981,7 +981,14 @@ def predict_model(request):
                 json_data = json.dumps(new_data)
                 headers1 = {'Content-type': 'application/json', 'subjectid': token}
                 res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
-                print res.text
+                dataset =  res.text
+                print dataset
+                headers = {'Accept': 'application/json', "subjectid": token}
+                body = {'dataset_uri': dataset}
+                print selected_model
+                res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
+                response = json.loads(res.text)
+                print response
             message="ajax"
             return HttpResponse(message)
         if method == 'select_dataset':
@@ -1006,6 +1013,8 @@ def predict_model(request):
                 return redirect('/')
 
 def calculate_image_descriptors(request):
+    print request.GET
+    print request.FILES
     #get data uri od upload image
     data_uri = request.GET.get('data_uri')
     print data_uri
@@ -1018,6 +1027,17 @@ def calculate_image_descriptors(request):
             average_particle = r
     print average_particle
     return HttpResponse(json.dumps(average_particle))
+
+def calculate_mopac_descriptors(request):
+    mopac = request.FILES['mopac_file']
+    print mopac
+    mopac_file = request.GET.get('mopac_file')
+    mopac_file = json.loads(mopac_file)
+    mopac_file_name =  mopac_file['name']
+    print mopac_file_name
+    pmml= mopac_file_name.read()
+    print pmml
+    print('----')
 
 
 #Search
