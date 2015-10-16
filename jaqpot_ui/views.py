@@ -1,9 +1,11 @@
+import base64
 import os
 from urllib import urlencode
 #from xlrd.xlsx import ET
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
 from elasticsearch import Elasticsearch
+import pathlib
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm
 import requests
@@ -1013,8 +1015,6 @@ def predict_model(request):
                 return redirect('/')
 
 def calculate_image_descriptors(request):
-    print request.GET
-    print request.FILES
     #get data uri od upload image
     data_uri = request.GET.get('data_uri')
     print data_uri
@@ -1029,17 +1029,21 @@ def calculate_image_descriptors(request):
     return HttpResponse(json.dumps(average_particle))
 
 def calculate_mopac_descriptors(request):
-    mopac = request.FILES['mopac_file']
-    print mopac
+    token = request.session.get('token', '')
+
+    #Check if user is authenticated. Else redirect to login page
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    headers = {'subjectid': token}
     mopac_file = request.GET.get('mopac_file')
-    mopac_file = json.loads(mopac_file)
-    mopac_file_name =  mopac_file['name']
-    print mopac_file_name
-    pmml= mopac_file_name.read()
-    print pmml
-    print('----')
-
-
+    print json.dumps(mopac_file)
+    body = {'pdbfile': mopac_file}
+    res = requests.post('http://app.jaqpot.org:8080/algorithms/service/mopac/calculate', headers=headers, data=body)
+    response = json.loads(res.text)
+    print response
+    return HttpResponse(json.dumps(response))
 #Search
 def search(request):
     token = request.session.get('token', '')

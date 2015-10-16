@@ -77,7 +77,7 @@ def chech_image_mopac(model_req):
     for m in model_req:
             if m['category'] == 'IMAGE':
                 image = True
-            if m['category'] == 'MOPAC':
+            if m['category'] == 'EXPERIMENTAL':
                 mopac = True
     return image, mopac
 

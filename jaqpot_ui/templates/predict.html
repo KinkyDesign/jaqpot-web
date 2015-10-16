@@ -96,7 +96,7 @@
                 "Image": '<input type="file" id="files"  accept="image/*" onchange="readURL(this, {{i}})" /><img id="img{{i}}" src="#" alt="your image" style= "display: none">',
             {% endif %}
             {% if mopac %}
-                "Mopac": '<input type="file" id="file{{i}}" onchange="readFile(this, {{i}})"/>',
+                "Mopac": '<input type="file" id="files" onchange="readFile(this, {{i}})" />',
             {% endif %}
             {% for m in model_req %}
                 {% if m.category == 'EXPERIMENTAL' %}
@@ -227,15 +227,15 @@ function readURL(input, i) {
 
     }
 
-function readFile(input, i) {
-        if (input.files && input.files[0] ) {
 
+function readFile(input, i) {
+        if (input.files && input.files[0]) {
                 //send data uri via ajax
                 $.ajax({
                     url: '/calculate_mopac_descriptors',
                     type: 'GET',
                     data: {
-                        mopac_file: JSON.stringify(input.files),
+                        mopac_file: URL.createObjectURL(input.files[0]),
                     },
                     cache: 'false',
                     success: function(data){
@@ -246,10 +246,11 @@ function readFile(input, i) {
                  }
                 });
 
+                }
 
-            }
 
-        }
+}
+
 
 </script>
 {% endblock%}
