@@ -65,6 +65,7 @@
 
 <script>
     var image_descriptors = []
+    var mopac_descriptors = []
     $('#radio1').click(function() {
             $("#select_dataset").show();
             $("#upload_dataset").hide();
@@ -230,21 +231,26 @@ function readURL(input, i) {
 
 function readFile(input, i) {
         if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
                 //send data uri via ajax
                 $.ajax({
                     url: '/calculate_mopac_descriptors',
                     type: 'GET',
                     data: {
-                        mopac_file: URL.createObjectURL(input.files[0]),
+                        mopac_file: e.target.result,
                     },
                     cache: 'false',
                     success: function(data){
                         alert(data)
-                        image_descriptors[i-1]=data
+                        mopac_descriptors[i-1]=data
                         console.log(i)
                         console.log(image_descriptors)
                  }
                 });
+                  };
+
+            reader.readAsDataURL(input.files[0]);
 
                 }
 

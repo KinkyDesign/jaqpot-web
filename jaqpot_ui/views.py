@@ -2,6 +2,9 @@ import base64
 import os
 from urllib import urlencode
 #from xlrd.xlsx import ET
+import urllib
+import urllib2
+import urlparse
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
 from elasticsearch import Elasticsearch
@@ -20,6 +23,7 @@ from jaqpot_ui.templatetags import templates_extras
 import jsonpatch
 import xmltodict
 import elasticsearch
+import wget
 
 
 # Home page
@@ -918,7 +922,6 @@ def predict(request):
         print models
         for mod in models:
                 m.append({'name': mod['_id'], 'meta': mod['meta']})
-
         #Display all models for selection
         return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models': m})
 
@@ -1038,9 +1041,9 @@ def calculate_mopac_descriptors(request):
             return redirect('/login')
     headers = {'subjectid': token}
     mopac_file = request.GET.get('mopac_file')
-    print json.dumps(mopac_file)
-    body = {'pdbfile': mopac_file}
-    res = requests.post('http://app.jaqpot.org:8080/algorithms/service/mopac/calculate', headers=headers, data=body)
+    body = {'pdbfile': mopac_file ,}
+    res = requests.post('http://test.jaqpot.org:8080/algorithms/service/mopac/calculate', headers=headers, data=body)
+    print res.text
     response = json.loads(res.text)
     print response
     return HttpResponse(json.dumps(response))
