@@ -976,13 +976,17 @@ def predict_model(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         required_res = requests.get(SERVER_URL+'/model/'+selected_model+'/required', headers=headers)
         required_res = json.loads(required_res.text)
+        print required_res
         if request.is_ajax():
             img_descriptors = request.POST.getlist('img_desc[]')
+            mopac_descriptors = request.POST.getlist('mopac_desc[]')
+            print mopac_descriptors
+            print request.POST
             if 'excel_data' in request.POST:
                 data = request.POST.get('excel_data')
                 data = json.loads(data)
                 #Get data from excel and create dataset to the appropriate format
-                new_data = create_dataset(data,username,required_res, img_descriptors)
+                new_data = create_dataset(data,username,required_res, img_descriptors, mopac_descriptors)
                 json_data = json.dumps(new_data)
                 headers1 = {'Content-type': 'application/json', 'subjectid': token}
                 res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
