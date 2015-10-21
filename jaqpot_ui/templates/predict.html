@@ -95,10 +95,10 @@
     {% for i in "1" %}
         {
             {% if image %}
-                "Image": '<input type="file" id="files"  accept="image/*" onchange="readURL(this, {{i}})" /><img id="img{{i}}" src="#" alt="your image" style= "display: none">',
+                "Image": '<div id="mybutton{{i}}" class="btn-file"><input type="file" id="file{{i}}" class="up_file" accept="image/*" onchange="readURL(this, {{i}})" />Choose image</div><input id="filename{{i}}"></input><img id="img{{i}}" src="#" alt="your image" style= "display: none">',
             {% endif %}
             {% if mopac %}
-                "Mopac": '<input type="file" id="files" onchange="readFile(this, {{i}})" />',
+                "Mopac": '<div id="mopac_button{{i}}" class="btn-file"><input type="file" id="mopac_file{{i}}" class="up_file" onchange="readFile(this, {{i}})" />Choose file</div><input id="mopacname{{i}}"></input>',
             {% endif %}
             {% for m in model_req %}
                 {% if m.category == 'EXPERIMENTAL' %}
@@ -119,7 +119,7 @@
       height: 150,
       rowHeaders: true,
       colHeaders: true,
-      contextMenu: true,
+      contextMenu: ['row_below', 'copy', 'paste', 'alignment',],
       colHeaders:[
                 {% if image %}
                     '<p data-toggle="tooltip" data-placement="top" data-container="body" title="Upload an image">Image</p>',
@@ -153,22 +153,34 @@
             $('[data-toggle="tooltip"]').tooltip({
                 container : 'body'
               });
+            for (i = 1; i < pr.length; i++) {
+                $('#filename'+i).val(pr[i]);
+            }
+            for (i = 1; i < mopac_path.length; i++) {
+                $('#mopacname'+i).val(pr[i]);
+            }
+
         },
       //create upload form in the first cell if user add row
       afterCreateRow: function(index){
         {% if image %}
            var next = index+1
-           hot.setDataAtCell(index, 0, '<input type="file" id="files"  accept="image/*" onchange="readURL(this, '+next+')" /><img id="img'+next+'" src="#" alt="your image" style= "display: none">')
+           hot.setDataAtCell(index, 0, '<div id="mybutton'+next+'" class="btn-file" ><input type="file" id="file'+next+'" class="up_file" accept="image/*" onchange="readURL(this, '+next+')" />Choose image</div><input id="filename'+next+'"></input><img id="img'+next+'" src="#" alt="your image" style= "display: none">')
         {% endif %}
+
     },
     afterChange: function (changes, source) {
                 if (!changes) {
                     return;
                 }
                 $.each(changes, function (index, element) {
-                    document.getElementById("img1").setAttribute('src', pr[1] );
-                    document.getElementById("files").setAttribute('title', " " );
+                for (i = 1; i < pr.length; i++) {
+                    $('#filename'+i).val(pr[i]);
+                    }
                 });
+                for (i = 1; i < mopac_path.length; i++) {
+                    $('#mopacname'+i).val(pr[i]);
+                    }
             },
 
 
@@ -210,9 +222,10 @@ $(document).ready(function(){
 
 function readURL(input, i) {
         if (input.files && input.files[0]) {
+            pr[i]= $( "#file"+i ).val().split('-').pop();
+            $('#filename'+i).val(pr[i]);
             var reader = new FileReader();
             reader.onload = function (e) {
-                pr[i] = e.target.result
                 $('#img'+i)
                     .attr('src', e.target.result)
                     .width(10)
@@ -243,6 +256,8 @@ function readURL(input, i) {
 
 function readFile(input, i) {
         if (input.files && input.files[0]) {
+            mopac_path[i]= $( "#mopac_file"+i ).val().split('-').pop();
+            $('#mopacname'+i).val(mopac_path[i]);
             var reader = new FileReader();
             reader.onload = function (e) {
                 //send data uri via ajax

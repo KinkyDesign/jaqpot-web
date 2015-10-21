@@ -426,3 +426,25 @@ text-overflow: ellipsis;
 .selecter-selected {
     width: 100%;
 }
+
+.up_file {
+    opacity: 0;
+    font-size:42px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+}
+
+.btn-file {
+    clear: both;
+    display: inline-block;
+    float: left;
+    overflow: hidden;
+    position: relative;
+    background-color: #ccc;
+    color: #222;
+    padding: 2px;
+    border-radius: 5px;
+    border: 1px solid #555;
+}
