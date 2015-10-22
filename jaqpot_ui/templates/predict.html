@@ -110,7 +110,7 @@
     {% endfor %}
 
     ]
-
+    var TotalRows=1
     var container = document.getElementById('upload_dataset');
     var hot = new Handsontable(container, {
       data: data,
@@ -153,19 +153,41 @@
             $('[data-toggle="tooltip"]').tooltip({
                 container : 'body'
               });
+            {% if image %}
             for (i = 1; i < pr.length; i++) {
                 $('#filename'+i).val(pr[i]);
             }
+            {% endif %}
+            {% if mopac %}
             for (i = 1; i < mopac_path.length; i++) {
                 $('#mopacname'+i).val(pr[i]);
             }
+            {% endif %}
 
         },
       //create upload form in the first cell if user add row
-      afterCreateRow: function(index){
+      afterCreateRow: function(index, numberOfRows){
         {% if image %}
            var next = index+1
            hot.setDataAtCell(index, 0, '<div id="mybutton'+next+'" class="btn-file" ><input type="file" id="file'+next+'" class="up_file" accept="image/*" onchange="readURL(this, '+next+')" />Choose image</div><input id="filename'+next+'"></input><img id="img'+next+'" src="#" alt="your image" style= "display: none">')
+           TotalRows = TotalRows + numberOfRows
+           if (TotalRows >next){
+                var i=TotalRows
+                hot.setDataAtCell(i-1, 0, '<div id="mybutton'+i+'" class="btn-file" ><input type="file" id="file'+i+'" class="up_file" accept="image/*" onchange="readURL(this, '+i+')" />Choose image</div><input id="filename'+i+'"></input><img id="img'+i+'" src="#" alt="your image" style= "display: none">')
+            }
+            pr[next+1]=pr[next]
+            pr[next]=""
+            console.log(pr)
+            /*if (pr.length >= next){
+                var temp = pr
+                for (i=next;i<=pr.length; i++){
+                    pr[i+2] = temp[i]
+
+            }
+            alert(pr)
+            console.log(pr)
+            }*/
+
         {% endif %}
 
     },
@@ -174,13 +196,17 @@
                     return;
                 }
                 $.each(changes, function (index, element) {
-                for (i = 1; i < pr.length; i++) {
-                    $('#filename'+i).val(pr[i]);
-                    }
-                });
-                for (i = 1; i < mopac_path.length; i++) {
-                    $('#mopacname'+i).val(pr[i]);
-                    }
+                {% if image %}
+                    for (i = 1; i < pr.length; i++) {
+                        $('#filename'+i).val(pr[i]);
+                        }
+                    });
+                {% endif %}
+                {% if mopac %}
+                    for (i = 1; i < mopac_path.length; i++) {
+                        $('#mopacname'+i).val(pr[i]);
+                        }
+                {% endif %}
             },
 
 
