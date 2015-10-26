@@ -80,7 +80,7 @@ def chech_image_mopac(model_req):
     image = False
     mopac = False
     for m in model_req:
-            if m['category'] == 'EXPERIMENTAL':
+            if m['category'] == 'IMAGE':
                 image = True
             if m['category'] == 'MOPAC':
                 mopac = True

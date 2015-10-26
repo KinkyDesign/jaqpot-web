@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="div-table" style="width:100%;">
-    <h1>Task #{{name}}</h1>
+    <h1>Task <span style="font-size: 12px;">#{{name}}</span> </h1>
     {% if status == "running"%}
     <h3>Running task</h3>
     <div id="container" style=" width: 75%; float:right; right:80%; min-width: 310px; height: 150px; /*max-width: 500px;*/ margin: 0 auto"></div>
@@ -461,6 +461,7 @@
             <div>
                 <label class="align">URI:</label>
                 <input type="text" readonly="readonly" style="margin:5px" value="{{output.resultUri}}">
+                <input type="button"  id="result" value="see result">
             </div>
             {% endif %}
             {% if output.result %}

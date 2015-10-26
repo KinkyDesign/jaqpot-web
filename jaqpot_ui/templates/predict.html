@@ -165,9 +165,10 @@
             {% endif %}
 
         },
+
       //create upload form in the first cell if user add row
       afterCreateRow: function(index, numberOfRows){
-        {% if image %}
+           {% if image %}
            var next = index+1
            hot.setDataAtCell(index, 0, '<div id="mybutton'+next+'" class="btn-file" ><input type="file" id="file'+next+'" class="up_file" accept="image/*" onchange="readURL(this, '+next+')" />Choose image</div><input id="filename'+next+'"></input><img id="img'+next+'" src="#" alt="your image" style= "display: none">')
            TotalRows = TotalRows + numberOfRows
@@ -187,10 +188,11 @@
             alert(pr)
             console.log(pr)
             }*/
-
-        {% endif %}
+            {% endif %}
 
     },
+
+    {% if image or mopac %}
     afterChange: function (changes, source) {
                 if (!changes) {
                     return;
@@ -208,6 +210,7 @@
                         }
                 {% endif %}
             },
+    {% endif %}
 
 
     });

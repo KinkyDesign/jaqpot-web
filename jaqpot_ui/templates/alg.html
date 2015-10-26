@@ -52,10 +52,22 @@
          <h3>Fill in the title and description of the produced model</h3>
         <div>
             <label class="align" >Model name:</label>
+            {% if tform.modelname.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{tform.modelname.errors.as_text}}</span>
+               </div>
+            {% endif %}
             {{tform.modelname}}
         </div>
         <br>
         <p><b>Model description:</b></p>
+         {% if tform.description.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{tform.description.errors.as_text}}</span>
+               </div>
+            {% endif %}
         {{tform.description}}
 
     </div>

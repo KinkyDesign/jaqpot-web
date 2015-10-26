@@ -13,7 +13,7 @@
          {% endif%}
         {% load endless %}
         <div class="publicdataset list-group">
-        {% paginate 15 entries2 using "other_objects_page" %}
+        {% paginate 20 entries2 using "other_objects_page" %}
             <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
         {% for e in entries2 %}
              <a href="/dataset?dataset={{e.name}}" class="list-group-item">{{e.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{e.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{e.meta.descriptions.0}}</span> </a>

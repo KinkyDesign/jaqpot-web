@@ -8,7 +8,6 @@ import urlparse
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
 from elasticsearch import Elasticsearch
-import pathlib
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm
 import requests
@@ -360,6 +359,7 @@ def trainmodel(request):
             #page1 is the number of first dataset of page
             page1=int(page) * 20 - 20
             k=str(page1)
+            print k
             if page1 <= 1:
                 res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
             else:
@@ -368,9 +368,10 @@ def trainmodel(request):
             page = 1
             res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
         data= json.loads(res.text)
+        print res.text
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
-
+        print dataset
         return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last})
 
 #choose dataset for training
@@ -577,7 +578,9 @@ def change_params(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
         print res.text
-        return redirect('/task', {'token': token, 'username': username})
+        task_id = json.loads(res.text)['_id']
+        print task_id
+        return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
 
 
 #Conformer
@@ -916,7 +919,7 @@ def predict(request):
         m = []
         #get all models
         headers = {'Accept': 'application/json', "subjectid": token}
-        res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+        res = requests.get(SERVER_URL+'/model?creator='+username+'&start=0&max=10000', headers=headers)
         list_resp = res.text
         models = json.loads(res.text)
         print models

@@ -9,6 +9,18 @@
         <label class="align">Name:</label>
         <input type="text" style="margin:5px;" value="{{name}}">
     </div>
+     {% if details.meta.titles %}
+        <div>
+        <label class="align">Title:</label>
+        <input type="text" style="margin:5px;" value="{{details.meta.titles.0}}">
+    </div>
+     {% endif %}
+        {% if details.meta.description %}
+        <div>
+        <label class="align">Description:</label>
+         <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;width:99%;">{{details.meta.descriptions.0}}</textarea>
+    </div>
+     {% endif %}
      {% if alg %}
     <h4>Algorithm:</h4>
         {% if alg.meta.descriptions %}

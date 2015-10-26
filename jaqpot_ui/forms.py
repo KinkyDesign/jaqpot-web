@@ -58,7 +58,7 @@ class NoPmmlForm(forms.Form):
 class TrainingForm(forms.Form):
     scaling = forms.ChoiceField(widget = forms.Select(), choices=[( 'scaling1', 'None' ), ('scaling2', 'Scaling between zero and one'), ('scaling3', 'Normalization')])
     doa = forms.ChoiceField(widget = forms.Select(), choices=[( 'doa1', 'None' ), ('doa2', 'Leverage method'), ('doa3', 'Other method')])
-    modelname = forms.CharField(max_length=50, required= False)
-    description = forms.CharField(widget=forms.Textarea, required= False)
+    modelname = forms.CharField(max_length=50, required= True)
+    description = forms.CharField(widget=forms.Textarea, required= True)
     description.widget.attrs.update({'style' : "border-radius: 4px;"})
     variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'None')])
