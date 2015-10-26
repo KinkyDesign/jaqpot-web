@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="div-table" style="width:100%;">
-    <h1>Task <span style="font-size: 12px;">#{{name}}</span> </h1>
+    <h1>Task: <span  style="font-size: 20px;">{{output.meta.titles.0}}</span> <span style="font-size: 12px;">#{{name}}</span> </h1>
     {% if status == "running"%}
     <h3>Running task</h3>
     <div id="container" style=" width: 75%; float:right; right:80%; min-width: 310px; height: 150px; /*max-width: 500px;*/ margin: 0 auto"></div>
@@ -10,6 +10,13 @@
         <label class="align">ID:</label>
         <input type="text" id="id1" readonly="readonly" style="margin:5px" >
     </div> -->
+
+    {% if output.createdBy %}
+    <div>
+        <label class="align">Creator:</label>
+        <input type="text" readonly="readonly" style="margin:5px" value="{{output.createdBy}}">
+    </div>
+    {% endif %}
     {% if output.status %}
     <div>
         <label class="align">Status:</label>
@@ -22,45 +29,41 @@
         <input type="text" readonly="readonly" style="margin:5px" value="{{output.type}}">
     </div>
     {% endif %}
-    {% if output.duration %}
-    <div><label class="align">ETA:</label>
-            <input type="text" id="eta" readonly="readonly" style="margin:5px" value="{{output.duration}}">
-    </div>
-    {% endif %}
+
     {% if output.meta.date %}
     <div>
         <label class="align">Date:</label>
         <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.date}}">
     </div>
     {% endif %}
-    {% if output.createdBy %}
-    <div>
-        <label class="align">Creator:</label>
-        <input type="text" readonly="readonly" style="margin:5px" value="{{output.createdBy}}">
+
+      <div>
+        <label class="align">Result:</label>
+        <input type="button" style="margin:5px" class="btn btn-danger" value="See result">
     </div>
-    {% endif %}
-    {% if output.httpStatus %}
-    <div>
-        <label class="align">Http Status:</label>
-        <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
-    </div>
-    {% endif %}
-    {% if output.meta.comments %}
-    <p><b>Comment:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
-            {{c}}{% endfor %}
-        </textarea>
-    {% endif %}
-    {% if output.meta.descriptions %}
+     {% if output.meta.descriptions %}
     <p><b>Description:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for c in output.meta.descriptions %}
+        <textarea class="form-control" readonly="readonly" style="margin:5px; width:50%;" rows="2">{% for c in output.meta.descriptions %}
             {{c}}{% endfor %}
         </textarea>
     {% endif %}
+
         <a class="advanced btn btn-danger" data-toggle="tooltip" title="Advanced info"><i class="glyphicon glyphicon-plus-sign"></i></a>
         <br>
         <div id='advancedOptions1' >
             <!-- Advanced info -->
+            {% if output.duration %}
+            <div><label class="align">ETA:</label>
+                    <input type="text" id="eta" readonly="readonly" style="margin:5px" value="{{output.duration}}">
+            </div>
+            {% endif %}
+            {% if output.httpStatus %}
+            <div>
+                <label class="align">Http Status:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
+            </div>
+            {% endif %}
+
             {% if output.resultUri %}
             <div>
                 <label class="align">URI:</label>
@@ -78,6 +81,12 @@
                 <label class="align">Sources:</label>
                 <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.hasSources.0}}">
             </div>
+            {% endif %}
+             {% if output.meta.comments %}
+            <p><b>Comment:</b></p>
+                <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
+                    {{c}}{% endfor %}
+                </textarea>
             {% endif %}
 
         </div>
