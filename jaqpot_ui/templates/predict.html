@@ -240,8 +240,8 @@ $(document).ready(function(){
                     mopac_desc : mopac_descriptors,
                     },
                     cache: 'false',
-                    success: function(){
-                    window.location.replace("/");
+                    success: function(data){
+                    window.location.replace("/t_detail?name="+data+"&status=queued");
                  }
                 });
 

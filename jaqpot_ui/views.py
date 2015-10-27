@@ -167,7 +167,7 @@ def taskdetail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     name = request.GET.get('name')
-    status = request.GET.get('status')
+    #status = request.GET.get('status')
     if request.is_ajax():
         output = request.GET.getlist('output')[0]
         name = request.GET.getlist('name')[0]
@@ -190,7 +190,7 @@ def taskdetail(request):
             date=output['meta']['date'].split('T')[0]
             output['meta']['date'] = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%m/%d/%y')
 
-        return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'status': status, 'output': output})
+        return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
 
 #stop running task
 def stop_task(request):
@@ -839,71 +839,75 @@ def dataset_detail(request):
     headers = {'Accept': 'application/json', 'subjectid': token}
     r = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=0&colStart=0&colMax=0', headers=headers)
     data=json.loads(r.text)
-    totalRows = data['totalRows']
-    totalColumns = data['totalColumns']
-    last = (totalRows/10)
-    if last==0:
-        last=1
-    if request.method == 'GET':
-        headers = {'Accept': 'application/json', 'subjectid': token}
-        #print data_detail['dataEntry']
-        if page:
-            page1=int(page) * 10 - 10
-            k=str(page1)
-            if page1 <= 1:
+    if str(r) != "<Response [200]>":
+        #redirect to error page
+        return render(request, "error.html", {'token': token, 'username': username,'error':data})
+    else:
+        totalRows = data['totalRows']
+        totalColumns = data['totalColumns']
+        last = (totalRows/10)
+        if last==0:
+            last=1
+        if request.method == 'GET':
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            #print data_detail['dataEntry']
+            if page:
+                page1=int(page) * 10 - 10
+                k=str(page1)
+                if page1 <= 1:
+                    if totalRows>10:
+                        res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
+                        data_detail= json.loads(res.text)
+                    else:
+                        res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
+                        data_detail= json.loads(res.text)
+                else:
+                    if totalRows>int(k)+10:
+                        res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart='+k+'&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
+                        data_detail = json.loads(res.text)
+                    else:
+                        res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart='+k+'&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
+                        data_detail = json.loads(res.text)
+            else:
+                page = 1
                 if totalRows>10:
                     res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
-                    data_detail= json.loads(res.text)
                 else:
                     res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
-                    data_detail= json.loads(res.text)
-            else:
-                if totalRows>int(k)+10:
-                    res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart='+k+'&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
-                    data_detail = json.loads(res.text)
-                else:
-                    res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart='+k+'&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
-                    data_detail = json.loads(res.text)
-        else:
-            page = 1
-            if totalRows>10:
-                res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
-            else:
-                res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
-        data_detail=json.loads(res.text)
-        a=[]
-        # a contains all compound's properties
-        for key in data_detail['dataEntry']:
-            for k, value in key.items():
-                if k =='values':
-                    for m,n in value.items():
-                        if m not in a:
-                            a.append(m)
-        properties={}
-        new=[]
-        compound = []
-        for i in range(len(a)):
-            for k in data_detail['features']:
-                if k['uri'] == a[i]:
-                    new.append(k['name'])
+            data_detail=json.loads(res.text)
+            a=[]
+            # a contains all compound's properties
+            for key in data_detail['dataEntry']:
+                for k, value in key.items():
+                    if k =='values':
+                        for m,n in value.items():
+                            if m not in a:
+                                a.append(m)
+            properties={}
+            new=[]
+            compound = []
+            for i in range(len(a)):
+                for k in data_detail['features']:
+                    if k['uri'] == a[i]:
+                        new.append(k['name'])
 
-        #get response json
-        for key in data_detail['dataEntry']:
-            properties[key['compound']['URI']] = []
-            properties[key['compound']['URI']].append({"compound": key['compound']['URI']})
-            properties[key['compound']['URI']].append({"name": key['compound']['name']})
+            #get response json
+            for key in data_detail['dataEntry']:
+                properties[key['compound']['URI']] = []
+                properties[key['compound']['URI']].append({"compound": key['compound']['URI']})
+                properties[key['compound']['URI']].append({"name": key['compound']['name']})
 
-            #for each compound
-            for k, value in key.items():
-                if k =='values':
-                    for i in range(len(a)):
-                        #if a compound haven't value for a property add its value Null
-                        if a[i] in value:
-                            properties[key['compound']['URI']].append({"prop": a[i], "value": value[a[i]]})
-                        else:
-                            properties[key['compound']['URI']].append({"prop":  a[i], "value": "NULL"})
+                #for each compound
+                for k, value in key.items():
+                    if k =='values':
+                        for i in range(len(a)):
+                            #if a compound haven't value for a property add its value Null
+                            if a[i] in value:
+                                properties[key['compound']['URI']].append({"prop": a[i], "value": value[a[i]]})
+                            else:
+                                properties[key['compound']['URI']].append({"prop":  a[i], "value": "NULL"})
 
-        return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail':data_detail, 'properties': properties, 'a': a, 'new': new, 'page':page, 'last':last})
+            return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail':data_detail, 'properties': properties, 'a': a, 'new': new, 'page':page, 'last':last})
 
 #Predict model
 def predict(request):
@@ -1001,8 +1005,9 @@ def predict_model(request):
                 res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
                 response = json.loads(res.text)
                 print response
-            message="ajax"
-            return HttpResponse(message)
+                id = response['_id']
+
+            return HttpResponse(id)
         if method == 'select_dataset':
             #Get the selected dataset
             dataset = request.POST.get('radio')
@@ -1022,7 +1027,8 @@ def predict_model(request):
                 res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
                 response = json.loads(res.text)
                 print response
-                return redirect('/')
+                id = response['_id']
+                return redirect('/t_detail?name='+id+'&status=queued')
 
 def calculate_image_descriptors(request):
     #get data uri od upload image

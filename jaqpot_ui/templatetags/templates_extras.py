@@ -9,3 +9,11 @@ def private(obj, attribute):
 @register.filter
 def get_range( value ):
     return range(1, value+1)
+
+@register.filter
+def split(string, sep):
+    """Return the last string split by sep.
+
+    Example usage: {{ value|split:"/" }}
+    """
+    return string.split(sep)[1]

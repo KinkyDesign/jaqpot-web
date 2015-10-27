@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
+{% load templates_extras %}
+
 {% block content %}
 <div class="div-table" style="width:100%;">
     <h1>Task: <span  style="font-size: 20px;">{{output.meta.titles.0}}</span> <span style="font-size: 12px;">#{{name}}</span> </h1>
-    {% if status == "running"%}
+    {% if  output.status == "RUNNING"%}
     <h3>Running task</h3>
     <div id="container" style=" width: 75%; float:right; right:80%; min-width: 310px; height: 150px; /*max-width: 500px;*/ margin: 0 auto"></div>
     <!--<div>
@@ -37,9 +39,9 @@
     </div>
     {% endif %}
 
-      <div>
+    <div>
         <label class="align">Result:</label>
-        <input type="button" style="margin:5px" class="btn btn-danger" value="See result">
+        <input type="button" style="margin:5px" class="btn btn-danger" disabled value="See result">
     </div>
      {% if output.meta.descriptions %}
     <p><b>Description:</b></p>
@@ -94,7 +96,7 @@
         <br>
         <a href="/stoptask?id={{name}}" class="btn btn-danger" data-toggle="tooltip" title="Stop task"><i class="glyphicon glyphicon-remove-sign"></i></a>
 
-    {%elif status == "cancelled" %}
+    {%elif output.status == "CANCELLED" %}
         <h3>This task has failed </h3>
         {% if output.actor %}
         <div>
@@ -158,7 +160,7 @@
         </div>
         <br>
         <a href="/" class="btn btn-danger" title="Report it">Report it</a>
-    {%elif status == "error" %}
+    {%elif output.status == "ERROR" %}
         <h3>Error </h3>
         {% if output.createdBy %}
         <div >
@@ -252,8 +254,8 @@
         </div>
         <br>
         <a href="/" class="btn btn-danger" title="Report it">Report it</a>
-    {%elif status == "queued" %}
-        <h3>Queued task </h3>
+    {%elif output.status == "QUEUED" %}
+
         {% if output.createdBy %}
         <div>
             <label class="align">Creator:</label>
@@ -278,21 +280,13 @@
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.date}}">
         </div>
         {% endif %}
-        {% if output.httpStatus %}
         <div>
-            <label class="align">Http Status:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
+            <label class="align">Result:</label>
+            <input type="button" style="margin:5px" class="btn btn-danger" disabled value="See result">
         </div>
-        {% endif %}
-        {% if output.meta.comments %}
-        <p><b>Comment:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
-            {{c}}{%endfor%}
-        </textarea>
-        {% endif %}
         {% if output.meta.descriptions %}
         <p><b>Description:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for c in output.meta.descriptions%}
+        <textarea class="form-control" readonly="readonly" style="margin:5px; width:50%;" rows="2">{% for c in output.meta.descriptions%}
             {{c}}{%endfor%}
 
         </textarea>
@@ -318,10 +312,21 @@
                 <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.hasSources.0}}">
             </div>
             {% endif %}
+            {% if output.httpStatus %}
+            <div>
+                <label class="align">Http Status:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
+            </div>
+            {% endif %}
+            {% if output.meta.comments %}
+            <p><b>Comment:</b></p>
+            <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
+                {{c}}{%endfor%}
+            </textarea>
+            {% endif %}
 
         </div>
-    {%elif status == "rejected" %}
-        <h3>Rejected task </h3>
+    {%elif output.status == "REJECTED" %}
         {% if output.createdBy %}
         <div>
             <label class="align">Creator:</label>
@@ -340,11 +345,6 @@
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.type}}">
         </div>
         {% endif %}
-        {% if output.duration %}
-        <div><label class="align">Duration:</label>
-                <input type="text" id="duration_rej" readonly="readonly" style="margin:5px" value="{{output.duration}}">
-        </div>
-        {% endif %}
         {% if output.meta.date %}
         <div>
             <label class="align">Date:</label>
@@ -357,12 +357,7 @@
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.actor}}" >
         </div>
         {% endif %}
-        {% if output.httpStatus %}
-        <div>
-            <label class="align">Http Status:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
-        </div>
-        {% endif %}
+
         {% if output.errorReport.code %}
         <div>
             <label class="align">Code:</label>
@@ -391,6 +386,11 @@
         <a class="advanced btn btn-danger" data-toggle="tooltip" title="Advanced info"><i class="glyphicon glyphicon-plus-sign"></i></a>
         <div id='advancedOptions5' >
             <!-- Advanced info -->
+            {% if output.duration %}
+            <div><label class="align">Duration:</label>
+                    <input type="text" id="duration_rej" readonly="readonly" style="margin:5px" value="{{output.duration}}">
+            </div>
+            {% endif %}
             {% if output.resultUri %}
             <div>
                 <label class="align">URI:</label>
@@ -409,10 +409,15 @@
                 <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.hasSources.0}}">
             </div>
             {% endif %}
+            {% if output.httpStatus %}
+            <div>
+                <label class="align">Http Status:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
+            </div>
+            {% endif %}
 
         </div>
-    {%elif status == "completed" %}
-        <h3>Completed task </h3>
+    {% elif output.status == "COMPLETED" %}
         {% if output.createdBy %}
         <div>
             <label class="align">Creator:</label>
@@ -431,32 +436,27 @@
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.type}}">
         </div>
         {% endif %}
-        {% if output.duration %}
-        <div><label class="align">Duration:</label>
-                <input type="text" id="duration" readonly="readonly" style="margin:5px" value="{{output.duration}}">
-        </div>
-        {% endif %}
+
          {% if output.meta.date %}
         <div>
             <label class="align">Date:</label>
             <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.date}}">
         </div>
          {% endif %}
-         {% if output.httpStatus %}
+
         <div>
-            <label class="align">Http Status:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
+            <label class="align">Result:</label>
+            {% if 'model' in output.result %}
+            <a href="/m_detail?name={{output.result|split:'/'}}" class="btn btn-danger" title="See result">See result</a>
+            {% elif 'dataset' in output.result %}
+            <a href="/data_detail?name={{output.result|split:'/'}}" class="btn btn-danger" title="See result">See result</a>
+            {% else %}
+            <a href="/" class="btn btn-danger" title="See result">See result</a>
+            {% endif %}
         </div>
-        {% endif %}
-         {% if output.meta.comments %}
-        <p><b>Comment:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
-            {{c}}{%endfor%}
-        </textarea>
-        {% endif %}
         {% if output.meta.descriptions %}
         <p><b>Description:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px" rows="2">{% for c in output.meta.descriptions%}
+        <textarea class="form-control" readonly="readonly" style="margin:5px; width:50%;" rows="2">{% for c in output.meta.descriptions%}
             {{c}}{%endfor%}
 
         </textarea>
@@ -470,7 +470,6 @@
             <div>
                 <label class="align">URI:</label>
                 <input type="text" readonly="readonly" style="margin:5px" value="{{output.resultUri}}">
-                <input type="button"  id="result" value="see result">
             </div>
             {% endif %}
             {% if output.result %}
@@ -484,6 +483,23 @@
                 <label class="align">Sources:</label>
                 <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.hasSources.0}}">
             </div>
+            {% endif %}
+             {% if output.duration %}
+            <div><label class="align">Duration:</label>
+                    <input type="text" id="duration" readonly="readonly" style="margin:5px" value="{{output.duration}}">
+            </div>
+            {% endif %}
+            {% if output.httpStatus %}
+            <div>
+                <label class="align">Http Status:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
+            </div>
+            {% endif %}
+             {% if output.meta.comments %}
+            <p><b>Comment:</b></p>
+            <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
+                {{c}}{%endfor%}
+            </textarea>
             {% endif %}
 
         </div>
@@ -503,12 +519,8 @@
 $('[data-toggle="tooltip"]').tooltip({
     'placement': 'right'
 });
-/*var params_json = JSON.parse($("#task").val() )
-$("#id1").val(params_json.id);
-$("#status").val('{{status}}');
-$("#eta").val(params_json.ETA);*/
 
-percentage = {{output.percentageCompleted}}
+var percentage = {{output.percentageCompleted}}
 function chart(percentage){
     $('#container').highcharts({
         chart: {
@@ -545,7 +557,7 @@ function chart(percentage){
         }]
     });
     }
-{% if status == "running"%}
+{% if output.status == "RUNNING"%}
 //Create chart pie
 $(function (){
      chart(percentage);
@@ -556,9 +568,9 @@ $('#duration').val($('#duration').val() + 'ms');
 $('#duration_rej').val($('#duration_rej').val() + 'ms');
 
 //Update running task percentage each 30 sec
-var seconds = 30;
+var seconds = 5;
 
-setInterval(function(){
+timerId = setInterval(function(){
     //get via ajax new values
     $.ajax({
             type: "get",
@@ -567,17 +579,34 @@ setInterval(function(){
             contentType: 'application/json;',
             data: { 'output': '{{output}}', 'name': '{{name}}', },
             success: function(data){
+                {% if output.status == "RUNNING" %}
                 //if percentageCompleted has changed then reload page
                 if (data.percentageCompleted != percentage){
                 location.reload();
                 }
+                {% endif %}
+                console.log(data.status)
+                console.log({{data.status}})
+                if (data.status != "{{output.status}}"){
+                location.reload();
+                }
             },
             error: function(){
-                alert("error");
+                console.log("error");
             }
         });
 
 }, seconds * 1000)
+
+{% if output.status == "COMPLETED" %}
+    clearInterval(timerId);
+{% endif %}
+{% if output.status == "ERROR" %}
+    clearInterval(timerId);
+{% endif %}
+{% if output.status == "CANCELLED" %}
+    clearInterval(timerId);
+{% endif %}
 
 </script>
 <!-- Show-Hide advanced info  -->

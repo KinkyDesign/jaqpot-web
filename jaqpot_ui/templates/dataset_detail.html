@@ -90,56 +90,6 @@
 
      $(document).ready( function () {
 
-        /* $('#dataset').DataTable( {
-            //"bProcessing": true,
-            "bServerSide": true,
-            "Paginate":true,
-            "serverSide": true,
-            "deferLoading": 57,
-            ajax: {
-                url: '/data_detail',
-                type: 'GET',
-                dataType: "json",
-                contentType: 'application/json;',
-                data: { 'page': '2' , 'name': '{{name}}' },
-                success: function(json)
-                {
-                        alert($(json));
-                        //$('#dataset').DataTable().ajax.reload();
-                        //$('html, body').animate({scrollTop:$(document).height()}, 'slow');
-                },
-            }
-
-        } );
-        $('.paginate_button').click( function () {
-
-            alert('hi')
-            $('#dataset').DataTable().ajax.reload();
-            var hidden = $('#dataset').dataTable().fnReloadAjax();
-            alert( hidden.length +' nodes were returned' );
-
-        } ); */
-        /*var table = $('#dataset').DataTable();
-        $('#dataset').on( 'page.dt', function () {
-            ajax: {
-                url: '/data_detail',
-                type: 'GET',
-                dataType: "json",
-                contentType: 'application/json;',
-                data: { 'page': '2' , 'name': '{{name}}' },
-                success: function(json)
-                {
-                        //alert("hi");
-                        //var oTable = $('#dataset').dataTable($(json));
-                        //$('html, body').animate({scrollTop:$(document).height()}, 'slow');
-                },
-            var info = table.page.info();
-            $('#pageInfo').html( 'Showing page: '+info.page+' of '+info.pages );
-        } );
-        $(".paginate_button").click(function() {
-            // Ajax call.
-
-        });*/
          $('#dataset').DataTable( {
         "scrollX": true,
         "bPaginate":false,
@@ -158,6 +108,7 @@
           // Filter on the column (the index) of this element
           table.fnFilterAll(this.value);
         } );
+
 
 
     } );
