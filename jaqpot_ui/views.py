@@ -573,7 +573,7 @@ def change_params(request):
         title= tform['modelname'].value()
         description= tform['description'].value()
 
-        body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params}
+        body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params, 'visible': True}
 
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
@@ -1000,7 +1000,7 @@ def predict_model(request):
                 dataset =  res.text
                 print dataset
                 headers = {'Accept': 'application/json', "subjectid": token}
-                body = {'dataset_uri': dataset}
+                body = {'dataset_uri': dataset, 'visible': True}
                 print selected_model
                 res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
                 response = json.loads(res.text)
@@ -1023,7 +1023,7 @@ def predict_model(request):
                 return render(request, "predict.html", {'token': token, 'username': username,'selected_model': selected_model, 'page': page, 'last':last,'error':"You should select a dataset."})
             else:
                 headers = {'Accept': 'application/json', "subjectid": token}
-                body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset}
+                body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'visible': True}
                 res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
                 response = json.loads(res.text)
                 print response
