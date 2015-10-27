@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
 from elasticsearch import Elasticsearch
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac
+from jaqpot_ui.get_dataset import paginate_dataset
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm
 import requests
 import json
@@ -836,45 +837,8 @@ def dataset_detail(request):
     username = request.session.get('username', '')
     name = request.GET.get('name', '')
     page = request.GET.get('page', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
-    r = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=0&colStart=0&colMax=0', headers=headers)
-    data=json.loads(r.text)
-    if str(r) != "<Response [200]>":
-        #redirect to error page
-        return render(request, "error.html", {'token': token, 'username': username,'error':data})
-    else:
-        totalRows = data['totalRows']
-        totalColumns = data['totalColumns']
-        last = (totalRows/10)
-        if last==0:
-            last=1
-        if request.method == 'GET':
-            headers = {'Accept': 'application/json', 'subjectid': token}
-            #print data_detail['dataEntry']
-            if page:
-                page1=int(page) * 10 - 10
-                k=str(page1)
-                if page1 <= 1:
-                    if totalRows>10:
-                        res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
-                        data_detail= json.loads(res.text)
-                    else:
-                        res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
-                        data_detail= json.loads(res.text)
-                else:
-                    if totalRows>int(k)+10:
-                        res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart='+k+'&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
-                        data_detail = json.loads(res.text)
-                    else:
-                        res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart='+k+'&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
-                        data_detail = json.loads(res.text)
-            else:
-                page = 1
-                if totalRows>10:
-                    res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
-                else:
-                    res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
-            data_detail=json.loads(res.text)
+    data_detail, last, page = paginate_dataset(request, name, token, username, page)
+    if data_detail and last and page:
             a=[]
             # a contains all compound's properties
             for key in data_detail['dataEntry']:
@@ -908,6 +872,15 @@ def dataset_detail(request):
                                 properties[key['compound']['URI']].append({"prop":  a[i], "value": "NULL"})
 
             return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail':data_detail, 'properties': properties, 'a': a, 'new': new, 'page':page, 'last':last})
+
+def dispay_predicted_dataset(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    name = request.GET.get('name', '')
+    page = request.GET.get('page', '')
+    data_detail, last, page = paginate_dataset(request, name, token, username, page)
+    if data_detail and last and page:
+        return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name,'data_detail':data_detail, })
 
 #Predict model
 def predict(request):
