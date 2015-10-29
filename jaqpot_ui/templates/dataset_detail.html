@@ -90,8 +90,8 @@
 
      $(document).ready( function () {
 
-         $('#dataset').DataTable( {
-        "scrollX": true,
+        var oTable = $('#dataset').DataTable( {
+        "scrollX": '100%',
         "bPaginate":false,
         "dom": 'ft',
          "fnDrawCallback": function( oSettings )
@@ -108,8 +108,6 @@
           // Filter on the column (the index) of this element
           table.fnFilterAll(this.value);
         } );
-
-
 
     } );
 

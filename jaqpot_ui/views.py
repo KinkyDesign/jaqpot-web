@@ -878,9 +878,28 @@ def dispay_predicted_dataset(request):
     username = request.session.get('username', '')
     name = request.GET.get('name', '')
     page = request.GET.get('page', '')
+    model = request.GET.get('model', '')
     data_detail, last, page = paginate_dataset(request, name, token, username, page)
     if data_detail and last and page:
-        return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name,'data_detail':data_detail, })
+        headers = {'Accept': 'text/uri-list', "subjectid": token}
+        res = requests.get(SERVER_URL+'/model/'+model+'/predicted', headers=headers)
+        predicted =  res.text
+        predicted = predicted.splitlines()
+        properties={}
+        new=[]
+        for i in range(len(predicted)):
+            for k in data_detail['features']:
+                if k['uri'] == predicted[i]:
+                    new.append(k['name'])
+        #get response json
+        for key in data_detail['dataEntry']:
+            properties[key['compound']['URI']] = []
+            properties[key['compound']['URI']].append({"compound": key['compound']['URI']})
+            properties[key['compound']['URI']].append({"name": key['compound']['name']})
+            for p in predicted:
+                properties[key['compound']['URI']].append({"prop": p, "value": key['values'][p]})
+
+        return render(request, "predicted_dataset.html", {'token': token, 'username': username, 'name': name,'data_detail':data_detail, 'properties': properties, 'new': new, 'a':predicted, 'page':page, 'last':last, 'model':model })
 
 #Predict model
 def predict(request):
@@ -1001,7 +1020,7 @@ def predict_model(request):
                 response = json.loads(res.text)
                 print response
                 id = response['_id']
-                return redirect('/t_detail?name='+id+'&status=queued')
+                return redirect('/t_detail?name='+id+'&model='+selected_model)
 
 def calculate_image_descriptors(request):
     #get data uri od upload image
