@@ -636,15 +636,11 @@ def model_detail(request):
         alg_details=json.loads(res.text)
     else:
         alg_details = ""
-    headers1 = {'Accept': 'text/uri-list', "subjectid": token}
-    res = requests.get(SERVER_URL+'/model/'+name+'/required', headers=headers1)
-    required= res.text
-    required_feature=[]
-    required = required.split('\n')[:]
+    res = requests.get(SERVER_URL+'/model/'+name+'/required', headers=headers)
+    required= json.loads(res.text)
+    required_feature = []
     for r in required:
-        required_feature.append({'feature': r})
-    required_feature = json.dumps(required_feature)
-    required_feature = json.loads(required_feature)
+        required_feature.append({'feature': r['uri']})
     if request.method == 'GET':
         return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name, 'alg': alg_details, 'required':required_feature })
 
