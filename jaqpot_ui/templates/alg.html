@@ -240,6 +240,33 @@
         $("#none").hide();
      }
 
+    $( "input[name='output']" ).on(
+        {
+          'change' : function( )
+                     {
+                       $.each( $( "input[name='output']" ),
+                               function( )
+                               {
+                                 var ObjectId, ObjectValue;
+
+                                 if( $(this).is(':checked') )
+                                 {
+                                   /*Checked radio button OBJECT */
+                                   console.log('checked')
+                                   console.log(this);                      /* Jquery "this" Object */
+                                   ObjectId    = $(this).attr( 'id' );     /* Id of above Jquery object */
+                                   ObjectValue = $(this).val(  );          /* Value of above Jquery object */
+                                 }
+
+                               }
+                             );
+                     }
+        }
+     );
+
+
+
+
 });
 </script>
 
