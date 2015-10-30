@@ -449,8 +449,11 @@
             {% if 'model' in output.result %}
             <a href="/m_detail?name={{output.result|split:'/'}}" class="btn btn-danger" title="See result">See result</a>
             {% elif 'dataset' in output.result %}
+                {% if 'model' in output.meta.titles.0 %}
                     <a href="/predicted_dataset?name={{output.result|split:'/'}}&model={{output.meta.titles.0|split:'model '}}" class="btn btn-danger" title="See result">See result</a>
-
+                {% else %}
+                     <a href="/predicted_dataset?name={{output.result|split:'/'}}" class="btn btn-danger" title="See result">See result</a>
+                {% endif %}
             {% else %}
             <a href="/" class="btn btn-danger" title="See result">See result</a>
             {% endif %}
