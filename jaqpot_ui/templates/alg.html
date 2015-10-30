@@ -252,10 +252,12 @@
                                  if( $(this).is(':checked') )
                                  {
                                    /*Checked radio button OBJECT */
-                                   console.log('checked')
-                                   console.log(this);                      /* Jquery "this" Object */
                                    ObjectId    = $(this).attr( 'id' );     /* Id of above Jquery object */
-                                   ObjectValue = $(this).val(  );          /* Value of above Jquery object */
+                                   //get number of id
+                                   num = ObjectId.split('output_')[1]
+                                   if(  $("#id_input_"+num).is(':checked') ){
+                                        $("#id_input_"+num).prop("checked", false);
+                                   }
                                  }
 
                                }
