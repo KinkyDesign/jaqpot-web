@@ -510,6 +510,7 @@
         <br>
     {% endif %}
         <input id="task" value="{{task_info}}" style="display:none">
+     <!-- <a href="/t_delete?id={{name}}" class="btn btn-danger" data-toggle="tooltip" title="Delete task"><i class="glyphicon glyphicon-remove-sign"></i></a> -->
 
 
 </div>
@@ -523,6 +524,7 @@
 $('[data-toggle="tooltip"]').tooltip({
     'placement': 'right'
 });
+
 
 var percentage = {{output.percentageCompleted}}
 function chart(percentage){

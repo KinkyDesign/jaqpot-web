@@ -644,6 +644,18 @@ def model_detail(request):
     if request.method == 'GET':
         return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name, 'alg': alg_details, 'required':required_feature })
 
+#Delete selected model
+def model_delete(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    id = request.GET.get('id')
+    #delete model
+    headers = {'Accept': 'application/json', "subjectid": token}
+    res = requests.delete(SERVER_URL+'/model/'+id, headers=headers)
+    reply = res.text
+    return redirect('/')
+
+
 def model_pmml(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -869,6 +881,18 @@ def dataset_detail(request):
 
             return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail':data_detail, 'properties': properties, 'a': a, 'new': new, 'page':page, 'last':last})
 
+#Delete selected dataset
+def dataset_delete(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    id = request.GET.get('id')
+    #delete dataset
+    headers = {'Accept': 'application/json', "subjectid": token}
+    res = requests.delete(SERVER_URL+'/dataset/'+id, headers=headers)
+    reply = res.text
+    print reply
+    return redirect('/')
+
 def dispay_predicted_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -887,6 +911,14 @@ def dispay_predicted_dataset(request):
             for k in data_detail['features']:
                 if k['uri'] == predicted[i]:
                     new.append(k['name'])
+        res = requests.get(SERVER_URL+'/model/'+model+'/dependent', headers=headers)
+        dependent =  res.text
+        if dependent:
+            dependent = dependent.splitlines()
+            for i in range(len(dependent)):
+                for k in data_detail['features']:
+                    if k['uri'] == dependent[i]:
+                        new.append(k['name'])
         #get response json
         for key in data_detail['dataEntry']:
             properties[key['compound']['URI']] = []

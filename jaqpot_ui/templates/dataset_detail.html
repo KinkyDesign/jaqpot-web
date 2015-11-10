@@ -5,7 +5,14 @@
 <div class="div-table" style="width:100%; min-height:650px;">
     {% load endless %}
      {% paginate 10 a %}
-    <h1>Dataset #{{name}}</h1>
+    <div>
+        <div style="float:left;">
+            <h1>Dataset: <span  style="font-size: 20px;">{{data_detail.meta.titles.0}}</span> <span style="font-size: 12px;">#{{name}}</span> </h1>
+        </div>
+        <div style="float:right;">
+            <a href="/d_delete?id={{name}}" class="btn bt-red" data-toggle="tool" title="Delete Dataset" style="margin: 3px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
+        </div>
+    </div>
 
     <div id="details">
          <table id="dataset" class="div-form-table display" >
@@ -84,6 +91,7 @@
                 </span>
          </div>
 
+
 </div>
 
 <script>
@@ -116,6 +124,11 @@ $(function () {
   $('[data-toggle="tooltip"]').tooltip({
     container : 'body'
   });
+});
+
+//display tooltip right
+$('[data-toggle="tool"]').tooltip({
+    'placement': 'left'
 });
 
 </script>
