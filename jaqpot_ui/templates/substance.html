@@ -1,15 +1,65 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form method="post"> {% csrf_token %}
+<form method="post" enctype="multipart/form-data"> {% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block;">
     <h1>Create Dataset</h1>
     {% if error %}
         <h6 style="color:red;">{{error}}</h6>
     {% endif %}
     <div>
+       <h4>Choose method:</h4>
+
+       <input type="radio" name="radio_method" id="radio1" checked value="select">Select Substance owner.<br>
+       <input type="radio" name="radio_method" id="radio2" value="complete">Complete substance owner id.<br>
+   </div>
+   <br>
+    <div id="complete" style="display:none">
         <label class="align">Substance owner id:</label>
         <label class="align">{{form.substanceowner}}</label>
+    </div>
+    <div id="select" style="display:none;">
+        <h1>Select substance owner:</h1>
+        <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
+        <br>
+        {% load endless %}
+        <label class="datasets" style="background-color:#cf2323;border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                Name</label>
+            {% paginate 20 substance_owner %}
+            {% for sub in substance_owner %}
+                {% if sub.value%}
+                <label class="datasets" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="radio" name="radio" value="{{sub.value}}">{{sub.value}} </label>
+                {% endif %}
+
+            {% endfor %}
+            {% get_pages %}
+            <div id="pageNavPosition5" class="pagination">
+                <span class="step-links">
+                    <ul class="pagination">
+                        <li class="active">
+                            {% if page|add:"0" >= 2 %}
+                            <a href="/substance?page={{page|add:-1}}">Previous</a>
+                            {% else %}
+                            <a href="/substance?page={{page}}">Previous</a>
+                            {%endif %}
+                        </li>
+
+                        <li><a href="/substance?page={{page}}"><strong>{{page}}</strong></a></li>
+
+
+                        <li class="active">
+                            {% if last %}
+                                    <a href="/substance?page={{last}}">Next</a>
+                            {%else%}
+                                <a href="/substance?&page={{page|add:1 }}">Next </a>
+                            {% endif %}
+                        </li>
+
+
+                   </ul>
+                </span>
+            </div>
     </div>
     <br>
     <!--<div>
@@ -19,4 +69,22 @@
 </div>
     </form>
 
+<script>
+    $('#radio1').click(function() {
+            $("#complete").hide();
+            $("#select").show();
+     });
+      if($('#radio1').is(':checked')) {
+            $("#complete").hide();
+            $("#select").show();
+     }
+     $('#radio2').click(function() {
+            $("#complete").show();
+            $("#select").hide();
+     });
+      if($('#radio2').is(':checked')) {
+            $("#complete").show();
+            $("#select").hide();
+     }
+</script>
 {% endblock %}

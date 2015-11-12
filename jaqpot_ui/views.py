@@ -1183,22 +1183,38 @@ def all_substance(request):
             return redirect('/login')
     if request.method == 'GET':
         form = SubstanceownerForm(initial={'substanceowner': ''})
-        return render(request, "substance.html", {'token': token, 'username': username, 'form':form})
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        page=1
+        res = requests.get('https://apps.ideaconsult.net:443/data/substanceowner?page=0&pagesize=10', headers=headers)
+        substance_owner=json.loads(res.text)
+        substance_owner = substance_owner['facet']
+        return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'substance_owner': substance_owner, 'page': page})
     if request.method == 'POST':
-        form = SubstanceownerForm(request.POST)
-        if form.is_valid(): # All validation rules pass
-            substanceowner = form.cleaned_data['substanceowner']
-            print substanceowner
-            request.session['substanceowner']=substanceowner
+        method = request.POST.get('radio_method')
+        if method=="select":
+            substance_owner = request.POST.get('radio')
+            substance_owner = 'https://apps.ideaconsult.net/data/substanceowner/'+substance_owner
+            request.session['substanceowner']= substance_owner
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res = requests.get(substanceowner+'/substance', headers=headers)
+            res = requests.get(substance_owner+'/substance', headers=headers)
             substances=json.loads(res.text)
-            print substances
             request.session['substances'] = substances
             return redirect('/select_substance', {'token': token, 'username': username})
-        else:
-            error = "Fill in Substance owner id."
-            return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'error':error})
+        elif method=="complete":
+            form = SubstanceownerForm(request.POST)
+            if form.is_valid(): # All validation rules pass
+                substanceowner = form.cleaned_data['substanceowner']
+                print substanceowner
+                request.session['substanceowner']=substanceowner
+                headers = {'Accept': 'application/json', 'subjectid': token}
+                res = requests.get(substanceowner+'/substance', headers=headers)
+                substances=json.loads(res.text)
+                print substances
+                request.session['substances'] = substances
+                return redirect('/select_substance', {'token': token, 'username': username})
+            else:
+                error = "Fill in Substance owner id."
+                return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'error':error})
 
 def select_substance(request):
     token = request.session.get('token', '')
@@ -1222,6 +1238,7 @@ def select_substance(request):
             return redirect('/login')
         if request.method == 'GET':
             substances = request.session.get('substances', '')
+            print substances
             return render(request, "select_substance.html", {'token': token, 'username': username, 'substances':substances['substance']})
 
 def get_substance(request):

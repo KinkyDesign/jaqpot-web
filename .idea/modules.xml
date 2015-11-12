@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/jaqpot_ui.iml" filepath="$PROJECT_DIR$/.idea/jaqpot_ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/JaqpotQuattroUI.iml" filepath="$PROJECT_DIR$/.idea/JaqpotQuattroUI.iml" />
     </modules>
   </component>
 </project>
