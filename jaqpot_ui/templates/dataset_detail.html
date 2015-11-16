@@ -12,7 +12,9 @@
         <div style="float:right;">
             <a href="/d_delete?id={{name}}" class="btn bt-red" data-toggle="tool" title="Delete Dataset" style="margin: 3px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
         </div>
+        <input type="search" id="search1" onsearch="myFunction()" style="display:none">
     </div>
+
 
     <div id="details">
          <table id="dataset" class="div-form-table display" >
@@ -22,8 +24,8 @@
                      <th style="background-color: #cf2323; min-width: 300px;">Compounds</th>
                       {% for prop in new %}
                         {% if prop %}
-                        <th style="background-color: #cf2323;">
-                            <p data-toggle="tooltip" data-placement="top" data-container="body" title="{{prop}}">{{prop}}</p>
+                        <th style="background-color: #cf2323;" class="column">
+                            <p data-toggle="tooltip" data-placement="top" data-container="body" title="{{prop}}" >{{prop}}</p>
                         </th>
 
                          {% endif %}
@@ -112,15 +114,21 @@
         },
 
         });
-         $("#search").keyup( function () {
-          // Filter on the column (the index) of this element
-          table.fnFilterAll(this.value);
-        } );
+
 
 
     } );
 
 
+function myFunction() {
+            var tab = $('#dataset').DataTable();
+            //tab.columns('.column').visible( false );
+            for ( var i=1 ; i<4 ; i++ ) {
+                tab.columns(i).visible( false );
+            }
+            tab.columns(':contains(A2V)').visible( true );
+            tab.columns.adjust().draw( false ); // adjust column sizing and redraw
+        }
 $(function () {
   $('[data-toggle="tooltip"]').tooltip({
     container : 'body'

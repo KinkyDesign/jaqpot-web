@@ -1181,13 +1181,22 @@ def all_substance(request):
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
             return redirect('/login')
+        else:
+
+            if page:
+                headers = {'Accept': 'application/json', 'subjectid': token}
+                page1=page-1
+                res = requests.get('https://apps.ideaconsult.net:443/data/substanceowner?page='+page1+'&pagesize=20', headers=headers)
+                substance_owner=json.loads(res.text)
+                substance_owner = substance_owner['facet']
+            else:
+                headers = {'Accept': 'application/json', 'subjectid': token}
+                page=1
+                res = requests.get('https://apps.ideaconsult.net:443/data/substanceowner?page=0&pagesize=20', headers=headers)
+                substance_owner=json.loads(res.text)
+                substance_owner = substance_owner['facet']
     if request.method == 'GET':
         form = SubstanceownerForm(initial={'substanceowner': ''})
-        headers = {'Accept': 'application/json', 'subjectid': token}
-        page=1
-        res = requests.get('https://apps.ideaconsult.net:443/data/substanceowner?page=0&pagesize=10', headers=headers)
-        substance_owner=json.loads(res.text)
-        substance_owner = substance_owner['facet']
         return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'substance_owner': substance_owner, 'page': page})
     if request.method == 'POST':
         method = request.POST.get('radio_method')
@@ -1214,7 +1223,7 @@ def all_substance(request):
                 return redirect('/select_substance', {'token': token, 'username': username})
             else:
                 error = "Fill in Substance owner id."
-                return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'error':error})
+                return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'error':error,'substance_owner': substance_owner, 'page': page})
 
 def select_substance(request):
     token = request.session.get('token', '')
