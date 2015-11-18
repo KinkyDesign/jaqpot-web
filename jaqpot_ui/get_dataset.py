@@ -27,24 +27,24 @@ def paginate_dataset(request, name, token, username, page):
     else:
         totalRows = data['totalRows']
         totalColumns = data['totalColumns']
-        last = (totalRows/10)
+        last = (totalRows/20)
         if last==0:
             last=1
         if request.method == 'GET':
             headers = {'Accept': 'application/json', 'subjectid': token}
             #print data_detail['dataEntry']
             if page:
-                page1=int(page) * 10 - 10
+                page1=int(page) * 20 - 20
                 k=str(page1)
                 if page1 <= 1:
-                    if totalRows>10:
-                        res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
+                    if totalRows>20:
+                        res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=20&colStart=0&colMax='+str(totalColumns), headers=headers)
                         data_detail= json.loads(res.text)
                     else:
                         res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
                         data_detail= json.loads(res.text)
                 else:
-                    if totalRows>int(k)+10:
+                    if totalRows>int(k)+20:
                         res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart='+k+'&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
                         data_detail = json.loads(res.text)
                     else:
@@ -52,8 +52,8 @@ def paginate_dataset(request, name, token, username, page):
                         data_detail = json.loads(res.text)
             else:
                 page = 1
-                if totalRows>10:
-                    res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=10&colStart=0&colMax='+str(totalColumns), headers=headers)
+                if totalRows>20:
+                    res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=20&colStart=0&colMax='+str(totalColumns), headers=headers)
                 else:
                     res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
             data_detail=json.loads(res.text)

@@ -1182,7 +1182,7 @@ def all_substance(request):
         if r.status_code != 200:
             return redirect('/login')
         else:
-
+            page=request.POST.get('page')
             if page:
                 headers = {'Accept': 'application/json', 'subjectid': token}
                 page1=page-1

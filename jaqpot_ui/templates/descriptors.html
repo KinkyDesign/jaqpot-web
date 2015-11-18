@@ -22,12 +22,17 @@
          <p><b>Description:</b></p>
         <textarea class="form-control" name="description" style="width:30%;" rows="5"></textarea>
     </div>
+    <br>
+    <input id="previous" type="button" value="Previous" class="btn bt-red" style="width: 10%; float:left; left:10%;">
     <input id="choose_desc" type="submit" value="Save" class="btn bt-red" style="width: 10%; float:right; right:10%;">
 </div>
 </form>
 
 <script>
     $(document).ready(function() {
+    $('#previous').click(function(event) {  //on click
+        history.go(-1);
+    });
     $('#selectall').click(function(event) {  //on click
         if(this.checked) { // check select status
             $('.check').each(function() { //loop through each checkbox

@@ -4,7 +4,7 @@
 
 <div class="div-table" style="width:100%; min-height:650px;">
     {% load endless %}
-     {% paginate 10 a %}
+     {% paginate 20 a %}
     <div>
         <div style="float:left;">
             <h1>Dataset: <span  style="font-size: 20px;">{{data_detail.meta.titles.0}}</span> <span style="font-size: 12px;">#{{name}}</span> </h1>
@@ -101,9 +101,14 @@
      $(document).ready( function () {
 
         var oTable = $('#dataset').DataTable( {
-        "scrollX": '100%',
+        "bJQueryUI": true,
+        "bScrollCollapse": true,
+        "bAutoWidth": false,
         "bPaginate":false,
         "dom": 'ft',
+        "sScrollX": "100%",
+        "sScrollXInner": "100%",
+
          "fnDrawCallback": function( oSettings )
          {
             $('.dataTables_scrollBody table thead tr').css({ 'height' : '0px' });
@@ -133,12 +138,19 @@ $(function () {
   $('[data-toggle="tooltip"]').tooltip({
     container : 'body'
   });
+
+
 });
 
 //display tooltip right
 $('[data-toggle="tool"]').tooltip({
     'placement': 'left'
 });
+
+setTimeout(function ()
+  {
+    oTable.fnAdjustColumnSizing();
+  }, 10 );
 
 </script>
 
