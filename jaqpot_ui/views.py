@@ -10,7 +10,7 @@ from django.template import RequestContext
 from elasticsearch import Elasticsearch
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac
 from jaqpot_ui.get_dataset import paginate_dataset
-from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm
+from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm
 import requests
 import json
 import datetime
@@ -1182,10 +1182,10 @@ def all_substance(request):
         if r.status_code != 200:
             return redirect('/login')
         else:
-            page=request.POST.get('page')
+            page=request.GET.get('page')
             if page:
                 headers = {'Accept': 'application/json', 'subjectid': token}
-                page1=page-1
+                page1=str(int(page)-1)
                 res = requests.get('https://apps.ideaconsult.net:443/data/substanceowner?page='+page1+'&pagesize=20', headers=headers)
                 substance_owner=json.loads(res.text)
                 substance_owner = substance_owner['facet']
@@ -1202,13 +1202,31 @@ def all_substance(request):
         method = request.POST.get('radio_method')
         if method=="select":
             substance_owner = request.POST.get('radio')
-            substance_owner = 'https://apps.ideaconsult.net/data/substanceowner/'+substance_owner
-            request.session['substanceowner']= substance_owner
-            headers = {'Accept': 'application/json', 'subjectid': token}
-            res = requests.get(substance_owner+'/substance', headers=headers)
-            substances=json.loads(res.text)
-            request.session['substances'] = substances
-            return redirect('/select_substance', {'token': token, 'username': username})
+            if not substance_owner:
+                form = SubstanceownerForm(initial={'substanceowner': ''})
+                page=request.GET.get('page')
+                if page:
+                    headers = {'Accept': 'application/json', 'subjectid': token}
+                    page1=str(int(page)-1)
+                    res = requests.get('https://apps.ideaconsult.net:443/data/substanceowner?page='+page1+'&pagesize=20', headers=headers)
+                    substance_owner=json.loads(res.text)
+                    substance_owner = substance_owner['facet']
+                else:
+                    headers = {'Accept': 'application/json', 'subjectid': token}
+                    page=1
+                    res = requests.get('https://apps.ideaconsult.net:443/data/substanceowner?page=0&pagesize=20', headers=headers)
+                    substance_owner=json.loads(res.text)
+                    substance_owner = substance_owner['facet']
+                error = "Please select substance owner."
+                return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'substance_owner': substance_owner, 'page': page, 'error':error})
+            else:
+                substance_owner = 'https://apps.ideaconsult.net/data/substanceowner/'+substance_owner
+                request.session['substanceowner']= substance_owner
+                headers = {'Accept': 'application/json', 'subjectid': token}
+                res = requests.get(substance_owner+'/substance', headers=headers)
+                substances=json.loads(res.text)
+                request.session['substances'] = substances
+                return redirect('/select_substance', {'token': token, 'username': username})
         elif method=="complete":
             form = SubstanceownerForm(request.POST)
             if form.is_valid(): # All validation rules pass
@@ -1314,14 +1332,21 @@ def select_descriptors(request):
         if r.status_code != 200:
             return redirect('/login')
         if request.method == 'GET':
+            form=DatasetForm()
             headers = {'Accept': 'application/json', 'subjectid': token}
             res1 = requests.get(SERVER_URL+'/enm/descriptor/categories', headers=headers)
             descriptors=json.loads(res1.text)
             print descriptors
-            return render(request, "descriptors.html", {'token': token, 'username': username, 'descriptors':descriptors})
+            return render(request, "descriptors.html", {'token': token, 'username': username, 'descriptors':descriptors, 'form':form})
         if request.method == 'POST':
-            title = request.POST.get('title')
-            description = request.POST.get('description')
+            form = DatasetForm(request.POST)
+            if not form.is_valid():
+                headers = {'Accept': 'application/json', 'subjectid': token}
+                res1 = requests.get(SERVER_URL+'/enm/descriptor/categories', headers=headers)
+                descriptors=json.loads(res1.text)
+                return render(request, "descriptors.html", {'token': token, 'username': username, 'descriptors':descriptors, 'form':form})
+            title = form['title'].value()
+            description = form['description'].value()
             select_descriptors = request.POST.getlist('checkbox')
             substanceowner = request.session.get('substanceowner', '')
             selected_substances = request.session.get('selected_substances', '')

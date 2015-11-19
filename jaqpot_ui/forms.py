@@ -62,3 +62,8 @@ class TrainingForm(forms.Form):
     description = forms.CharField(widget=forms.Textarea, required= True)
     description.widget.attrs.update({'style' : "border-radius: 4px;"})
     variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'None')])
+
+
+class DatasetForm(forms.Form):
+    title = forms.CharField(max_length=50, required= True)
+    description = forms.CharField(widget=forms.Textarea, required= True)
