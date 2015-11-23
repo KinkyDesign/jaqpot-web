@@ -1362,3 +1362,120 @@ def select_descriptors(request):
             #return redirect('/task', {'token': token, 'username': username})
             return render(request, "new_task.html", {'token': token, 'username': username, 'task':task})
 
+#Validate
+
+def validate(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    page = request.GET.get('page')
+    last = request.GET.get('last')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    if request.method == 'GET':
+        dataset=[]
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        #get total number of datasets
+        headers1 = {'Accept': 'text/plain', 'subjectid': token}
+        res1= requests.get(SERVER_URL+'/dataset/count?creator='+username, headers=headers1)
+        total_datasets= int(res1.text)
+        if total_datasets%20 == 0:
+            last = total_datasets/20
+        else:
+            last = (total_datasets/20)+1
+
+        if page:
+            #page1 is the number of first dataset of page
+            page1=int(page) * 20 - 20
+            k=str(page1)
+            print k
+            if page1 <= 1:
+                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+            else:
+                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start='+k+'&max=20', headers=headers)
+        else:
+            page = 1
+            res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+        data= json.loads(res.text)
+        print res.text
+        for d in data:
+            dataset.append({'name': d['_id'], 'meta': d['meta']})
+        print dataset
+        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last})
+
+#choose dataset for training
+def choose_dataset(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    form = TrainForm(initial={})
+    if request.method == 'GET':
+        dataset = request.GET.get('dataset')
+        headers = {'Accept': 'text/uri-list', 'subjectid': token}
+        classification_alg = []
+        res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
+        list_resp = res.text
+        list_resp = list_resp.split('\n')[:]
+        for l in list_resp:
+            l = l.split('/algorithm/')[1]
+            classification_alg.append({'name': l})
+        classification_alg = json.dumps(classification_alg)
+        classification_alg = json.loads(classification_alg)
+        regression_alg = []
+        res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
+        list_resp = res.text
+        list_resp = list_resp.split('\n')[:]
+        for l in list_resp:
+            l = l.split('/algorithm/')[1]
+            regression_alg.append({'name': l})
+        regression_alg = json.dumps(regression_alg)
+        regression_alg = json.loads(regression_alg)
+        return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset, 'validate': True})
+    if request.method == 'POST':
+        algorithms=[]
+        for alg in request.POST.getlist('radio'):
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            res = requests.get(SERVER_URL+'/algorithm/'+alg, headers=headers)
+            info = json.loads(res.text)
+            algorithms.append({"alg":alg, "info":info })
+        dataset = request.GET.get('dataset')
+        print dataset
+        print algorithms
+        if algorithms == []:
+            headers = {'Accept': 'text/uri-list', 'subjectid': token}
+            classification_alg = []
+            res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
+            list_resp = res.text
+            list_resp = list_resp.split('\n')[:]
+            for l in list_resp:
+                l = l.split('/algorithm/')[1]
+                classification_alg.append({'name': l})
+            classification_alg = json.dumps(classification_alg)
+            classification_alg = json.loads(classification_alg)
+            regression_alg = []
+            res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
+            list_resp = res.text
+            list_resp = list_resp.split('\n')[:]
+            for l in list_resp:
+                l = l.split('/algorithm/')[1]
+                regression_alg.append({'name': l})
+            regression_alg = json.dumps(regression_alg)
+            regression_alg = json.loads(regression_alg)
+            error = "Please select algorithm."
+            return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset, 'error':error})
+        else:
+            request.session['alg'] = algorithms[0]['alg']
+            request.session['data'] = dataset
+            return redirect('/valid_params', {'token': token, 'username': username,})
+
+def valid_params(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if request.method == 'GET':
+        dataset = request.session.get('data', '')
+        algorithms = request.session.get('alg', '')
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        al = json.loads(res.text)
+
+        return render(request, "validate.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms,'features':features})
