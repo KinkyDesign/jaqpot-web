@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" id="form1" enctype="multipart/form-data"> {% csrf_token %}
+<div class="div-table" style="width:100%; display: inline-block; padding:10px;">
+    <a id="back" class="btn bt-red" style="width:3%;" ><i class="glyphicon glyphicon-circle-arrow-left"></i></a>
+    <br>
+    <div style="float:left; width:50%;">
+            <h1>Algorithm</h1>
+            <h3>Title: {{algorithms}}</h3>
+            {% if al.meta.titles %}
+                <div>
+                    <label class="align">Title:</label>
+                    <input type="text" style="margin:5px;width:40%;" readonly="readonly" value="{{al.meta.titles.0}}">
+                </div>
+            {% endif %}
+
+       </div>
+    </div>
+    </form>
+{%endblock%}
