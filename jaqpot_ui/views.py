@@ -10,7 +10,7 @@ from django.template import RequestContext
 from elasticsearch import Elasticsearch
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac
 from jaqpot_ui.get_dataset import paginate_dataset
-from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm
+from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm
 import requests
 import json
 import datetime
@@ -1474,8 +1474,100 @@ def valid_params(request):
     if request.method == 'GET':
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
+        vform = ValidationForm()
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         al = json.loads(res.text)
+        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
+        predicted_features = json.loads(res2.text)
+        if str(res2) != "<Response [200]>":
+            #redirect to error page
+            return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
+        else:
+            features = predicted_features['features']
+            vform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
 
-        return render(request, "validate.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms,'features':features})
+        return render(request, "validate.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms,'features':features, 'vform':vform})
+    if request.method == 'POST':
+        print("post")
+        #get parameters of algorithm
+        params=[]
+        print request.POST
+        parameters = request.POST.getlist('parameters')
+        for p in parameters:
+            params.append({'name': p, 'value': request.POST.get(''+p)})
+
+        vform = ValidationForm(request.POST)
+        dataset = request.session.get('data', '')
+        algorithms = request.session.get('alg', '')
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        al = json.loads(res.text)
+        #replace al parameters value with request.post
+        al['parameters']= params
+
+        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
+        predicted_features = json.loads(res2.text)
+        if str(res2) != "<Response [200]>":
+            #redirect to error page
+            return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
+        else:
+            features = predicted_features['features']
+            vform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
+        if not vform.is_valid():
+            print vform
+            return render(request, "validate.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'vform':vform,'al':al,})
+
+        prediction_feature =  vform['pred_feature'].value()
+        folds = vform['folds'].value()
+        stratify = vform['stratify'].value()
+        '''if stratify != "":
+            seed = "5"
+        else:
+            seed = "" '''
+
+        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': algorithms, 'folds':folds, 'stratify': stratify,}
+
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.post(SERVER_URL+'/validation/training_test_cross', headers=headers, data=body)
+        print res.text
+        task_id = json.loads(res.text)['_id']
+        print task_id
+        return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+
+
+#Experimental design
+def experimental(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    page = request.GET.get('page')
+    last = request.GET.get('last')
+    dataset=[]
+    if request.method == 'GET':
+        dataset=[]
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        #get total number of datasets
+        headers1 = {'Accept': 'text/plain', 'subjectid': token}
+        res1= requests.get(SERVER_URL+'/dataset/count?creator='+username, headers=headers1)
+        total_datasets= int(res1.text)
+        if total_datasets%20 == 0:
+            last = total_datasets/20
+        else:
+            last = (total_datasets/20)+1
+
+        if page:
+            #page1 is the number of first dataset of page
+            page1=int(page) * 20 - 20
+            k=str(page1)
+            if page1 <= 1:
+                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+            else:
+                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start='+k+'&max=20', headers=headers)
+        else:
+            page = 1
+            res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+        data= json.loads(res.text)
+        for d in data:
+            dataset.append({'name': d['_id'], 'meta': d['meta']})
+
+        return render(request, "dataset.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last})

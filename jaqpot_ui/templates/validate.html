@@ -13,8 +13,66 @@
                     <input type="text" style="margin:5px;width:40%;" readonly="readonly" value="{{al.meta.titles.0}}">
                 </div>
             {% endif %}
+            {% if al.publisher %}
+                <div>
+                    <label class="align">Publisher:</label>
+                    <input type="text" style="margin:5px;" value="{{al.publisher}}">
+                </div>
+            {% endif %}
+            {% if al.contributor %}
+                <div>
+                    <label class="align">Contributor:</label>
+                    <input type="text" style="margin:5px;" value="{{al.contributor}}">
+                </div>
+            {% endif %}
+            {% if al.date %}
+                <div>
+                    <label class="align">Date:</label>
+                    <input type="text" style="margin:5px;" value="{{al.date}}">
+                </div>
+            {% endif %}
+            {% if al.parameters %}
+                <h6><b>Parameters:</b></h6>
+                 {% for p in al.parameters%}
+                    <div>
+                        <label class="align">{{p.name}}:</label>
+                        <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
+                        <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                    </div>
+                 {% endfor %}
+            {% endif %}
+            {% if al.rights %}
+                <p><b>Copyright:</b></p>
+                <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;">{{al.info.rights}}
 
+                </textarea>
+            {% endif %}
+        <br>
        </div>
+       <div style="float:right; width:50%;">
+
+        <h5>Select Prediction Feature:</h5>
+            {{vform.pred_feature}}
+
+        <h5>Select folds:</h5>
+            {{vform.folds}}
+
+        <h5>Stratify:</h5>
+            {{vform.stratify}}
+
+        </div>
+    <br>
+    <input id="validate" type="submit" value="Validate" class="btn bt-red" style="width: 10%; float:left; left:10%;">
     </div>
     </form>
+
+<script>
+
+     $("select").selecter();
+
+     $('#back').click(function(event) {
+       history.go(-1);
+     });
+
+</script>
 {%endblock%}

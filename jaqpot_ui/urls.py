@@ -55,6 +55,7 @@ urlpatterns = patterns('',
                        url(r'^calculate_mopac_descriptors', views.calculate_mopac_descriptors),
                        url(r'^validate', views.validate),
                        url(r'^valid_params', views.valid_params),
+                       url(r'^experimental', views.experimental),
                        # captcha
                        url(r'^captcha/', include('captcha.urls')),
                        #search
