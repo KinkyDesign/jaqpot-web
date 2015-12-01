@@ -56,6 +56,7 @@ urlpatterns = patterns('',
                        url(r'^validate', views.validate),
                        url(r'^valid_params', views.valid_params),
                        url(r'^experimental', views.experimental),
+                       url(r'^d_validate', views.choose_dataset_validate),
                        # captcha
                        url(r'^captcha/', include('captcha.urls')),
                        #search

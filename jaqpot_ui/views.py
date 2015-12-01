@@ -1186,18 +1186,22 @@ def all_substance(request):
             if page:
                 headers = {'Accept': 'application/json', 'subjectid': token}
                 page1=str(int(page)-1)
-                res = requests.get('https://apps.ideaconsult.net:443/data/substanceowner?page='+page1+'&pagesize=20', headers=headers)
+                res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page='+page1+'&pagesize=20', headers=headers)
                 substance_owner=json.loads(res.text)
                 substance_owner = substance_owner['facet']
             else:
                 headers = {'Accept': 'application/json', 'subjectid': token}
                 page=1
-                res = requests.get('https://apps.ideaconsult.net:443/data/substanceowner?page=0&pagesize=20', headers=headers)
+                res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
                 substance_owner=json.loads(res.text)
                 substance_owner = substance_owner['facet']
     if request.method == 'GET':
         form = SubstanceownerForm(initial={'substanceowner': ''})
-        return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'substance_owner': substance_owner, 'page': page})
+        if len(substance_owner)<20:
+            last=page
+            return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'substance_owner': substance_owner, 'page': page, 'last':last,})
+        else:
+            return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'substance_owner': substance_owner, 'page': page})
     if request.method == 'POST':
         method = request.POST.get('radio_method')
         if method=="select":
@@ -1402,10 +1406,10 @@ def validate(request):
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
         print dataset
-        return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last})
+        return render(request, "choose_dataset_validate.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last,})
 
 #choose dataset for training
-def choose_dataset(request):
+def choose_dataset_validate(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     form = TrainForm(initial={})
@@ -1462,7 +1466,7 @@ def choose_dataset(request):
             regression_alg = json.dumps(regression_alg)
             regression_alg = json.loads(regression_alg)
             error = "Please select algorithm."
-            return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset, 'error':error})
+            return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset, 'error':error, 'validate':True})
         else:
             request.session['alg'] = algorithms[0]['alg']
             request.session['data'] = dataset
