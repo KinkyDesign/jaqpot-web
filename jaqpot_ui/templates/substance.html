@@ -24,12 +24,12 @@
         <br>
         {% load endless %}
         <label class="datasets" style="background-color:#cf2323;border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                Name</label>
+                Name <span style="float: left; left:40%; position:absolute;">Subcategory</span> <span style="float: left; left:70%; position:absolute;">Count</span></label>
             {% paginate 20 substance_owner %}
             {% for sub in substance_owner %}
                 {% if sub.value%}
                 <label class="datasets" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio" value="{{sub.value}}">{{sub.value}} </label>
+                    <input type="radio" name="radio" value="{{sub.value}}">{{sub.value}}<span class="overflow-span" style="float: left; left:40%; position:absolute;">{{sub.subcategory}}</span> <span style="float: left; left:70%; position:absolute;">{{sub.count}}</span></label>
                 {% endif %}
 
             {% endfor %}

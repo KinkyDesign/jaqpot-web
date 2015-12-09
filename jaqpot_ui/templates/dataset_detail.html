@@ -25,7 +25,7 @@
                       {% for prop in new %}
                         {% if prop %}
                         <th style="background-color: #cf2323;" class="column">
-                            <p data-toggle="tooltip" data-placement="top" data-container="body" title="{{prop}}" >{{prop}}</p>
+                            <p data-toggle="tooltip" data-placement="top" data-container="body" title="Units: {{prop.units}} Conditions: {% for k,v in prop.conditions.iteritems %}{{k}}:{{v}}, {% endfor %}" >{{prop.name}}</p>
                         </th>
 
                          {% endif %}

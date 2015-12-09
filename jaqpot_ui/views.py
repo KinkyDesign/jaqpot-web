@@ -478,9 +478,7 @@ def change_params(request):
         #get parameters of algorithm
         params=[]
         print request.POST
-        parameters = request.POST.getlist('parameters')
-        for p in parameters:
-            params.append({'name': p, 'value': request.POST.get(''+p)})
+
 
         tform = TrainingForm(request.POST)
         inputform = InputForm(request.POST)
@@ -492,8 +490,14 @@ def change_params(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         al = json.loads(res.text)
-        #replace al parameters value with request.post
-        al['parameters']= params
+        parameters = request.POST.getlist('parameters')
+        for p in parameters:
+            params.append({'name': p, 'value': request.POST.get(''+p)})
+            for a in al['parameters']:
+                if (a['name'] == p):
+                    print p
+                    a['value']=request.POST.get(''+p)
+        print al['parameters']
         res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
         pmml=json.loads(res1.text)
         if pmml:
@@ -861,7 +865,7 @@ def dataset_detail(request):
             for i in range(len(a)):
                 for k in data_detail['features']:
                     if k['uri'] == a[i]:
-                        new.append(k['name'])
+                        new.append(k)
 
             #get response json
             for key in data_detail['dataEntry']:
@@ -1212,19 +1216,19 @@ def all_substance(request):
                 if page:
                     headers = {'Accept': 'application/json', 'subjectid': token}
                     page1=str(int(page)-1)
-                    res = requests.get('https://apps.ideaconsult.net:443/data/substanceowner?page='+page1+'&pagesize=20', headers=headers)
+                    res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page='+page1+'&pagesize=20', headers=headers)
                     substance_owner=json.loads(res.text)
                     substance_owner = substance_owner['facet']
                 else:
                     headers = {'Accept': 'application/json', 'subjectid': token}
                     page=1
-                    res = requests.get('https://apps.ideaconsult.net:443/data/substanceowner?page=0&pagesize=20', headers=headers)
+                    res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
                     substance_owner=json.loads(res.text)
                     substance_owner = substance_owner['facet']
                 error = "Please select substance owner."
                 return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'substance_owner': substance_owner, 'page': page, 'error':error})
             else:
-                substance_owner = 'https://apps.ideaconsult.net/data/substanceowner/'+substance_owner
+                substance_owner = 'https://apps.ideaconsult.net/enmtest/substanceowner/'+substance_owner
                 request.session['substanceowner']= substance_owner
                 headers = {'Accept': 'application/json', 'subjectid': token}
                 res = requests.get(substance_owner+'/substance', headers=headers)

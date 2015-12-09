@@ -37,8 +37,21 @@
                  {% for p in al.parameters%}
                     <div>
                         <label class="align">{{p.name}}:</label>
+                        {% if p.allowedValues %}
+                        <select name="{{p.name}}" >
+                            {% for s in p.allowedValues %}
+                            <option value="{{s}}" {% if p.value == s %} selected {% endif %}>{{s}}</option>
+                            {% endfor %}
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        </select>
+                        {% elif p.minValue %}
+                        <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
+                        <p><small><b>Min value:</b>{{p.minValue}}   <b>Max value:</b>{{p.maxValue}}</small></p>
+                        <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        {% else%}
                         <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
                         <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        {%endif %}
                     </div>
                  {% endfor %}
             {% endif %}
