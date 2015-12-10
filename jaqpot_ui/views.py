@@ -1579,3 +1579,44 @@ def experimental(request):
             dataset.append({'name': d['_id'], 'meta': d['meta']})
 
         return render(request, "dataset.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last})
+
+#Experimental design without input
+def exp_design(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+
+    if request.method == 'GET':
+
+        params = '{"levels":[3],"nVars":[3],"factors":["null"],"varNames":["a","b","c"],"nTrials":[10],"criterion":["D"],"form":["linear"]}'
+        body = {'parameters':params, 'visible': True}
+
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers, data=body)
+        print res.text
+        task_id = json.loads(res.text)['_id']
+        print task_id
+        res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+        status = json.loads(res1.text)['status']
+        while (status != "COMPLETED"):
+            res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            status = json.loads(res1.text)['status']
+        #model: model/{id}
+        model = json.loads(res1.text)['result']
+        body = {'visible': True}
+        res2 = requests.post(SERVER_URL+'/'+model, headers=headers, data=body)
+        task_id = json.loads(res2.text)['_id']
+        res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+        status = json.loads(res3.text)['status']
+
+        while (status != "COMPLETED"):
+            res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            status = json.loads(res4.text)['status']
+
+        dataset = json.loads(res4.text)['result']
+        dataset = dataset.split('dataset/')[1]
+
+        return redirect('/data_detail?name='+dataset, {'token': token, 'username': username})
