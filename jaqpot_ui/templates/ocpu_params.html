@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post" id="form1"> {% csrf_token %}
+
+<div class="div-table" style="width:100%; display: inline-block;">
+    <h4>Select parameters:</h4>
+    {% if error %}
+    <div class="alert alert-danger" role="alert" style="width: 40%;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{error}}</span>
+               </div>
+    {% endif %}
+
+    <label class="align" >Levels:</label>
+            {% if pform.levels.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{pform.levels.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{pform.levels}}
+    <br>
+    <label class="align" >nVars:</label>
+            {% if pform.nVars.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{pform.nVars.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{pform.nVars}}
+    <br>
+    <label class="align" >factors:</label>
+            {% if pform.factors.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{pform.factors.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{pform.factors}}
+    <br>
+    <label class="align" >varNames:</label>
+            {% if pform.varNames.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{pform.varNames.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{pform.varNames}}
+    <br>
+    <label class="align" >nTrials:</label>
+            {% if pform.nTrials.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{pform.nTrials.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{pform.nTrials}}
+    <br>
+    <label class="align" >criterion:</label>
+            {% if pform.criterion.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{pform.criterion.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{pform.criterion}}
+    <br>
+    <label class="align" >form:</label>
+            {% if pform.form.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{pform.form.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{pform.form}}
+    <br>
+    <br>
+
+    <input id="choose_params" type="submit" value="Experimental Design" class="btn bt-red" style="width: 15%; float:left; left:10%;">
+
+    <div id="loading" style="display: none"><!-- Place at bottom of page -->
+            <img id="loading-image" src="http://i.stack.imgur.com/FhHRx.gif" alt="Loading..." />
+        </div>
+    </div>
+
+    </form>
+
+<script>
+    $('#choose_params').bind('click', function(e)
+        {
+            $("#loading").show();
+            });
+
+</script>
+
+{% endblock %}

@@ -8,10 +8,11 @@
              <h1>Dataset:</h1>
              {% paginate 20 dataset %}
              <div class="list-group">
-                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:95%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
                  {% for d in dataset %}
 
-                    <a href="/data_detail?name={{d.name}}" class="list-group-item">{{d.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{% for title in d.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in d.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </a>
+                    <a href="/data_detail?name={{d.name}}" class="list-group-item" style="width:95%;float:left;">{{d.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{% for title in d.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in d.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </a>
+                    <a href="/d_delete?id={{d.name}}" class="btn bt-red" data-toggle="tool" title="Delete Dataset" style="margin: 4px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
 
                  {% endfor %}
              </div>
@@ -64,4 +65,11 @@
 
         </div>
 </div>
+
+<script>
+//display tooltip right
+$('[data-toggle="tool"]').tooltip({
+    'placement': 'top'
+});
+</script>
 {% endblock %}

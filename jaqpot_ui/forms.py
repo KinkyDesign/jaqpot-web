@@ -72,3 +72,12 @@ class ValidationForm(forms.Form):
     pred_feature = forms.ChoiceField(widget = forms.Select(), choices=[])
     folds = forms.ChoiceField(widget = forms.Select(), choices=[( '3', '3'), ('5', '5'), ('10', '10')])
     stratify = forms.ChoiceField(widget = forms.Select(), choices=[( ' ', 'None'), ('1', '1'), ('2', '2')])
+
+class ExperimentalParamsForm(forms.Form):
+    levels = forms.CharField(required=True, error_messages={'required': 'Please enter levels.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))
+    nVars = forms.CharField(required=True, error_messages={'required': 'Please enter nVars.'}, widget=forms.TextInput(attrs={'style': "margin:5px;"}))
+    factors = forms.CharField(required=True, error_messages={'required': 'Please enter factors.'}, widget=forms.TextInput(attrs={'style': "margin:5px;"}))
+    varNames = forms.CharField(required=True, error_messages={'required': 'Please enter varNames.'}, widget=forms.TextInput(attrs={'style': "margin:5px;"}))
+    nTrials = forms.CharField(required=True, error_messages={'required': 'Please enter nTrials.'}, widget=forms.TextInput(attrs={'style': "margin:5px;"}))
+    criterion = forms.CharField(required=True, error_messages={'required': 'Please enter criterion.'}, widget=forms.TextInput(attrs={'style': "margin:5px;"}))
+    form = forms.CharField(required=True, error_messages={'required': 'Please enter form.'}, widget=forms.TextInput(attrs={'style': "margin:5px;"}))

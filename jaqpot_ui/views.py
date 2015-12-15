@@ -10,7 +10,7 @@ from django.template import RequestContext
 from elasticsearch import Elasticsearch
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac
 from jaqpot_ui.get_dataset import paginate_dataset
-from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm
+from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalParamsForm
 import requests
 import json
 import datetime
@@ -1578,7 +1578,50 @@ def experimental(request):
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
 
-        return render(request, "dataset.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last})
+        return render(request, "exp_dataset.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last})
+
+#Select parameters for experimental design with input
+def experimental_params(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+        if request.method == 'GET':
+            dataset = request.GET.get('dataset')
+            form = UploadFileForm()
+            tform = TrainingForm()
+            inputform = InputForm()
+            nform = NoPmmlForm()
+            pmmlform = SelectPmmlForm()
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-xy', headers=headers)
+            al = json.loads(res.text)
+            res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+            pmml=json.loads(res1.text)
+            if pmml:
+                pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
+            else:
+                pmmlform.fields['pmml'].choices = [("",'No pmml')]
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
+            predicted_features = json.loads(res2.text)
+            if str(res2) != "<Response [200]>":
+                #redirect to error page
+                return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
+            else:
+                features = predicted_features['features']
+                form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
+                inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
+                inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
+                nform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
+                pmmlform.fields['predicted_feature'].choices = [(f['uri'],f['name']) for f in features]
+                return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'uploadform':form, 'tform':tform ,'features':features, 'inputform':inputform, 'nform':nform, 'pmmlform': pmmlform})
+
+
+
+
+
 
 #Experimental design without input
 def exp_design(request):
@@ -1591,32 +1634,50 @@ def exp_design(request):
 
     if request.method == 'GET':
 
-        params = '{"levels":[3],"nVars":[3],"factors":["null"],"varNames":["a","b","c"],"nTrials":[10],"criterion":["D"],"form":["linear"]}'
-        body = {'parameters':params, 'visible': True}
+        pform = ExperimentalParamsForm(initial={"levels":[3],"nVars":[3],"factors":["null"],"varNames":["a","b","c"],"nTrials":[10],"criterion":["D"],"form":["linear"]})
+        return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform })
 
-        headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers, data=body)
-        print res.text
-        task_id = json.loads(res.text)['_id']
-        print task_id
-        res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
-        status = json.loads(res1.text)['status']
-        while (status != "COMPLETED"):
+    if request.method == 'POST':
+
+        pform = ExperimentalParamsForm(request.POST)
+        if not pform.is_valid():
+            return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform })
+        else:
+            print pform['levels'].value()
+            print pform['factors'].value()
+            params = '{"levels": '+pform["levels"].value()+',"nVars": '+pform["nVars"].value()+',"factors":'+pform["factors"].value()+',"varNames":'+pform["varNames"].value()+',"nTrials":'+pform["nTrials"].value()+',"criterion":'+pform["criterion"].value()+',"form":'+pform["form"].value()+'}'
+            print params
+            body = {'parameters':params, 'visible':False }
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers, data=body)
+            print res.text
+            task_id = json.loads(res.text)['_id']
+            print task_id
             res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
             status = json.loads(res1.text)['status']
-        #model: model/{id}
-        model = json.loads(res1.text)['result']
-        body = {'visible': True}
-        res2 = requests.post(SERVER_URL+'/'+model, headers=headers, data=body)
-        task_id = json.loads(res2.text)['_id']
-        res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
-        status = json.loads(res3.text)['status']
+            while (status != "COMPLETED"):
+                if(status == "ERROR"):
+                    error = "An error occurred while processing your request.Please try again."
+                    return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform, 'error':error })
+                else:
+                    res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    status = json.loads(res1.text)['status']
+            #model: model/{id}
+            model = json.loads(res1.text)['result']
+            res2 = requests.post(SERVER_URL+'/'+model, headers=headers)
+            task_id = json.loads(res2.text)['_id']
+            res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            status = json.loads(res3.text)['status']
 
-        while (status != "COMPLETED"):
-            res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
-            status = json.loads(res4.text)['status']
+            while (status != "COMPLETED"):
+                if(status == "ERROR"):
+                    error = "An error occurred while processing your request.Please try again."
+                    return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform, 'error':error })
+                else:
+                    res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    status = json.loads(res4.text)['status']
 
-        dataset = json.loads(res4.text)['result']
-        dataset = dataset.split('dataset/')[1]
+            dataset = json.loads(res4.text)['result']
+            dataset = dataset.split('dataset/')[1]
 
-        return redirect('/data_detail?name='+dataset, {'token': token, 'username': username})
+            return redirect('/data_detail?name='+dataset, {'token': token, 'username': username})
