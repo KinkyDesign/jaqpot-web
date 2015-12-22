@@ -15,6 +15,7 @@ import requests
 import json
 import datetime
 import subprocess
+from jaqpot_ui.get_params import get_params
 from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, EMAIL_HOST_USER, SERVER_URL
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect, HttpResponse
@@ -1412,7 +1413,7 @@ def validate(request):
         print dataset
         return render(request, "choose_dataset_validate.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last,})
 
-#choose dataset for training
+#choose dataset for validation
 def choose_dataset_validate(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1590,6 +1591,8 @@ def experimental_params(request):
             return redirect('/login')
         if request.method == 'GET':
             dataset = request.GET.get('dataset')
+            request.session['alg'] = "ocpu-expdesign-xy"
+            request.session['data'] = dataset
             form = UploadFileForm()
             tform = TrainingForm()
             inputform = InputForm()
@@ -1616,49 +1619,129 @@ def experimental_params(request):
                 inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
                 nform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
                 pmmlform.fields['predicted_feature'].choices = [(f['uri'],f['name']) for f in features]
-                return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'uploadform':form, 'tform':tform ,'features':features, 'inputform':inputform, 'nform':nform, 'pmmlform': pmmlform})
+                return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'uploadform':form, 'tform':tform ,'features':features, 'inputform':inputform, 'nform':nform, 'pmmlform': pmmlform, 'exp':True})
 
+        if request.method == 'POST':
+            #get parameters of algorithm
+            params=[]
+            print request.POST
 
-
-
-
-
-#Experimental design without input
-def exp_design(request):
-    token = request.session.get('token', '')
-    username = request.session.get('username', '')
-    if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
-
-    if request.method == 'GET':
-
-        pform = ExperimentalParamsForm(initial={"levels":[3],"nVars":[3],"factors":["null"],"varNames":["a","b","c"],"nTrials":[10],"criterion":["D"],"form":["linear"]})
-        return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform })
-
-    if request.method == 'POST':
-
-        pform = ExperimentalParamsForm(request.POST)
-        if not pform.is_valid():
-            return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform })
-        else:
-            print pform['levels'].value()
-            print pform['factors'].value()
-            params = '{"levels": '+pform["levels"].value()+',"nVars": '+pform["nVars"].value()+',"factors":'+pform["factors"].value()+',"varNames":'+pform["varNames"].value()+',"nTrials":'+pform["nTrials"].value()+',"criterion":'+pform["criterion"].value()+',"form":'+pform["form"].value()+'}'
-            print params
-            body = {'parameters':params, 'visible':False }
+            tform = TrainingForm(request.POST)
+            inputform = InputForm(request.POST)
+            form = UploadFileForm(request.POST, request.FILES)
+            nform = NoPmmlForm(request.POST)
+            pmmlform = SelectPmmlForm(request.POST)
+            dataset = request.session.get('data', '')
+            algorithms = request.session.get('alg', '')
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers, data=body)
+            res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+            al = json.loads(res.text)
+            parameters = request.POST.getlist('parameters')
+            params, al = get_params(request, parameters, al)
+
+            '''for p in parameters:
+                params.append({'name': p, 'value': request.POST.get(''+p)})
+                for a in al['parameters']:
+                    if (a['name'] == p):
+                        print p
+                        a['value']=request.POST.get(''+p)'''
+            print al['parameters']
+            res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+            pmml=json.loads(res1.text)
+            if pmml:
+                pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
+            else:
+                pmmlform.fields['pmml'].choices = [("",'No pmml')]
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
+            predicted_features = json.loads(res2.text)
+            if str(res2) != "<Response [200]>":
+                #redirect to error page
+                return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
+            else:
+                features = predicted_features['features']
+                form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
+                inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
+                inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
+                nform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
+                pmmlform.fields['predicted_feature'].choices = [(f['uri'],f['name']) for f in features]
+            if not tform.is_valid():
+                return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform, 'exp':True})
+            #get transformations
+            transformations=""
+            prediction_feature = ""
+            if request.POST.get('variables') == "none":
+                if not nform.is_valid():
+                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform, 'exp':True})
+                transformations = ""
+                prediction_feature = nform['pred_feature'].value()
+            elif request.POST.get('variables') == "pm":
+                transformations = SERVER_URL+'/pmml/'+pmmlform['pmml'].value()
+                prediction_feature = pmmlform['predicted_feature'].value()
+            elif request.POST.get('variables') == "input":
+                prediction_feature = inputform['output'].value()
+                feature_list = inputform['input'].value()
+                if not inputform.is_valid():
+                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform, 'exp':True})
+                headers = {'Accept': 'application/json',  'subjectid': token}
+                feat=""
+                for f in feature_list:
+                    feat += str(f)+','
+                body = {'features': feat}
+                res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
+                response = json.loads(res.text)
+                transformations = SERVER_URL+'/pmml/'+response['_id']
+
+            elif request.POST.get('variables') == "file":
+                prediction_feature = form['feature'].value()
+                if form.is_valid:
+                    if 'file' in request.FILES:
+                        pmml= request.FILES['file'].read()
+                        print pmml
+                        headers = {'Content-Type': 'application/xml',  'subjectid': token }
+                        res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
+                        print res.text
+                        response = json.loads(res.text)
+                        transformations = SERVER_URL+'/pmml/'+response['_id']
+                    else:
+                        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'nform': nform, 'exp':True})
+
+             #get scaling
+            scaling=""
+            if request.POST.get('scaling') == "scaling1":
+                scaling=""
+            elif request.POST.get('scaling') == "scaling2":
+                scaling=SERVER_URL+'/algorithm/scaling'
+            elif request.POST.get('scaling') == "scaling3":
+                scaling=SERVER_URL+'/algorithm/standarization'
+            #get doa
+            doa=""
+            if request.POST.get('doa') == "doa1":
+                doa=""
+            elif request.POST.get('doa') == "doa2":
+                doa=SERVER_URL+'/algorithm/leverage'
+            elif request.POST.get('doa') == "doa3":
+                doa=SERVER_URL+'/algorithm/leverage'
+            algorithms = request.session.get('alg', '')
+            dataset = request.session.get('data', '')
+            title= tform['modelname'].value()
+            description= tform['description'].value()
+
+            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params, 'visible': True}
+            print('----')
+            print body
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
             print res.text
             task_id = json.loads(res.text)['_id']
             print task_id
+            #return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
             res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
             status = json.loads(res1.text)['status']
             while (status != "COMPLETED"):
                 if(status == "ERROR"):
                     error = "An error occurred while processing your request.Please try again."
-                    return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform, 'error':error })
+                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'nform': nform, 'exp':True})
+
                 else:
                     res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
                     status = json.loads(res1.text)['status']
@@ -1672,7 +1755,80 @@ def exp_design(request):
             while (status != "COMPLETED"):
                 if(status == "ERROR"):
                     error = "An error occurred while processing your request.Please try again."
-                    return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform, 'error':error })
+                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'nform': nform, 'exp':True})
+
+                else:
+                    res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    status = json.loads(res4.text)['status']
+
+            dataset = json.loads(res4.text)['result']
+            dataset = dataset.split('dataset/')[1]
+            #dataset = 'jREmfXY9E997Ci'
+            #model = 'aTqA637F4O00'
+            res5 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+            data_detail = json.loads(res5.text)
+            res6 = requests.get(SERVER_URL+'/model/'+model, headers=headers)
+            model_detail = json.loads(res6.text)
+            predictedFeatures = model_detail['predictedFeatures']
+            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures})
+
+
+#Experimental design without input
+def exp_design(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+
+    if request.method == 'GET':
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
+        print json.loads(res.text)
+        al = json.loads(res.text)
+
+        return render(request, "ocpu_params.html", {'token': token, 'username': username, 'al':al })
+
+    if request.method == 'POST':
+
+        pform = ExperimentalParamsForm(request.POST)
+        if not pform.is_valid():
+            return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform })
+        else:
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
+            al = json.loads(res.text)
+            parameters = request.POST.getlist('parameters')
+
+            params, al = get_params(request, parameters, al)
+
+            body = {'parameters':json.dumps(params), 'visible':False }
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers, data=body)
+            print res.text
+            task_id = json.loads(res.text)['_id']
+            print task_id
+            res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            status = json.loads(res1.text)['status']
+            while (status != "COMPLETED"):
+                if(status == "ERROR"):
+                    error = "An error occurred while processing your request.Please try again."
+                    return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform, 'error':error, 'al':al })
+                else:
+                    res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    status = json.loads(res1.text)['status']
+            #model: model/{id}
+            model = json.loads(res1.text)['result']
+            res2 = requests.post(SERVER_URL+'/'+model, headers=headers)
+            task_id = json.loads(res2.text)['_id']
+            res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            status = json.loads(res3.text)['status']
+
+            while (status != "COMPLETED"):
+                if(status == "ERROR"):
+                    error = "An error occurred while processing your request.Please try again."
+                    return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform, 'error':error, 'al':al })
                 else:
                     res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
                     status = json.loads(res4.text)['status']

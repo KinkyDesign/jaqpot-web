@@ -17,3 +17,15 @@ def split(string, sep):
     Example usage: {{ value|split:"/" }}
     """
     return string.split(sep)[1]
+
+@register.filter
+def joinby(value, arg):
+    return arg.join(value)
+
+@register.filter
+def get_type(value):
+    return value.__class__.__name__
+
+@register.filter
+def intiger(value):
+    return int(value)

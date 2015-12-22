@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load templates_extras %}
+
 {% block content %}
 <form method="post" id="form1"> {% csrf_token %}
 
@@ -12,7 +14,39 @@
                </div>
     {% endif %}
 
-    <label class="align" >Levels:</label>
+    {% if al.parameters %}
+                <h6><b>Parameters:</b></h6>
+                 {% for p in al.parameters%}
+                    <div>
+                        <label class="align">{{p.name}}:</label>
+                        {% if p.allowedValues %}
+                        <select name="{{p.name}}" >
+                            {% for s in p.allowedValues %}
+                            <option value="{{s}}" {% if p.value == s %} selected {% endif %}>{{s}}</option>
+                            {% endfor %}
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        </select>
+                        {% elif p.minValue %}
+                        <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
+                        <p><small><b>Min value:</b>{{p.minValue}}   <b>Max value:</b>{{p.maxValue}}</small></p>
+                        <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        {% else%}
+                        {% if p.value.0|get_type == "unicode" %}
+                            <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|joinby:','}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        {% elif p.value.0|get_type == "int" %}
+                            <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value.0|intiger}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        {%else %}
+                            <input type="text" name="{{p.name}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        {%endif %}
+                        {%endif%}
+                    </div>
+                 {% endfor %}
+            {% endif %}
+
+    <!-- <label class="align" >Levels:</label>
             {% if pform.levels.errors %}
                <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
 						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -73,7 +107,7 @@
 						<span>{{pform.form.errors.as_text}}</span>
                </div>
             {% endif %}
-            {{pform.form}}
+            {{pform.form}} -->
     <br>
     <br>
 

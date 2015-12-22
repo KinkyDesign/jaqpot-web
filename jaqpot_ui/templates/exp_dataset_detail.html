@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="div-table" style="width:100%; min-height:650px;">
+
+    <div>
+        <div style="float:left;">
+            <h1>Dataset: <span  style="font-size: 20px;">{{data_detail.meta.titles.0}}</span> <span style="font-size: 12px;">#{{name}}</span> </h1>
+        </div>
+        <div style="float:right;">
+            <a href="/d_delete?id={{name}}" class="btn bt-red" data-toggle="tool" title="Delete Dataset" style="margin: 3px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
+        </div>
+        <input type="search" id="search1" onsearch="myFunction()" style="display:none">
+    </div>
+
+
+    <div id="details">
+         <table id="dataset" class="div-form-table display" >
+             <thead>
+                 <tr>
+
+                     <th style="background-color: #cf2323; min-width: 300px;">Compounds</th>
+                       <th style="background-color: #cf2323;" class="column">
+                            <p>{{predicted.0}}</p>
+                       </th>
+                 </tr>
+             </thead>
+             <tbody>
+             {% for key in data_detail.dataEntry%}
+                    <tr>
+                        <td>{{key.compound.name}}</td>
+                        {% for k,v in key.values.items %}
+                            {% if k == predicted.0%}
+                                <td>{{v}}</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+             {% endfor %}
+
+             </tbody>
+         </table>
+
+    </div>
+
+
+</div>
+
+<script>
+
+     $(document).ready( function () {
+
+        var oTable = $('#dataset').DataTable( {
+        "bJQueryUI": true,
+        "bScrollCollapse": true,
+        "bAutoWidth": false,
+        "bPaginate":false,
+        "dom": 'ft',
+        "sScrollX": "100%",
+        "sScrollXInner": "100%",
+
+         "fnDrawCallback": function( oSettings )
+         {
+            $('.dataTables_scrollBody table thead tr').css({ 'height' : '0px' });
+        },
+        "fnInitComplete": function(oSettings, json)
+         {
+            $('.dataTables_scrollBody table thead tr').css({ 'height' : '0px' });
+        },
+        "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+        switch(aData[1]){
+            case '1':
+                $(nRow).css('color', 'red')
+                break;
+        }
+        var tab = $('#dataset').DataTable();
+        tab.columns(1).visible( false );
+    }
+
+        });
+
+
+
+    } );
+
+
+function myFunction() {
+            var tab = $('#dataset').DataTable();
+            tab.columns(1).visible( false );
+            //tab.columns('.column').visible( false );
+            for ( var i=1 ; i<4 ; i++ ) {
+                tab.columns(i).visible( false );
+            }
+            tab.columns(':contains(A2V)').visible( true );
+            tab.columns.adjust().draw( false ); // adjust column sizing and redraw
+        }
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip({
+    container : 'body'
+  });
+
+
+});
+
+//display tooltip right
+$('[data-toggle="tool"]').tooltip({
+    'placement': 'left'
+});
+
+/* setTimeout(function ()
+  {
+    oTable.fnAdjustColumnSizing();
+  }, 10 );*/
+
+</script>
+
+
+
+{% endblock %}

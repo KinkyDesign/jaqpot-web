@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load templates_extras %}
+
 {% block content %}
 <form method="post" id="form1" enctype="multipart/form-data"> {% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block; padding:10px;">
@@ -49,9 +51,22 @@
                         <p><small><b>Min value:</b>{{p.minValue}}   <b>Max value:</b>{{p.maxValue}}</small></p>
                         <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
                         {% else%}
-                        <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
-                        <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
-                        {%endif %}
+                            {% if p.value.0 %}
+                                {% if p.value.0|get_type == "unicode" %}
+                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|joinby:','}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                {% elif p.value.0|get_type == "int" %}
+                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value.0|intiger}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                {%else %}
+                                    <input type="text" name="{{p.name}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                {% endif %}
+                            {%else%}
+                            <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            {%endif %}
+                        {% endif %}
                     </div>
                  {% endfor %}
             {% endif %}
@@ -177,7 +192,11 @@
         <br>
         <br>
          <!-- <a href="/change_params?data={{dataset}}&alg={{algorithms}}" class="btn bt-red" style="width:10%; float:left; left:10%;" >Train</a> -->
-        <input id="choose_alg" type="submit" value="Train" class="btn bt-red" style="width: 10%; float:left; left:10%;">
+        {% if exp %}
+            <input id="choose_alg" type="submit" value="Experimental design" class="btn bt-red" style="width: 30%; float:left; left:10%;">
+        {% else %}
+            <input id="choose_alg" type="submit" value="Train" class="btn bt-red" style="width: 10%; float:left; left:10%;">
+        {% endif %}
     </div>
 
     </div>
