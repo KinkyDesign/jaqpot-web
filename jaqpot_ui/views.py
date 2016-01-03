@@ -15,7 +15,7 @@ import requests
 import json
 import datetime
 import subprocess
-from jaqpot_ui.get_params import get_params
+from jaqpot_ui.get_params import get_params, get_params2
 from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, EMAIL_HOST_USER, SERVER_URL
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect, HttpResponse
@@ -1551,12 +1551,14 @@ def experimental(request):
     username = request.session.get('username', '')
     page = request.GET.get('page')
     last = request.GET.get('last')
-    dataset=[]
+    last = 1
+    page=1
+
     if request.method == 'GET':
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
         #get total number of datasets
-        headers1 = {'Accept': 'text/plain', 'subjectid': token}
+        '''headers1 = {'Accept': 'text/plain', 'subjectid': token}
         res1= requests.get(SERVER_URL+'/dataset/count?creator='+username, headers=headers1)
         total_datasets= int(res1.text)
         if total_datasets%20 == 0:
@@ -1575,9 +1577,10 @@ def experimental(request):
         else:
             page = 1
             res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+        data= json.loads(res.text)'''
+        res = requests.get(SERVER_URL+'/dataset/ayDPMNB3JcOJAm', headers=headers)
         data= json.loads(res.text)
-        for d in data:
-            dataset.append({'name': d['_id'], 'meta': d['meta']})
+        dataset.append({'name': data['_id'], 'meta': data['meta']})
 
         return render(request, "exp_dataset.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last})
 
@@ -1633,6 +1636,7 @@ def experimental_params(request):
             pmmlform = SelectPmmlForm(request.POST)
             dataset = request.session.get('data', '')
             algorithms = request.session.get('alg', '')
+            print algorithms
             headers = {'Accept': 'application/json', 'subjectid': token}
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
             al = json.loads(res.text)
@@ -1721,12 +1725,13 @@ def experimental_params(request):
                 doa=SERVER_URL+'/algorithm/leverage'
             elif request.POST.get('doa') == "doa3":
                 doa=SERVER_URL+'/algorithm/leverage'
-            algorithms = request.session.get('alg', '')
+            #algorithms = request.session.get('alg', '')
             dataset = request.session.get('data', '')
             title= tform['modelname'].value()
             description= tform['description'].value()
+            print json.dumps(params)
 
-            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params, 'visible': True}
+            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
             print('----')
             print body
             headers = {'Accept': 'application/json', 'subjectid': token}
@@ -1747,7 +1752,9 @@ def experimental_params(request):
                     status = json.loads(res1.text)['status']
             #model: model/{id}
             model = json.loads(res1.text)['result']
-            res2 = requests.post(SERVER_URL+'/'+model, headers=headers)
+            print dataset
+            body = {'dataset_uri':SERVER_URL+'/dataset/'+dataset}
+            res2 = requests.post(SERVER_URL+'/'+model, headers=headers, data=body)
             task_id = json.loads(res2.text)['_id']
             res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
             status = json.loads(res3.text)['status']
@@ -1761,16 +1768,21 @@ def experimental_params(request):
                     res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
                     status = json.loads(res4.text)['status']
 
-            dataset = json.loads(res4.text)['result']
-            dataset = dataset.split('dataset/')[1]
+            new_dataset = json.loads(res4.text)['result']
+            new_dataset = new_dataset.split('dataset/')[1]
+            print new_dataset
             #dataset = 'jREmfXY9E997Ci'
             #model = 'aTqA637F4O00'
-            res5 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+            res5 = requests.get(SERVER_URL+'/dataset/'+new_dataset, headers=headers)
             data_detail = json.loads(res5.text)
-            res6 = requests.get(SERVER_URL+'/model/'+model, headers=headers)
+            res6 = requests.get(SERVER_URL+'/'+model, headers=headers)
             model_detail = json.loads(res6.text)
             predictedFeatures = model_detail['predictedFeatures']
-            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures})
+            res7 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+            d_detail = json.loads(res7.text)
+            print predicted_features
+            print data_detail
+            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail,'d_detail':d_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature})
 
 
 #Experimental design without input
@@ -1837,3 +1849,65 @@ def exp_design(request):
             dataset = dataset.split('dataset/')[1]
 
             return redirect('/data_detail?name='+dataset, {'token': token, 'username': username})
+
+
+#Interlab testing select substance owners
+def interlab_select_substance(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+        else:
+            page=request.GET.get('page')
+            if page:
+                headers = {'Accept': 'application/json', 'subjectid': token}
+                page1=str(int(page)-1)
+                res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page='+page1+'&pagesize=20', headers=headers)
+                substance_owner=json.loads(res.text)
+                substance_owner = substance_owner['facet']
+            else:
+                headers = {'Accept': 'application/json', 'subjectid': token}
+                page=1
+                res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
+                substance_owner=json.loads(res.text)
+                substance_owner = substance_owner['facet']
+    if request.method == 'GET':
+        form = SubstanceownerForm(initial={'substanceowner': ''})
+        if len(substance_owner)<20:
+            last=page
+            return render(request, "interlab_substance.html", {'token': token, 'username': username, 'form':form, 'substance_owner': substance_owner, 'page': page, 'last':last,})
+        else:
+            return render(request, "interlab_substance.html", {'token': token, 'username': username, 'form':form, 'substance_owner': substance_owner, 'page': page})
+    if request.method == 'POST':
+        method = request.POST.get('radio_method')
+
+        substance_owner = request.POST.get('radio')
+        if not substance_owner:
+            form = SubstanceownerForm(initial={'substanceowner': ''})
+            page=request.GET.get('page')
+            if page:
+                headers = {'Accept': 'application/json', 'subjectid': token}
+                page1=str(int(page)-1)
+                res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page='+page1+'&pagesize=20', headers=headers)
+                substance_owner=json.loads(res.text)
+                substance_owner = substance_owner['facet']
+            else:
+                headers = {'Accept': 'application/json', 'subjectid': token}
+                page=1
+                res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
+                substance_owner=json.loads(res.text)
+                substance_owner = substance_owner['facet']
+                error = "Please select substance owner."
+                return render(request, "interlab_substance.html", {'token': token, 'username': username, 'form':form, 'substance_owner': substance_owner, 'page': page, 'error':error})
+        else:
+            substance_owner = 'https://apps.ideaconsult.net/enmtest/substanceowner/'+substance_owner
+            request.session['substanceowner']= substance_owner
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            res = requests.get(substance_owner+'/substance', headers=headers)
+            substances=json.loads(res.text)
+            request.session['substances'] = substances
+            return redirect('/interlab_params', {'token': token, 'username': username})
+
+#def interlab_params(request):

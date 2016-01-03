@@ -24,6 +24,9 @@
                        <th style="background-color: #cf2323;" class="column">
                             <p>{{predicted.0}}</p>
                        </th>
+                       <th style="background-color: #cf2323;" class="column">
+                            <p>Prediction feature</p>
+                       </th>
                  </tr>
              </thead>
              <tbody>
@@ -34,7 +37,12 @@
                             {% if k == predicted.0%}
                                 <td>{{v}}</td>
                             {% endif %}
-                        {% endfor %}
+                            {% if k == prediction %}
+                                <td>{{v}}</td>
+                            {% endif %}
+
+                        {% endfor%}
+
                     </tr>
              {% endfor %}
 
@@ -58,6 +66,7 @@
         "dom": 'ft',
         "sScrollX": "100%",
         "sScrollXInner": "100%",
+        "editable": true,
 
          "fnDrawCallback": function( oSettings )
          {
@@ -78,8 +87,6 @@
     }
 
         });
-
-
 
     } );
 
@@ -111,6 +118,18 @@ $('[data-toggle="tool"]').tooltip({
   {
     oTable.fnAdjustColumnSizing();
   }, 10 );*/
+ $('#dataset tbody td').editable( function( sValue ) {
+		/* Get the position of the current data from the node */
+		 var oTable = $('#dataset').dataTable()
+		var aPos = oTable.fnGetPosition( this );
+
+		/* Get the data array for this row */
+		var aData = oTable.fnGetData( aPos[0] );
+
+		/* Update the data array and return the value */
+		aData[ aPos[2] ] = sValue;
+		return sValue;
+	}, { "onblur": 'submit' } ); /* Submit the form when bluring a field */
 
 </script>
 

@@ -59,6 +59,7 @@ urlpatterns = patterns('',
                        url(r'^experimental', views.experimental),
                        url(r'^d_validate', views.choose_dataset_validate),
                        url(r'^exp_design', views.exp_design),
+                       url(r'^interlab_substance', views.interlab_select_substance),
 
 
                        # captcha
