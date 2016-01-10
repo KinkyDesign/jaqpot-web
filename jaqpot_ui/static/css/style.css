@@ -63,7 +63,7 @@ background-position: center 30%;
 background-image: url('/static/img/nanotube.jpg');
 //background: rgba(195, 195, 195, 0.8);
 background-size: 2000px 3000px;
-background-repeat: no-repeat;
+background-repeat: repeat;
 padding: 50px;
 }
 .footer{

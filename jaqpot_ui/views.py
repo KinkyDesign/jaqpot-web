@@ -1534,8 +1534,10 @@ def valid_params(request):
             seed = "5"
         else:
             seed = "" '''
+        print prediction_feature
+        print params
 
-        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': algorithms, 'folds':folds, 'stratify': stratify,}
+        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'stratify': stratify,}
 
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/validation/training_test_cross', headers=headers, data=body)
@@ -1543,6 +1545,18 @@ def valid_params(request):
         task_id = json.loads(res.text)['_id']
         print task_id
         return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+
+#Display report after validation
+def report(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if request.method == 'GET':
+        name = request.GET.get('name')
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.get(SERVER_URL+'/report/'+name, headers=headers)
+        report = json.loads(res.text)
+        return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })
+
 
 
 #Experimental design
