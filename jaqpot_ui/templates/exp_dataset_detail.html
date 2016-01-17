@@ -2,20 +2,64 @@
 
 {% block content %}
 
-<div class="div-table" style="width:100%; min-height:650px;">
-
+<div class="div-table" style="width:100%; min-height:650px; ">
     <div>
-        <div style="float:left;">
-            <h1>Dataset: <span  style="font-size: 20px;">{{data_detail.meta.titles.0}}</span> <span style="font-size: 12px;">#{{name}}</span> </h1>
-        </div>
+        <div style= "float:left;"></div>
         <div style="float:right;">
             <a href="/d_delete?id={{name}}" class="btn bt-red" data-toggle="tool" title="Delete Dataset" style="margin: 3px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
         </div>
+    </div>
+
+    <div>
+        <div>
+            <h1>Dataset: <span  style="font-size: 20px;">{{data_detail.meta.titles.0}}</span> <span style="font-size: 12px;">#{{name}}</span> </h1>
+        </div>
+        <br>
+        <div>
+            {% for k,v in model.additionalInfo.items %}
+            {% if k == "r.squared" %}
+                    <div>
+                        <label class="align">Rsquared:</label>
+                        <input type="text" style="margin:5px;width:40%;" readonly="readonly" value="{{v.0}}">
+                    </div>
+                    <span style="font-size: 10px;margin-left: 10%;"><b>Help note:</b>Rsquared greater or equal to Rsquared threshold</span>
+            {% endif %}
+            {% endfor %}
+            {% for k,v in model.additionalInfo.items %}
+            {% if k == "norm.var" %}
+                    <div>
+                        <label class="align">Normalised variance:</label>
+                        <input type="text" style="margin:5px;width:40%;" readonly="readonly" value="{{v.0}}">
+                    </div>
+                    <span style="font-size: 10px;margin-left: 10%;"><b>Help note:</b>Minimax normalised variance over input matrix.</span>
+            {% endif %}
+            {% endfor %}
+            {% for k,v in model.additionalInfo.items %}
+            {% if k == "confounding.effect" %}
+                    <div>
+                        <label class="align">Confounding effect:</label>
+                        <input type="text" style="margin:5px;width:40%;" readonly="readonly" value="{{v.0}}">
+                    </div>
+                    <span style="font-size: 10px;margin-left: 10%;"><b>Help note:</b>The diagonality of the design.</span>
+            {% endif %}
+            {% endfor %}
+            {% for k,v in model.additionalInfo.items %}
+            {% if k == "verbal.notes" %}
+                    <p><b>Notes:</b></p>
+                    <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;width:50%;">{% for note in v %}
+                        {{note}}{% endfor %}
+                         </textarea>
+            {% endif %}
+            {% endfor %}
+        </div>
+
         <input type="search" id="search1" onsearch="myFunction()" style="display:none">
+
     </div>
 
 
     <div id="details">
+
          <table id="dataset" class="div-form-table display" >
              <thead>
                  <tr>
@@ -48,9 +92,10 @@
 
              </tbody>
          </table>
+        <br>
 
     </div>
-
+    <input type="submit" id="exp" value="Experimental Design" class="btn bt-red" style="width: 20%;">
 
 </div>
 
@@ -130,6 +175,31 @@ $('[data-toggle="tool"]').tooltip({
 		aData[ aPos[2] ] = sValue;
 		return sValue;
 	}, { "onblur": 'submit' } ); /* Submit the form when bluring a field */
+
+ $("#exp").on("click", function (){
+    var data =  $('#dataset').DataTable().data()
+    data = JSON.stringify(data)
+    var dataset_name = {{name}}
+    dataset_name = JSON.stringify(dataset_name)
+    //var predicted = {{predicted}}
+    //predicted = JSON.stringify(predicted)
+     $.ajax({
+                type: "get",
+                url: "/exp_submit",
+                dataType: "json",
+                contentType: 'application/json;',
+                data: { 'data': data, 'dataset_name': dataset_name, },
+                //data: {queryData : JSON.stringify({'data': data, 'dataset_name': dataset_name})},
+                success: function(data){
+
+
+                    alert(data)
+                },
+                error: function(){
+                    console.log("error");
+                }
+            });
+    });
 
 </script>
 
