@@ -113,9 +113,14 @@
         </div>
 
     <div id="input" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
+        {% if exp %}
+            <h5><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable:</h5>
+        {% else %}
+            <h5><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable and endpoint:</h5>
+        {% endif %}
 
-        <h5><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable and endpoint:</h5>
-        <div style="float:left; width:50%;">
+        <div style="float:left; width:50%;" >
+
         <h5>Input</h5>
             {% if inputform.input.errors %}
                <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-bottom: 0px;">
@@ -132,24 +137,26 @@
             </div>
 
             </div>
-        <div style="float:left; width:50%">
-        <h5>Output</h5>
-             {% if inputform.output.errors %}
-               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-bottom: 0px;">
-						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-						<span>{{inputform.output.errors.as_text}}</span>
-               </div>
-            {% endif %}
-           <br>
-        <div style="overflow:scroll; height:300px;">
-             {% for output in inputform.output %}
-                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;" for="">
-                     {{output}}</label>
-            {% endfor %}
-            </div>
 
-            </div>
-    </div>
+        <div style="float:left; width:50%">
+            <h5>Output</h5>
+                 {% if inputform.output.errors %}
+                   <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-bottom: 0px;">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                            <span>{{inputform.output.errors.as_text}}</span>
+                   </div>
+                {% endif %}
+               <br>
+            <div style="overflow:scroll; height:300px;">
+                {% for output in inputform.output %}
+                    <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;" for="">
+                        {{output}}</label>
+                {% endfor %}
+                </div>
+
+                </div>
+
+        </div>
     <div id="PMML" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
 
         <div>
@@ -158,11 +165,13 @@
 
             <br>
         </div>
-        <div>
-            <h5>Select Prediction Feature:</h5>
-               {{pmmlform.predicted_feature}}
-            <br>
-        </div>
+        {% if not exp%}
+            <div>
+                <h5>Select Prediction Feature:</h5>
+                   {{pmmlform.predicted_feature}}
+                <br>
+            </div>
+        {% endif %}
     </div>
     <div id="file" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
 
@@ -174,16 +183,20 @@
                </div>
             {% endif %}
         {{uploadform.file}}
-        <h5>Select Prediction Feature:</h5>
-            {{uploadform.feature}}
+        {% if not exp %}
+            <h5>Select Prediction Feature:</h5>
+                {{uploadform.feature}}
+        {% endif %}
 
     </div>
-     <div id="none" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
+     {% if not exp %}
+         <div id="none" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
 
-        <h5>Select Prediction Feature:</h5>
-            {{nform.pred_feature}}
+            <h5>Select Prediction Feature:</h5>
+                {{nform.pred_feature}}
 
-    </div>
+        </div>
+     {% endif %}
     <br>
     <br>
     <div style="float:right; width:50%;">

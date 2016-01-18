@@ -58,3 +58,29 @@ def paginate_dataset(request, name, token, username, page):
                     res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
             data_detail=json.loads(res.text)
             return data_detail, last, page
+
+
+def get_prediction_feature_of_dataset(dataset, token):
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    r = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+    data=json.loads(r.text)
+    prediction_feature = ""
+    for d in data['dataEntry']:
+        values =  d['values']
+        for k,v in values.items():
+            if v == None:
+                prediction_feature = k
+                break
+        if prediction_feature != "":
+            break
+    return prediction_feature
+
+def get_prediction_feature_name_of_dataset(dataset, token, prediction):
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    r = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+    data=json.loads(r.text)
+    for f in data['features']:
+        if f['uri'] == prediction:
+            name = f['name']
+            break
+    return name
