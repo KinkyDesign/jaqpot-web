@@ -15,7 +15,7 @@ import requests
 import json
 import datetime
 import subprocess
-from jaqpot_ui.get_params import get_params, get_params2
+from jaqpot_ui.get_params import get_params, get_params2, get_params3
 from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, EMAIL_HOST_USER, SERVER_URL
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect, HttpResponse
@@ -482,7 +482,7 @@ def change_params(request):
 
     if request.method == 'POST':
         #get parameters of algorithm
-        params=[]
+        params={}
         print request.POST
 
 
@@ -496,6 +496,7 @@ def change_params(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         al = json.loads(res.text)
+        print al['parameters']
         if request.POST.getlist('parameters'):
             parameters = request.POST.getlist('parameters')
             '''for p in parameters:
@@ -505,12 +506,17 @@ def change_params(request):
                         print p
                         a['value']=request.POST.get(''+p)'''
             for p in parameters:
-                params.append({p: request.POST.get(''+p)})
+                #params.update({p: request.POST.get(''+p)})
                 for a in al['parameters']:
                     if (a['name'] == p):
                         print p
                         a['value']=request.POST.get(''+p)
             print al['parameters']
+            for a in al['parameters']:
+                params.update({a['name']: a['value']})
+            params, al = get_params3(request, parameters, al)
+            print json.dumps(params)
+
         res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
         pmml=json.loads(res1.text)
         if pmml:
@@ -596,6 +602,7 @@ def change_params(request):
         print res.text
         task_id = json.loads(res.text)['_id']
         print task_id
+        print json.dumps(params)
         return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
 
 

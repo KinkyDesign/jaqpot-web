@@ -68,8 +68,13 @@
                             <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
                             {%endif %}
                         {% else %}
-                             <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
-                             <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            {% if p.value|get_type == "int" %}
+                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|intiger}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            {%else %}
+                                 <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
+                                 <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            {% endif %}
                         {% endif %}
                         {% endif %}
                     </div>

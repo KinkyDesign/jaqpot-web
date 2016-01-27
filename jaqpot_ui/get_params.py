@@ -33,3 +33,22 @@ def get_params2(request, parameters, al):
             if (a['name'] == p):
                 a['value']=[request.POST.get(''+p)]
     return params, al
+
+def get_params3(request, parameters, al):
+    params={}
+    for p in parameters:
+        try:
+            value = int(request.POST.get(''+p))
+            params.update({p:value})
+        except:
+            try:
+                value = float(request.POST.get(''+p))
+                params.update({p:value})
+            except:
+                value = request.POST.get(''+p)
+                params.update({p:value})
+
+        for a in al['parameters']:
+            if (a['name'] == p):
+                a['value']=[request.POST.get(''+p)]
+    return params, al

@@ -29,3 +29,7 @@ def get_type(value):
 @register.filter
 def intiger(value):
     return int(value)
+
+@register.filter
+def float(value):
+    return int(float)

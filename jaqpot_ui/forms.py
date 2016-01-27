@@ -84,3 +84,7 @@ class ExperimentalParamsForm(forms.Form):
     nTrials = forms.CharField(required=True, error_messages={'required': 'Please enter nTrials.'}, widget=forms.TextInput(attrs={'style': "margin:5px;"}))
     criterion = forms.CharField(required=True, error_messages={'required': 'Please enter criterion.'}, widget=forms.TextInput(attrs={'style': "margin:5px;"}))
     form = forms.CharField(required=True, error_messages={'required': 'Please enter form.'}, widget=forms.TextInput(attrs={'style': "margin:5px;"}))
+
+class UploadForm(forms.Form):
+    #title = forms.CharField(max_length=50)
+    file = forms.FileField(error_messages={'required': 'Please choose a file.'})
