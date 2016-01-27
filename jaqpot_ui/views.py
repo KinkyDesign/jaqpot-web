@@ -498,8 +498,14 @@ def change_params(request):
         al = json.loads(res.text)
         if request.POST.getlist('parameters'):
             parameters = request.POST.getlist('parameters')
-            for p in parameters:
+            '''for p in parameters:
                 params.append({'name': p, 'value': request.POST.get(''+p)})
+                for a in al['parameters']:
+                    if (a['name'] == p):
+                        print p
+                        a['value']=request.POST.get(''+p)'''
+            for p in parameters:
+                params.append({p: request.POST.get(''+p)})
                 for a in al['parameters']:
                     if (a['name'] == p):
                         print p
@@ -584,9 +590,7 @@ def change_params(request):
         dataset = request.session.get('data', '')
         title= tform['modelname'].value()
         description= tform['description'].value()
-        print params
-        body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params, 'visible': True}
-
+        body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': True}
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
         print res.text
