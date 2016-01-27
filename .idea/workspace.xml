@@ -3,15 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="3198a210-b7c6-4410-b845-6dedaa48ee46" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/db.sqlite3" afterPath="$PROJECT_DIR$/db.sqlite3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset.html" afterPath="$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset_validate.html" afterPath="$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset_validate.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/templates/dataset.html" afterPath="$PROJECT_DIR$/jaqpot_ui/templates/dataset.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset.html" afterPath="$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/templates/alg.html" afterPath="$PROJECT_DIR$/jaqpot_ui/templates/alg.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset_detail.html" afterPath="$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset_detail.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/templates/model.html" afterPath="$PROJECT_DIR$/jaqpot_ui/templates/model.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/templates/predict_model.html" afterPath="$PROJECT_DIR$/jaqpot_ui/templates/predict_model.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/urls.py" afterPath="$PROJECT_DIR$/jaqpot_ui/urls.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/views.py" afterPath="$PROJECT_DIR$/jaqpot_ui/views.py" />
     </list>
     <ignored path="jaqpot_ui.iws" />
@@ -36,20 +31,56 @@
       <file leaf-file-name="dataset.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/dataset.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.307693">
+            <state vertical-scroll-proportion="0.0">
               <caret line="20" column="39" selection-start-line="20" selection-start-column="39" selection-end-line="20" selection-end-column="39" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5373563">
-              <caret line="1678" column="34" selection-start-line="1678" selection-start-column="34" selection-end-line="1678" selection-end-column="34" />
+            <state vertical-scroll-proportion="-10.827586">
+              <caret line="1720" column="30" selection-start-line="1720" selection-start-column="30" selection-end-line="1720" selection-end-column="30" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jaqpot_ui/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="64" column="37" selection-start-line="64" selection-start-column="30" selection-end-line="64" selection-end-column="38" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="forms.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jaqpot_ui/forms.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="53" column="142" selection-start-line="53" selection-start-column="142" selection-end-line="53" selection-end-column="142" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="alg.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/alg.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.9031339">
+              <caret line="70" column="106" selection-start-line="70" selection-start-column="106" selection-end-line="70" selection-end-column="106" />
+              <folding>
+                <element signature="n#style#0;n#input#8;n#div#4;n#div#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#9;n#div#4;n#div#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#10;n#div#4;n#div#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#11;n#div#4;n#div#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#4;n#div#0;n#form#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -58,8 +89,8 @@
       <file leaf-file-name="exp_dataset_detail.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset_detail.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.230769">
-              <caret line="193" column="31" selection-start-line="193" selection-start-column="31" selection-end-line="193" selection-end-column="31" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="194" column="48" selection-start-line="194" selection-start-column="48" selection-end-line="194" selection-end-column="48" />
               <folding />
             </state>
           </provider>
@@ -68,7 +99,7 @@
       <file leaf-file-name="model.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/model.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-12.192307">
+            <state vertical-scroll-proportion="0.0">
               <caret line="24" column="22" selection-start-line="24" selection-start-column="22" selection-end-line="24" selection-end-column="22" />
               <folding />
             </state>
@@ -78,7 +109,7 @@
       <file leaf-file-name="predict_model.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/predict_model.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0">
+            <state vertical-scroll-proportion="0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
@@ -88,7 +119,7 @@
       <file leaf-file-name="choose_dataset_validate.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset_validate.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.923077">
+            <state vertical-scroll-proportion="0.0">
               <caret line="23" column="29" selection-start-line="23" selection-start-column="29" selection-end-line="23" selection-end-column="29" />
               <folding />
             </state>
@@ -98,38 +129,8 @@
       <file leaf-file-name="choose_dataset.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.1923075">
+            <state vertical-scroll-proportion="0.0">
               <caret line="22" column="25" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="25" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="get_dataset.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jaqpot_ui/get_dataset.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="86" column="0" selection-start-line="86" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="exp_dataset.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.961538">
-              <caret line="25" column="29" selection-start-line="25" selection-start-column="29" selection-end-line="25" selection-end-column="29" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="30" column="5" selection-start-line="30" selection-start-column="5" selection-end-line="30" selection-end-column="5" />
               <folding />
             </state>
           </provider>
@@ -173,15 +174,12 @@
         <option value="$PROJECT_DIR$/jaqpot_ui/static/js/search.js" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/base.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/static/css/style.css" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/forms.py" />
         <option value="$PROJECT_DIR$/jaqpot_ui/create_dataset.py" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templatetags/templates_extras.py" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/predict.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/get_dataset.py" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/predicted_dataset.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/alg.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/model_detail.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/urls.py" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/taskdetail.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/dataset_detail.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/substance.html" />
@@ -192,8 +190,11 @@
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/dataset.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/predict_model.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/model.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/views.py" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/forms.py" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/urls.py" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset_detail.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/views.py" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/alg.html" />
       </list>
     </option>
   </component>
@@ -227,6 +228,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -279,7 +281,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -497,19 +498,25 @@
       <option name="project" value="LOCAL" />
       <updated>1453054864321</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Add proposed models and datasets. Changes in experimental design.">
+      <created>1453736827661</created>
+      <option name="number" value="00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1453736827661</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="0" width="1378" height="735" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20190896" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3628049" sideWeight="0.50080085" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32884902" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329653" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.352" sideWeight="0.49919915" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.352" sideWeight="0.49919915" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -539,7 +546,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Ignore database" />
-    <option name="LAST_COMMIT_MESSAGE" value="Ignore database" />
+    <MESSAGE value="Add proposed models and datasets. Changes in experimental design." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add proposed models and datasets. Changes in experimental design." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -744,13 +752,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="61" column="71" selection-start-line="61" selection-start-column="71" selection-end-line="61" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/taskdetail.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.5376712">
@@ -790,23 +791,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="41" column="0" selection-start-line="15" selection-start-column="3" selection-end-line="55" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="20" column="39" selection-start-line="17" selection-start-column="30" selection-end-line="17" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/alg.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="108" column="20" selection-start-line="108" selection-start-column="20" selection-end-line="108" selection-end-column="20" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -814,12 +798,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="21" column="38" selection-start-line="21" selection-start-column="38" selection-end-line="21" selection-end-column="38" />
-          <folding>
-            <element signature="n#style#0;n#div#1;n#div#0;n#form#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#div#2;n#div#0;n#form#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#label#0;n#div#2;n#div#0;n#form#0;n#!!top" expanded="false" />
-            <element signature="n#style#0;n#label#1;n#div#2;n#div#0;n#form#0;n#!!top" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -827,7 +805,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -835,7 +812,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -843,7 +819,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="30" column="5" selection-start-line="30" selection-start-column="5" selection-end-line="30" selection-end-column="5" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -858,21 +833,19 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="86" column="0" selection-start-line="86" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.961538">
+        <state vertical-scroll-proportion="0.0">
           <caret line="25" column="29" selection-start-line="25" selection-start-column="29" selection-end-line="25" selection-end-column="29" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.1923075">
+        <state vertical-scroll-proportion="0.0">
           <caret line="22" column="25" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="25" />
           <folding />
         </state>
@@ -880,16 +853,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset_validate.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.923077">
+        <state vertical-scroll-proportion="0.0">
           <caret line="23" column="29" selection-start-line="23" selection-start-column="29" selection-end-line="23" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/dataset.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.307693">
-          <caret line="20" column="39" selection-start-line="20" selection-start-column="39" selection-end-line="20" selection-end-column="39" />
           <folding />
         </state>
       </provider>
@@ -904,26 +869,64 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/model.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-12.192307">
+        <state vertical-scroll-proportion="0.0">
           <caret line="24" column="22" selection-start-line="24" selection-start-column="22" selection-end-line="24" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/dataset.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="20" column="39" selection-start-line="20" selection-start-column="39" selection-end-line="20" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="53" column="142" selection-start-line="53" selection-start-column="142" selection-end-line="53" selection-end-column="142" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="64" column="37" selection-start-line="64" selection-start-column="30" selection-end-line="64" selection-end-column="38" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset_detail.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.230769">
-          <caret line="193" column="31" selection-start-line="193" selection-start-column="31" selection-end-line="193" selection-end-column="31" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="194" column="48" selection-start-line="194" selection-start-column="48" selection-end-line="194" selection-end-column="48" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5373563">
-          <caret line="1678" column="34" selection-start-line="1678" selection-start-column="34" selection-end-line="1678" selection-end-column="34" />
+        <state vertical-scroll-proportion="-10.827586">
+          <caret line="1720" column="30" selection-start-line="1720" selection-start-column="30" selection-end-line="1720" selection-end-column="30" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/alg.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.9031339">
+          <caret line="70" column="106" selection-start-line="70" selection-start-column="106" selection-end-line="70" selection-end-column="106" />
+          <folding>
+            <element signature="n#style#0;n#input#8;n#div#4;n#div#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#9;n#div#4;n#div#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#10;n#div#4;n#div#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#11;n#div#4;n#div#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#4;n#div#0;n#form#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -51,6 +51,7 @@
                         <p><small><b>Min value:</b>{{p.minValue}}   <b>Max value:</b>{{p.maxValue}}</small></p>
                         <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
                         {% else%}
+                            {% if exp %}
                             {% if p.value.0 %}
                                 {% if p.value.0|get_type == "unicode" %}
                                     <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|joinby:','}}">
@@ -66,6 +67,10 @@
                             <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
                             <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
                             {%endif %}
+                        {% else %}
+                             <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
+                             <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        {% endif %}
                         {% endif %}
                     </div>
                  {% endfor %}

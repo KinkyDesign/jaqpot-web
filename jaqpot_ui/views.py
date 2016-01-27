@@ -584,7 +584,7 @@ def change_params(request):
         dataset = request.session.get('data', '')
         title= tform['modelname'].value()
         description= tform['description'].value()
-
+        print params
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params, 'visible': True}
 
         headers = {'Accept': 'application/json', 'subjectid': token}
@@ -1719,7 +1719,6 @@ def experimental_params(request):
                 return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'pmmlform':pmmlform, 'exp':True})
             #get transformations
             transformations=""
-            prediction_feature = ""
             if request.POST.get('variables') == "none":
                 transformations = ""
                 prediction_feature = prediction_feature
@@ -1798,7 +1797,7 @@ def experimental_params(request):
             task_id = json.loads(res2.text)['_id']
             res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
             status = json.loads(res3.text)['status']
-
+            print task_id
             while (status != "COMPLETED"):
                 if(status == "ERROR"):
                     error = "An error occurred while processing your request.Please try again."
@@ -1822,6 +1821,8 @@ def experimental_params(request):
             d_detail = json.loads(res7.text)
             print predicted_features
             print data_detail
+            #body = { 'scaling': scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
+            #body
             return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail,'d_detail':d_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail})
 
 def exp_submit(request):
@@ -1870,9 +1871,82 @@ def exp_submit(request):
         res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data, timeout=10)
 
         print res.text
-        #data = json.loads(dataset)
-        data = json_data['_id']
-        return HttpResponse(data)
+        data = res.text.split('/dataset/')[1]
+        print data
+        #json_data = {'dataset': data}
+        json_data = json.dumps(data)
+        return HttpResponse(json_data)
+
+def exp_iter(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+        if request.method == 'GET':
+            dataset = request.GET.get('dataset')
+            print dataset
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            res1 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+            #model = json.loads(res1.text)['model']
+            model = '7YZXHnO1Gh5L'
+            res = requests.get(SERVER_URL+'/model/'+model, headers=headers)
+            algorithms = json.loads(res.text)['algorithm']['_id']
+            params = json.loads(res.text)['parameters']
+            prediction_feature = get_prediction_feature_of_dataset(dataset, token)
+            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': "", 'doa': "", 'title': "", 'description':"", 'transformations':"", 'prediction_feature': prediction_feature, 'parameters':params, 'visible': False}
+            print('----')
+            print body
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            import pdb;pdb.set_trace();
+            res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
+            print res.text
+            task_id = json.loads(res.text)['_id']
+            print task_id
+            #return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+            res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            status = json.loads(res1.text)['status']
+            while (status != "COMPLETED"):
+                if(status == "ERROR"):
+                    error = "An error occurred while processing your request.Please try again."
+                    #return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True})
+
+                else:
+                    res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    status = json.loads(res1.text)['status']
+            #model: model/{id}
+            model = json.loads(res1.text)['result']
+            body = {'dataset_uri':SERVER_URL+'/dataset/'+dataset}
+            res2 = requests.post(SERVER_URL+'/'+model, headers=headers, data=body)
+            task_id = json.loads(res2.text)['_id']
+            res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            status = json.loads(res3.text)['status']
+
+            while (status != "COMPLETED"):
+                if(status == "ERROR"):
+                    error = "An error occurred while processing your request.Please try again."
+                    #return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True})
+
+                else:
+                    res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    status = json.loads(res4.text)['status']
+
+            new_dataset = json.loads(res4.text)['result']
+            new_dataset = new_dataset.split('dataset/')[1]
+            print new_dataset
+            res5 = requests.get(SERVER_URL+'/dataset/'+new_dataset, headers=headers)
+            data_detail = json.loads(res5.text)
+            res6 = requests.get(SERVER_URL+'/'+model, headers=headers)
+            model_detail = json.loads(res6.text)
+            predictedFeatures = model_detail['predictedFeatures']
+            res7 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+            d_detail = json.loads(res7.text)
+            prediction_feature = get_prediction_feature_of_dataset(new_dataset, token)
+            print data_detail
+            #body = { 'scaling': scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
+            #body
+            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail,'d_detail':d_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail})
 
 
 #Experimental design without input

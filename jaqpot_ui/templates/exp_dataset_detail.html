@@ -192,7 +192,7 @@ $('[data-toggle="tool"]').tooltip({
                 //data: {queryData : JSON.stringify({'data': data, 'dataset_name': dataset_name})},
                 success: function(data){
                     alert(data)
-                    window.location = '/player_detail?username=' + name;
+                    window.location = '/exp_iter?dataset=' + data;
 
                 },
                 error: function(){
