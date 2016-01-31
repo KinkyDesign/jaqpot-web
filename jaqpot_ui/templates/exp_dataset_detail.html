@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load templates_extras %}
+
 {% block content %}
 
 <div class="div-table" style="width:100%; min-height:650px; ">
@@ -12,19 +14,19 @@
 
     <div>
         <div>
-            <h1>Dataset: <span  style="font-size: 20px;">{{data_detail.meta.titles.0}}</span> <span style="font-size: 12px;">#{{name}}</span> </h1>
+            <h1>Dataset: <span  style="font-size: 20px;">{{data_detail.meta.titles.0}}</span> <span style="font-size: 12px;">#{{dataset_name}}</span> </h1>
         </div>
         <br>
+        {% if model.additionalInfo|get_key:'r.squared'%}
+
+            <div>
+                <label class="align">Rsquared:</label>
+                <input type="text" style="margin:5px;width:40%;" readonly="readonly" value="{{model.additionalInfo|get_key:'r.squared'}}">
+            </div>
+            <span style="font-size: 10px;margin-left: 10%;"><b>Help note:</b>Rsquared greater or equal to Rsquared threshold</span>
+
+        {% endif %}
         <div>
-            {% for k,v in model.additionalInfo.items %}
-            {% if k == "r.squared" %}
-                    <div>
-                        <label class="align">Rsquared:</label>
-                        <input type="text" style="margin:5px;width:40%;" readonly="readonly" value="{{v.0}}">
-                    </div>
-                    <span style="font-size: 10px;margin-left: 10%;"><b>Help note:</b>Rsquared greater or equal to Rsquared threshold</span>
-            {% endif %}
-            {% endfor %}
             {% for k,v in model.additionalInfo.items %}
             {% if k == "norm.var" %}
                     <div>
@@ -96,112 +98,19 @@
 
     </div>
     <input type="submit" id="exp" value="Experimental Design" class="btn bt-red" style="width: 20%;">
+    <!-- <div id="dialog-confirm" title="Empty the recycle bin?">
+      <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
+    </div> -->
+
 
 </div>
 
 <script>
-
-     $(document).ready( function () {
-
-        var oTable = $('#dataset').DataTable( {
-        "bJQueryUI": true,
-        "bScrollCollapse": true,
-        "bAutoWidth": false,
-        "bPaginate":false,
-        "dom": 'ft',
-        "sScrollX": "100%",
-        "sScrollXInner": "100%",
-        "editable": true,
-
-         "fnDrawCallback": function( oSettings )
-         {
-            $('.dataTables_scrollBody table thead tr').css({ 'height' : '0px' });
-        },
-        "fnInitComplete": function(oSettings, json)
-         {
-            $('.dataTables_scrollBody table thead tr').css({ 'height' : '0px' });
-        },
-        "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-        switch(aData[1]){
-            case '1':
-                $(nRow).css('color', 'red')
-                break;
-        }
-        var tab = $('#dataset').DataTable();
-        tab.columns(1).visible( false );
-    }
-
-        });
-
-    } );
-
-
-function myFunction() {
-            var tab = $('#dataset').DataTable();
-            tab.columns(1).visible( false );
-            //tab.columns('.column').visible( false );
-            for ( var i=1 ; i<4 ; i++ ) {
-                tab.columns(i).visible( false );
-            }
-            tab.columns(':contains(A2V)').visible( true );
-            tab.columns.adjust().draw( false ); // adjust column sizing and redraw
-        }
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip({
-    container : 'body'
-  });
-
-
-});
-
-//display tooltip right
-$('[data-toggle="tool"]').tooltip({
-    'placement': 'left'
-});
-
-/* setTimeout(function ()
-  {
-    oTable.fnAdjustColumnSizing();
-  }, 10 );*/
- $('#dataset tbody td').editable( function( sValue ) {
-		/* Get the position of the current data from the node */
-		 var oTable = $('#dataset').dataTable()
-		var aPos = oTable.fnGetPosition( this );
-
-		/* Get the data array for this row */
-		var aData = oTable.fnGetData( aPos[0] );
-
-		/* Update the data array and return the value */
-		aData[ aPos[2] ] = sValue;
-		return sValue;
-	}, { "onblur": 'submit' } ); /* Submit the form when bluring a field */
-
- $("#exp").on("click", function (){
-    var data =  $('#dataset').DataTable().data()
-    data = JSON.stringify(data)
-    var dataset_name = {{name}}
-    dataset_name = JSON.stringify(dataset_name)
-    //var predicted = {{predicted}}
-    //predicted = JSON.stringify(predicted)
-     $.ajax({
-                type: "get",
-                url: "/exp_submit",
-                dataType: "json",
-                contentType: 'application/json;',
-                data: { 'data': data, 'dataset_name': dataset_name, },
-                //data: {queryData : JSON.stringify({'data': data, 'dataset_name': dataset_name})},
-                success: function(data){
-                    alert(data)
-                    window.location = '/exp_iter?dataset=' + data;
-
-                },
-                error: function(){
-                    console.log("error");
-                }
-            });
-    });
-
+    var DATASET_NAME = '{{dataset_name}}';
+    //var THRESHOLD = '{{params|get_key:'r2.threshold'}}';
+    var SQUARED = '{{model.additionalInfo|get_key:'r.squared'}}';
 </script>
+<script src="/static/js/exp_dataset_detail.js"></script>
 
 
 

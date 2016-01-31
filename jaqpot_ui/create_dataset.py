@@ -104,7 +104,7 @@ def reformat(d):
         new.update({key : value})
     return new
 
-def create_dataset2( data, username, features):
+def create_dataset2( data, username, features, bymodel):
    #This function creates json dataset
 
 
@@ -125,9 +125,10 @@ def create_dataset2( data, username, features):
     data1['titles'] = ["new dataset"]
     data1['creators'] = [username]
     data1['hasSources'] = [""]
+    #data1['byModel'] = [bymodel]
     data2['meta'] = data1
 
-
+    data3['byModel'] = bymodel
     data8["dataEntry"]= data
 
     data6["descriptors"] = [ "EXPERIMENTAL" ]
@@ -136,6 +137,7 @@ def create_dataset2( data, username, features):
     data11["features"] = features
 
     data7.update(data2)
+    data7.update(data3)
     data7.update(data8)
     data7.update(data6)
     data7.update(data9)

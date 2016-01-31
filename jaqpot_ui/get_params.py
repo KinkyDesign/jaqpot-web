@@ -8,13 +8,20 @@ def get_params(request, parameters, al):
             value = int(request.POST.get(''+p))
             params.update({str(p):[value]})
         except:
-            value = request.POST.get(''+p)
-            v = value.split(',')
-            params.update({str(p):v})
+            try:
+                value = float(request.POST.get(''+p))
+                params.update({str(p):[value]})
+            except:
+                value = request.POST.get(''+p)
+                v = value.split(',')
+                params.update({str(p):v})
 
         for a in al['parameters']:
             if (a['name'] == p):
-                a['value']=[request.POST.get(''+p)]
+                if type(a['value']== "list"):
+                    a['value']=[request.POST.get(''+p)]
+                elif type(a['value']== "unicode"):
+                    a['value']=request.POST.get(''+p)
     return params, al
 
 def get_params2(request, parameters, al):

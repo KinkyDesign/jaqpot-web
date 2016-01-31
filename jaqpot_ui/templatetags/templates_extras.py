@@ -18,18 +18,27 @@ def split(string, sep):
     """
     return string.split(sep)[1]
 
+
 @register.filter
 def joinby(value, arg):
     return arg.join(value)
+
 
 @register.filter
 def get_type(value):
     return value.__class__.__name__
 
+
 @register.filter
 def intiger(value):
     return int(value)
 
-@register.filter
+
+'''@register.filter
 def float(value):
-    return int(float)
+    return int(float)'''
+
+
+@register.filter
+def get_key(obj, key):
+    return obj[key][0]

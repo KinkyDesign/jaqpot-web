@@ -10,7 +10,7 @@ from django.template import RequestContext
 from elasticsearch import Elasticsearch
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_dataset2
 from jaqpot_ui.get_dataset import paginate_dataset, get_prediction_feature_of_dataset, get_prediction_feature_name_of_dataset
-from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalParamsForm, ExperimentalForm
+from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalParamsForm, ExperimentalForm, UploadForm
 import requests
 import json
 import datetime
@@ -1654,7 +1654,7 @@ def experimental_params(request):
             request.session['alg'] = "ocpu-expdesign-xy"
             request.session['data'] = dataset
             prediction_feature = get_prediction_feature_of_dataset(dataset, token)
-            form = UploadFileForm()
+            form = UploadForm()
             tform = ExperimentalForm()
             inputform = InputForm()
             #nform = NoPmmlForm()
@@ -1677,7 +1677,10 @@ def experimental_params(request):
                 features = predicted_features['features']
                 form.fields['feature'] = prediction_feature
                 inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
-                inputform.fields['output'].choices = [ (prediction_feature, get_prediction_feature_name_of_dataset(dataset, token, prediction_feature) )]
+                if prediction_feature == "":
+                    inputform.fields['output'].choices = [ (prediction_feature, "")]
+                else:
+                    inputform.fields['output'].choices = [ (prediction_feature, get_prediction_feature_name_of_dataset(dataset, token, prediction_feature) )]
                 pmmlform.fields['predicted_feature'] = prediction_feature
 
                 return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'uploadform':form, 'tform':tform ,'features':features, 'inputform':inputform, 'pmmlform': pmmlform, 'exp':True})
@@ -1689,7 +1692,7 @@ def experimental_params(request):
 
             tform = ExperimentalForm(request.POST)
             inputform = InputForm(request.POST)
-            form = UploadFileForm(request.POST, request.FILES)
+            form = UploadForm(request.POST, request.FILES)
             #nform = NoPmmlForm(request.POST)
             pmmlform = SelectPmmlForm(request.POST)
             dataset = request.session.get('data', '')
@@ -1722,9 +1725,12 @@ def experimental_params(request):
                 return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
             else:
                 features = predicted_features['features']
-                form.fields['feature'] = prediction_feature
+                #form.fields['feature'] = prediction_feature
                 inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
-                inputform.fields['output'].choices = [ (prediction_feature, get_prediction_feature_name_of_dataset(dataset, token, prediction_feature))]
+                if prediction_feature== "":
+                    inputform.fields['output'].choices = [ (prediction_feature, "")]
+                else:
+                    inputform.fields['output'].choices = [ (prediction_feature, get_prediction_feature_name_of_dataset(dataset, token, prediction_feature))]
                 pmmlform.fields['predicted_feature'] = prediction_feature
             if not tform.is_valid():
                 return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'pmmlform':pmmlform, 'exp':True})
@@ -1795,13 +1801,14 @@ def experimental_params(request):
             while (status != "COMPLETED"):
                 if(status == "ERROR"):
                     error = "An error occurred while processing your request.Please try again."
-                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True})
+                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True, 'error':error})
 
                 else:
                     res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
                     status = json.loads(res1.text)['status']
             #model: model/{id}
             model = json.loads(res1.text)['result']
+            print model
             print dataset
             body = {'dataset_uri':SERVER_URL+'/dataset/'+dataset}
             res2 = requests.post(SERVER_URL+'/'+model, headers=headers, data=body)
@@ -1812,7 +1819,8 @@ def experimental_params(request):
             while (status != "COMPLETED"):
                 if(status == "ERROR"):
                     error = "An error occurred while processing your request.Please try again."
-                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True})
+                    print form
+                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'uploadform':form, 'pmmlform':pmmlform, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True, 'error':error})
 
                 else:
                     res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
@@ -1828,13 +1836,13 @@ def experimental_params(request):
             res6 = requests.get(SERVER_URL+'/'+model, headers=headers)
             model_detail = json.loads(res6.text)
             predictedFeatures = model_detail['predictedFeatures']
-            res7 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
-            d_detail = json.loads(res7.text)
+            '''res7 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+            d_detail = json.loads(res7.text)'''
             print predicted_features
             print data_detail
             #body = { 'scaling': scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
             #body
-            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail,'d_detail':d_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail})
+            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': params})
 
 def exp_submit(request):
     token = request.session.get('token', '')
@@ -1843,13 +1851,15 @@ def exp_submit(request):
         #queryData = request.GET.get('queryData')
         data = request.GET.get('data')
         dataset = request.GET.get('dataset_name')
-        predicted = request.GET.get('predicted')
         print data
+        #dataset = data['dataset_name']
+        dataset = json.loads(dataset)
         #print queryData
-        print predicted
         #dataset='ayDPMNB3JcOJAm'
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/dataset/ayDPMNB3JcOJAm', headers=headers)
+        res = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+        prediction_feature = get_prediction_feature_of_dataset(dataset, token)
+        print prediction_feature
         d_detail = json.loads(res.text)
         print d_detail
         #import pdb;pdb.set_trace();
@@ -1858,11 +1868,15 @@ def exp_submit(request):
         print length
         new = {}
         for i in range(0,int(length)):
-            new[data[str(i)][0]]= data[str(i)][2]
+            if data[str(i)][2] == "None":
+                 new[data[str(i)][0]]= None
+            else:
+                new[data[str(i)][0]]= float(data[str(i)][2])
+        print new
         data_Entry = []
         for det in d_detail['dataEntry']:
             name = det['compound']['name']
-            det['values']['https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/LSPR+peak+position+nm/B9439BC9057F55C0234A5FEAB3BB0869DC75DB67/3ed642f9-1b42-387a-9966-dea5b91e5f8a'] = new[name]
+            det['values'][prediction_feature] = new[name]
             data_Entry.append(det)
         #d_detail contains dataset with new values
         d_detail['dataEntry']= data_Entry
@@ -1873,7 +1887,7 @@ def exp_submit(request):
         print data
         headers1 = {'content-type': 'application/json'}
         #new_data = create_dataset(d_detail['dataEntry'],"guest","", "", "")
-        new_data = create_dataset2( d_detail['dataEntry'], "guest", d_detail['features'])
+        new_data = create_dataset2( d_detail['dataEntry'], "guest", d_detail['features'], d_detail['byModel'])
         print new_data
         json_data = json.dumps(new_data)
         #import pdb;pdb.set_trace();
@@ -1900,17 +1914,17 @@ def exp_iter(request):
             print dataset
             headers = {'Accept': 'application/json', 'subjectid': token}
             res1 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
-            #model = json.loads(res1.text)['model']
-            model = '7YZXHnO1Gh5L'
+            model = json.loads(res1.text)['byModel']
+            #model = 'A0fU5rK7B64r'
             res = requests.get(SERVER_URL+'/model/'+model, headers=headers)
             algorithms = json.loads(res.text)['algorithm']['_id']
             params = json.loads(res.text)['parameters']
             prediction_feature = get_prediction_feature_of_dataset(dataset, token)
-            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': "", 'doa': "", 'title': "", 'description':"", 'transformations':"", 'prediction_feature': prediction_feature, 'parameters':params, 'visible': False}
+            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': "", 'doa': "", 'title': "", 'description':"", 'transformations':"", 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': False}
             print('----')
             print body
             headers = {'Accept': 'application/json', 'subjectid': token}
-            import pdb;pdb.set_trace();
+            #import pdb;pdb.set_trace();
             res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
             print res.text
             task_id = json.loads(res.text)['_id']
@@ -1921,8 +1935,7 @@ def exp_iter(request):
             while (status != "COMPLETED"):
                 if(status == "ERROR"):
                     error = "An error occurred while processing your request.Please try again."
-                    #return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True})
-
+                    #return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset,})
                 else:
                     res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
                     status = json.loads(res1.text)['status']

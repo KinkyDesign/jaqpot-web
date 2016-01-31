@@ -7,6 +7,12 @@
 <div class="div-table" style="width:100%; display: inline-block; padding:10px;">
     <a id="back" class="btn bt-red" style="width:3%;" ><i class="glyphicon glyphicon-circle-arrow-left"></i></a>
     <br>
+    {% if error %}
+        <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-top:10px;">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span>{{error}}</span>
+        </div>
+    {% endif %}
     <div style="float:left; width:50%;">
             <h1>Algorithm</h1>
             <h3>Title: {{algorithms}}</h3>
@@ -52,7 +58,7 @@
                         <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
                         {% else%}
                             {% if exp %}
-                            {% if p.value.0 %}
+                            {% if p.value|get_type == "list" %}
                                 {% if p.value.0|get_type == "unicode" %}
                                     <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|joinby:','}}">
                                     <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
