@@ -2011,7 +2011,7 @@ def exp_design(request):
             print task_id
             res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
             status = json.loads(res1.text)['status']
-            while (status != "COMPLETED{% endif %}"):
+            while (status != "COMPLETED"):
                 if(status == "ERROR"):
                     error = "An error occurred while processing your request.Please try again."
                     return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform, 'error':error, 'al':al })
