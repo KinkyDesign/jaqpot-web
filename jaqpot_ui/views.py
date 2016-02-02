@@ -1544,16 +1544,16 @@ def valid_params(request):
         parameters = request.POST.getlist('parameters')
         for p in parameters:
             params.append({'name': p, 'value': request.POST.get(''+p)})
-
         vform = ValidationForm(request.POST)
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         al = json.loads(res.text)
+        params, al = get_params3(request, parameters, al)
         #replace al parameters value with request.post
-        al['parameters']= params
-
+        #al['parameters']= params
+        print json.dumps(params)
         res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
@@ -1576,7 +1576,7 @@ def valid_params(request):
         print prediction_feature
         print params
 
-        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'stratify': stratify,}
+        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'stratify': stratify,}
 
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/validation/training_test_cross', headers=headers, data=body)
