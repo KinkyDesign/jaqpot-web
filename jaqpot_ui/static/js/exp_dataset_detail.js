@@ -81,9 +81,11 @@ $('[data-toggle="tool"]').tooltip({
         $(function() {
             $( "#dialog-confirm" ).html("You have reached your desired R Squared threshold. Do you want to use this dataset for modelling?");
             $( "#dialog-confirm" ).dialog({
-              resizable: false,
-              height:140,
-              modal: true,
+			  modal: true,
+			  width: 608,
+			  height: 320,
+			  left: 300,
+			  top: 200,
               buttons: {
                 "Yes": function() {
                   $( this ).dialog( "close" );
