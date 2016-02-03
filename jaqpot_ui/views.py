@@ -1660,7 +1660,12 @@ def experimental_params(request):
             #nform = NoPmmlForm()
             pmmlform = SelectPmmlForm()
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-xy', headers=headers)
+            print prediction_feature
+            if prediction_feature == "":
+                request.session['alg'] = "ocpu-expdesign-x"
+                res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-x', headers=headers)
+            else:
+                res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-xy', headers=headers)
             al = json.loads(res.text)
             res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
             pmml=json.loads(res1.text)
@@ -1787,7 +1792,7 @@ def experimental_params(request):
             description= ""
             print json.dumps(params)
 
-            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
+            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': False}
             print('----')
             print body
             headers = {'Accept': 'application/json', 'subjectid': token}
@@ -1851,6 +1856,8 @@ def exp_submit(request):
         #queryData = request.GET.get('queryData')
         data = request.GET.get('data')
         dataset = request.GET.get('dataset_name')
+        #threshold = request.GET.get('threshold')
+        #print threshold
         print data
         #dataset = data['dataset_name']
         dataset = json.loads(dataset)
@@ -1898,6 +1905,7 @@ def exp_submit(request):
         print res.text
         data = res.text.split('/dataset/')[1]
         print data
+        #json_data={"dataset": data, "threshold": threshold}
         #json_data = {'dataset': data}
         json_data = json.dumps(data)
         return HttpResponse(json_data)
@@ -1970,7 +1978,7 @@ def exp_iter(request):
             print data_detail
             #body = { 'scaling': scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
             #body
-            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail,'d_detail':d_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail})
+            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail,'d_detail':d_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params':params})
 
 
 #Experimental design without input

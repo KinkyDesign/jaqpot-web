@@ -1,4 +1,3 @@
-
      $(document).ready( function () {
 
         var oTable = $('#dataset').DataTable( {
@@ -78,29 +77,32 @@ $('[data-toggle="tool"]').tooltip({
     var data =  $('#dataset').DataTable().data()
     data = JSON.stringify(data)
     //if r.squared >= r2.threshold
-    /*if (SQUARED >= THRESHOLD){
+    if (SQUARED >= THRESHOLD){
         $(function() {
+            $( "#dialog-confirm" ).html("You have reached your desired R Squared threshold. Do you want to use this dataset for modelling?");
             $( "#dialog-confirm" ).dialog({
               resizable: false,
               height:140,
               modal: true,
               buttons: {
-                "Delete all items": function() {
+                "Yes": function() {
                   $( this ).dialog( "close" );
+                  //redirect to training and clean the dataset
+                  //open.window.href = '/exp_iter?dataset=' + data;;
                 },
-                Cancel: function() {
+                "No": function() {
                   $( this ).dialog( "close" );
                 }
               }
             });
           });
-          }*/
+          }
      $.ajax({
                 type: "get",
                 url: "/exp_submit",
                 dataType: "json",
                 contentType: 'application/json;',
-                data: { 'data': data, 'dataset_name': JSON.stringify(DATASET_NAME), },
+                data: { 'data': data, 'dataset_name': JSON.stringify(DATASET_NAME) },
                 //data: {queryData : JSON.stringify({'data': data, 'dataset_name': DATASET_NAME})},
                 success: function(data){
                     alert(data)

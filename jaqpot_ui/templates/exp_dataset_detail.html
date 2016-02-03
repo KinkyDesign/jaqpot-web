@@ -5,6 +5,7 @@
 {% block content %}
 
 <div class="div-table" style="width:100%; min-height:650px; ">
+    <div id="dialog-confirm"></div>
     <div>
         <div style= "float:left;"></div>
         <div style="float:right;">
@@ -107,7 +108,7 @@
 
 <script>
     var DATASET_NAME = '{{dataset_name}}';
-    //var THRESHOLD = '{{params|get_key:'r2.threshold'}}';
+    var THRESHOLD = '{{params|get_key:'r2.threshold'}}';
     var SQUARED = '{{model.additionalInfo|get_key:'r.squared'}}';
 </script>
 <script src="/static/js/exp_dataset_detail.js"></script>
