@@ -496,7 +496,6 @@ def change_params(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         al = json.loads(res.text)
-        print al['parameters']
         if request.POST.getlist('parameters'):
             parameters = request.POST.getlist('parameters')
             '''for p in parameters:

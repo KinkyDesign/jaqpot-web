@@ -95,7 +95,7 @@
                 <a href="/task" class="bt-grey btn" data-toggle="tooltip" title="Tasks" style="margin: 7px; background-color:#666666; border-color:#666666;">
                     <i class="glyphicon glyphicon-align-left"></i>
                 </a>
-                <a class="navbar-brand" href="http://www.enanomapper.net/"><img src="/static/img/enm_logo.png" style="background-color:#FFFFFF;" class="logo"></a>
+                <a class="navbar-brand" href="http://www.enanomapper.net/"><img src="/static/img/enm_logo.png" style="background-color:#FFFFFF;right:20%;position:absolute;" class="logo"></a>
                     <span class="user-info">
                         Welcome back, <a href="/user">{{username}}</a>
                         <a href="/logout"><span class="glyphicon glyphicon-off"></span></a>
@@ -103,6 +103,7 @@
             {% else %} <!-- If user hasn't logged in -->
                 <a class="btn bt-grey navbar-btn" href="/login">Sign in</a>
                 <a class="btn bt-grey navbar-btn" href="http://www.opentox.org/join_form">Create Account</a>
+                <a class="navbar-brand" href="http://www.enanomapper.net/"><img src="/static/img/enm_logo.png" style="background-color:#FFFFFF;right:30%;position:absolute;" class="logo"></a>
                 <form class="navbar-form navbar-right" role="search">
                     <div class="form-search search-only"><i class="search-icon glyphicon glyphicon-search hoverable"></i>
                         <input class="form-control search-query">
