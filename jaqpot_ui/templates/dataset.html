@@ -12,7 +12,7 @@
                  {% for p in proposed %}
 
                     <a href="/data_detail?name={{p.name}}" class="list-group-item" style="width:95%;float:left;">{{p.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{% for title in p.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </a>
-                    <a href="/d_delete?id={{p.name}}" class="btn bt-red" data-toggle="tool" title="Delete Dataset" style="margin: 4px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
+                    <button class="btn bt-red" data-toggle="tool" title="Delete Dataset" style="margin: 4px;" onclick="deleteDataset('{{p.name}}')"><i class="glyphicon glyphicon-remove-sign"></i></button>
 
                  {% endfor %}
              </div>
@@ -23,8 +23,7 @@
                  {% for d in dataset %}
 
                     <a href="/data_detail?name={{d.name}}" class="list-group-item" style="width:95%;float:left;">{{d.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{% for title in d.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in d.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </a>
-                    <a href="/d_delete?id={{d.name}}" class="btn bt-red" data-toggle="tool" title="Delete Dataset" style="margin: 4px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
-
+                    <button class="btn bt-red" data-toggle="tool" title="Delete Dataset" style="margin: 4px;" onclick="deleteDataset('{{d.name}}')"><i class="glyphicon glyphicon-remove-sign"></i></button>
                  {% endfor %}
              </div>
 
@@ -82,5 +81,13 @@
 $('[data-toggle="tool"]').tooltip({
     'placement': 'top'
 });
+
+function deleteDataset(name) {
+            if (confirm("Are you sure?")) {
+                // your deletion code
+                window.location="/d_delete?id="+name
+            }
+            return false;
+}
 </script>
 {% endblock %}

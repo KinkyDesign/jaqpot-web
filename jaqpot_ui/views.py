@@ -922,7 +922,7 @@ def dataset_delete(request):
     res = requests.delete(SERVER_URL+'/dataset/'+id, headers=headers)
     reply = res.text
     print reply
-    return redirect('/')
+    return redirect('/data')
 
 def dispay_predicted_dataset(request):
     token = request.session.get('token', '')
