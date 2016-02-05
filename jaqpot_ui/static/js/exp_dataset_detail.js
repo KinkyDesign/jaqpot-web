@@ -78,7 +78,37 @@ $('[data-toggle="tool"]').tooltip({
     data = JSON.stringify(data)
     //if r.squared >= r2.threshold
     if (SQUARED >= THRESHOLD){
-        $(function() {
+        $("#myModal").modal()
+        $('#btnYes').click(function() {
+            // clean dataset send for training
+            var id = $('#myModal').data('id');
+            $('[data-id='+id+']').remove();
+            $('#myModal').modal('hide');
+        });
+         $('#btnNo').click(function() {
+           //Continue with experimental design
+            $.ajax({
+                type: "get",
+                url: "/exp_submit",
+                dataType: "json",
+                contentType: 'application/json;',
+                data: { 'data': data, 'dataset_name': JSON.stringify(DATASET_NAME) },
+                //data: {queryData : JSON.stringify({'data': data, 'dataset_name': DATASET_NAME})},
+                success: function(data){
+                    alert(data)
+                    window.location = '/exp_iter?dataset=' + data;
+
+                },
+                error: function(){
+                    console.log("error");
+                }
+            });
+            var id = $('#myModal').data('id');
+            $('[data-id='+id+']').remove();
+            $('#myModal').modal('hide');
+
+        });
+        /*$(function() {
             $( "#dialog-confirm" ).html("You have reached your desired R Squared threshold. Do you want to use this dataset for modelling?");
             $( "#dialog-confirm" ).dialog({
 			  modal: true,
@@ -97,8 +127,9 @@ $('[data-toggle="tool"]').tooltip({
                 }
               }
             });
-          });
+          });*/
           }
+     else{
      $.ajax({
                 type: "get",
                 url: "/exp_submit",
@@ -115,5 +146,5 @@ $('[data-toggle="tool"]').tooltip({
                     console.log("error");
                 }
             });
-
+        }
     });

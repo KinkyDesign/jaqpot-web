@@ -13,7 +13,7 @@
         {% load endless %}
         {% if proposed %}
         <div class="publicdataset list-group">
-            <h3>Proposed models:</h3>
+            <h3>Example models:</h3>
             <p class="list-group-item model" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
             {% for p in proposed %}
                 <a href="/predict_model?model={{p.name}}" class="list-group-item model">{{p.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{p.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{p.meta.descriptions.0}}</span> </a>

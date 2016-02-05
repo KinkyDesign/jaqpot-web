@@ -96,6 +96,8 @@ def task(request):
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
             return redirect('/login')
+    else:
+        return redirect('/login')
     #else go to tasks
     all_tasks = []
     #get all tasks with status Running
@@ -345,6 +347,8 @@ def trainmodel(request):
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
             return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
@@ -625,6 +629,8 @@ def model(request):
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
             return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         models = []
         #get all models
@@ -970,6 +976,8 @@ def predict(request):
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
             return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         m = []
         #get all models
@@ -1110,6 +1118,8 @@ def calculate_mopac_descriptors(request):
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
             return redirect('/login')
+    else:
+        return redirect('/login')
     headers = {'subjectid': token}
     mopac_file = request.GET.get('mopac_file')
     body = {'pdbfile': mopac_file ,}
@@ -1233,6 +1243,8 @@ def all_substance(request):
                 res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
                 substance_owner=json.loads(res.text)
                 substance_owner = substance_owner['facet']
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         form = SubstanceownerForm(initial={'substanceowner': ''})
         if len(substance_owner)<20:
@@ -1309,6 +1321,8 @@ def select_substance(request):
             substances = request.session.get('substances', '')
             print substances
             return render(request, "select_substance.html", {'token': token, 'username': username, 'substances':substances['substance']})
+    else:
+        return redirect('/login')
 
 def get_substance(request):
      token = request.session.get('token', '')
@@ -1364,6 +1378,8 @@ def select_properties(request):
             print final
             request.session['selected_properties'] = final
             return redirect('/descriptors', {'token': token, 'username': username})
+    else:
+        return redirect('/login')
 
 def select_descriptors(request):
     token = request.session.get('token', '')
@@ -1403,6 +1419,8 @@ def select_descriptors(request):
             task = response['_id']
             #return redirect('/task', {'token': token, 'username': username})
             return render(request, "new_task.html", {'token': token, 'username': username, 'task':task})
+    else:
+        return redirect('/login')
 
 #Validate
 
@@ -1415,6 +1433,8 @@ def validate(request):
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
             return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
@@ -1648,48 +1668,50 @@ def experimental_params(request):
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
             return redirect('/login')
-        if request.method == 'GET':
-            dataset = request.GET.get('dataset')
-            request.session['alg'] = "ocpu-expdesign-xy"
-            request.session['data'] = dataset
-            prediction_feature = get_prediction_feature_of_dataset(dataset, token)
-            form = UploadForm()
-            tform = ExperimentalForm()
-            inputform = InputForm()
-            #nform = NoPmmlForm()
-            pmmlform = SelectPmmlForm()
-            headers = {'Accept': 'application/json', 'subjectid': token}
-            print prediction_feature
+    else:
+        return redirect('/login')
+    if request.method == 'GET':
+        dataset = request.GET.get('dataset')
+        request.session['alg'] = "ocpu-expdesign-xy"
+        request.session['data'] = dataset
+        prediction_feature = get_prediction_feature_of_dataset(dataset, token)
+        form = UploadForm()
+        tform = ExperimentalForm()
+        inputform = InputForm()
+        #nform = NoPmmlForm()
+        pmmlform = SelectPmmlForm()
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        print prediction_feature
+        if prediction_feature == "":
+            request.session['alg'] = "ocpu-expdesign-x"
+            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-x', headers=headers)
+        else:
+            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-xy', headers=headers)
+        al = json.loads(res.text)
+        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        pmml=json.loads(res1.text)
+        if pmml:
+            pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
+        else:
+            pmmlform.fields['pmml'].choices = [("",'No pmml')]
+        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
+        predicted_features = json.loads(res2.text)
+        if str(res2) != "<Response [200]>":
+            #redirect to error page
+            return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
+        else:
+            features = predicted_features['features']
+            form.fields['feature'] = prediction_feature
+            inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
             if prediction_feature == "":
-                request.session['alg'] = "ocpu-expdesign-x"
-                res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-x', headers=headers)
+                inputform.fields['output'].choices = [ (prediction_feature, "")]
             else:
-                res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-xy', headers=headers)
-            al = json.loads(res.text)
-            res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
-            pmml=json.loads(res1.text)
-            if pmml:
-                pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
-            else:
-                pmmlform.fields['pmml'].choices = [("",'No pmml')]
-            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
-            predicted_features = json.loads(res2.text)
-            if str(res2) != "<Response [200]>":
-                #redirect to error page
-                return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
-            else:
-                features = predicted_features['features']
-                form.fields['feature'] = prediction_feature
-                inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
-                if prediction_feature == "":
-                    inputform.fields['output'].choices = [ (prediction_feature, "")]
-                else:
-                    inputform.fields['output'].choices = [ (prediction_feature, get_prediction_feature_name_of_dataset(dataset, token, prediction_feature) )]
-                pmmlform.fields['predicted_feature'] = prediction_feature
+                 inputform.fields['output'].choices = [ (prediction_feature, get_prediction_feature_name_of_dataset(dataset, token, prediction_feature) )]
+            pmmlform.fields['predicted_feature'] = prediction_feature
 
-                return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'uploadform':form, 'tform':tform ,'features':features, 'inputform':inputform, 'pmmlform': pmmlform, 'exp':True})
+            return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'uploadform':form, 'tform':tform ,'features':features, 'inputform':inputform, 'pmmlform': pmmlform, 'exp':True})
 
-        if request.method == 'POST':
+    if request.method == 'POST':
             #get parameters of algorithm
             params=[]
             print request.POST
@@ -1844,11 +1866,14 @@ def experimental_params(request):
             d_detail = json.loads(res7.text)'''
             print predicted_features
             print data_detail
-            #if prediction_feature == "":
-                #prediction_feature = get_prediction_feature_of_dataset(new_dataset, token)
+            if prediction_feature == "":
+                prediction_feature = get_prediction_feature_of_dataset(new_dataset, token)
+                print prediction_feature
+
             #body = { 'scaling': scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
             #body
-            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': params})
+
+            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': params })
 
 def exp_submit(request):
     token = request.session.get('token', '')
