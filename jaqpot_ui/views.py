@@ -1037,8 +1037,13 @@ def predict_model(request):
 
         if len(dataset)< 20:
             last= page
+        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        proposed_data = json.loads(res1.text)
+        proposed = []
+        for p in proposed_data:
+            proposed.append({'name': p['_id'], 'meta': p['meta'] })
         #Display all datasets for selection
-        return render(request, "predict.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last, 'model_req': model_req, 'model' : model, 'image':image, 'mopac':mopac})
+        return render(request, "predict.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last, 'model_req': model_req, 'model' : model, 'image':image, 'mopac':mopac, 'proposed':proposed})
     if request.method == 'POST':
         #Get the selected model for prediction from session
         selected_model= request.session.get('model', '')
@@ -2143,3 +2148,18 @@ def interlab_params(request):
         #dataset=request.GET.get('dataset')
         dataset = "8aj1O7Vny4uJLl"
         return render(request, "interlab_params.html", {'token': token, 'username': username, 'dataset':dataset })
+
+def clean_dataset(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
+    if request.method == 'GET':
+        dataset = request.GET.get('dataset')
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.get(SERVER_URL+'/dataset/ayDPMNB3JcOJAm', headers=headers)
+        data= json.loads(res.text)

@@ -84,6 +84,7 @@ $('[data-toggle="tool"]').tooltip({
             var id = $('#myModal').data('id');
             $('[data-id='+id+']').remove();
             $('#myModal').modal('hide');
+             window.location = '/dataset?dataset=' +DATASET_NAME
         });
          $('#btnNo').click(function() {
            //Continue with experimental design
