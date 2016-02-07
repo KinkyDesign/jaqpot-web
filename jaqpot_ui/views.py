@@ -5,6 +5,8 @@ from urllib import urlencode
 import urllib
 import urllib2
 import urlparse
+
+from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
 from elasticsearch import Elasticsearch
@@ -696,16 +698,31 @@ def model_pmml(request):
     headers = {'Accept': 'application/xml', "subjectid": token}
     res = requests.get(SERVER_URL+'/model/'+name+'/pmml', headers=headers)
     #details = json.loads(res.text)
-    print res
-    print res.text
     if res.status_code == 200:
         pmml = res.text
         response = HttpResponse(pmml, content_type='application/xml')
         response['Content-Disposition'] = 'attachment; filename="pmml_'+name+'.xml"'
         return response
     else:
-        response = HttpResponse(res.text,  mimetype="application/json")
-        return response
+        #response = HttpResponse(res.text,  mimetype="application/json")
+        print res.text
+        headers = {'Accept': 'application/json', "subjectid": token}
+        res1 = requests.get(SERVER_URL+'/model/'+name, headers=headers)
+        details = json.loads(res1.text)
+        algorithm=details['algorithm']['_id']
+        if algorithm:
+            res2 = requests.get(SERVER_URL+'/algorithm/'+algorithm, headers=headers)
+            alg_details=json.loads(res2.text)
+        else:
+            alg_details = ""
+        res3 = requests.get(SERVER_URL+'/model/'+name+'/required', headers=headers)
+        required= json.loads(res3.text)
+        required_feature = []
+        for r in required:
+            required_feature.append({'feature': r['uri']})
+
+        return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name, 'alg': alg_details, 'required':required_feature, 'error': res.text})
+
 
 
 #list of features
