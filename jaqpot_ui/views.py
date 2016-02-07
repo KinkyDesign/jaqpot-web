@@ -12,7 +12,8 @@ from django.template import RequestContext
 from elasticsearch import Elasticsearch
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_dataset2, create_and_clean_dataset
 from jaqpot_ui.get_dataset import paginate_dataset, get_prediction_feature_of_dataset, get_prediction_feature_name_of_dataset
-from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalParamsForm, ExperimentalForm, UploadForm
+from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalParamsForm, ExperimentalForm, UploadForm, \
+    InterlabForm
 import requests
 import json
 import datetime
@@ -2170,8 +2171,23 @@ def interlab_params(request):
             return redirect('/login')
     if request.method == 'GET':
         #dataset=request.GET.get('dataset')
+        form=InterlabForm()
         dataset = "8aj1O7Vny4uJLl"
-        return render(request, "interlab_params.html", {'token': token, 'username': username, 'dataset':dataset })
+        return render(request, "interlab_params.html", {'token': token, 'username': username, 'dataset':dataset, 'form':form})
+    if request.method == 'POST':
+        dataset=request.GET.get('dataset')
+        form = InterlabForm(request.POST)
+        if not form.is_valid():
+            return render(request, "interlab_params.html", {'token': token, 'username': username, 'dataset':dataset, 'form':form})
+        modelname = form['modelname'].value()
+        description = form['description'].value()
+        dataset = "8aj1O7Vny4uJLl"
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        body = {'title': modelname, 'descriptions': description, 'dataset_uri': dataset}
+        res = requests.post(SERVER_URL+'/interlab/test', headers=headers, data=body)
+        print res.text
+        return redirect('/report?name='+res.text)
+
 
 def clean_dataset(request):
     token = request.session.get('token', '')
@@ -2193,7 +2209,6 @@ def clean_dataset(request):
             if d['name']=='suggestedTrials':
                 suggested= d['uri']
         new_data = create_and_clean_dataset(data, prediction_feature, suggested)
-
         json_data = json.dumps(new_data)
         print json_data
         headers1 = {'Content-type': 'application/json', 'subjectid': token}

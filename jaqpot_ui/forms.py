@@ -88,3 +88,7 @@ class ExperimentalParamsForm(forms.Form):
 class UploadForm(forms.Form):
     #title = forms.CharField(max_length=50)
     file = forms.FileField(error_messages={'required': 'Please choose a file.'})
+
+class InterlabForm(forms.Form):
+     modelname = forms.CharField(required=True, error_messages={'required': 'Please enter modelname.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))
+     description = forms.CharField(required=True, error_messages={'required': 'Please enter description.'},  widget=forms.Textarea(attrs={'cols': 40, 'rows': 4, 'style': "margin:5px;"}))
