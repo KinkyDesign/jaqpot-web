@@ -1923,6 +1923,7 @@ def exp_submit(request):
         res = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
         prediction_feature = get_prediction_feature_of_dataset(dataset, token)
         print prediction_feature
+        import pdb;pdb.set_trace();
         d_detail = json.loads(res.text)
         print d_detail
         #import pdb;pdb.set_trace();
@@ -2181,12 +2182,13 @@ def interlab_params(request):
             return render(request, "interlab_params.html", {'token': token, 'username': username, 'dataset':dataset, 'form':form})
         modelname = form['modelname'].value()
         description = form['description'].value()
-        dataset = "8aj1O7Vny4uJLl"
+        dataset = "http://test.jaqpot.org:8080/jaqpot/services/dataset/interlab"
+        prediction = "https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
         headers = {'Accept': 'application/json', 'subjectid': token}
-        body = {'title': modelname, 'descriptions': description, 'dataset_uri': dataset}
+        body = {'title': modelname, 'descriptions': description, 'dataset_uri': dataset, 'prediction_feature':prediction}
         res = requests.post(SERVER_URL+'/interlab/test', headers=headers, data=body)
-        print res.text
-        return redirect('/report?name='+res.text)
+        print json.loads(res.text)['_id']
+        return redirect('/report?name='+json.loads(res.text)['_id'])
 
 
 def clean_dataset(request):
