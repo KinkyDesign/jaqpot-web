@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
 from elasticsearch import Elasticsearch
-from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_dataset2
+from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_dataset2, create_and_clean_dataset
 from jaqpot_ui.get_dataset import paginate_dataset, get_prediction_feature_of_dataset, get_prediction_feature_name_of_dataset
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalParamsForm, ExperimentalForm, UploadForm
 import requests
@@ -2187,3 +2187,17 @@ def clean_dataset(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/dataset/ayDPMNB3JcOJAm', headers=headers)
         data= json.loads(res.text)
+        prediction_feature = get_prediction_feature_of_dataset(dataset, token)
+        suggested=""
+        for d in data['features']:
+            if d['name']=='suggestedTrials':
+                suggested= d['uri']
+        new_data = create_and_clean_dataset(data, prediction_feature, suggested)
+
+        json_data = json.dumps(new_data)
+        print json_data
+        headers1 = {'Content-type': 'application/json', 'subjectid': token}
+        res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
+        dataset = res.text.split('/dataset/')[1]
+        print dataset
+        return redirect('/dataset?dataset=' +dataset)
