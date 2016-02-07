@@ -696,10 +696,17 @@ def model_pmml(request):
     headers = {'Accept': 'application/xml', "subjectid": token}
     res = requests.get(SERVER_URL+'/model/'+name+'/pmml', headers=headers)
     #details = json.loads(res.text)
-    pmml = res.text
-    response = HttpResponse(pmml, content_type='application/xml')
-    response['Content-Disposition'] = 'attachment; filename="pmml_'+name+'.xml"'
-    return response
+    print res
+    print res.text
+    if res.status_code == 200:
+        pmml = res.text
+        response = HttpResponse(pmml, content_type='application/xml')
+        response['Content-Disposition'] = 'attachment; filename="pmml_'+name+'.xml"'
+        return response
+    else:
+        response = HttpResponse(res.text,  mimetype="application/json")
+        return response
+
 
 #list of features
 def features(request):
