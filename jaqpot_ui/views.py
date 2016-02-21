@@ -174,6 +174,15 @@ def taskdetail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     name = request.GET.get('name')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     #status = request.GET.get('status')
     if request.is_ajax():
         output = request.GET.getlist('output')[0]
@@ -203,6 +212,15 @@ def taskdetail(request):
 def stop_task(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     id = request.GET.get('id')
     if request.method == 'GET':
         #stop task
@@ -215,6 +233,15 @@ def bibtex(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     name = request.GET.get('name')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
 
     if request.method == 'GET':
         final_output=[]
@@ -250,6 +277,15 @@ def bib_detail(request):
     username = request.session.get('username', '')
     name = request.GET.get('name')
     id = request.GET.get('id')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     if request.is_ajax():
         id = request.GET.getlist('id')[0]
         op = request.GET.getlist('op')[0]
@@ -278,6 +314,15 @@ def bib_delete(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     id = request.GET.get('id')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         #delete bibtex
         headers = {'content-type': 'text/uri-list', 'subjectid': token}
@@ -289,6 +334,15 @@ def add_bibtex(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     name = request.GET.get('name')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         form = BibtexForm(initial={'author': "", 'abstract': "",'title': "",'copyright': "",'address':"", 'year':"", 'pages':"", 'volume':"", 'journal':"", 'keyword':"", 'url':""})
 
@@ -318,6 +372,15 @@ def sub(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     name = request.GET.get('name')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
 
     if request.method == 'GET':
         return render(request, "bibdetail.html", {'token': token, 'username': username, 'name': name})
@@ -327,6 +390,15 @@ def user(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     name = request.GET.get('name')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
 
     if request.method == 'GET':
         headers = {'content-type': 'application/json', 'subjectid': token}
@@ -393,6 +465,15 @@ def choose_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     form = TrainForm(initial={})
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
         headers = {'Accept': 'text/uri-list', 'subjectid': token}
@@ -455,6 +536,15 @@ def choose_dataset(request):
 def change_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         form = UploadFileForm()
         tform = TrainingForm()
@@ -616,6 +706,15 @@ def change_params(request):
 def conformer(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         return render(request, "conformer.html", {'token': token, 'username': username})
     if request.method == 'POST':
@@ -662,6 +761,15 @@ def model_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     name = request.GET.get('name')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     #get task details in rdf format
     headers = {'Accept': 'application/json', "subjectid": token}
     res = requests.get(SERVER_URL+'/model/'+name, headers=headers)
@@ -685,6 +793,15 @@ def model_delete(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     id = request.GET.get('id')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     #delete model
     headers = {'Accept': 'application/json', "subjectid": token}
     res = requests.delete(SERVER_URL+'/model/'+id, headers=headers)
@@ -695,6 +812,15 @@ def model_delete(request):
 def model_pmml(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     name = request.GET.get('name')
     headers = {'Accept': 'application/xml', "subjectid": token}
     res = requests.get(SERVER_URL+'/model/'+name+'/pmml', headers=headers)
@@ -730,6 +856,15 @@ def model_pmml(request):
 def features(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     page = request.GET.get('page')
     last = request.GET.get('last')
 
@@ -774,6 +909,15 @@ def features(request):
 def feature_details(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     name = request.GET.get('name')
 
     if request.method == 'GET':
@@ -786,6 +930,15 @@ def feature_details(request):
 def add_feature(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     name = request.GET.get('name')
     if request.method == 'GET':
         form = FeatureForm(initial={'feature': ""})
@@ -808,6 +961,15 @@ def add_feature(request):
 def feature_delete(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     id = request.GET.get('id')
     if request.method == 'GET':
         #delete bibtex
@@ -819,6 +981,15 @@ def feature_delete(request):
 def algorithm(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
 
     if request.method == 'GET':
          algorithms = []
@@ -840,6 +1011,15 @@ def algorithm(request):
 def algorithm_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     algorithm = request.GET.get('name')
 
     if request.method == 'GET':
@@ -854,6 +1034,15 @@ def algorithm_detail(request):
 def algorithm_delete(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     id = request.GET.get('id')
     if request.method == 'GET':
         #delete algorithm
@@ -865,6 +1054,16 @@ def algorithm_delete(request):
 def dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
+
     page = request.GET.get('page')
     last = request.GET.get('last')
     dataset=[]
@@ -905,6 +1104,16 @@ def dataset(request):
 def dataset_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
+
     name = request.GET.get('name', '')
     page = request.GET.get('page', '')
     data_detail, last, page = paginate_dataset(request, name, token, username, page)
@@ -947,6 +1156,15 @@ def dataset_detail(request):
 def dataset_delete(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     id = request.GET.get('id')
     #delete dataset
     headers = {'Accept': 'application/json', "subjectid": token}
@@ -958,6 +1176,15 @@ def dataset_delete(request):
 def dispay_predicted_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     name = request.GET.get('name', '')
     page = request.GET.get('page', '')
     model = request.GET.get('model', '')
@@ -1026,6 +1253,15 @@ def predict(request):
 def predict_model(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     #Get the current page
     page = request.GET.get('page')
     #Get the last page
@@ -1142,7 +1378,6 @@ def calculate_image_descriptors(request):
 
 def calculate_mopac_descriptors(request):
     token = request.session.get('token', '')
-
     #Check if user is authenticated. Else redirect to login page
     if token:
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
@@ -1162,6 +1397,15 @@ def calculate_mopac_descriptors(request):
 def search(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         search = request.GET.get('search')
         models=[]
@@ -1185,6 +1429,15 @@ def search(request):
 def contact(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
 
     if request.method == 'POST': # If the form has been submitted...
         form = ContactForm(request.POST) # A form bound to the POST data
@@ -1212,12 +1465,30 @@ def contact(request):
 def thanks(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         return render(request, "thanks.html", {'token': token, 'username': username})
 
 def compound(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         compound= [{'name':'compound1'}, {'name':'compound2'}, {'name':'compound3'}, {'name':'compound4'}]
         return render(request, "compound.html", {'token': token, 'username': username, 'compound': compound})
@@ -1225,6 +1496,15 @@ def compound(request):
 def compound_details(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     name = request.GET.get('name', '')
     if request.method == 'GET':
         return render(request, "compound_detail.html", {'token': token, 'username': username, 'name': name})
@@ -1233,6 +1513,15 @@ def compound_details(request):
 def source(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         return render(request, "source.html", {'token': token, 'username': username})
 
@@ -1240,12 +1529,30 @@ def source(request):
 def documentation(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         return render(request, "documentation.html", {'token': token, 'username': username})
 
 def explore(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     entries = [ "data", "data2", "data3"]
     entries2 = [ "compound", "compound2", "compound3"]
     entries3 = [ "conformer", "conformer2", "conformer3"]
@@ -1357,6 +1664,15 @@ def select_substance(request):
 def get_substance(request):
      token = request.session.get('token', '')
      username = request.session.get('username', '')
+     if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+     else:
+        return redirect('/login')
      if request.method == 'GET':
             data= request.GET.getlist('data[]')
             request.session['selected_substances'] = data
@@ -1505,6 +1821,12 @@ def validate(request):
 def choose_dataset_validate(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     form = TrainForm(initial={})
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
@@ -1568,6 +1890,12 @@ def choose_dataset_validate(request):
 def valid_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
@@ -1638,6 +1966,12 @@ def valid_params(request):
 def report(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     if request.method == 'GET':
         name = request.GET.get('name')
         headers = {'Accept': 'application/json', 'subjectid': token}
@@ -1651,6 +1985,12 @@ def report(request):
 def experimental(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     page = request.GET.get('page')
     last = request.GET.get('last')
     last = 1
@@ -1899,7 +2239,6 @@ def experimental_params(request):
             if prediction_feature == "":
                 prediction_feature = get_prediction_feature_of_dataset(new_dataset, token)
                 print prediction_feature
-
             #body = { 'scaling': scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
             #body
 
@@ -1908,6 +2247,12 @@ def experimental_params(request):
 def exp_submit(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
     if request.is_ajax():
         #queryData = request.GET.get('queryData')
         data = request.GET.get('data')
@@ -1923,7 +2268,7 @@ def exp_submit(request):
         res = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
         prediction_feature = get_prediction_feature_of_dataset(dataset, token)
         print prediction_feature
-        import pdb;pdb.set_trace();
+        #import pdb;pdb.set_trace();
         d_detail = json.loads(res.text)
         print d_detail
         #import pdb;pdb.set_trace();

@@ -84,6 +84,8 @@
                             {% if k == predicted.0%}
                                 <td>{{v}}</td>
                             {% endif %}
+                        {% endfor %}
+                        {% for k,v in key.values.items %}
                             {% if k == prediction %}
                                 <td>{{v}}</td>
                             {% endif %}
