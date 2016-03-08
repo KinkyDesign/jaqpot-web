@@ -17,17 +17,23 @@
         <div>
             <h1>Dataset: <span  style="font-size: 20px;">{{data_detail.meta.titles.0}}</span> <span style="font-size: 12px;">#{{dataset_name}}</span> </h1>
         </div>
-        <br>
-        {% if model.additionalInfo|get_key:'r.squared'%}
-
-            <div>
-                <label class="align">Rsquared:</label>
-                <input type="text" style="margin:5px;width:40%;" readonly="readonly" value="{{model.additionalInfo|get_key:'r.squared'}}">
+        {% if error %}
+            <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-top:10px;">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span>{{error}}</span>
             </div>
-            <span style="font-size: 10px;margin-left: 10%;"><b>Help note:</b>Rsquared greater or equal to Rsquared threshold</span>
-
         {% endif %}
+        <br>
         <div>
+            {% for k,v in model.additionalInfo.items %}
+            {% if k == "r.squared" %}
+                    <div>
+                        <label class="align">Rsquared:</label>
+                        <input type="text" style="margin:5px;width:40%;" readonly="readonly" value="{{v.0}}">
+                    </div>
+                    <span style="font-size: 10px;margin-left: 10%;"><b>Help note:</b>Rsquared greater or equal to Rsquared threshold.</span>
+            {% endif %}
+            {% endfor %}
             {% for k,v in model.additionalInfo.items %}
             {% if k == "norm.var" %}
                     <div>
@@ -133,6 +139,9 @@
     var DATASET_NAME = '{{dataset_name}}';
     var THRESHOLD = '{{params|get_key:'r2.threshold'}}';
     var SQUARED = '{{model.additionalInfo|get_key:'r.squared'}}';
+    if (SQUARED === 'None' || SQUARED === undefined ){
+        SQUARED =0;
+    }
 </script>
 <script src="/static/js/exp_dataset_detail.js"></script>
 

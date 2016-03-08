@@ -61,7 +61,7 @@
                         {% endif %}
 
                         <li class="active">
-                            {% if page >= last %}
+                            {% if page|add:1 > last %}
                                     <a href="/data?page={{last}}">Next</a>
                             {%else%}
                                 <a href="/data?page={{page|add:1 }}">Next </a>

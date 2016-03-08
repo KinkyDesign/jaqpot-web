@@ -17,7 +17,13 @@ def create_dataset( data, username, required_res, img_descriptors, mopac_descrip
             for r in required_res:
                 if r['name'] == key:
                     n=r['uri']
-                    n_d1[''+n+'']=value
+                    try:
+                        n_d1[''+n+'']=int(value)
+                    except:
+                        try:
+                            n_d1[''+n+'']=float(value)
+                        except:
+                            n_d1[''+n+'']=value
                     n_d.update(n_d1)
         new_data.append(n_d)
 
@@ -104,7 +110,7 @@ def reformat(d):
         new.update({key : value})
     return new
 
-def create_dataset2( data, username, features, bymodel):
+def create_dataset2( data, username, features, bymodel, rows, columns):
    #This function creates json dataset
 
 
@@ -132,8 +138,8 @@ def create_dataset2( data, username, features, bymodel):
     data8["dataEntry"]= data
 
     data6["descriptors"] = [ "EXPERIMENTAL" ]
-    data9["totalColumns"] = 16
-    data10["totalRows"] = 84
+    data9["totalColumns"] = columns
+    data10["totalRows"] = rows
     data11["features"] = features
 
     data7.update(data2)

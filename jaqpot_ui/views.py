@@ -28,7 +28,7 @@ import jsonpatch
 import xmltodict
 import elasticsearch
 import wget
-
+import collections
 
 # Home page
 def index(request):
@@ -106,7 +106,7 @@ def task(request):
     #get all tasks with status Running
     headers = {'Accept': 'text/uri-list', 'subjectid': token}
     headers = {'Accept': 'application/json', 'subjectid': token}
-    res = requests.get(SERVER_URL+'/task?creator='+username+'&status=RUNNING&start=0&max=10000', headers=headers)
+    res = requests.get(SERVER_URL+'/task?status=RUNNING&start=0&max=10000', headers=headers)
     list_resp = json.loads(res.text)
     if res.status_code == 200:
         list_run=[]
@@ -118,8 +118,13 @@ def task(request):
         list_run = json.loads(list_run)
 
         #get all tasks with status Completed
-        res = requests.get(SERVER_URL+'/task?status=COMPLETED&creator='+username+'&start=0&max=10000', headers=headers)
+        res = requests.get(SERVER_URL+'/task?status=COMPLETED&start=0&max=10000', headers=headers)
         list_resp = json.loads(res.text)
+
+
+
+
+
 
         list_complete=[]
         for l in list_resp:
@@ -129,7 +134,7 @@ def task(request):
         list_complete = json.loads(list_complete)
 
         #get all tasks with status Cancelled
-        res = requests.get(SERVER_URL+'/task?status=CANCELLED&creator='+username+'&start=0&max=10000', headers=headers)
+        res = requests.get(SERVER_URL+'/task?status=CANCELLED&start=0&max=10000', headers=headers)
         list_resp = json.loads(res.text)
 
         list_cancelled=[]
@@ -141,7 +146,7 @@ def task(request):
         list_cancelled = json.loads(list_cancelled)
 
         #get all tasks with status Error
-        res = requests.get(SERVER_URL+'/task?status=ERROR&creator='+username+'&start=0&max=10000', headers=headers)
+        res = requests.get(SERVER_URL+'/task?status=ERROR&start=0&max=10000', headers=headers)
         list_resp = json.loads(res.text)
 
         list_error=[]
@@ -154,7 +159,7 @@ def task(request):
 
 
         #get all tasks with status Queued
-        res = requests.get(SERVER_URL+'/task?status=QUEUED&creator='+username+'&start=0&max=10000', headers=headers)
+        res = requests.get(SERVER_URL+'/task?status=QUEUED&start=0&max=10000', headers=headers)
         list_resp = json.loads(res.text)
 
         list_queued=[]
@@ -248,7 +253,7 @@ def bibtex(request):
         #get all bibtex
         headers = {'Accept': 'application/json', 'subjectid': token}
         headers1 = {'Accept': 'text/uri-list', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/bibtex?bibtype=Entry&creator='+username+'&&&start=0&max=10000', headers=headers1)
+        res = requests.get(SERVER_URL+'/bibtex?bibtype=Entry&&&start=0&max=10000', headers=headers1)
         list_resp = res.text
         if res.status_code == 403:
             error = "This request is forbidden (e.g., no authentication token is provided)"
@@ -428,9 +433,8 @@ def trainmodel(request):
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
         #get total number of datasets
-        headers1 = {'Accept': 'text/plain', 'subjectid': token}
-        res1= requests.get(SERVER_URL+'/dataset/count?creator='+username, headers=headers1)
-        total_datasets= int(res1.text)
+        res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
         else:
@@ -442,12 +446,12 @@ def trainmodel(request):
             k=str(page1)
             print k
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
             else:
-                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start='+k+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         data= json.loads(res.text)
         print res.text
         for d in data:
@@ -562,7 +566,7 @@ def change_params(request):
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
         else:
             pmmlform.fields['pmml'].choices = [("",'No pmml')]
-        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
+        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid':token})
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
             #redirect to error page
@@ -619,8 +623,9 @@ def change_params(request):
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
         else:
             pmmlform.fields['pmml'].choices = [("",'No pmml')]
-        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
+        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid':token})
         predicted_features = json.loads(res2.text)
+
         if str(res2) != "<Response [200]>":
             #redirect to error page
             return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
@@ -738,10 +743,9 @@ def model(request):
         #get all models
         headers = {'Accept': 'application/json', "subjectid": token}
         #get total number of models
-        headers1 = {'Accept': 'text/plain', 'subjectid': token}
-        res1= requests.get(SERVER_URL+'/model/count?creator='+username, headers=headers1)
-        total_models= res1.text
-        res = requests.get(SERVER_URL+'/model?creator='+username+'&start=0&max='+total_models, headers=headers)
+        res = requests.get(SERVER_URL+'/model?start=0&max=1', headers=headers)
+        total_models= res.headers.get('total')
+        res = requests.get(SERVER_URL+'/model?start=0&max='+total_models, headers=headers)
         list_resp = json.loads(res.text)
         #for each model
         for l in list_resp:
@@ -874,15 +878,15 @@ def features(request):
             page1=int(page) * 20 - 20
             k=str(page1)
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/feature?creator='+username+'&&start=0&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/feature?start=0&max=20', headers=headers)
             elif last:
-                res = requests.get(SERVER_URL+'/feature?creator='+username+'&&start='+last+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/feature?start='+last+'&max=20', headers=headers)
             else:
-                res = requests.get(SERVER_URL+'/feature?creator='+username+'&&start='+k+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/feature?start='+k+'&max=20', headers=headers)
 
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/feature?creator='+username+'&&start=0&max=20', headers=headers)
+            res = requests.get(SERVER_URL+'/feature?start=0&max=20', headers=headers)
         features=[]
         if res.status_code == 403:
             error = "This request is forbidden (e.g., no authentication token is provided)"
@@ -1071,9 +1075,8 @@ def dataset(request):
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
         #get total number of datasets
-        headers1 = {'Accept': 'text/plain', 'subjectid': token}
-        res1= requests.get(SERVER_URL+'/dataset/count?creator='+username, headers=headers1)
-        total_datasets= int(res1.text)
+        res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
         else:
@@ -1084,12 +1087,12 @@ def dataset(request):
             page1=int(page) * 20 - 20
             k=str(page1)
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
             else:
-                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start='+k+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         data= json.loads(res.text)
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
@@ -1119,6 +1122,7 @@ def dataset_detail(request):
     data_detail, last, page = paginate_dataset(request, name, token, username, page)
     if data_detail and last and page:
             a=[]
+            #a=collections.OrderedDict()
             # a contains all compound's properties
             for key in data_detail['dataEntry']:
                 for k, value in key.items():
@@ -1234,7 +1238,7 @@ def predict(request):
         m = []
         #get all models
         headers = {'Accept': 'application/json', "subjectid": token}
-        res = requests.get(SERVER_URL+'/model?creator='+username+'&start=0&max=10000', headers=headers)
+        res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
         list_resp = res.text
         models = json.loads(res.text)
         print models
@@ -1283,15 +1287,15 @@ def predict_model(request):
             page1=int(page) * 20 - 20
             k=str(page1)
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
             elif last:
-                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start='+last+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start='+last+'&max=20', headers=headers)
             else:
-                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start='+k+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
 
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         data= json.loads(res.text)
         for d in data:
             dataset.append({'name': d['_id'], 'title':d['meta']['titles'][0], 'description': d['meta']['descriptions'][0]})
@@ -1323,6 +1327,20 @@ def predict_model(request):
             if 'excel_data' in request.POST:
                 data = request.POST.get('excel_data')
                 data = json.loads(data)
+                n_data=[]
+                n_d={}
+                n_d1={}
+                for d in data:
+                    for key, value in d.items():
+                        new_val = value.replace(',', '.')
+                        n_d1[''+key+'']=new_val
+                        n_d.update(n_d1)
+                n_data.append(n_d)
+                print n_data
+                data = n_data
+                #data = json.loads(data)
+                #data.replace(',','.')'''
+                print data
                 #Get data from excel and create dataset to the appropriate format
                 new_data = create_dataset(data,username,required_res, img_descriptors, mopac_descriptors)
                 json_data = json.dumps(new_data)
@@ -1785,9 +1803,8 @@ def validate(request):
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
         #get total number of datasets
-        headers1 = {'Accept': 'text/plain', 'subjectid': token}
-        res1= requests.get(SERVER_URL+'/dataset/count?creator='+username, headers=headers1)
-        total_datasets= int(res1.text)
+        res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
         else:
@@ -1799,12 +1816,12 @@ def validate(request):
             k=str(page1)
             print k
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
             else:
-                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start='+k+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         data= json.loads(res.text)
         print res.text
         for d in data:
@@ -1903,7 +1920,7 @@ def valid_params(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         al = json.loads(res.text)
-        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
+        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2',headers={'subjectid': token})
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
             #redirect to error page
@@ -1931,7 +1948,7 @@ def valid_params(request):
         #replace al parameters value with request.post
         #al['parameters']= params
         print json.dumps(params)
-        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
+        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid': token})
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
             #redirect to error page
@@ -1980,7 +1997,6 @@ def report(request):
         return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })
 
 
-
 #Experimental design
 def experimental(request):
     token = request.session.get('token', '')
@@ -2000,9 +2016,8 @@ def experimental(request):
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
         #get total number of datasets
-        '''headers1 = {'Accept': 'text/plain', 'subjectid': token}
-        res1= requests.get(SERVER_URL+'/dataset/count?creator='+username, headers=headers1)
-        total_datasets= int(res1.text)
+        '''res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
         else:
@@ -2013,12 +2028,12 @@ def experimental(request):
             page1=int(page) * 20 - 20
             k=str(page1)
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
             else:
-                res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start='+k+'&max=20', headers=headers)
+                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/dataset?creator='+username+'&start=0&max=20', headers=headers)
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         data= json.loads(res.text)'''
         res = requests.get(SERVER_URL+'/dataset/ayDPMNB3JcOJAm', headers=headers)
         data= json.loads(res.text)
@@ -2064,7 +2079,7 @@ def experimental_params(request):
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
         else:
             pmmlform.fields['pmml'].choices = [("",'No pmml')]
-        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
+        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid': token})
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
             #redirect to error page
@@ -2114,7 +2129,7 @@ def experimental_params(request):
                 pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
             else:
                 pmmlform.fields['pmml'].choices = [("",'No pmml')]
-            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2')
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid': token})
             predicted_features = json.loads(res2.text)
             if str(res2) != "<Response [200]>":
                 #redirect to error page
@@ -2241,7 +2256,7 @@ def experimental_params(request):
                 print prediction_feature
             #body = { 'scaling': scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
             #body
-
+            print model_detail
             return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': params })
 
 def exp_submit(request):
@@ -2294,14 +2309,18 @@ def exp_submit(request):
 
         #data=json.dumps(data1)
         print data
-        headers1 = {'content-type': 'application/json'}
+        headers1 = {'content-type': 'application/json', 'subjectid':token}
         #new_data = create_dataset(d_detail['dataEntry'],"guest","", "", "")
-        new_data = create_dataset2( d_detail['dataEntry'], "guest", d_detail['features'], d_detail['byModel'])
+        rows= d_detail['totalRows']
+        columns = d_detail['totalColumns']
+        new_data = create_dataset2( d_detail['dataEntry'], "guest", d_detail['features'], d_detail['byModel'], rows, columns)
         print new_data
         json_data = json.dumps(new_data)
+        print()
         #import pdb;pdb.set_trace();
         json_data = json.dumps(json_data)
         json_data = json.loads(json_data)
+        print json_data
         res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data, timeout=10)
 
         print res.text
@@ -2324,17 +2343,28 @@ def exp_iter(request):
             print dataset
             headers = {'Accept': 'application/json', 'subjectid': token}
             res1 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+            data_detail = json.loads(res1.text)
             model = json.loads(res1.text)['byModel']
             #model = 'A0fU5rK7B64r'
             res = requests.get(SERVER_URL+'/model/'+model, headers=headers)
+            model_detail = json.loads(res.text)
+            predictedFeatures = model_detail['predictedFeatures']
             algorithms = json.loads(res.text)['algorithm']['_id']
             params = json.loads(res.text)['parameters']
+            if algorithms == "ocpu-expdesign-x":
+                algorithms = "ocpu-expdesign-xy"
+                par = {}
+                for k,v in params.items():
+                    if k != "newY":
+                        par.update({k:v})
+                params = par
             prediction_feature = get_prediction_feature_of_dataset(dataset, token)
             body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': "", 'doa': "", 'title': "", 'description':"", 'transformations':"", 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': False}
             print('----')
             print body
             headers = {'Accept': 'application/json', 'subjectid': token}
             #import pdb;pdb.set_trace();
+
             res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
             print res.text
             task_id = json.loads(res.text)['_id']
@@ -2345,7 +2375,8 @@ def exp_iter(request):
             while (status != "COMPLETED"):
                 if(status == "ERROR"):
                     error = "An error occurred while processing your request.Please try again."
-                    #return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset,})
+                    return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':dataset, 'params': params, 'error':error })
+
                 else:
                     res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
                     status = json.loads(res1.text)['status']
@@ -2360,8 +2391,7 @@ def exp_iter(request):
             while (status != "COMPLETED"):
                 if(status == "ERROR"):
                     error = "An error occurred while processing your request.Please try again."
-                    #return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True})
-
+                    return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':dataset, 'params': params, 'error':error })
                 else:
                     res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
                     status = json.loads(res4.text)['status']
