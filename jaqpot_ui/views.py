@@ -1127,9 +1127,14 @@ def dataset_detail(request):
             for key in data_detail['dataEntry']:
                 for k, value in key.items():
                     if k =='values':
+                        counter=0
                         for m,n in value.items():
                             if m not in a:
                                 a.append(m)
+                                '''a[counter]=m
+                                counter=counter+1'''
+
+            print a
             properties={}
             new=[]
             compound = []
@@ -2593,3 +2598,125 @@ def clean_dataset(request):
         dataset = res.text.split('/dataset/')[1]
         print dataset
         return redirect('/dataset?dataset=' +dataset)
+
+#List of reports
+def report_list(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
+
+    page = request.GET.get('page')
+    last = request.GET.get('last')
+    if request.method == 'GET':
+        report=[]
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        #get total number of datasets
+        res = requests.get(SERVER_URL+'/report?start=0&max=20', headers=headers)
+        total_reports= int(res.headers.get('total'))
+        if total_reports%20 == 0:
+            last = total_reports/20
+        else:
+            last = (total_reports/20)+1
+
+        if page:
+            #page1 is the number of first dataset of page
+            page1=int(page) * 20 - 20
+            k=str(page1)
+            if page1 <= 1:
+                res = requests.get(SERVER_URL+'/report?start=0&max=20', headers=headers)
+            else:
+                res = requests.get(SERVER_URL+'/report?start='+k+'&max=20', headers=headers)
+        else:
+            page = 1
+            res = requests.get(SERVER_URL+'/report?start=0&max=20', headers=headers)
+        data= json.loads(res.text)
+        for d in data:
+            report.append({'id':d['_id'], 'meta':d['meta']})
+
+        return render(request, "reports.html", {'token': token, 'username': username, 'report': report, 'page': page, 'last':last})
+
+#Display details of each dataset
+'''def dataset_detail(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
+
+    name = request.GET.get('name', '')
+    page = request.GET.get('page', '')
+    data_detail, last, page = paginate_dataset(request, name, token, username, page)
+    if data_detail and last and page:
+            a=[]
+            #a=collections.OrderedDict()
+            # a contains all compound's properties
+            for key in data_detail['dataEntry']:
+                for k, value in key.items():
+                    if k =='values':
+                        counter=0
+                        for m,n in value.items():
+                            if m not in a:
+                                a.append(m)
+
+
+            print a
+            properties={}
+            new=[]
+            compound = []
+            for i in range(len(a)):
+                for k in data_detail['features']:
+                    if k['uri'] == a[i]:
+                        new.append(k)
+
+            #get response json
+            for key in data_detail['dataEntry']:
+                properties[key['compound']['URI']] = []
+                properties[key['compound']['URI']].append({"compound": key['compound']['URI']})
+                properties[key['compound']['URI']].append({"name": key['compound']['name']})
+
+                #for each compound
+                for k, value in key.items():
+                    if k =='values':
+                        for i in range(len(a)):
+                            #if a compound haven't value for a property add its value Null
+                            if a[i] in value:
+                                properties[key['compound']['URI']].append({"prop": a[i], "value": value[a[i]]})
+                            else:
+                                properties[key['compound']['URI']].append({"prop":  a[i], "value": "NULL"})
+
+            return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail':data_detail, 'properties': properties, 'a': a, 'new': new, 'page':page, 'last':last})'''
+
+#Delete selected report
+def report_delete(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
+    id = request.GET.get('id')
+    #delete report
+    headers = {'Accept': 'application/json', "subjectid": token}
+    res = requests.delete(SERVER_URL+'/report/'+id, headers=headers)
+    reply = res.text
+    print reply
+    return redirect('/reports')

@@ -60,11 +60,15 @@ urlpatterns = patterns('',
                        url(r'^d_validate', views.choose_dataset_validate),
                        url(r'^exp_design', views.exp_design),
                        url(r'^interlab_substance', views.interlab_select_substance),
+                       url(r'^report_delete', views.report_delete),
+                       url(r'^reports', views.report_list),
                        url(r'^report', views.report),
+
                        url(r'^exp_submit', views.exp_submit),
                        url(r'^exp_iter', views.exp_iter),
                        url(r'^interlab_params', views.interlab_params),
                        url(r'^clean_dataset', views.clean_dataset),
+
 
 
                        # captcha
