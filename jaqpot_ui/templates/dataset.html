@@ -6,13 +6,23 @@
     {% load endless %}
         <div>
              <h1>Dataset:</h1>
+             <div class="list-group">
+                 <h3>Example datasets:</h3>
+                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:95%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+                 {% for p in proposed %}
+
+                    <a href="/data_detail?name={{p.name}}" class="list-group-item" style="width:95%;">{{p.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{% for title in p.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </a>
+
+                 {% endfor %}
+             </div>
              {% paginate 20 dataset %}
              <div class="list-group">
-                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+                 <h3>All Datasets:</h3>
+                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:95%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
                  {% for d in dataset %}
 
-                    <a href="/data_detail?name={{d.name}}" class="list-group-item">{{d.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{% for title in d.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in d.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </a>
-
+                    <a href="/data_detail?name={{d.name}}" class="list-group-item" style="width:95%;float:left;">{{d.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{% for title in d.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in d.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </a>
+                    <button class="btn bt-red" data-toggle="tool" title="Delete Dataset" style="margin: 4px;" onclick="deleteDataset('{{d.name}}')"><i class="glyphicon glyphicon-remove-sign"></i></button>
                  {% endfor %}
              </div>
 
@@ -51,7 +61,7 @@
                         {% endif %}
 
                         <li class="active">
-                            {% if page >= last %}
+                            {% if page|add:1 > last %}
                                     <a href="/data?page={{last}}">Next</a>
                             {%else%}
                                 <a href="/data?page={{page|add:1 }}">Next </a>
@@ -64,4 +74,19 @@
 
         </div>
 </div>
+
+<script>
+//display tooltip right
+$('[data-toggle="tool"]').tooltip({
+    'placement': 'top'
+});
+
+function deleteDataset(name) {
+            if (confirm("Are you sure?")) {
+                // your deletion code
+                window.location="/d_delete?id="+name
+            }
+            return false;
+}
+</script>
 {% endblock %}

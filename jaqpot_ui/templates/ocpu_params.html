@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% load templates_extras %}
+
+{% block content %}
+<form method="post" id="form1"> {% csrf_token %}
+
+<div class="div-table" style="width:100%; display: inline-block;">
+    <h4>Select parameters:</h4>
+    {% if error %}
+    <div class="alert alert-danger" role="alert" style="width: 40%;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{error}}</span>
+               </div>
+    {% endif %}
+
+    {% if al.parameters %}
+                 {% for p in al.parameters%}
+                    <div>
+                        <label class="align">{{p.name}}:</label>
+                        {% if p.allowedValues %}
+                        <select name="{{p.name}}" >
+                            {% for s in p.allowedValues %}
+                            <option value="{{s}}" {% if p.value == s %} selected {% endif %}>{{s}}</option>
+                            {% endfor %}
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        </select>
+                        {% elif p.minValue %}
+                        <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
+                        <p><small><b>Min value:</b>{{p.minValue}}   <b>Max value:</b>{{p.maxValue}}</small></p>
+                        <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        {% else%}
+                        {% if p.value.0|get_type == "unicode" %}
+                            <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|joinby:','}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        {% elif p.value.0|get_type == "int" %}
+                            <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value.0|intiger}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        {%else %}
+                            <input type="text" name="{{p.name}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        {%endif %}
+                        {%endif%}
+                    </div>
+                 {% endfor %}
+            {% endif %}
+
+    <!-- <label class="align" >Levels:</label>
+            {% if pform.levels.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{pform.levels.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{pform.levels}}
+    <br>
+    <label class="align" >nVars:</label>
+            {% if pform.nVars.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{pform.nVars.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{pform.nVars}}
+    <br>
+    <label class="align" >factors:</label>
+            {% if pform.factors.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{pform.factors.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{pform.factors}}
+    <br>
+    <label class="align" >varNames:</label>
+            {% if pform.varNames.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{pform.varNames.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{pform.varNames}}
+    <br>
+    <label class="align" >nTrials:</label>
+            {% if pform.nTrials.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{pform.nTrials.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{pform.nTrials}}
+    <br>
+    <label class="align" >criterion:</label>
+            {% if pform.criterion.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{pform.criterion.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{pform.criterion}}
+    <br>
+    <label class="align" >form:</label>
+            {% if pform.form.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{pform.form.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{pform.form}} -->
+    <br>
+    <br>
+
+    <input id="choose_params" type="submit" value="Experimental Design" class="btn bt-red" style="width: 15%; float:left; left:10%;">
+
+    <div id="loading" style="display: none"><!-- Place at bottom of page -->
+            <img id="loading-image" src="http://i.stack.imgur.com/FhHRx.gif" alt="Loading..." />
+        </div>
+    </div>
+
+    </form>
+
+<script>
+    $('#choose_params').bind('click', function(e)
+        {
+            $("#loading").show();
+            });
+
+</script>
+
+{% endblock %}

@@ -15,6 +15,39 @@
         <input type="text" style="margin:5px;" value="{{details.meta.titles.0}}">
     </div>
      {% endif %}
+     {% if details.meta.subjects%}
+            <h6><b>Subjects:</b></h6>
+            {% for d in details.meta.subjects%}
+                <div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{d}}">
+                </div>
+            {% endfor %}
+        {% endif %}
+     {% if details.meta.publishers%}
+            <h6><b>Publishers:</b></h6>
+            {% for d in details.meta.publishers%}
+                <div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{d}}">
+                </div>
+            {% endfor %}
+        {% endif %}
+     {% if details.meta.contributors%}
+            <h6><b>Contributors:</b></h6>
+            {% for d in details.meta.contributors%}
+                <div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{d}}">
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if details.meta.doi %}
+        <div>
+            <label class="align">Doi:</label>
+            <input type="text" style="margin:5px;" value="{{details.meta.doi.0}}">
+        </div>
+        {% endif %}
         {% if details.meta.description %}
         <div>
         <label class="align">Description:</label>
@@ -141,7 +174,7 @@
     {% endif %}  -->
         <br>
         <a href="m_pmml?name={{name}}" class="btn bt-red" data-toggle="toolleft" title="Download PMML">PMML</a>
-        <a href="#" class="btn bt-red" data-toggle="toolleft" title="Predict model" style="margin:3px;">Predict</a>
+        <a href="/predict_model?model={{name}}" class="btn bt-red" data-toggle="toolleft" title="Predict model" style="margin:3px;">Predict</a>
         <a href="/m_delete?id={{name}}" class="btn bt-red" data-toggle="tool" title="Delete Model" style="margin: 3px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
          <br>
         <h4>Validations:</h4>
@@ -153,6 +186,26 @@
             <a href="#" class="btn bt-red" style="margin:5px; margin-left:10px;" data-toggle="tool" title="Validate the model">Validate me</a>
         </div>
 
+    </div>
+    <!-- Modal-->
+    <div id="alert" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Error</h4>
+          </div>
+          <div class="modal-body">
+            <p>{{error}}</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+          </div>
+        </div>
+
+      </div>
     </div>
 
 </div>
@@ -168,5 +221,10 @@ $('[data-toggle="toolleft"]').tooltip({
 $('[data-toggle="tool"]').tooltip({
     'placement': 'right'
 });
+{% if error %}
+    //whatever conditions and js code
+    $("#alert").modal()
+{% endif %}
+
 </script>
 {% endblock %}

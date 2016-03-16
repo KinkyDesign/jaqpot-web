@@ -24,6 +24,16 @@
                             <li>
                                 <a href="/predict">Predict</a>
                             </li>
+                            <li class="dropdown-header">Validate</li>
+                            <li>
+                                <a href="/external_validation">External Validation</a>
+                            </li>
+                             <li>
+                                <a href="/validate?method=cross">Cross Validation</a>
+                            </li>
+                             <li>
+                                <a href="/validate?method=split">Split Validation</a>
+                            </li>
                             <!-- <li>
                                 <a href="/conformer">Calculate descriptors</a>
                             </li> -->
@@ -42,18 +52,21 @@
                                 <a href="/algorithm">Algorithm</a>
                             </li>
                             <li class="divider"></li>
-                            <li class="dropdown-header">Chemical dataset</li>
+                            <li class="dropdown-header">Dataset</li>
                             <li>
                                 <a href="/data">Dataset</a>
                             </li>
-                            <li>
+                            <!-- <li>
                                 <a href="/compound">Compound</a>
                             </li>
                             <li>
                                 <a href="/conformer">Conformer</a>
                             </li>
-                            <li class="divider"></li>
+                            <li class="divider"></li> -->
                             <li class="dropdown-header">Other resources</li>
+                             <li>
+                                <a href="/reports">Reports</a>
+                            </li>
                             <li>
                                 <a href="/bibtex">BibTex</a>
                             </li>
@@ -71,12 +84,28 @@
                             </li>  -->
                         </ul>
                     </li>
+                     <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Experimental Design <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="dropdown-header">Experimental Design </li>
+                            <li>
+                                <a href="/experimental">With input</a>
+                            </li>
+                            <li>
+                                <a href="/exp_design">Without input</a>
+                            </li>
+                        </ul>
+                    </li>
+                     <li class="dropdown">
+                        <a href="/interlab_substance">Interlab testing</a>
+                    </li>
 
                 </ul>
+
                 <a href="/task" class="bt-grey btn" data-toggle="tooltip" title="Tasks" style="margin: 7px; background-color:#666666; border-color:#666666;">
                     <i class="glyphicon glyphicon-align-left"></i>
                 </a>
-                    <span class="user-info">
+                     <span class="user-info">
                         Welcome back, <a href="/user">{{username}}</a>
                         <a href="/logout"><span class="glyphicon glyphicon-off"></span></a>
                         </span>

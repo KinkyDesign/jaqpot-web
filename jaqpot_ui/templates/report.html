@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% load templates_extras %}
+
+{% block content %}
+<div class="div-table" style="width:100%;">
+    <h1>Report: <span style="font-size: 20px;">#{{name}}</span> </h1>
+    {% if report.singleCalculations %}
+        {% for key, value in report.singleCalculations.items  %}
+            <div>
+                <label class="align">{{key}}:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{value}}">
+            </div>
+        {% endfor%}
+    {% endif %}
+    {% if report.arrayCalculations %}
+        {% for k,v in report.arrayCalculations.items  %}
+            <h4>{{k}}</h4>
+            <table>
+                <tr>
+                    <th> </th>
+                    {% for col in v.colNames%}
+                    <th>{{col}}</th>
+                    {% endfor %}
+                </tr>
+                {% for k,val in v.values.items%}
+                <tr>
+                    <td>{{k}}</td>
+                    {%for d in val%}
+                    <td>{{d}}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+
+            </table>
+        {% endfor%}
+    {% endif %}
+    {% if report.figures %}
+        {% for k,v in report.figures.items %}
+            <h4>{{k}}</h4>
+            <!--  base 64 image v -->
+            <img src="data:image/png;base64, {{v}}" width="40%" height="30%;">
+        {% endfor %}
+    {% endif %}
+
+
+</div>
+
+{% endblock %}

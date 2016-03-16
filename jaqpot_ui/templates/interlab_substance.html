@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data"> {% csrf_token %}
+<div class="div-table" style="width:100%; display: inline-block;">
+    {% if error %}
+        <h6 style="color:red;">{{error}}</h6>
+    {% endif %}
+    <div id="select" >
+        <h1>Select substance owner:</h1>
+        <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
+        <br>
+        {% load endless %}
+        <label class="datasets" style="background-color:#cf2323;border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                Name <span style="float: left; left:40%; position:absolute;">Subcategory</span> <span style="float: left; left:70%; position:absolute;">Count</span></label>
+            {% paginate 20 substance_owner %}
+            {% for sub in substance_owner %}
+                {% if sub.value%}
+                <label class="datasets" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="radio" name="radio" value="{{sub.value}}">{{sub.value}}<span class="overflow-span" style="float: left; left:40%; position:absolute;">{{sub.subcategory}}</span> <span style="float: left; left:70%; position:absolute;">{{sub.count}}</span></label>
+                {% endif %}
+
+            {% endfor %}
+            {% get_pages %}
+            <div id="pageNavPosition5" class="pagination">
+                <span class="step-links">
+                    <ul class="pagination">
+                        <li class="active">
+                            {% if page|add:"0" >= 2 %}
+                            <a href="/substance?page={{page|add:-1}}">Previous</a>
+                            {% else %}
+                            <a href="/substance?page={{page}}">Previous</a>
+                            {%endif %}
+                        </li>
+
+                        <li><a href="/substance?page={{page}}"><strong>{{page}}</strong></a></li>
+
+
+                        <li class="active">
+                            {% if last %}
+                                    <a href="/substance?page={{last}}">Next</a>
+                            {%else%}
+                                <a href="/substance?page={{page|add:1 }}">Next </a>
+                            {% endif %}
+                        </li>
+
+
+                   </ul>
+                </span>
+            </div>
+    </div>
+    <br>
+    <!--<div>
+        <a type="button" class="btn btn-success" style="width:10%; float:right; right:10%;" href="/sub">Next</a>
+    </div>  -->
+    <input type="submit" value="Save" class="btn bt-red" style="width: 10%; float:right; right:10%;">
+</div>
+    </form>
+
+{% endblock %}

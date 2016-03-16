@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% load templates_extras %}
+
+{% block content %}
+<form method="post" id="form1" enctype="multipart/form-data"> {% csrf_token %}
+<div class="div-table" style="width:100%; display: inline-block; padding:10px;">
+    <a id="back" class="btn bt-red" style="width:3%;" ><i class="glyphicon glyphicon-circle-arrow-left"></i></a>
+    <br>
+
+     <h3>Fill in the title and description of the produced model</h3>
+        <div>
+            <label class="align" >Model name:</label>
+            {% if form.modelname.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.modelname.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{form.modelname}}
+        </div>
+        <br>
+        <p><b>Model description:</b></p>
+         {% if form.description.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.description.errors.as_text}}</span>
+               </div>
+            {% endif %}
+        {{form.description}}
+    <br>
+    <input id="choose_params" type="submit" value="Experimental Design" class="btn bt-red" style="width: 15%; float:left; left:10%;">
+    </div>
+    </form>
+{% endblock %}

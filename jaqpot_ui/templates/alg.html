@@ -1,10 +1,18 @@
 {% extends "base.html" %}
 
+{% load templates_extras %}
+
 {% block content %}
 <form method="post" id="form1" enctype="multipart/form-data"> {% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block; padding:10px;">
     <a id="back" class="btn bt-red" style="width:3%;" ><i class="glyphicon glyphicon-circle-arrow-left"></i></a>
     <br>
+    {% if error %}
+        <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-top:10px;">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span>{{error}}</span>
+        </div>
+    {% endif %}
     <div style="float:left; width:50%;">
             <h1>Algorithm</h1>
             <h3>Title: {{algorithms}}</h3>
@@ -37,8 +45,44 @@
                  {% for p in al.parameters%}
                     <div>
                         <label class="align">{{p.name}}:</label>
+                        {% if p.allowedValues %}
+                        <select name="{{p.name}}" >
+                            {% for s in p.allowedValues %}
+                            <option value="{{s}}" {% if p.value == s %} selected {% endif %}>{{s}}</option>
+                            {% endfor %}
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        </select>
+                        {% elif p.minValue %}
                         <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
+                        <p><small><b>Min value:</b>{{p.minValue}}   <b>Max value:</b>{{p.maxValue}}</small></p>
                         <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        {% else%}
+                            {% if exp %}
+                            {% if p.value|get_type == "list" %}
+                                {% if p.value.0|get_type == "unicode" %}
+                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|joinby:','}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                {% elif p.value.0|get_type == "int" %}
+                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value.0|intiger}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                {%else %}
+                                    <input type="text" name="{{p.name}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                {% endif %}
+                            {%else%}
+                            <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            {%endif %}
+                        {% else %}
+                            {% if p.value|get_type == "int" %}
+                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|intiger}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            {%else %}
+                                 <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
+                                 <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            {% endif %}
+                        {% endif %}
+                        {% endif %}
                     </div>
                  {% endfor %}
             {% endif %}
@@ -49,6 +93,7 @@
                 </textarea>
             {% endif %}
         <br>
+        {% if not exp %}
          <h3>Fill in the title and description of the produced model</h3>
         <div>
             <label class="align" >Model name:</label>
@@ -69,6 +114,7 @@
                </div>
             {% endif %}
         {{tform.description}}
+        {% endif %}
 
     </div>
     <div style="float:right; width:50%;">
@@ -83,9 +129,14 @@
         </div>
 
     <div id="input" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
+        {% if exp %}
+            <h5><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable:</h5>
+        {% else %}
+            <h5><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable and endpoint:</h5>
+        {% endif %}
 
-        <h5><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable and endpoint:</h5>
-        <div style="float:left; width:50%;">
+        <div style="float:left; width:50%;" >
+
         <h5>Input</h5>
             {% if inputform.input.errors %}
                <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-bottom: 0px;">
@@ -102,24 +153,26 @@
             </div>
 
             </div>
-        <div style="float:left; width:50%">
-        <h5>Output</h5>
-             {% if inputform.output.errors %}
-               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-bottom: 0px;">
-						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-						<span>{{inputform.output.errors.as_text}}</span>
-               </div>
-            {% endif %}
-           <br>
-        <div style="overflow:scroll; height:300px;">
-             {% for output in inputform.output %}
-                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;" for="">
-                     {{output}}</label>
-            {% endfor %}
-            </div>
 
-            </div>
-    </div>
+        <div style="float:left; width:50%">
+            <h5>Output</h5>
+                 {% if inputform.output.errors %}
+                   <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-bottom: 0px;">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                            <span>{{inputform.output.errors.as_text}}</span>
+                   </div>
+                {% endif %}
+               <br>
+            <div style="overflow:scroll; height:300px;">
+                {% for output in inputform.output %}
+                    <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;" for="">
+                        {{output}}</label>
+                {% endfor %}
+                </div>
+
+                </div>
+
+        </div>
     <div id="PMML" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
 
         <div>
@@ -128,11 +181,13 @@
 
             <br>
         </div>
-        <div>
-            <h5>Select Prediction Feature:</h5>
-               {{pmmlform.predicted_feature}}
-            <br>
-        </div>
+        {% if not exp%}
+            <div>
+                <h5>Select Prediction Feature:</h5>
+                   {{pmmlform.predicted_feature}}
+                <br>
+            </div>
+        {% endif %}
     </div>
     <div id="file" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
 
@@ -144,27 +199,38 @@
                </div>
             {% endif %}
         {{uploadform.file}}
-        <h5>Select Prediction Feature:</h5>
-            {{uploadform.feature}}
+        {% if not exp %}
+            <h5>Select Prediction Feature:</h5>
+                {{uploadform.feature}}
+        {% endif %}
 
     </div>
-     <div id="none" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
+     {% if not exp %}
+         <div id="none" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
 
-        <h5>Select Prediction Feature:</h5>
-            {{nform.pred_feature}}
+            <h5>Select Prediction Feature:</h5>
+                {{nform.pred_feature}}
 
-    </div>
+        </div>
+     {% endif %}
     <br>
     <br>
     <div style="float:right; width:50%;">
         <h3>Select scaling method:</h3>
         {{tform.scaling}}
+        {% if not exp %}
         <h3>Select domain of applicability method:</h3>
         {{tform.doa}}
+        {% endif %}
         <br>
         <br>
+
          <!-- <a href="/change_params?data={{dataset}}&alg={{algorithms}}" class="btn bt-red" style="width:10%; float:left; left:10%;" >Train</a> -->
-        <input id="choose_alg" type="submit" value="Train" class="btn bt-red" style="width: 10%; float:left; left:10%;">
+        {% if exp %}
+            <input id="choose_alg" type="submit" value="Experimental design" class="btn bt-red" style="width: 30%; float:left; left:10%;">
+        {% else %}
+            <input id="choose_alg" type="submit" value="Train" class="btn bt-red" style="width: 10%; float:left; left:10%;">
+        {% endif %}
     </div>
 
     </div>

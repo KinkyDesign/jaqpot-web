@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="div-table" style="width:100%;display:inline-block;">
+
+     <div>
+        <h1>Select dataset:</h1>
+        <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
+        <br>
+        {% if error %}
+            {{error}}
+         {% endif%}
+        {% load endless %}
+        {% if proposed%}
+            <h3>Example datasets: </h3>
+             <div class="publicdataset list-group">
+                <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+            {% for p in proposed %}
+                 <a href="/experimental_params?dataset={{p.name}}" class="list-group-item">{{p.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{p.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{p.meta.descriptions.0}}</span> </a>
+            {% endfor %}
+            </div>
+        {% endif %}
+        <div class="publicdataset list-group">
+        {% paginate 20 dataset using "other_objects_page" %}
+            <h3>All Datasets:</h3>
+            <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+        {% for d in dataset %}
+             <a href="/experimental_params?dataset={{d.name}}" class="list-group-item">{{d.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{d.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{d.meta.descriptions.0}}</span> </a>
+        {% endfor %}
+            </div>
+            {% get_pages %}
+            <div id="pageNavPosition5" class="pagination">
+                <span class="step-links">
+                    <ul class="pagination">
+                        <li class="active">
+                            {% if page|add:"0" >= 2 %}
+                            <a href="/experimental?page={{page|add:-1}}">Previous</a>
+                            {% else %}
+                            <a href="/experimental?page={{page}}">Previous</a>
+                            {%endif %}
+                        </li>
+
+                        {% if page|add:-1 >= 1 %}
+                        <li><a href="/experimental?page=1">1</a></li>
+                        {% endif %}
+                        {% if page|add:-2 > 1%}
+                        <li><a><strong>...</strong></a></li>
+                        {% endif%}
+                        {% if page|add:-1 > 1%}
+                        <li><a href="/experimental?page={{page|add:-1}}">{{page|add:-1}}</a></li>
+                        {% endif %}
+                        <li><a href="/experimental?page={{page}}"><strong>{{page}}</strong></a></li>
+
+                         {% if page|add:"1" < last%}
+                        <li><a href="/experimental?page={{page|add:1}}">{{page|add:1}}</a></li>
+                        {% endif %}
+                        {% if page|add:"2" < last%}
+                        <li><a><strong>...</strong></a></li>
+                        {% endif%}
+                         {% if page|add:1 <= last %}
+                        <li><a href="/experimental?page={{last}}">{{last}}</a></li>
+                        {% endif %}
+
+                        <li class="active">
+                            {% if page >= last %}
+                                    <a href="/experimental?page={{last}}">Next</a>
+                            {%else%}
+                                <a href="/experimental?page={{page|add:1 }}">Next </a>
+                            {% endif %}
+                        </li>
+
+
+
+                   </ul>
+                </span>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+//console.log(data)
+/*$('#dataset').bind('click', function(e){
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                url: '/alg/',
+                data: {'algorithm': {{data|safe}} , },
+                success: function(result) {
+                        document.write(result)
+                        }
+    });
+
+});*/
+//search from public dataset
+$(document).ready(function(){
+    $("#filter").keyup(function(){
+
+        // Retrieve the input field text and reset the count to zero
+        var filter = $(this).val(), count = 0;
+
+        // Loop through the comment list
+        $(".publicdataset a").each(function(){
+
+            // If the list item does not contain the text phrase fade it out
+            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
+                $(this).fadeOut();
+
+            // Show the list item if the phrase matches and increase the count by 1
+            } else {
+                $(this).show();
+                count++;
+            }
+        });
+
+        // Update the count
+        var numberItems = count;
+        $("#filter-count").text("Number of Comments = "+count);
+    });
+});
+
+</script>
+{%endblock%}

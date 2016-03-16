@@ -3,7 +3,7 @@
 {% block content %}
 <form method="post">{% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block">
-    <h4>Select Calculated Descriptors</h4>
+    <h4>Select Descriptors</h4>
 
      <label>
          <input type="checkbox" id= "selectall" >Select All</label>
@@ -17,17 +17,34 @@
     <h4>Fill in the title and description of the produced dataset</h4>
         <div>
             <label class="align" >Title:</label>
-            <input type="text" name="title" class="align">
+             {% if form.title.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.title.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{form.title}}
         </div>
          <p><b>Description:</b></p>
-        <textarea class="form-control" name="description" style="width:30%;" rows="5"></textarea>
+          {% if form.description.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{form.description.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{form.description}}
     </div>
-    <input id="choose_desc" type="submit" value="Save" class="btn bt-red" style="width: 10%; float:right; right:10%;">
+    <br>
+    <input id="previous" type="button" value="Previous" class="btn bt-red" style="width: 10%; float:left; left:10%;">
+    <input id="choose_desc" type="submit" value="Next" class="btn bt-red" style="width: 10%; float:right; right:10%;">
 </div>
 </form>
 
 <script>
     $(document).ready(function() {
+    $('#previous').click(function(event) {  //on click
+        history.go(-1);
+    });
     $('#selectall').click(function(event) {  //on click
         if(this.checked) { // check select status
             $('.check').each(function() { //loop through each checkbox

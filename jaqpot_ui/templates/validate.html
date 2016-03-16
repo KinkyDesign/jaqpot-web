@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" id="form1" enctype="multipart/form-data"> {% csrf_token %}
+<div class="div-table" style="width:100%; display: inline-block; padding:10px;">
+    <a id="back" class="btn bt-red" style="width:3%;" ><i class="glyphicon glyphicon-circle-arrow-left"></i></a>
+    <br>
+    <div style="float:left; width:50%;">
+            <h1>Algorithm</h1>
+            <h3>Title: {{algorithms}}</h3>
+            {% if al.meta.titles %}
+                <div>
+                    <label class="align">Title:</label>
+                    <input type="text" style="margin:5px;width:40%;" readonly="readonly" value="{{al.meta.titles.0}}">
+                </div>
+            {% endif %}
+            {% if al.publisher %}
+                <div>
+                    <label class="align">Publisher:</label>
+                    <input type="text" style="margin:5px;" value="{{al.publisher}}">
+                </div>
+            {% endif %}
+            {% if al.contributor %}
+                <div>
+                    <label class="align">Contributor:</label>
+                    <input type="text" style="margin:5px;" value="{{al.contributor}}">
+                </div>
+            {% endif %}
+            {% if al.date %}
+                <div>
+                    <label class="align">Date:</label>
+                    <input type="text" style="margin:5px;" value="{{al.date}}">
+                </div>
+            {% endif %}
+            {% if al.parameters %}
+                <h6><b>Parameters:</b></h6>
+                 {% for p in al.parameters%}
+                    <div>
+                        <label class="align">{{p.name}}:</label>
+                        <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
+                        <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                    </div>
+                 {% endfor %}
+            {% endif %}
+            {% if al.rights %}
+                <p><b>Copyright:</b></p>
+                <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;">{{al.info.rights}}
+
+                </textarea>
+            {% endif %}
+        <br>
+       </div>
+        <div style="float:right; width:50%;">
+        <h5>Select variables (optional):</h5>
+        {% if vform.variables.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{vform.variables.errors.as_text}}</span>
+               </div>
+            {% endif %}
+        {{vform.variables}}
+        </div>
+
+       <div id="input" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
+
+            <h5><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable and endpoint:</h5>
+
+        <div style="float:left; width:50%;" >
+
+        <h5>Input</h5>
+            {% if inputform.input.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-bottom: 0px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{inputform.input.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            <input type="checkbox" name="selectallfeatures" id= "selectallfeatures" ><b>Select All</b>
+        <div style="overflow:scroll; height:300px;">
+            {% for in in inputform.input %}
+                <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;" for="">
+                     {{in}}</label>
+            {% endfor %}
+            </div>
+
+            </div>
+
+        <div style="float:left; width:50%">
+            <h5>Output</h5>
+                 {% if inputform.output.errors %}
+                   <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-bottom: 0px;">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                            <span>{{inputform.output.errors.as_text}}</span>
+                   </div>
+                {% endif %}
+               <br>
+            <div style="overflow:scroll; height:300px;">
+                {% for output in inputform.output %}
+                    <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;" for="">
+                        {{output}}</label>
+                {% endfor %}
+                </div>
+
+                </div>
+
+        </div>
+    <div id="PMML" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
+
+        <div>
+            <h5><input type="radio" name="radio1" value="PMML" style="display:none;">Select PMML:</h5>
+            {{pmmlform.pmml}}
+
+            <br>
+        </div>
+        {% if not exp%}
+            <div>
+                <h5>Select Prediction Feature:</h5>
+                   {{pmmlform.predicted_feature}}
+                <br>
+            </div>
+        {% endif %}
+    </div>
+    <div id="file" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
+
+        <h5><input type="radio" name="radio1" value="PMML file" style="display:none;">Upload a PMML with transformations(optional):</h5>
+        {% if uploadform.file.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{uploadform.file.errors.as_text}}</span>
+               </div>
+            {% endif %}
+        {{uploadform.file}}
+        {% if not exp %}
+            <h5>Select Prediction Feature:</h5>
+                {{uploadform.feature}}
+        {% endif %}
+
+    </div>
+     {% if not exp %}
+         <div id="none" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
+
+            <h5>Select Prediction Feature:</h5>
+                {{nform.pred_feature}}
+
+        </div>
+     {% endif %}
+    <br>
+       <div style="float:right; width:50%;">
+
+        <h5>Select folds:</h5>
+            {{vform.folds}}
+
+        <h5>Stratify:</h5>
+            {{vform.stratify}}
+
+        </div>
+    <br>
+    <input id="validate" type="submit" value="Validate" class="btn bt-red" style="width: 10%; float:left; left:10%;">
+    </div>
+    </form>
+
+<script>
+
+     $("select").selecter();
+
+     $('#back').click(function(event) {
+       history.go(-1);
+     });
+
+      $('#id_variables_0').click(function() {
+            $("#input").show();
+            $("#file").hide();
+            $("#PMML").hide();
+            $("#none").hide();
+     });
+      if($('#id_variables_1').is(':checked')) {
+            $("#input").hide();
+            $("#file").hide();
+            $("#PMML").show();
+            $("#none").hide();
+     }
+     $('#id_variables_1').click(function() {
+            $("#input").hide();
+            $("#file").hide();
+            $("#PMML").show();
+            $("#none").hide();
+     });
+      if($('#id_variables_2').is(':checked')) {
+            $("#input").hide();
+            $("#file").show();
+            $("#PMML").hide();
+            $("#none").hide();
+     }
+      $('#id_variables_2').click(function() {
+            $("#input").hide();
+            $("#file").show();
+            $("#PMML").hide();
+            $("#none").hide();
+     });
+      if($('#id_variables_3').is(':checked')) {
+            $("#input").hide();
+            $("#file").hide();
+            $("#PMML").hide();
+            $("#none").show();
+     }
+     $('#id_variables_3').click(function() {
+            $("#input").hide();
+            $("#file").hide();
+            $("#PMML").hide();
+            $("#none").show();
+     });
+
+</script>
+{%endblock%}

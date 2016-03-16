@@ -5,7 +5,11 @@
 <div class="div-table" style="width:100%; display: inline-block;">
     <a id="back" class="btn bt-red" style="width:3%; float:left;" ><i class="glyphicon glyphicon-circle-arrow-left"></i></a>
     <br>
-    <h1>Train model</h1>
+    {% if validate %}
+        <h1>Validate</h1>
+    {% else %}
+        <h1>Train model</h1>
+    {% endif %}
     <div class="form-search search-only" style="float:right; right:5%;"><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
     <h4>Choose Algorithm</h4>
     {% if error%}

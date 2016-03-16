@@ -5,3 +5,7 @@ django-ratings
 jsonpatch
 django-haystack
 elasticsearch
+django-simple-captcha
+jsonpatch
+xmltodict
+wget

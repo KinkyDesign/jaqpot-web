@@ -53,6 +53,28 @@ urlpatterns = patterns('',
                        url(r'^descriptors', views.select_descriptors),
                        url(r'^calculate_image_descriptors', views.calculate_image_descriptors),
                        url(r'^calculate_mopac_descriptors', views.calculate_mopac_descriptors),
+                       url(r'^validate', views.validate),
+                       url(r'^valid_params', views.valid_params),
+                       url(r'^external_validation', views.external_validation),
+                       url(r'^ext_valid_model', views.ext_valid_model),
+                       url(r'^get_model_ext_valid', views.get_model_ext_valid),
+                       url(r'^valid_split', views.valid_split),
+                       url(r'^experimental_params', views.experimental_params),
+                       url(r'^experimental', views.experimental),
+                       url(r'^d_validate', views.choose_dataset_validate),
+                       url(r'^exp_design', views.exp_design),
+                       url(r'^interlab_substance', views.interlab_select_substance),
+                       url(r'^report_delete', views.report_delete),
+                       url(r'^reports', views.report_list),
+                       url(r'^report', views.report),
+
+                       url(r'^exp_submit', views.exp_submit),
+                       url(r'^exp_iter', views.exp_iter),
+                       url(r'^interlab_params', views.interlab_params),
+                       url(r'^clean_dataset', views.clean_dataset),
+
+
+
                        # captcha
                        url(r'^captcha/', include('captcha.urls')),
                        #search

@@ -10,13 +10,14 @@
     <script src="/static/js/promise-0.1.1.min.js"></script>
     <script src="/static/js/marvinjslauncher.js"></script>
     <script src="/static/dist/handsontable.full.min.js"></script>
+    <script src="/static/js/editable.min.js"></script>
+    <script src="/static/js/editor.js"></script>
     <!-- DataTables CSS -->
     <link rel="stylesheet" type="text/css" href="static/DataTables-1.10.5/media/css/jquery.dataTables.css">
     <!-- DataTables -->
     <script type="text/javascript" charset="utf8" src="static/DataTables-1.10.5/media/js/jquery.dataTables.js"></script>
     <!-- Handsontable css -->
     <link rel="stylesheet" media="screen" href="/static/dist/handsontable.full.min.css">
-
 
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" media="all">
     <link rel="stylesheet" href="/static/css/site.min.css" media="all">
@@ -27,6 +28,7 @@
     <link href="/static/css/jquery.fs.selecter.css" rel="stylesheet">
     <!-- Javascript function for searching  -->
     <script src="/static/js/search.js"></script>
+    <!--<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
 
     {% block header %}
     {% endblock %}
@@ -45,12 +47,13 @@
             <div class="container">
                 <div class="clearfix">
                     <div class="footer-logo">
-                        <a href="/"><img src="/static/img/red.png" style="height:20px">Jaqpot</a>
+                        <a href="http://www.enanomapper.net/"> <img src="/static/img/enm_logo.png" style="background-color:#FFFFFF;width:100%;height:100%;" class="logo"></a>
+                        <p style="line-height:15px;"><span style="font-size:8pt;">This project has received funding from the European Union's Seventh Framework Programme for research, technological development and demonstration under grant agreement no 604134.</span></p>
                     </div>
                     <dl class="footer-nav">
                         <dt class="nav-title">SOURCE</dt>
                         <dd class="nav-item">
-                            <a href="/source">Source</a></dd>
+                            <a href="https://github.com/KinkyDesign">Source</a></dd>
                     </dl>
                     <dl class="footer-nav">
                         <dt class="nav-title">DOCUMENTATION</dt>
@@ -59,11 +62,19 @@
 
                     </dl>
                     <dl class="footer-nav">
-                        <dt class="nav-title">CONTACT</dt>
-                        <dd class="nav-item"><a href="/contact" >Conctact Form</a></dd>
+                        <dt class="nav-title">ISSUES</dt>
+                        <dd class="nav-item"><a href="https://github.com/KinkyDesign/JaqpotQuattroUI/issues" >Issues</a></dd>
                     </dl>
+                     <div class="footer-logo" style="line-height:10px;padding:0px;">
+                        <img src="/static/img/ntua.png" style="background-color:#FFFFFF;width:40%;height:250%;float:left;" class="logo">
+                         <a href=" http://www.chemeng.ntua.gr/labs/control_lab/" style="margin:0 0 10px;"><span style="font-size:8pt;font-weight: normal;line-height:10px;">Unit of Process Control and Informatics</span> </a>
+                         <p style="line-height:15px;line-height:10px;margin:0 0 5px;"><span style="font-size:8pt;color:#FFFFFF;">School of Chemical Engineering</span></p>
+                         <p style="line-height:15px;line-height:10px;margin:0 0 5px;"><span style="font-size:8pt;color:#FFFFFF;">National Technical University of Athens</span></p>
+                    </div>
                 </div>
-            <div class="footer-copyright text-center">Copyright © 2015 KinkyDesign.All rights reserved.</div></div>
+            <div class="footer-copyright text-center">
+                Copyright © 2015 Jaqpot.All rights reserved.
+            </div></div>
 
         </div>
 

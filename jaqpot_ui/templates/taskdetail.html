@@ -454,6 +454,8 @@
                 {% else %}
                      <a href="/data_detail?name={{output.result|split:'/'}}" class="btn btn-danger" title="See result">See result</a>
                 {% endif %}
+            {% elif 'report' in output.result %}
+                <a href="/report?name={{output.result|split:'/'}}" class="btn btn-danger" title="See result">See result</a>
             {% else %}
             <a href="/" class="btn btn-danger" title="See result">See result</a>
             {% endif %}
