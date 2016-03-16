@@ -72,9 +72,10 @@ class DatasetForm(forms.Form):
     description = forms.CharField(widget=forms.Textarea, required= True)
 
 class ValidationForm(forms.Form):
-    pred_feature = forms.ChoiceField(widget = forms.Select(), choices=[])
+    #pred_feature = forms.ChoiceField(widget = forms.Select(), choices=[])
     folds = forms.ChoiceField(widget = forms.Select(), choices=[( '3', '3'), ('5', '5'), ('10', '10')])
     stratify = forms.ChoiceField(widget = forms.Select(), choices=[( ' ', 'None'), ('1', '1'), ('2', '2')])
+    variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'None')])
 
 class ValidationSplitForm(forms.Form):
     scaling = forms.ChoiceField(widget = forms.Select(), choices=[( 'scaling1', 'None' ), ('scaling2', 'Scaling between zero and one'), ('scaling3', 'Normalization')])

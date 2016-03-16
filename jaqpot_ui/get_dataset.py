@@ -88,3 +88,16 @@ def get_prediction_feature_name_of_dataset(dataset, token, prediction):
             name = f['name']
             break
     return name
+
+def get_number_of_not_null_of_dataset(dataset, token, prediction_feature):
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    r = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+    data=json.loads(r.text)
+    total = 0
+    for d in data['dataEntry']:
+        values =  d['values']
+        for k,v in values.items():
+            if k  == prediction_feature:
+                if v != None:
+                    total = total+1
+    return total

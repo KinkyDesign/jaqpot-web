@@ -11,14 +11,14 @@ from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
 from elasticsearch import Elasticsearch
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_dataset2, create_and_clean_dataset
-from jaqpot_ui.get_dataset import paginate_dataset, get_prediction_feature_of_dataset, get_prediction_feature_name_of_dataset
+from jaqpot_ui.get_dataset import paginate_dataset, get_prediction_feature_of_dataset, get_prediction_feature_name_of_dataset, get_number_of_not_null_of_dataset
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalParamsForm, ExperimentalForm, UploadForm, \
     InterlabForm, ValidationSplitForm
 import requests
 import json
 import datetime
 import subprocess
-from jaqpot_ui.get_params import get_params, get_params2, get_params3
+from jaqpot_ui.get_params import get_params, get_params2, get_params3, get_params4
 from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, EMAIL_HOST_USER, SERVER_URL
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect, HttpResponse
@@ -1931,6 +1931,10 @@ def valid_params(request):
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
         vform = ValidationForm()
+        form = UploadFileForm()
+        inputform = InputForm()
+        nform = NoPmmlForm()
+        pmmlform = SelectPmmlForm()
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         al = json.loads(res.text)
@@ -1941,9 +1945,20 @@ def valid_params(request):
             return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
         else:
             features = predicted_features['features']
-            vform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
+            #vform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
+            form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
+            inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
+            inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
+            nform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
+            pmmlform.fields['predicted_feature'].choices = [(f['uri'],f['name']) for f in features]
+        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        pmml=json.loads(res1.text)
+        if pmml:
+            pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
+        else:
+            pmmlform.fields['pmml'].choices = [("",'No pmml')]
 
-        return render(request, "validate.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms,'features':features, 'vform':vform})
+        return render(request, "validate.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms,'features':features, 'vform':vform, 'uploadform':form, 'inputform':inputform, 'nform':nform, 'pmmlform':pmmlform})
     if request.method == 'POST':
         print("post")
         #get parameters of algorithm
@@ -1953,6 +1968,10 @@ def valid_params(request):
         for p in parameters:
             params.append({'name': p, 'value': request.POST.get(''+p)})
         vform = ValidationForm(request.POST)
+        inputform = InputForm(request.POST)
+        form = UploadFileForm(request.POST, request.FILES)
+        nform = NoPmmlForm(request.POST)
+        pmmlform = SelectPmmlForm(request.POST)
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
         headers = {'Accept': 'application/json', 'subjectid': token}
@@ -1969,22 +1988,69 @@ def valid_params(request):
             return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
         else:
             features = predicted_features['features']
-            vform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
+            #vform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
+            form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
+            inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
+            inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
+            nform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
+            pmmlform.fields['predicted_feature'].choices = [(f['uri'],f['name']) for f in features]
+        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        pmml=json.loads(res1.text)
+        if pmml:
+            pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
+        else:
+            pmmlform.fields['pmml'].choices = [("",'No pmml')]
         if not vform.is_valid():
             print vform
-            return render(request, "validate.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'vform':vform,'al':al,})
+            return render(request, "validate.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'vform':vform,'al':al, 'uploadform':form, 'inputform':inputform, 'nform':nform, 'pmmlform':pmmlform})
 
-        prediction_feature =  vform['pred_feature'].value()
+         #get transformations
+        transformations=""
+        prediction_feature = ""
+        if request.POST.get('variables') == "none":
+            print nform
+            if not nform.is_valid():
+                return render(request, "validate.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'vform':vform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
+            transformations = ""
+            prediction_feature = nform['pred_feature'].value()
+        elif request.POST.get('variables') == "pm":
+            transformations = SERVER_URL+'/pmml/'+pmmlform['pmml'].value()
+            prediction_feature = pmmlform['predicted_feature'].value()
+        elif request.POST.get('variables') == "input":
+            prediction_feature = inputform['output'].value()
+            feature_list = inputform['input'].value()
+            if not inputform.is_valid():
+                return render(request, "validate.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'vform':vform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
+            headers = {'Accept': 'application/json',  'subjectid': token}
+            feat=""
+            for f in feature_list:
+                feat += str(f)+','
+            body = {'features': feat}
+            res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
+            response = json.loads(res.text)
+            transformations = SERVER_URL+'/pmml/'+response['_id']
+
+        elif request.POST.get('variables') == "file":
+            prediction_feature = form['feature'].value()
+            if form.is_valid:
+                if 'file' in request.FILES:
+                    pmml= request.FILES['file'].read()
+                    print pmml
+                    headers = {'Content-Type': 'application/xml',  'subjectid': token }
+                    res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
+                    print res.text
+                    response = json.loads(res.text)
+                    transformations = SERVER_URL+'/pmml/'+response['_id']
+                else:
+                    return render(request, "validate.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'vform':vform, 'features':features, 'inputform': inputform, 'nform': nform})
+
         folds = vform['folds'].value()
         stratify = vform['stratify'].value()
-        '''if stratify != "":
-            seed = "5"
-        else:
-            seed = "" '''
+
         print prediction_feature
         print params
 
-        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'stratify': stratify,}
+        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'stratify': stratify, 'transformations':transformations,}
 
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/validation/training_test_cross', headers=headers, data=body)
@@ -2020,7 +2086,7 @@ def valid_split(request):
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
             #redirect to error page
-            return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
+            return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features,})
         else:
             features = predicted_features['features']
             #vform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
@@ -2035,7 +2101,7 @@ def valid_split(request):
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
         else:
             pmmlform.fields['pmml'].choices = [("",'No pmml')]
-
+        print al
         return render(request, "validate_split.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms,'features':features, 'vform':vform, 'uploadform':form, 'inputform':inputform, 'nform':nform, 'pmmlform':pmmlform})
     if request.method == 'POST':
         print("post")
@@ -2055,7 +2121,7 @@ def valid_split(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         al = json.loads(res.text)
-        params, al = get_params3(request, parameters, al)
+        params, al = get_params4(request, parameters, al)
 
         res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid':token})
         predicted_features = json.loads(res2.text)
@@ -2070,9 +2136,16 @@ def valid_split(request):
             inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
             nform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
             pmmlform.fields['predicted_feature'].choices = [(f['uri'],f['name']) for f in features]
+        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        pmml=json.loads(res1.text)
+        if pmml:
+            pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
+        else:
+            pmmlform.fields['pmml'].choices = [("",'No pmml')]
+        print al
         if not vform.is_valid():
-            print vform
-            return render(request, "validate_split.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'vform':vform,'al':al,})
+            print al
+            return render(request, "validate_split.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'vform':vform,'al':al, 'parameters':params, 'uploadform':form, 'inputform':inputform, 'nform':nform, 'pmmlform':pmmlform})
         #get transformations
         transformations=""
         prediction_feature = ""
@@ -2089,7 +2162,7 @@ def valid_split(request):
             prediction_feature = inputform['output'].value()
             feature_list = inputform['input'].value()
             if not inputform.is_valid():
-                return render(request, "validate_split.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
+                return render(request, "validate_split.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'vform':vform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
             headers = {'Accept': 'application/json',  'subjectid': token}
             feat=""
             for f in feature_list:
@@ -2111,7 +2184,7 @@ def valid_split(request):
                     response = json.loads(res.text)
                     transformations = SERVER_URL+'/pmml/'+response['_id']
                 else:
-                    return render(request, "validate_split.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'nform': nform})
+                    return render(request, "validate_split.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'vform':vform, 'features':features, 'inputform': inputform, 'nform': nform})
 
          #get scaling
         scaling=""
@@ -2125,9 +2198,10 @@ def valid_split(request):
         split_ratio = vform['split_ratio'].value()
 
         print prediction_feature
+        params = json.dumps(params)
         print params
 
-        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio}
+        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio}
         print body
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/validation/training_test_split', headers=headers, data=body)
@@ -2515,6 +2589,7 @@ def experimental_params(request):
             #body = { 'scaling': scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
             #body
             print model_detail
+
             return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': params })
 
 def exp_submit(request):
@@ -2617,6 +2692,11 @@ def exp_iter(request):
                         par.update({k:v})
                 params = par
             prediction_feature = get_prediction_feature_of_dataset(dataset, token)
+            total=get_number_of_not_null_of_dataset(dataset, token, prediction_feature)
+            if total < 4:
+                error="You should change the prediction feature of 4 compounds at least."
+                return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':dataset, 'params': params, 'error':error })
+
             body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': "", 'doa': "", 'title': "", 'description':"", 'transformations':"", 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': False}
             print('----')
             print body

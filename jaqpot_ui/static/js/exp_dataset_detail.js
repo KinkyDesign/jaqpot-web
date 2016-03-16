@@ -96,7 +96,6 @@ $('[data-toggle="tool"]').tooltip({
                 data: { 'data': data, 'dataset_name': JSON.stringify(DATASET_NAME) },
                 //data: {queryData : JSON.stringify({'data': data, 'dataset_name': DATASET_NAME})},
                 success: function(data){
-                    alert(data)
                     window.location = '/exp_iter?dataset=' + data;
 
                 },
