@@ -76,6 +76,12 @@ class ValidationForm(forms.Form):
     folds = forms.ChoiceField(widget = forms.Select(), choices=[( '3', '3'), ('5', '5'), ('10', '10')])
     stratify = forms.ChoiceField(widget = forms.Select(), choices=[( ' ', 'None'), ('1', '1'), ('2', '2')])
 
+class ValidationSplitForm(forms.Form):
+    scaling = forms.ChoiceField(widget = forms.Select(), choices=[( 'scaling1', 'None' ), ('scaling2', 'Scaling between zero and one'), ('scaling3', 'Normalization')])
+    variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'None')])
+    split_ratio = forms.CharField(required=True, error_messages={'required': 'Please enter split ratio.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))
+
+
 class ExperimentalParamsForm(forms.Form):
     levels = forms.CharField(required=True, error_messages={'required': 'Please enter levels.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))
     nVars = forms.CharField(required=True, error_messages={'required': 'Please enter nVars.'}, widget=forms.TextInput(attrs={'style': "margin:5px;"}))

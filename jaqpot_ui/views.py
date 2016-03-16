@@ -13,7 +13,7 @@ from elasticsearch import Elasticsearch
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_dataset2, create_and_clean_dataset
 from jaqpot_ui.get_dataset import paginate_dataset, get_prediction_feature_of_dataset, get_prediction_feature_name_of_dataset
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalParamsForm, ExperimentalForm, UploadForm, \
-    InterlabForm
+    InterlabForm, ValidationSplitForm
 import requests
 import json
 import datetime
@@ -1798,6 +1798,8 @@ def validate(request):
     username = request.session.get('username', '')
     page = request.GET.get('page')
     last = request.GET.get('last')
+    method = request.GET.get('method')
+    request.session['method'] = method
     if token:
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
@@ -1837,12 +1839,14 @@ def validate(request):
         proposed = []
         for p in proposed_data:
             proposed.append({'name': p['_id'], 'meta': p['meta'] })
-        return render(request, "choose_dataset_validate.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed': proposed})
+        return render(request, "choose_dataset_validate.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed': proposed,})
 
 #choose dataset for validation
 def choose_dataset_validate(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    method = request.session.get('method', '')
+    print method
     if token:
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
@@ -1907,11 +1911,16 @@ def choose_dataset_validate(request):
         else:
             request.session['alg'] = algorithms[0]['alg']
             request.session['data'] = dataset
-            return redirect('/valid_params', {'token': token, 'username': username,})
+            if method == "cross":
+                return redirect('/valid_params', {'token': token, 'username': username,})
+            elif method == "split":
+                return redirect('/valid_split', {'token': token, 'username': username,})
 
 def valid_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    method = request.session.get('method', '')
+    print method
     if token:
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
@@ -1984,6 +1993,251 @@ def valid_params(request):
         print task_id
         return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
 
+
+def valid_split(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    method = request.session.get('method', '')
+    print method
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
+    if request.method == 'GET':
+        dataset = request.session.get('data', '')
+        algorithms = request.session.get('alg', '')
+        vform = ValidationSplitForm()
+        form = UploadFileForm()
+        inputform = InputForm()
+        nform = NoPmmlForm()
+        pmmlform = SelectPmmlForm()
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        al = json.loads(res.text)
+        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2',headers={'subjectid': token})
+        predicted_features = json.loads(res2.text)
+        if str(res2) != "<Response [200]>":
+            #redirect to error page
+            return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
+        else:
+            features = predicted_features['features']
+            #vform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
+            form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
+            inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
+            inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
+            nform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
+            pmmlform.fields['predicted_feature'].choices = [(f['uri'],f['name']) for f in features]
+        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        pmml=json.loads(res1.text)
+        if pmml:
+            pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
+        else:
+            pmmlform.fields['pmml'].choices = [("",'No pmml')]
+
+        return render(request, "validate_split.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms,'features':features, 'vform':vform, 'uploadform':form, 'inputform':inputform, 'nform':nform, 'pmmlform':pmmlform})
+    if request.method == 'POST':
+        print("post")
+        #get parameters of algorithm
+        params=[]
+        print request.POST
+        parameters = request.POST.getlist('parameters')
+        for p in parameters:
+            params.append({'name': p, 'value': request.POST.get(''+p)})
+        vform = ValidationSplitForm(request.POST)
+        inputform = InputForm(request.POST)
+        form = UploadFileForm(request.POST, request.FILES)
+        nform = NoPmmlForm(request.POST)
+        pmmlform = SelectPmmlForm(request.POST)
+        dataset = request.session.get('data', '')
+        algorithms = request.session.get('alg', '')
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        al = json.loads(res.text)
+        params, al = get_params3(request, parameters, al)
+
+        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid':token})
+        predicted_features = json.loads(res2.text)
+
+        if str(res2) != "<Response [200]>":
+            #redirect to error page
+            return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
+        else:
+            features = predicted_features['features']
+            form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
+            inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
+            inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
+            nform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
+            pmmlform.fields['predicted_feature'].choices = [(f['uri'],f['name']) for f in features]
+        if not vform.is_valid():
+            print vform
+            return render(request, "validate_split.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'vform':vform,'al':al,})
+        #get transformations
+        transformations=""
+        prediction_feature = ""
+        if request.POST.get('variables') == "none":
+            print nform
+            if not nform.is_valid():
+                return render(request, "validate_split.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'vform':vform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
+            transformations = ""
+            prediction_feature = nform['pred_feature'].value()
+        elif request.POST.get('variables') == "pm":
+            transformations = SERVER_URL+'/pmml/'+pmmlform['pmml'].value()
+            prediction_feature = pmmlform['predicted_feature'].value()
+        elif request.POST.get('variables') == "input":
+            prediction_feature = inputform['output'].value()
+            feature_list = inputform['input'].value()
+            if not inputform.is_valid():
+                return render(request, "validate_split.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
+            headers = {'Accept': 'application/json',  'subjectid': token}
+            feat=""
+            for f in feature_list:
+                feat += str(f)+','
+            body = {'features': feat}
+            res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
+            response = json.loads(res.text)
+            transformations = SERVER_URL+'/pmml/'+response['_id']
+
+        elif request.POST.get('variables') == "file":
+            prediction_feature = form['feature'].value()
+            if form.is_valid:
+                if 'file' in request.FILES:
+                    pmml= request.FILES['file'].read()
+                    print pmml
+                    headers = {'Content-Type': 'application/xml',  'subjectid': token }
+                    res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
+                    print res.text
+                    response = json.loads(res.text)
+                    transformations = SERVER_URL+'/pmml/'+response['_id']
+                else:
+                    return render(request, "validate_split.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'nform': nform})
+
+         #get scaling
+        scaling=""
+        if request.POST.get('scaling') == "scaling1":
+            scaling=""
+        elif request.POST.get('scaling') == "scaling2":
+            scaling=SERVER_URL+'/algorithm/scaling'
+        elif request.POST.get('scaling') == "scaling3":
+            scaling=SERVER_URL+'/algorithm/standarization'
+
+        split_ratio = vform['split_ratio'].value()
+
+        print prediction_feature
+        print params
+
+        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio}
+        print body
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.post(SERVER_URL+'/validation/training_test_split', headers=headers, data=body)
+        print res.text
+        task_id = json.loads(res.text)['_id']
+        print task_id
+        return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+
+#External validation
+def external_validation(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    page = request.GET.get('page')
+    last = request.GET.get('last')
+    method = request.GET.get('method')
+    request.session['method'] = method
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
+    if request.method == 'GET':
+        dataset=[]
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        #get total number of datasets
+        res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        total_datasets= int(res.headers.get('total'))
+        if total_datasets%20 == 0:
+            last = total_datasets/20
+        else:
+            last = (total_datasets/20)+1
+
+        if page:
+            #page1 is the number of first dataset of page
+            page1=int(page) * 20 - 20
+            k=str(page1)
+            print k
+            if page1 <= 1:
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            else:
+                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+        else:
+            page = 1
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        data= json.loads(res.text)
+        print res.text
+        for d in data:
+            dataset.append({'name': d['_id'], 'meta': d['meta']})
+        print dataset
+        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        proposed_data = json.loads(res1.text)
+        proposed = []
+        for p in proposed_data:
+            proposed.append({'name': p['_id'], 'meta': p['meta'] })
+        return render(request, "choose_dataset_ext_valid.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed': proposed,})
+
+#Choose model for external validation
+def ext_valid_model(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    dataset= request.GET.get('dataset')
+
+    #Check if user is authenticated. Else redirect to login page
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
+    if request.method == 'GET':
+        m = []
+        #get all models
+        headers = {'Accept': 'application/json', "subjectid": token}
+        res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+        list_resp = res.text
+        models = json.loads(res.text)
+        print models
+        for mod in models:
+                m.append({'name': mod['_id'], 'meta': mod['meta']})
+        #Get selected models
+        res1 = requests.get(SERVER_URL+'/model/featured?start=0&max=10', headers=headers)
+        proposed_model = json.loads(res1.text)
+        proposed = []
+        for p in proposed_model:
+            proposed.append({'name': p['_id'], 'meta': p['meta'] })
+        #Display all models for selection
+        return render(request, "ext_validation.html", {'token': token, 'username': username, 'my_models': m, 'proposed':proposed, 'dataset':dataset})
+#
+def get_model_ext_valid(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
+    if request.method == 'GET':
+        model = request.GET.get('model')
+        dataset = request.GET.get('dataset')
+        body = {'test_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'model_uri': SERVER_URL+'/model/'+model,}
+        print body
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        res = requests.post(SERVER_URL+'/validation/test_set_validation', headers=headers, data=body)
+        print res.text
+        task_id = json.loads(res.text)['_id']
+        print task_id
+        return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+
 #Display report after validation
 def report(request):
     token = request.session.get('token', '')
@@ -2021,7 +2275,7 @@ def experimental(request):
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
         #get total number of datasets
-        '''res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
@@ -2039,10 +2293,9 @@ def experimental(request):
         else:
             page = 1
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
-        data= json.loads(res.text)'''
-        res = requests.get(SERVER_URL+'/dataset/ayDPMNB3JcOJAm', headers=headers)
         data= json.loads(res.text)
-        dataset.append({'name': data['_id'], 'meta': data['meta']})
+        for d in data:
+            dataset.append({'name': d['_id'], 'meta': d['meta']})
         res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
         proposed_data = json.loads(res1.text)
         proposed = []

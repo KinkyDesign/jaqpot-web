@@ -15,6 +15,39 @@
         <input type="text" style="margin:5px;" value="{{details.meta.titles.0}}">
     </div>
      {% endif %}
+     {% if details.meta.subjects%}
+            <h6><b>Subjects:</b></h6>
+            {% for d in details.meta.subjects%}
+                <div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{d}}">
+                </div>
+            {% endfor %}
+        {% endif %}
+     {% if details.meta.publishers%}
+            <h6><b>Publishers:</b></h6>
+            {% for d in details.meta.publishers%}
+                <div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{d}}">
+                </div>
+            {% endfor %}
+        {% endif %}
+     {% if details.meta.contributors%}
+            <h6><b>Contributors:</b></h6>
+            {% for d in details.meta.contributors%}
+                <div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{d}}">
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if details.meta.doi %}
+        <div>
+            <label class="align">Doi:</label>
+            <input type="text" style="margin:5px;" value="{{details.meta.doi.0}}">
+        </div>
+        {% endif %}
         {% if details.meta.description %}
         <div>
         <label class="align">Description:</label>
