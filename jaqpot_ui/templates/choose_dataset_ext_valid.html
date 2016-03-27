@@ -16,7 +16,7 @@
             <h3>Example Dataset:</h3>
             <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
         {% for p in proposed %}
-             <a href="/ext_valid_model?dataset={{p.name}}" class="list-group-item">{{p.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{p.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{p.meta.descriptions.0}}</span> </a>
+             <a href="/get_model_ext_valid?dataset={{p.name}}&model={{model}}" class="list-group-item">{{p.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{p.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{p.meta.descriptions.0}}</span> </a>
         {% endfor %}
             </div>
         <div class="publicdataset list-group">
@@ -24,7 +24,7 @@
             <h3>All Datasets:</h3>
             <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
         {% for e in entries2 %}
-             <a href="/ext_valid_model?dataset={{e.name}}" class="list-group-item">{{e.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{e.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{e.meta.descriptions.0}}</span> </a>
+             <a href="/get_model_ext_valid?dataset={{e.name}}&model={{model}}" class="list-group-item">{{e.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{e.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{e.meta.descriptions.0}}</span> </a>
         {% endfor %}
             </div>
             {% get_pages %}

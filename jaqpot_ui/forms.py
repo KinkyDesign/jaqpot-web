@@ -74,14 +74,19 @@ class DatasetForm(forms.Form):
 class ValidationForm(forms.Form):
     #pred_feature = forms.ChoiceField(widget = forms.Select(), choices=[])
     folds = forms.ChoiceField(widget = forms.Select(), choices=[( '3', '3'), ('5', '5'), ('10', '10')])
-    stratify = forms.ChoiceField(widget = forms.Select(), choices=[( ' ', 'None'), ('1', '1'), ('2', '2')])
+    stratify = forms.ChoiceField(widget = forms.Select(), choices=[( ' ', 'None'), ('random', 'random'), ('normal', 'normal')])
     variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'None')])
+    seed = forms.CharField(required=False, error_messages={'required': 'Please enter seed.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))
+    scaling = forms.ChoiceField(widget = forms.Select(), choices=[( 'scaling1', 'None' ), ('scaling2', 'Scaling between zero and one'), ('scaling3', 'Normalization')])
+
 
 class ValidationSplitForm(forms.Form):
     scaling = forms.ChoiceField(widget = forms.Select(), choices=[( 'scaling1', 'None' ), ('scaling2', 'Scaling between zero and one'), ('scaling3', 'Normalization')])
     variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'None')])
     split_ratio = forms.CharField(required=True, error_messages={'required': 'Please enter split ratio.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))
-
+    stratify = forms.ChoiceField(widget = forms.Select(), choices=[( ' ', 'None'), ('random', 'random'), ('normal', 'normal')])
+    seed = forms.CharField(required=False, error_messages={'required': 'Please enter seed.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))
+    folds = forms.ChoiceField(widget = forms.Select(), choices=[( '3', '3'), ('5', '5'), ('10', '10')])
 
 class ExperimentalParamsForm(forms.Form):
     levels = forms.CharField(required=True, error_messages={'required': 'Please enter levels.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))

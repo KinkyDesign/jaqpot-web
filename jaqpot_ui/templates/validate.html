@@ -145,12 +145,19 @@
     <br>
        <div style="float:right; width:50%;">
 
+        <h5>Select scaling method:</h5>
+            {{vform.scaling}}
+
         <h5>Select folds:</h5>
             {{vform.folds}}
 
         <h5>Stratify:</h5>
             {{vform.stratify}}
 
+        <div id="seed" style="display:none;">
+           <h5>Seed:</h5>
+            {{vform.seed}}
+        </div>
         </div>
     <br>
     <input id="validate" type="submit" value="Validate" class="btn bt-red" style="width: 10%; float:left; left:10%;">
@@ -207,6 +214,39 @@
             $("#PMML").hide();
             $("#none").show();
      });
+
+     var strat = $('select[id=id_stratify]').val();
+         if ( strat == "random" ){
+            $( "#seed" ).show();
+            }
+
+
+     $('#id_stratify').change(function() {
+         var strat = $('select[id=id_stratify]').val();
+         if ( strat == "random" ){
+            $( "#seed" ).show();
+            $( "#id_seed" ).val('10');
+         }
+         else{
+            $( "#seed" ).hide();
+            $( "#id_seed" ).val('');
+         }
+     });
+
+    $(document).ready(function() {
+    $('#selectallfeatures').click(function(event) {  //on click
+        if(this.checked) { // check select status
+            $('.input').each(function() { //loop through each checkbox
+                this.checked = true;  //select all checkboxes with class "checkbox1"
+            });
+        }else{
+            $('.input').each(function() { //loop through each checkbox
+                this.checked = false; //deselect all checkboxes with class "checkbox1"
+            });
+        }
+        });
+    });
+
 
 </script>
 {%endblock%}

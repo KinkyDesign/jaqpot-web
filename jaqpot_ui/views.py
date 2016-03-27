@@ -1313,6 +1313,7 @@ def predict_model(request):
         for p in proposed_data:
             proposed.append({'name': p['_id'], 'meta': p['meta'] })
         #Display all datasets for selection
+        mopac = True
         return render(request, "predict.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last, 'model_req': model_req, 'model' : model, 'image':image, 'mopac':mopac, 'proposed':proposed})
     if request.method == 'POST':
         #Get the selected model for prediction from session
@@ -2046,11 +2047,18 @@ def valid_params(request):
 
         folds = vform['folds'].value()
         stratify = vform['stratify'].value()
+        print stratify
+        seed = ""
+        if stratify == "random":
+            seed = vform['seed'].value()
+        print seed
+        scaling = vform['scaling'].value()
+
 
         print prediction_feature
         print params
 
-        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'stratify': stratify, 'transformations':transformations,}
+        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'stratify': stratify, 'transformations':transformations, 'seed':seed, 'scaling':scaling}
 
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/validation/training_test_cross', headers=headers, data=body)
@@ -2197,11 +2205,19 @@ def valid_split(request):
 
         split_ratio = vform['split_ratio'].value()
 
+        folds = vform['folds'].value()
+        stratify = vform['stratify'].value()
+        print stratify
+        seed = ""
+        if stratify == "random":
+            seed = vform['seed'].value()
+        print seed
+
         print prediction_feature
         params = json.dumps(params)
         print params
 
-        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio}
+        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio, 'folds':folds}
         print body
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/validation/training_test_split', headers=headers, data=body)
@@ -2216,6 +2232,7 @@ def external_validation(request):
     username = request.session.get('username', '')
     page = request.GET.get('page')
     last = request.GET.get('last')
+    model= request.GET.get('model')
     method = request.GET.get('method')
     request.session['method'] = method
     if token:
@@ -2257,13 +2274,13 @@ def external_validation(request):
         proposed = []
         for p in proposed_data:
             proposed.append({'name': p['_id'], 'meta': p['meta'] })
-        return render(request, "choose_dataset_ext_valid.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed': proposed,})
+        return render(request, "choose_dataset_ext_valid.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed': proposed, 'model':model})
 
 #Choose model for external validation
 def ext_valid_model(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    dataset= request.GET.get('dataset')
+    #dataset= request.GET.get('dataset')
 
     #Check if user is authenticated. Else redirect to login page
     if token:
@@ -2289,7 +2306,7 @@ def ext_valid_model(request):
         for p in proposed_model:
             proposed.append({'name': p['_id'], 'meta': p['meta'] })
         #Display all models for selection
-        return render(request, "ext_validation.html", {'token': token, 'username': username, 'my_models': m, 'proposed':proposed, 'dataset':dataset})
+        return render(request, "ext_validation.html", {'token': token, 'username': username, 'my_models': m, 'proposed':proposed,})
 #
 def get_model_ext_valid(request):
     token = request.session.get('token', '')
