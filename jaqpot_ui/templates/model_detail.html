@@ -3,50 +3,67 @@
 {% block content %}
 
 <div class="div-table" style="width:100%; display:inline-block;">
-    <h1>Model:</h1>
-    <div  style="float:left;overflow:hidden; white-space:nowrap; text-overflow:ellipsis; width:100%; ">
-    <div>
-        <label class="align">Name:</label>
-        <input type="text" style="margin:5px;" value="{{name}}">
+    <div style="float:right;overflow:hidden; white-space:nowrap; text-overflow:ellipsis; width:20%;">
+        <a href="/external_validation?model={{name}}" class="btn bt-red" style="margin:5px; margin-left:10px;" data-toggle="tool" title="Validate the model">Validate me</a>
+        <a href="/predict_model?model={{name}}" class="btn bt-red" data-toggle="toolleft" title="Predict model" style="margin:3px;right:5%;">Predict</a>
+        <a href="/m_delete?id={{name}}" class="btn bt-red" data-toggle="tool" title="Delete Model" style="margin: 3px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
     </div>
+
+    <h1>Model: <span style="font-size: 12px;">#{{name}}</span></h1>
+
+    <div  style="float:left;overflow:hidden; white-space:nowrap; text-overflow:ellipsis; width:90%; ">
      {% if details.meta.titles %}
         <div>
         <label class="align">Title:</label>
-        <input type="text" style="margin:5px;" value="{{details.meta.titles.0}}">
+        <input type="text" style="margin:5px;width:40%;" value="{{details.meta.titles.0}}">
     </div>
      {% endif %}
-     {% if details.meta.subjects%}
-            <h6><b>Subjects:</b></h6>
-            {% for d in details.meta.subjects%}
-                <div>
-                    <label class="align"></label>
-                    <input type="text" style="margin:5px;" value="{{d}}">
-                </div>
-            {% endfor %}
-        {% endif %}
-     {% if details.meta.publishers%}
-            <h6><b>Publishers:</b></h6>
-            {% for d in details.meta.publishers%}
-                <div>
-                    <label class="align"></label>
-                    <input type="text" style="margin:5px;" value="{{d}}">
-                </div>
-            {% endfor %}
-        {% endif %}
-     {% if details.meta.contributors%}
-            <h6><b>Contributors:</b></h6>
-            {% for d in details.meta.contributors%}
-                <div>
-                    <label class="align"></label>
-                    <input type="text" style="margin:5px;" value="{{d}}">
-                </div>
-            {% endfor %}
-        {% endif %}
+
         {% if details.meta.doi %}
         <div>
             <label class="align">Doi:</label>
-            <input type="text" style="margin:5px;" value="{{details.meta.doi.0}}">
+            <input type="text" style="margin:5px;width:40%;" value="{{details.meta.doi.0}}">
         </div>
+        {% endif %}
+     {% if details.meta.descriptions %}
+            <p><b>Description:</b></p>
+            <textarea class="form-control" rows="4" readonly="readonly" style="margin:5px;width:40%;margin-left:8%;">{{details.meta.descriptions.0}}
+
+            </textarea>
+        {% endif %}
+     {% if details.meta.contributors%}
+            <h6><b>Contributors:</b></h6>
+
+            {% for d in details.meta.contributors%}
+                <!-- <input type="text" style="margin:5px;width:13%;" value="{{d}}"> -->
+                <span class="label" style="font-size:100%;padding: .4em .9em .5em;">{{d}}</span>
+                <!--<div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{d}}">
+                </div> -->
+            {% endfor %}
+        {% endif %}
+        {% if details.meta.publishers%}
+            <h6><b>Publishers:</b></h6>
+            {% for d in details.meta.publishers%}
+                <!-- <input type="text" style="margin:5px;" value="{{d}}"> -->
+                <span class="label" style="font-size:100%;padding: .4em .9em .5em;">{{d}}</span>
+                <!-- <div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{d}}">
+                </div> -->
+            {% endfor %}
+        {% endif %}
+
+        {% if details.meta.subjects%}
+            <h6><b>Subjects:</b></h6>
+            {% for d in details.meta.subjects%}
+                <span class="label label-danger" style="font-size:80%;">{{d}}</span>
+                <!--<div>
+                    <label class="align"></label>
+                    <input type="text" style="margin:5px;" value="{{d}}">
+                </div> -->
+            {% endfor %}
         {% endif %}
         {% if details.meta.description %}
         <div>
@@ -56,15 +73,11 @@
      {% endif %}
      {% if alg %}
     <h4>Algorithm:</h4>
-        {% if alg.meta.descriptions %}
-        <p><b>Description:</b></p>
-            <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;width:99%;">{{alg.meta.descriptions.0}}
-
-            </textarea>
-        {% endif %}
+        <a href="/algorithm_detail?name={{algorithm}}" class="btn bt-red">{{algorithm}}</a>
 
     {% endif %}
     <br>
+    <h4>Features:</h4>
 
      {% if required %}
         <div class="panel" style="background-color: #e6e9ed;">
@@ -172,19 +185,13 @@
             {% endfor %}
         </ul>
     {% endif %}  -->
-        <br>
+        <h4>Representation:</h4>
         <a href="m_pmml?name={{name}}" class="btn bt-red" data-toggle="toolleft" title="Download PMML">PMML</a>
-        <a href="/predict_model?model={{name}}" class="btn bt-red" data-toggle="toolleft" title="Predict model" style="margin:3px;">Predict</a>
-        <a href="/m_delete?id={{name}}" class="btn bt-red" data-toggle="tool" title="Delete Model" style="margin: 3px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
-         <br>
-        <h4>Validations:</h4>
-        <div>
+
+        <!-- <div>
             <a href="#" class="btn bt-red" data-toggle="toolleft" title="Show all test-set validations">Test</a>
             <a href="#" class="btn bt-red" data-toggle="tool" title="Show all cross validations">Cross</a>
-        </div>
-        <div style="float:down;">
-            <a href="#" class="btn bt-red" style="margin:5px; margin-left:10px;" data-toggle="tool" title="Validate the model">Validate me</a>
-        </div>
+        </div> -->
 
     </div>
     <!-- Modal-->

@@ -790,7 +790,7 @@ def model_detail(request):
     for r in required:
         required_feature.append({'feature': r['uri']})
     if request.method == 'GET':
-        return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name, 'alg': alg_details, 'required':required_feature })
+        return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name, 'alg': alg_details, 'required':required_feature, 'algorithm':algorithm})
 
 #Delete selected model
 def model_delete(request):
