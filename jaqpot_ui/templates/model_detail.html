@@ -3,31 +3,31 @@
 {% block content %}
 
 <div class="div-table" style="width:100%; display:inline-block;">
-    <div style="float:right;overflow:hidden; white-space:nowrap; text-overflow:ellipsis; width:20%;">
-        <a href="/external_validation?model={{name}}" class="btn bt-red" style="margin:5px; margin-left:10px;" data-toggle="tool" title="Validate the model">Validate me</a>
-        <a href="/predict_model?model={{name}}" class="btn bt-red" data-toggle="toolleft" title="Predict model" style="margin:3px;right:5%;">Predict</a>
-        <a href="/m_delete?id={{name}}" class="btn bt-red" data-toggle="tool" title="Delete Model" style="margin: 3px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
+    <div style="float:right;overflow:hidden; white-space:nowrap; text-overflow:ellipsis; width:32%;">
+        <a href="/external_validation?model={{name}}" class="btn bt-red btn-lg" style="margin:5px; margin-left:10px;" data-toggle="tool" title="Validate the model"><i class="glyphicon glyphicon-ok" style="margin-right: 10px;"></i>Validate me</a>
+        <a href="/predict_model?model={{name}}" class="btn bt-red btn-lg" data-toggle="tool" title="Predict model" style="margin:3px;right:5%;"><i class="glyphicon glyphicon-play" style="margin-right: 10px;"></i>Predict</a>
+        <a href="/m_delete?id={{name}}" class="btn bt-red btn-lg" data-toggle="tool" title="Delete Model" style="margin: 3px;"><i class="glyphicon glyphicon-remove-sign" style="margin-right: 10px;"></i>Delete</a>
     </div>
 
     <h1>Model: <span style="font-size: 12px;">#{{name}}</span></h1>
 
-    <div  style="float:left;overflow:hidden; white-space:nowrap; text-overflow:ellipsis; width:90%; ">
+    <div  style="float:left;overflow:hidden; white-space:nowrap; text-overflow:ellipsis; width:100%; ">
      {% if details.meta.titles %}
         <div>
         <label class="align">Title:</label>
-        <input type="text" style="margin:5px;width:40%;" value="{{details.meta.titles.0}}">
+        <input type="text" style="margin:5px;width:50%;" value="{{details.meta.titles.0}}">
     </div>
      {% endif %}
 
         {% if details.meta.doi %}
         <div>
             <label class="align">Doi:</label>
-            <input type="text" style="margin:5px;width:40%;" value="{{details.meta.doi.0}}">
+            <input type="text" style="margin:5px;width:50%;" value="{{details.meta.doi.0}}">
         </div>
         {% endif %}
      {% if details.meta.descriptions %}
             <p><b>Description:</b></p>
-            <textarea class="form-control" rows="4" readonly="readonly" style="margin:5px;width:40%;margin-left:8%;">{{details.meta.descriptions.0}}
+            <textarea class="form-control" rows="4" readonly="readonly" style="margin:5px;width:50%;margin-left:8%;">{{details.meta.descriptions.0}}
 
             </textarea>
         {% endif %}
@@ -226,7 +226,7 @@ $('[data-toggle="toolleft"]').tooltip({
 });
 //display tooltip right
 $('[data-toggle="tool"]').tooltip({
-    'placement': 'right'
+    'placement': 'bottom'
 });
 {% if error %}
     //whatever conditions and js code

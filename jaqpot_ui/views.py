@@ -458,7 +458,7 @@ def trainmodel(request):
             dataset.append({'name': d['_id'], 'meta': d['meta']})
         print dataset
         proposed=[]
-        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=70', headers=headers)
         proposed_data = json.loads(res1.text)
         for p in proposed_data:
             proposed.append({'name': p['_id'], 'meta': p['meta']})
@@ -1092,7 +1092,7 @@ def dataset(request):
                 res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=100', headers=headers)
         data= json.loads(res.text)
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
@@ -2835,7 +2835,7 @@ def exp_design(request):
 
 
 #Interlab testing select substance owners
-def interlab_select_substance(request):
+'''def interlab_select_substance(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     if token:
@@ -2891,19 +2891,71 @@ def interlab_select_substance(request):
             res = requests.get(substance_owner+'/substance', headers=headers)
             substances=json.loads(res.text)
             request.session['substances'] = substances
-            return redirect('/interlab_params', {'token': token, 'username': username})
+            return redirect('/interlab_params', {'token': token, 'username': username})'''
+
+#Train model
+def interlab_select_substance(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    page = request.GET.get('page')
+    last = request.GET.get('last')
+    if token:
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        if r.status_code != 200:
+            return redirect('/login')
+    else:
+        return redirect('/login')
+    if request.method == 'GET':
+        dataset=[]
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        #get total number of datasets
+        res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        total_datasets= int(res.headers.get('total'))
+        if total_datasets%20 == 0:
+            last = total_datasets/20
+        else:
+            last = (total_datasets/20)+1
+
+        if page:
+            #page1 is the number of first dataset of page
+            page1=int(page) * 20 - 20
+            k=str(page1)
+            print k
+            if page1 <= 1:
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            else:
+                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+        else:
+            page = 1
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        data = json.loads(res.text)
+        print res.text
+        res = requests.get(SERVER_URL+'/dataset/interlab-dummy', headers=headers)
+        d = json.loads(res.text)
+        dataset.append({'name': d['_id'], 'meta': d['meta']})
+        '''for d in data:
+                dataset.append({'name': d['_id'], 'meta': d['meta']})'''
+        print dataset
+        proposed=[]
+        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        proposed_data = json.loads(res1.text)
+        for p in proposed_data:
+            proposed.append({'name': p['_id'], 'meta': p['meta']})
+        return render(request, "interlab_dataset.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed':proposed})
+
 
 def interlab_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+
     if token:
         r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
         if r.status_code != 200:
             return redirect('/login')
     if request.method == 'GET':
-        #dataset=request.GET.get('dataset')
+        dataset=request.GET.get('dataset')
         form=InterlabForm()
-        dataset = "8aj1O7Vny4uJLl"
+        #dataset = "8aj1O7Vny4uJLl"
         return render(request, "interlab_params.html", {'token': token, 'username': username, 'dataset':dataset, 'form':form})
     if request.method == 'POST':
         dataset=request.GET.get('dataset')

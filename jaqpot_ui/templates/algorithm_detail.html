@@ -3,6 +3,10 @@
 {% block content %}
 
 <div class="div-table" style="width:100%; display:inline-block">
+      <div style="float:right;overflow:hidden; white-space:nowrap; text-overflow:ellipsis; width:12%;">
+          <a href="/algorithm_delete?id={{id}}" class="btn btn-danger btn-lg" data-toggle="tooltip" title="Delete Algorithn" style="margin: 5px;"><i class="glyphicon glyphicon-remove-sign"></i> Delete</a>
+
+      </div>
     <h1>Algorithm Information</h1>
     <div  style="float:left;">
         <!--<div>
@@ -15,22 +19,16 @@
                 <input type="text" style="margin:5px;" value="{{details.meta.titles.0}}">
             </div>
         {% endif %}
-        {% if details.meta.subjects %}
-            <h6><b>Subjects:</b></h6>
-            {% for sub in details.meta.subjects %}
-                <div>
-                    <label class="align"></label>
-                    <input type="text" style="margin:5px;" value="{{sub}}">
-                </div>
-            {% endfor %}
+         {% if details.meta.descriptions %}
+            <p><b>Description:</b></p>
+            <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;">{{details.meta.descriptions.0}}
+
+            </textarea>
         {% endif %}
         {% if details.ontologicalClasses%}
             <h6><b>Ontological classes:</b></h6>
             {% for ont in details.ontologicalClasses %}
-                <div>
-                    <label class="align"></label>
-                    <input type="text" style="margin:5px;" value="{{ont}}">
-                </div>
+                 <span class="label" style="font-size:100%;padding: .4em .9em .5em;">{{ont}}</span>
             {% endfor %}
         {% endif %}
         {% if details.publisher %}
@@ -45,6 +43,13 @@
                 <input type="text" style="margin:5px;" value="{{details.contributor}}">
             </div>
         {% endif %}
+        {% if details.meta.subjects %}
+            <h6><b>Subjects:</b></h6>
+            {% for sub in details.meta.subjects %}
+                 <span class="label label-danger" style="font-size:100%;padding: .4em .9em .5em;">{{sub}}</span>
+            {% endfor %}
+        {% endif %}
+        <br>
         {% if details.date %}
             <div>
                 <label class="align">Date:</label>
@@ -60,20 +65,15 @@
                 </div>
              {% endfor %}
         {% endif %}
-        {% if details.meta.descriptions %}
-            <p><b>Description:</b></p>
-            <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;">{{details.meta.descriptions.0}}
 
-            </textarea>
-        {% endif %}
         {% if details.rights %}
             <p><b>Copyright:</b></p>
             <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;">{{details.rights}}
 
             </textarea>
         {% endif %}
-         <a href="/algorithm_delete?id={{id}}" class="btn btn-danger" data-toggle="tooltip" title="Delete Algorithn" style="margin: 5px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
-         <br>
+        <br>
+
         </div>
 
 
