@@ -1307,7 +1307,7 @@ def predict_model(request):
 
         if len(dataset)< 20:
             last= page
-        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=100', headers=headers)
         proposed_data = json.loads(res1.text)
         proposed = []
         for p in proposed_data:
@@ -2048,18 +2048,26 @@ def valid_params(request):
         folds = vform['folds'].value()
         stratify = vform['stratify'].value()
         print stratify
-        seed = ""
+        seed = 0
         if stratify == "random":
             seed = vform['seed'].value()
         print seed
         scaling = vform['scaling'].value()
+        if scaling == "scaling1":
+            scaling=""
+        elif scaling == "scaling2":
+            scaling=SERVER_URL+'/algorithm/scaling'
+        elif scaling == "scaling3":
+            scaling=SERVER_URL+'/algorithm/standarization'
 
 
         print prediction_feature
         print params
-
-        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'stratify': stratify, 'transformations':transformations, 'seed':seed, 'scaling':scaling}
-
+        if stratify != "random" and "normal":
+            body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'transformations':transformations, 'seed':seed, 'scaling':scaling}
+        else:
+            body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'stratify': stratify, 'transformations':transformations, 'seed':seed, 'scaling':scaling}
+        print body
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/validation/training_test_cross', headers=headers, data=body)
         print res.text
@@ -2205,10 +2213,9 @@ def valid_split(request):
 
         split_ratio = vform['split_ratio'].value()
 
-        folds = vform['folds'].value()
         stratify = vform['stratify'].value()
         print stratify
-        seed = ""
+        seed = 0
         if stratify == "random":
             seed = vform['seed'].value()
         print seed
@@ -2217,7 +2224,7 @@ def valid_split(request):
         params = json.dumps(params)
         print params
 
-        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio, 'folds':folds}
+        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio}
         print body
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/validation/training_test_split', headers=headers, data=body)
@@ -2545,13 +2552,16 @@ def experimental_params(request):
             dataset = request.session.get('data', '')
             title= ""
             description= ""
-            print json.dumps(params)
+            params = json.dumps(params)
+            print params
 
-            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': False}
+
+            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params, 'visible': False}
             print('----')
             print body
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
+            headers = { 'subjectid': token}
+            res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, json=body)
             print res.text
             task_id = json.loads(res.text)['_id']
             print task_id

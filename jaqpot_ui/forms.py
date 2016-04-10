@@ -86,7 +86,6 @@ class ValidationSplitForm(forms.Form):
     split_ratio = forms.CharField(required=True, error_messages={'required': 'Please enter split ratio.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))
     stratify = forms.ChoiceField(widget = forms.Select(), choices=[( ' ', 'None'), ('random', 'random'), ('normal', 'normal')])
     seed = forms.CharField(required=False, error_messages={'required': 'Please enter seed.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))
-    folds = forms.ChoiceField(widget = forms.Select(), choices=[( '3', '3'), ('5', '5'), ('10', '10')])
 
 class ExperimentalParamsForm(forms.Form):
     levels = forms.CharField(required=True, error_messages={'required': 'Please enter levels.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))

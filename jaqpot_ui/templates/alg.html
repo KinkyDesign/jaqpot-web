@@ -48,12 +48,27 @@
                         {% if p.allowedValues %}
                         <select name="{{p.name}}" >
                             {% for s in p.allowedValues %}
+                            {% if s|get_type == "list" %}
+                            <option value="{{s.0}}" {% if p.value == s %} selected {% endif %}>{{s.0}}</option>
+                            {% else %}
                             <option value="{{s}}" {% if p.value == s %} selected {% endif %}>{{s}}</option>
+                            {% endif %}
                             {% endfor %}
                             <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
                         </select>
                         {% elif p.minValue %}
-                        <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
+                        {% if p.value|get_type == "list" %}
+                                {% if p.value.0|get_type == "unicode" %}
+                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|joinby:','}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                {% elif p.value.0|get_type == "int" %}
+                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value.0|intiger}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                {%else %}
+                                    <input type="text" name="{{p.name}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                {% endif %}
+                        {% endif %}
                         <p><small><b>Min value:</b>{{p.minValue}}   <b>Max value:</b>{{p.maxValue}}</small></p>
                         <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
                         {% else%}
