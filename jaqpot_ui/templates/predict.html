@@ -17,24 +17,36 @@
         <h1>Select dataset for prediction:</h1>
         <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
         <br>
+       <div class="list-group">
+                 <h3>Example Datasets:</h3>
+                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+                  {% for p in proposed %}
 
-       <h3>Example datasets:</h3>
-       <label class="datasets" style="background-color:#cf2323;border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </label>
-            {% for p in proposed %}
-                <label class="datasets" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                <input type="radio" name="radio" value="{{p.name}}">{{p.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{% for title in p.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </label>
+                    <a class="list-group-item" style="width:100%;float:left;"><input type="radio" name="radio" value="{{p.name}}">{{p.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{% for title in p.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </label></a>
 
-        {% endfor %}
+                 {% endfor %}
+             </div>
+
         {% load endless %}
-        <h3>All datasets:</h3>
+       <div class="list-group">
+                 <h3>All Datasets:</h3>
+                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+                  {% paginate 20 dataset %}
+                  {% for data in dataset %}
+
+                    <a class="list-group-item" style="width:100%;float:left;"><input type="radio" name="radio" value="{{data.name}}">{{data.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{data.title}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{data.description}}</span> </label></a>
+
+                 {% endfor %}
+             </div>
+       <!-- <h3>All datasets:</h3>
         <label class="datasets" style="background-color:#cf2323;border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
                 Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </label>
             {% paginate 20 dataset %}
             {% for data in dataset %}
                 <label class="datasets" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio" value="{{data.name}}">{{data.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{data.title}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{data.description}}</span> </label>
+                    <input type="radio" name="radio" value="{{data.name}}">{{data.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%"><input type="radio" name="radio" value="{{data.name}}">{{data.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{data.title}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{data.description}}</span></span></label>
 
-            {% endfor %}
+            {% endfor %}  -->
             {% get_pages %}
             <div id="pageNavPosition5" class="pagination">
                 <span class="step-links">
