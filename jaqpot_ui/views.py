@@ -1096,7 +1096,7 @@ def dataset(request):
         data= json.loads(res.text)
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
-        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=100', headers=headers)
         proposed_data = json.loads(res1.text)
         proposed = []
         for p in proposed_data:
@@ -1313,7 +1313,6 @@ def predict_model(request):
         for p in proposed_data:
             proposed.append({'name': p['_id'], 'meta': p['meta'] })
         #Display all datasets for selection
-        mopac = True
         return render(request, "predict.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last, 'model_req': model_req, 'model' : model, 'image':image, 'mopac':mopac, 'proposed':proposed})
     if request.method == 'POST':
         #Get the selected model for prediction from session
@@ -2974,11 +2973,13 @@ def interlab_params(request):
             return render(request, "interlab_params.html", {'token': token, 'username': username, 'dataset':dataset, 'form':form})
         modelname = form['modelname'].value()
         description = form['description'].value()
-        dataset = "http://test.jaqpot.org:8080/jaqpot/services/dataset/interlab"
+        dataset = "http://test.jaqpot.org:8080/jaqpot/services/dataset/interlab-dummy"
         prediction = "https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
         headers = {'Accept': 'application/json', 'subjectid': token}
         body = {'title': modelname, 'descriptions': description, 'dataset_uri': dataset, 'prediction_feature':prediction}
+        print body
         res = requests.post(SERVER_URL+'/interlab/test', headers=headers, data=body)
+        print res.text
         print json.loads(res.text)['_id']
         return redirect('/report?name='+json.loads(res.text)['_id'])
 
