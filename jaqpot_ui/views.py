@@ -810,7 +810,7 @@ def model_delete(request):
     headers = {'Accept': 'application/json', "subjectid": token}
     res = requests.delete(SERVER_URL+'/model/'+id, headers=headers)
     reply = res.text
-    return redirect('/')
+    return redirect('/model')
 
 
 def model_pmml(request):
@@ -1977,7 +1977,8 @@ def valid_params(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         al = json.loads(res.text)
-        params, al = get_params3(request, parameters, al)
+        #params, al = get_params3(request, parameters, al)
+        params, al = get_params4(request, parameters, al)
         #replace al parameters value with request.post
         #al['parameters']= params
         print json.dumps(params)
@@ -2223,7 +2224,7 @@ def valid_split(request):
         params = json.dumps(params)
         print params
 
-        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio}
+        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio, 'stratify':stratify, 'seed':seed}
         print body
         headers = {'Accept': 'application/json', 'subjectid': token}
         res = requests.post(SERVER_URL+'/validation/training_test_split', headers=headers, data=body)

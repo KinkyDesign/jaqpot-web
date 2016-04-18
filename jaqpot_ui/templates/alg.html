@@ -43,10 +43,10 @@
             {% if al.parameters %}
                 <h6><b>Parameters:</b></h6>
                  {% for p in al.parameters%}
-                    <div>
+                    <div >
                         <label class="align">{{p.name}}:</label>
                         {% if p.allowedValues %}
-                        <select name="{{p.name}}" >
+                        <select name="{{p|get:'_id'}}">
                             {% for s in p.allowedValues %}
                             {% if s|get_type == "list" %}
                             <option value="{{s.0}}" {% if p.value == s %} selected {% endif %}>{{s.0}}</option>
@@ -54,47 +54,55 @@
                             <option value="{{s}}" {% if p.value == s %} selected {% endif %}>{{s}}</option>
                             {% endif %}
                             {% endfor %}
-                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                            <span class="glyphicon glyphicon-info-sign" data-bind=""></span>
                         </select>
                         {% elif p.minValue %}
                         {% if p.value|get_type == "list" %}
                                 {% if p.value.0|get_type == "unicode" %}
-                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|joinby:','}}">
-                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value|joinby:','}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                                    <span class="glyphicon glyphicon-info-sign" data-bind=""></span>
                                 {% elif p.value.0|get_type == "int" %}
-                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value.0|intiger}}">
-                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value.0|intiger}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                                    <span class="glyphicon glyphicon-info-sign" data-bind=""></span>
                                 {%else %}
-                                    <input type="text" name="{{p.name}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
-                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                                    <span class="glyphicon glyphicon-info-sign" data-bind=""></span>
                                 {% endif %}
+                        {%else %}
+                            <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value='{{p.value}}'>
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                            <span class="glyphicon glyphicon-info-sign" data-bind=""></span>
                         {% endif %}
                         <p><small><b>Min value:</b>{{p.minValue}}   <b>Max value:</b>{{p.maxValue}}</small></p>
-                        <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                         {% else%}
                             {% if exp %}
                             {% if p.value|get_type == "list" %}
                                 {% if p.value.0|get_type == "unicode" %}
-                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|joinby:','}}">
-                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value|joinby:','}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                                 {% elif p.value.0|get_type == "int" %}
-                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value.0|intiger}}">
-                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value.0|intiger}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                                 {%else %}
-                                    <input type="text" name="{{p.name}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
-                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                                 {% endif %}
                             {%else%}
-                            <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
-                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                             {%endif %}
                         {% else %}
                             {% if p.value|get_type == "int" %}
-                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|intiger}}">
-                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value|intiger}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                             {%else %}
-                                 <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
-                                 <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                 <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value}}">
+                                 <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                             {% endif %}
                         {% endif %}
                         {% endif %}
