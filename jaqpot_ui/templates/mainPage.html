@@ -91,6 +91,28 @@
                     {% endif %}
                 </div>
               </div>
+              <div class="thumbnail">
+                <img class="img-rounded" style="height:200px;margin-right:2px;" src="static/img/like.jpg">
+
+                <div class="caption text-center">
+                  <h3>QSAR Validation Schemes</h3>
+                  <p>Validate model using known methods.</p>
+                   {% if token %}
+                        <p>
+                            <a href="/validate?method=cross" class="btn bt-red" role="button">Cross</a>
+                            <a href="/validate?method=split" class="btn bt-red" role="button">Data Split</a>
+                            <a href="/ext_valid_model" class="btn bt-red" role="button">External</a>
+                        </p>
+                    {% else %}
+                        <p>
+                            <a href="/login" class="btn bt-red" role="button">Cross</a>
+                            <a href="/login" class="btn bt-red" role="button">Data Split</a>
+                            <a href="/login" class="btn bt-red" role="button">External</a>
+                        </p>
+                    {% endif %}
+
+                </div>
+              </div>
             </div>
             <div class="col-sm-6 col-md-3"  style="width:33%;">
               <div class="thumbnail" style="min-height: 680px; max-height: 690px">
@@ -164,32 +186,6 @@
               </div>
             </div>
 
-
-            <div class="col-sm-6 col-md-3" style="width: 26%;top:75%;position:absolute;">
-              <div class="thumbnail">
-                <img class="img-rounded" style="height:200px;margin-right:2px;" src="static/img/like.jpg">
-
-                <div class="caption text-center">
-                  <h3>QSAR Validation Schemes</h3>
-                  <p>Validate model using known methods.</p>
-                   {% if token %}
-                        <p>
-                            <a href="/validate?method=cross" class="btn bt-red" role="button">Cross</a>
-                            <a href="/validate?method=split" class="btn bt-red" role="button">Data Split</a>
-                            <a href="/ext_valid_model" class="btn bt-red" role="button">External</a>
-                        </p>
-                    {% else %}
-                        <p>
-                            <a href="/login" class="btn bt-red" role="button">Cross</a>
-                            <a href="/login" class="btn bt-red" role="button">Data Split</a>
-                            <a href="/login" class="btn bt-red" role="button">External</a>
-                        </p>
-                    {% endif %}
-
-
-                </div>
-              </div>
-            </div>
             </div>
 
 
