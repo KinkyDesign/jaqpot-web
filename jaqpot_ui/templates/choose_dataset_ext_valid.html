@@ -12,8 +12,9 @@
             {{error}}
          {% endif%}
         {% load endless %}
-        <div class="publicdataset list-group">
-            <h3>Example Dataset:</h3>
+         <h3>Example Dataset:</h3>
+        <div class="publicdataset list-group" style="height: 300px;overflow: scroll;">
+
             <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
         {% for p in proposed %}
              <a href="/get_model_ext_valid?dataset={{p.name}}&model={{model}}" class="list-group-item">{{p.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{p.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{p.meta.descriptions.0}}</span> </a>

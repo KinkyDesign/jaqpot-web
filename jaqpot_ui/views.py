@@ -458,7 +458,7 @@ def trainmodel(request):
             dataset.append({'name': d['_id'], 'meta': d['meta']})
         print dataset
         proposed=[]
-        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=70', headers=headers)
+        res1 = requests.get(SERVER_URL+'/dataset/featured', headers=headers)
         proposed_data = json.loads(res1.text)
         for p in proposed_data:
             proposed.append({'name': p['_id'], 'meta': p['meta']})
@@ -1834,7 +1834,7 @@ def validate(request):
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
         print dataset
-        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        res1 = requests.get(SERVER_URL+'/dataset/featured', headers=headers)
         proposed_data = json.loads(res1.text)
         proposed = []
         for p in proposed_data:
@@ -2278,7 +2278,7 @@ def external_validation(request):
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
         print dataset
-        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        res1 = requests.get(SERVER_URL+'/dataset/featured', headers=headers)
         proposed_data = json.loads(res1.text)
         proposed = []
         for p in proposed_data:
