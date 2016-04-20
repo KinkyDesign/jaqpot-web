@@ -77,7 +77,7 @@
         </div>
 
 </div>  -->
-<div class="row" style="margin: auto;width: 90%;">
+<div class="row" style="margin: auto;width: 85%;">
             <div class="col-sm-6 col-md-3" style="width:33%;">
               <div class="thumbnail">
                 <img class="img-rounded" style="height:200px;" src="static/img/dataset.jpg">
@@ -93,9 +93,9 @@
               </div>
             </div>
             <div class="col-sm-6 col-md-3"  style="width:33%;">
-              <div class="thumbnail">
-                <img class="img-rounded" style="height:200px;width:50%;float:left;" src="static/img/train.jpg">
-                <img class="img-rounded" style="height:200px;width:50%"  src="static/img/nanotube.jpg">
+              <div class="thumbnail" style="min-height: 680px; max-height: 690px">
+                <img class="img-rounded" style="height:550px;width:50%;float:left;" src="static/img/train.jpg">
+                <img class="img-rounded" style="height:550px;width:50%"  src="static/img/nanotube.jpg">
                 <div class="caption text-center">
                   <h3>QSAR Modelling</h3>
                   <p>Train a model or make a prediction.</p>
@@ -113,7 +113,59 @@
                 </div>
               </div>
             </div>
+
             <div class="col-sm-6 col-md-3"  style="width:33%;">
+              <div class="thumbnail" style="min-height: 210px; max-height: 220px">
+                <img class="img-rounded" style="height:80px;"  src="static/img/nanotube.jpg">
+                <div class="caption text-center">
+                  <h3>Experimental Design</h3>
+                  <p>Iteratively optimise an experiment.</p>
+                  {% if token %}
+                        <p>
+                            <a href="/experimental" class="btn bt-red" role="button">Data available</a>
+                            <a href="/exp_design" class="btn bt-red" role="button">No data available</a>
+                        </p>
+                    {% else %}
+                        <p>
+                            <a href="/login" class="btn bt-red" role="button">Data available</a>
+                            <a href="/login" class="btn bt-red" role="button">No data available</a>
+                        </p>
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+             <div class="col-sm-6 col-md-3" style="width:33%;">
+              <div class="thumbnail"  style="min-height: 220px; max-height: 220px">
+                <img class="img-rounded" style="height:80px;" src="static/img/testing.png">
+                <div class="caption text-center">
+                  <h3>Proficiency Testing</h3>
+                  <p>Perform statistical laboratory quality control.</p>
+                   {% if token %}
+                        <p><a href="#" class="btn bt-red" role="button">Interlaboratory Test</a></p>
+                        <!--/interlab_substance-->
+                    {% else %}
+                        <p><a href="/login" class="btn bt-red" role="button">Interlaboratory Test</a></p>
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-3" style="width:33%;">
+              <div class="thumbnail"  style="min-height: 210px; max-height: 220px">
+                <img class="img-rounded" style="height:80px;" src="static/img/similarity.jpg">
+                <div class="caption text-center">
+                  <h3>Similarity based Prediction</h3>
+                  <p>Make a prediction based on existing dataset.</p>
+                   {% if token %}
+                        <p><a href="#" class="btn bt-red" role="button">Read Across</a></p>
+                    {% else %}
+                        <p><a href="/login" class="btn bt-red" role="button">Read Across</a></p>
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+
+
+            <div class="col-sm-6 col-md-3" style="width: 26%;top:70%;position:absolute">
               <div class="thumbnail">
                 <img class="img-rounded" style="height:200px;margin-right:2px;" src="static/img/like.jpg">
 
@@ -138,56 +190,8 @@
                 </div>
               </div>
             </div>
-            <div class="col-sm-6 col-md-3"  style="width:33%;">
-              <div class="thumbnail">
-                <img class="img-rounded" style="height:200px;"  src="static/img/nanotube.jpg">
-                <div class="caption text-center">
-                  <h3>Experimental Design</h3>
-                  <p>Iteratively optimise an experiment.</p>
-                  {% if token %}
-                        <p>
-                            <a href="/experimental" class="btn bt-red" role="button">Data available</a>
-                            <a href="/exp_design" class="btn bt-red" role="button">No data available</a>
-                        </p>
-                    {% else %}
-                        <p>
-                            <a href="/login" class="btn bt-red" role="button">Data available</a>
-                            <a href="/login" class="btn bt-red" role="button">No data available</a>
-                        </p>
-                    {% endif %}
-                </div>
-              </div>
             </div>
-             <div class="col-sm-6 col-md-3" style="width:33%;">
-              <div class="thumbnail">
-                <img class="img-rounded" style="height:200px;" src="static/img/testing.png">
-                <div class="caption text-center">
-                  <h3>Proficiency Testing</h3>
-                  <p>Perform statistical laboratory quality control.</p>
-                   {% if token %}
-                        <p><a href="#" class="btn bt-red" role="button">Interlaboratory Test</a></p>
-                        <!--/interlab_substance-->
-                    {% else %}
-                        <p><a href="/login" class="btn bt-red" role="button">Interlaboratory Test</a></p>
-                    {% endif %}
-                </div>
-              </div>
-            </div>
-            <div class="col-sm-6 col-md-3" style="width:33%;">
-              <div class="thumbnail">
-                <img class="img-rounded" style="height:200px;" src="static/img/similarity.jpg">
-                <div class="caption text-center">
-                  <h3>Similarity based Prediction</h3>
-                  <p>Make a prediction based on existing dataset.</p>
-                   {% if token %}
-                        <p><a href="#" class="btn bt-red" role="button">Read Across</a></p>
-                    {% else %}
-                        <p><a href="/login" class="btn bt-red" role="button">Read Across</a></p>
-                    {% endif %}
-                </div>
-              </div>
-            </div>
-          </div>
+
 
 
 
