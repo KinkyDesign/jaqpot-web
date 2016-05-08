@@ -9,7 +9,7 @@
        <h1>Choose method:</h1>
 
        <input type="radio" name="radio_method" id="radio1" checked value="select_dataset"> Select dataset.<br>
-       <input type="radio" name="radio_method" id="radio2" value="upload_dataset">Upload dataset.<br>
+       <input type="radio" name="radio_method" id="radio2" value="upload_dataset">Insert values.<br>
    </div>
    <br>
 
@@ -22,8 +22,8 @@
                  <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
                   {% for p in proposed %}
 
-                    <a class="list-group-item" style="width:100%;float:left;"><input type="radio" name="radio" value="{{p.name}}" style="display:none">{{p.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{% for title in p.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </label></a>
-
+                    <a class="list-group-item" style="width:100%;float:left;" ><input type="radio" name="radio" value="{{p.name}}" style="display:none">{{p.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{% for title in p.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </label></a>
+                    <!-- onclick="document.getElementById('predict_form').submit();" -->
                  {% endfor %}
              </div>
 

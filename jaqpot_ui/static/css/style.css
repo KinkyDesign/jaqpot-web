@@ -453,6 +453,7 @@ text-overflow: ellipsis;
 /* When the body has the loading class, we turn
    the scrollbar off with overflow:hidden */
 body.loading {
+
     overflow: hidden;
 }
 

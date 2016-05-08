@@ -998,15 +998,9 @@ def algorithm(request):
     if request.method == 'GET':
          algorithms = []
          #get all algorithms
-         headers = {'Accept': 'text/uri-list', 'subjectid': token}
+         headers = {'Accept': 'application/json', 'subjectid': token}
          res = requests.get(SERVER_URL+'/algorithm?start=0&max=10', headers=headers)
-         list_resp = res.text
-         list_resp = list_resp.split('\n')[:]
-         for l in list_resp:
-             l = l.split('/algorithm/')[1]
-             algorithms.append({'name': l})
-         algorithms = json.dumps(algorithms)
-         algorithms = json.loads(algorithms)
+         algorithms = json.loads(res.text)
          print algorithms
 
          return render(request, "algorithm.html", {'token': token, 'username': username, 'algorithms': algorithms})

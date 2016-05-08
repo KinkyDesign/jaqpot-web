@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load templates_extras %}
+
 {% block content %}
 
 <div class="div-table" style="width:100%;">
@@ -9,7 +11,7 @@
              {% paginate 20 algorithms %}
              <div class="list-group">
                 {% for a in algorithms %}
-                    <a href="/algorithm_detail?name={{a.name}}" class="list-group-item">{{a.name}}</a>
+                    <a href="/algorithm_detail?name={{a|get:'_id'}}" class="list-group-item">{{a.meta.titles.0}}</a>
                 {% endfor %}
             </div>
             {% get_pages %}
