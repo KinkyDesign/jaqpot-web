@@ -566,7 +566,8 @@ def change_params(request):
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
         else:
             pmmlform.fields['pmml'].choices = [("",'No pmml')]
-        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid':token})
+        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
+        print res2.text
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
             #redirect to error page
