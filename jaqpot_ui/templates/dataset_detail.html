@@ -5,7 +5,7 @@
 <div class="div-table" style="width:100%; min-height:650px;">
     {% load endless %}
      {% paginate 20 a %}
-    <div>
+     <div>
         <div style="float:left;">
             <h1>Dataset: <span  style="font-size: 20px;">{{data_detail.meta.titles.0}}</span> <span style="font-size: 12px;">#{{name}}</span> </h1>
         </div>
@@ -14,11 +14,10 @@
         </div>
         <input type="search" id="search1" onsearch="myFunction()" style="display:none">
     </div>
-    <br>
-
 
     <div id="details">
-         <a id="info" class="btn bt-red" data-toggle="tool-top" title="Dataset info" style="margin: 3px;margin-top: 6%;margin-left: -40%;"><i class="glyphicon glyphicon-plus-sign"></i></a>
+
+        <a id="info" class="btn bt-red" data-toggle="tool-top" title="Dataset info" style="float:left; clear:left"><i class="glyphicon glyphicon-plus-sign"></i></a>
         <div id="data_details" style="display:none;">
 
           {% if data_detail.meta.doi %}
