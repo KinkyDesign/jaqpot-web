@@ -1,8 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="div-table" style="width:100%;">
+<div class="div-table" style="width:100%;display:inline-block;">
+    {% if server_error %}
+    <h3>Jaqpot server does not respond</h3>
+    <input id="details" value="More Details" class="btn bt-red" style="width: 7%;">
+    <div id="error_details" style="display:none">
+        <h6>Error : {{server_error}}</h6>
+    </div>
+    {% else %}
     <h3>Error: {{error.message}}</h3>
     <h6>{{error.details}}</h6>
+    {% endif %}
     </div>
+
+<script>
+    $('#details').click(function() {
+            if ( $("#error_details").css('display') == 'none' ){
+                 $("#error_details").show();
+            }
+            else{
+
+                $("#error_details").hide();
+            }
+             });
+</script>
 {% endblock %}
