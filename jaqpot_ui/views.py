@@ -596,33 +596,20 @@ def choose_dataset(request):
         return redirect('/login')
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
-        headers = {'Accept': 'text/uri-list', 'subjectid': token}
-        classification_alg = []
+        headers = {'Accept': 'application/json', 'subjectid': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
         except Exception as e:
-            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         error_handling(request, res, token, username)
-        list_resp = res.text
-        list_resp = list_resp.split('\n')[:]
-        for l in list_resp:
-            l = l.split('/algorithm/')[1]
-            classification_alg.append({'name': l})
-        classification_alg = json.dumps(classification_alg)
-        classification_alg = json.loads(classification_alg)
-        regression_alg = []
+        classification_alg=json.loads(res.text)
+        headers = {'Accept': 'application/json', 'subjectid': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
         except Exception as e:
-            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         error_handling(request, res, token, username)
-        list_resp = res.text
-        list_resp = list_resp.split('\n')[:]
-        for l in list_resp:
-            l = l.split('/algorithm/')[1]
-            regression_alg.append({'name': l})
-        regression_alg = json.dumps(regression_alg)
-        regression_alg = json.loads(regression_alg)
+        regression_alg = json.loads(res.text)
         return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset})
     if request.method == 'POST':
         algorithms=[]
@@ -639,33 +626,21 @@ def choose_dataset(request):
         print dataset
         print algorithms
         if algorithms == []:
-            headers = {'Accept': 'text/uri-list', 'subjectid': token}
-            classification_alg = []
+
+            headers = {'Accept': 'application/json', 'subjectid': token}
             try:
                 res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
             except Exception as e:
-                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             error_handling(request, res, token, username)
-            list_resp = res.text
-            list_resp = list_resp.split('\n')[:]
-            for l in list_resp:
-                l = l.split('/algorithm/')[1]
-                classification_alg.append({'name': l})
-            classification_alg = json.dumps(classification_alg)
-            classification_alg = json.loads(classification_alg)
-            regression_alg = []
+            classification_alg = json.loads(res.text)
+            headers = {'Accept': 'application/json', 'subjectid': token}
             try:
                 res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
             except Exception as e:
-                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             error_handling(request, res, token, username)
-            list_resp = res.text
-            list_resp = list_resp.split('\n')[:]
-            for l in list_resp:
-                l = l.split('/algorithm/')[1]
-                regression_alg.append({'name': l})
-            regression_alg = json.dumps(regression_alg)
-            regression_alg = json.loads(regression_alg)
+            regression_alg = json.loads(res.text)
             error = "Please select algorithm."
             return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset, 'error':error})
         else:
@@ -2365,33 +2340,20 @@ def choose_dataset_validate(request):
     form = TrainForm(initial={})
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
-        headers = {'Accept': 'text/uri-list', 'subjectid': token}
-        classification_alg = []
+        headers = {'Accept': 'application/json', 'subjectid': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
         except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         error_handling(request, res, token, username)
-        list_resp = res.text
-        list_resp = list_resp.split('\n')[:]
-        for l in list_resp:
-            l = l.split('/algorithm/')[1]
-            classification_alg.append({'name': l})
-        classification_alg = json.dumps(classification_alg)
-        classification_alg = json.loads(classification_alg)
-        regression_alg = []
+        classification_alg = json.loads(res.text)
+        headers = {'Accept': 'application/json', 'subjectid': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
         except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         error_handling(request, res, token, username)
-        list_resp = res.text
-        list_resp = list_resp.split('\n')[:]
-        for l in list_resp:
-            l = l.split('/algorithm/')[1]
-            regression_alg.append({'name': l})
-        regression_alg = json.dumps(regression_alg)
-        regression_alg = json.loads(regression_alg)
+        regression_alg = json.loads(res.text)
         return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset, 'validate': True})
     if request.method == 'POST':
         algorithms=[]
@@ -2408,33 +2370,19 @@ def choose_dataset_validate(request):
         print dataset
         print algorithms
         if algorithms == []:
-            headers = {'Accept': 'text/uri-list', 'subjectid': token}
-            classification_alg = []
+            headers = {'Accept': 'application/json', 'subjectid': token}
             try:
                 res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             error_handling(request, res, token, username)
-            list_resp = res.text
-            list_resp = list_resp.split('\n')[:]
-            for l in list_resp:
-                l = l.split('/algorithm/')[1]
-                classification_alg.append({'name': l})
-            classification_alg = json.dumps(classification_alg)
-            classification_alg = json.loads(classification_alg)
-            regression_alg = []
+            classification_alg = json.loads(res.text)
             try:
                 res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             error_handling(request, res, token, username)
-            list_resp = res.text
-            list_resp = list_resp.split('\n')[:]
-            for l in list_resp:
-                l = l.split('/algorithm/')[1]
-                regression_alg.append({'name': l})
-            regression_alg = json.dumps(regression_alg)
-            regression_alg = json.loads(regression_alg)
+            regression_alg = json.loads(res.text)
             error = "Please select algorithm."
             return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset, 'error':error, 'validate':True})
         else:
@@ -2475,7 +2423,7 @@ def valid_params(request):
         error_handling(request, res, token, username)
         al = json.loads(res.text)
         try:
-            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2',headers={'subjectid': token})
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2',headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         error_handling(request, res2, token, username)
@@ -2531,7 +2479,7 @@ def valid_params(request):
         #al['parameters']= params
         print json.dumps(params)
         try:
-            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid': token})
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         predicted_features = json.loads(res2.text)
@@ -2672,7 +2620,7 @@ def valid_split(request):
         error_handling(request, res, token, username)
         al = json.loads(res.text)
         try:
-            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2',headers={'subjectid': token})
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2',headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         predicted_features = json.loads(res2.text)
@@ -2723,7 +2671,7 @@ def valid_split(request):
         al = json.loads(res.text)
         params, al = get_params4(request, parameters, al)
         try:
-            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid':token})
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         predicted_features = json.loads(res2.text)
