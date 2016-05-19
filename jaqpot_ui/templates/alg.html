@@ -44,7 +44,7 @@
                 <h6><b>Parameters:</b></h6>
                  {% for p in al.parameters%}
                     <div >
-                        <label class="align" style=" display : inline;padding-right : 4px;">{{p.name}}:</label>
+                        <label class="align">{{p.name}}:</label>
                         {% if p.allowedValues %}
                         <select name="{{p|get:'_id'}}">
                             {% for s in p.allowedValues %}
@@ -56,8 +56,9 @@
                             {% endif %}
                             {% endfor %}
                             <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
-                             <span class="glyphicon glyphicon-info-sign" data-bind=""></span>
-
+                            {% if p.description %}
+                             <span class="glyphicon glyphicon-info-sign" data-bind="" data-toggle="tooltip" data-container="body" title="{{p.description}}"></span>
+                            {% endif %}
                         </select>
 
                         {% elif p.minValue %}
@@ -65,20 +66,28 @@
                                 {% if p.value.0|get_type == "unicode" %}
                                     <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value|joinby:','}}">
                                     <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
-                                    <span class="glyphicon glyphicon-info-sign" data-bind=""></span>
+                                    {% if p.description %}
+                                        <span class="glyphicon glyphicon-info-sign" data-bind="" data-toggle="tooltip" title="{{p.description}}"></span>
+                                    {% endif %}
                                 {% elif p.value.0|get_type == "int" %}
                                     <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value.0|intiger}}">
                                     <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
-                                    <span class="glyphicon glyphicon-info-sign" data-bind=""></span>
+                                    {% if p.description %}
+                                        <span class="glyphicon glyphicon-info-sign" data-bind="" data-toggle="tooltip" title="{{p.description}}"></span>
+                                    {% endif %}
                                 {%else %}
                                     <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
                                     <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
-                                    <span class="glyphicon glyphicon-info-sign" data-bind=""></span>
+                                    {% if p.description %}
+                                        <span class="glyphicon glyphicon-info-sign" data-bind="" data-toggle="tooltip" title="{{p.description}}"></span>
+                                    {% endif %}
                                 {% endif %}
                         {%else %}
                             <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value='{{p.value}}'>
                             <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
-                            <span class="glyphicon glyphicon-info-sign" data-bind=""></span>
+                            {% if p.description %}
+                            <span class="glyphicon glyphicon-info-sign" data-bind="" data-toggle="tooltip" title="{{p.description}}"></span>
+                            {% endif %}
                         {% endif %}
                         <p><small><b>Min value:</b>{{p.minValue}}   <b>Max value:</b>{{p.maxValue}}</small></p>
                         <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
@@ -361,6 +370,13 @@
 
 
 
+});
+$(function () {
+    //display tooltip right
+    $('[data-toggle="tooltip"]').tooltip({
+        container : 'body',
+        placement:'right'
+    });
 });
 </script>
 

@@ -76,10 +76,11 @@ def login(request):
 #User logout
 def logout(request):
     token = request.session.get('token', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
         # send request to logout from auth server
         try:
-            r = requests.post(SERVER_URL + '/aa/logout', headers={'subjectid': token})
+            r = requests.post(SERVER_URL + '/aa/logout', headers=headers)
             if r.status_code == 200:
                 # remove from session
                 request.session['token'] = ''
@@ -99,12 +100,13 @@ def logout(request):
 def task(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
         try:
-            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
             if r.status_code != 200:
                 return redirect('/login')
         except Exception as e:
@@ -1693,10 +1695,10 @@ def predict_model(request):
                 #Get data from excel and create dataset to the appropriate format
                 new_data = create_dataset(data,username,required_res, img_descriptors, mopac_descriptors)
                 json_data = json.dumps(new_data)
-                print json_data
                 headers1 = {'Content-type': 'application/json', 'subjectid': token}
                 try:
                     res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
+                    print res.text
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
                 error_handling(request, res, token, username)
@@ -3071,7 +3073,7 @@ def experimental_params(request):
         else:
             pmmlform.fields['pmml'].choices = [("",'No pmml')]
         try:
-            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid': token})
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         predicted_features = json.loads(res2.text)
@@ -3132,7 +3134,7 @@ def experimental_params(request):
             else:
                 pmmlform.fields['pmml'].choices = [("",'No pmml')]
             try:
-                res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid': token})
+                res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             predicted_features = json.loads(res2.text)
@@ -3216,7 +3218,7 @@ def experimental_params(request):
             print('----')
             print body
             headers = {'Accept': 'application/json', 'subjectid': token}
-            headers = { 'subjectid': token}
+            #headers = { 'subjectid': token}
             try:
                 res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, json=body)
             except Exception as e:
@@ -3310,9 +3312,10 @@ def experimental_params(request):
 def exp_submit(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
         try:
-            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
             if r.status_code != 200:
                 return redirect('/login')
         except Exception as e:
@@ -3392,9 +3395,10 @@ def exp_submit(request):
 def exp_iter(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
         try:
-            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
             if r.status_code != 200:
                 return redirect('/login')
         except Exception as e:
@@ -3525,9 +3529,10 @@ def exp_iter(request):
 def exp_design(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
         try:
-            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
             if r.status_code != 200:
                 return redirect('/login')
         except Exception as e:
@@ -3626,8 +3631,9 @@ def exp_design(request):
 '''def interlab_select_substance(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
         if r.status_code != 200:
             return redirect('/login')
         else:
@@ -3687,9 +3693,10 @@ def interlab_select_substance(request):
     username = request.session.get('username', '')
     page = request.GET.get('page')
     last = request.GET.get('last')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
         try:
-            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
             if r.status_code != 200:
                 return redirect('/login')
         except Exception as e:
@@ -3762,10 +3769,10 @@ def interlab_select_substance(request):
 def interlab_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
         try:
-            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
             if r.status_code != 200:
                 return redirect('/login')
         except Exception as e:
@@ -3800,9 +3807,10 @@ def interlab_params(request):
 def clean_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
         try:
-            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
             if r.status_code != 200:
                 return redirect('/login')
         except Exception as e:
@@ -3840,12 +3848,13 @@ def clean_dataset(request):
 def report_list(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
         try:
-            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
             if r.status_code != 200:
                 return redirect('/login')
         except Exception as e:
@@ -3960,12 +3969,13 @@ def report_list(request):
 def report_delete(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
         try:
-            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
             if r.status_code != 200:
                 return redirect('/login')
         except Exception as e:
