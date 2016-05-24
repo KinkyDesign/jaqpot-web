@@ -30,6 +30,7 @@ import xmltodict
 import elasticsearch
 import wget
 import collections
+from collections import OrderedDict
 
 # Home page
 def index(request):
@@ -1526,6 +1527,7 @@ def dispay_predicted_dataset(request):
             properties[key['compound']['URI']] = []
             properties[key['compound']['URI']].append({"compound": key['compound']['URI']})
             properties[key['compound']['URI']].append({"name": key['compound']['name']})
+            print predicted
             for p in predicted:
                 properties[key['compound']['URI']].append({"prop": p, "value": key['values'][p]})
 
@@ -2949,7 +2951,8 @@ def report(request):
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         error_handling(request, res, token, username)
-        report = json.loads(res.text)
+        report = json.loads(res.text, object_pairs_hook=OrderedDict)
+
         return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })
 
 
@@ -3993,3 +3996,35 @@ def report_delete(request):
     reply = res.text
     print reply
     return redirect('/reports')
+
+#Qrf report
+def qrf_report(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    else:
+        return redirect('/login')
+    uri = request.GET.get('uri')
+    dataset = request.GET.get('dataset')
+    print uri
+    print dataset
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    body={'substance_uri':uri}
+    try:
+        res = requests.post(SERVER_URL+'/dataset/'+dataset+'/qprf', headers=headers, data=body)
+    except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    error_handling(request, res, token, username)
+    response = json.loads(res.text)
+    print response
+    return render(request, "qrf_report.html", {'token': token, 'username': username, 'response': response})

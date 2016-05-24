@@ -18,9 +18,9 @@
                         <th style="background-color: #cf2323;">
                             <p data-toggle="tooltip" data-placement="top" data-container="body" title="{{prop}}">{{prop}}</p>
                         </th>
-
                          {% endif %}
                      {% endfor %}
+                      <th style="background-color: #cf2323;">Report</th>
                  </tr>
              </thead>
              <tbody>
@@ -32,6 +32,8 @@
                                 <td>{{v.value}}</td>
                             {% endif %}
                         {% endfor %}
+                        <td><a href="/qrf_report?uri={{key}}&dataset={{name}}" class="btn bt-red">Qrf Report</a></td>
+
                     </tr>
              {% endfor %}
 
