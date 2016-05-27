@@ -1406,6 +1406,7 @@ def dataset_detail(request):
 
     name = request.GET.get('name', '')
     page = request.GET.get('page', '')
+
     data_detail, last, page = paginate_dataset(request, name, token, username, page)
     if data_detail and last and page:
             a=[]
@@ -1494,6 +1495,15 @@ def dispay_predicted_dataset(request):
     name = request.GET.get('name', '')
     page = request.GET.get('page', '')
     model = request.GET.get('model', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    try:
+        r = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=0&colStart=0&colMax=0', headers=headers)
+    except Exception as e:
+        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    error_handling(request, r, token, username)
+    if r.status_code >= 400:
+            #redirect to error page
+            return render(request, "error.html", {'token': token, 'username': username,'error':json.loads(r.text)})
     data_detail, last, page = paginate_dataset(request, name, token, username, page)
     if data_detail and last and page:
         headers = {'Accept': 'text/uri-list', "subjectid": token}
@@ -3223,7 +3233,7 @@ def experimental_params(request):
             headers = {'Accept': 'application/json', 'subjectid': token}
             #headers = { 'subjectid': token}
             try:
-                res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, json=body)
+                res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             print res.text
@@ -3310,7 +3320,7 @@ def experimental_params(request):
             #body
             print model_detail
 
-            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': params })
+            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': json.loads(params) })
 
 def exp_submit(request):
     token = request.session.get('token', '')
@@ -4026,5 +4036,13 @@ def qrf_report(request):
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     error_handling(request, res, token, username)
     response = json.loads(res.text)
-    print response
-    return render(request, "qrf_report.html", {'token': token, 'username': username, 'response': response})
+    name=response['_id']
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    try:
+        res = requests.get(SERVER_URL+'/report/'+name, headers=headers)
+    except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    error_handling(request, res, token, username)
+    report = json.loads(res.text, object_pairs_hook=OrderedDict)
+
+    return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })
