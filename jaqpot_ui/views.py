@@ -14,7 +14,6 @@ from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_d
 from jaqpot_ui.get_dataset import paginate_dataset, get_prediction_feature_of_dataset, get_prediction_feature_name_of_dataset, get_number_of_not_null_of_dataset
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalParamsForm, ExperimentalForm, UploadForm, \
     InterlabForm, ValidationSplitForm
-from jaqpot_ui.error_handling import error_handling
 import requests
 import json
 import datetime
@@ -44,7 +43,10 @@ def index(request):
 def login(request):
     if request.method == 'GET':
         form = UserForm(initial={'username': ''})
+
         return render(request, "login.html", {'form': form})
+        #return render(request, "login.html", {'form': form})
+        #return render_to_response('login.html', form ,context_instance=RequestContext(request))
     if request.method == 'POST':
         form = UserForm(request.POST)
         if not form.is_valid():
@@ -64,6 +66,7 @@ def login(request):
                     request.session['token'] = token
                     request.session['username'] = username
                     return redirect('/')
+
                 elif r.status_code == 401:
                     error = "Wrong username or password"
                     return render(request, "login.html", {'form': form, 'error': error})
@@ -123,7 +126,8 @@ def task(request):
     headers = {'Accept': 'application/json', 'subjectid': token}
     try:
         res = requests.get(SERVER_URL+'/task?status=RUNNING&start=0&max=10000', headers=headers)
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
     except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     list_resp = json.loads(res.text)
@@ -141,7 +145,8 @@ def task(request):
             res = requests.get(SERVER_URL+'/task?status=COMPLETED&start=0&max=10000', headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         list_resp = json.loads(res.text)
         list_complete=[]
         for l in list_resp:
@@ -155,7 +160,8 @@ def task(request):
             res = requests.get(SERVER_URL+'/task?status=CANCELLED&start=0&max=10000', headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         list_resp = json.loads(res.text)
 
         list_cancelled=[]
@@ -171,7 +177,8 @@ def task(request):
             res = requests.get(SERVER_URL+'/task?status=ERROR&start=0&max=10000', headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         list_resp = json.loads(res.text)
 
         list_error=[]
@@ -188,7 +195,8 @@ def task(request):
             res = requests.get(SERVER_URL+'/task?status=QUEUED&start=0&max=10000', headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         list_resp = json.loads(res.text)
 
         list_queued=[]
@@ -229,7 +237,8 @@ def taskdetail(request):
             res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         data = json.loads(res.text)
         if data['meta']['date']:
             date=data['meta']['date'].split('T')[0]
@@ -244,12 +253,16 @@ def taskdetail(request):
             res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         #output = json.dumps(res.text)
         output = json.loads(res.text)
-        if output['meta']['date']:
-            date=output['meta']['date'].split('T')[0]
-            output['meta']['date'] = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%m/%d/%y')
+        try:
+            if output['meta']['date']:
+                date=output['meta']['date'].split('T')[0]
+                output['meta']['date'] = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%m/%d/%y')
+        except Exception as e:
+             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
 
         return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
 
@@ -277,7 +290,8 @@ def stop_task(request):
             res = requests.delete(SERVER_URL+'/task/'+id, headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         return render(request, "mainPage.html", {'token': token, 'username': username })
 
 #List of all BibTex
@@ -326,7 +340,7 @@ def bibtex(request):
                     r = requests.get(l, headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, r, token, username)
+                if r.status_code >= 400:         return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(r.text)})
                 #get json data
                 info=json.loads(r.text)
                 final_output.append( {"id":id, "info": info })
@@ -364,7 +378,8 @@ def bib_detail(request):
             res = requests.patch(url=SERVER_URL+'/bibtex/'+id, data=body, headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         return HttpResponse(res.text)
 
 
@@ -375,7 +390,8 @@ def bib_detail(request):
             res = requests.get(SERVER_URL+'/bibtex/'+id, headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         list_resp = res.text
         #get json data
         details = json.loads(res.text)
@@ -405,7 +421,8 @@ def bib_delete(request):
             res = requests.delete(SERVER_URL+'/bibtex/'+id, headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         return render(request, "mainPage.html", {'token': token, 'username': username })
 
 #Add a Bibtex
@@ -451,7 +468,8 @@ def add_bibtex(request):
             res = requests.post(SERVER_URL+'/bibtex', data = bibtex_entry, headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         return render(request, "mainPage.html", {'token': token, 'username': username, 'name': name})
 
 def sub(request):
@@ -498,13 +516,15 @@ def user(request):
             res = requests.get(SERVER_URL+'/user/'+ username, headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         contacts = json.loads(res.text)
         try:
             res1 = requests.get(SERVER_URL+'/user/'+ username+'/quota', headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         percentage = json.loads(res1.text)
         percentage = json.dumps(percentage)
         contacts = json.dumps(contacts)
@@ -533,7 +553,8 @@ def trainmodel(request):
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
@@ -550,20 +571,23 @@ def trainmodel(request):
                     res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             else:
                 try:
                     res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         else:
             page = 1
             try:
                 res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
             except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         data= json.loads(res.text)
         print res.text
         for d in data:
@@ -574,7 +598,8 @@ def trainmodel(request):
             res1 = requests.get(SERVER_URL+'/dataset/featured', headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         proposed_data = json.loads(res1.text)
         for p in proposed_data:
             proposed.append({'name': p['_id'], 'meta': p['meta']})
@@ -604,14 +629,16 @@ def choose_dataset(request):
             res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         classification_alg=json.loads(res.text)
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         regression_alg = json.loads(res.text)
         return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset})
     if request.method == 'POST':
@@ -622,7 +649,8 @@ def choose_dataset(request):
                 res = requests.get(SERVER_URL+'/algorithm/'+alg, headers=headers)
             except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             info = json.loads(res.text)
             algorithms.append({"alg":alg, "info":info })
         dataset = request.GET.get('dataset')
@@ -635,14 +663,16 @@ def choose_dataset(request):
                 res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             classification_alg = json.loads(res.text)
             headers = {'Accept': 'application/json', 'subjectid': token}
             try:
                 res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             regression_alg = json.loads(res.text)
             error = "Please select algorithm."
             return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset, 'error':error})
@@ -679,13 +709,15 @@ def change_params(request):
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         al = json.loads(res.text)
         try:
             res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         pmml=json.loads(res1.text)
         if pmml:
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
@@ -695,7 +727,8 @@ def change_params(request):
             res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res2, token, username)
+        if res2.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res2.text)})
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
             #redirect to error page
@@ -728,7 +761,8 @@ def change_params(request):
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         al = json.loads(res.text)
         if request.POST.getlist('parameters'):
             parameters = request.POST.getlist('parameters')
@@ -754,7 +788,8 @@ def change_params(request):
             res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         pmml=json.loads(res1.text)
         if pmml:
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
@@ -764,7 +799,8 @@ def change_params(request):
             res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res2, token, username)
+        if res2.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res2.text)})
         predicted_features = json.loads(res2.text)
 
         if str(res2) != "<Response [200]>":
@@ -804,7 +840,8 @@ def change_params(request):
                 res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
             except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             response = json.loads(res.text)
             transformations = SERVER_URL+'/pmml/'+response['_id']
 
@@ -819,7 +856,8 @@ def change_params(request):
                         res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
                     except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    error_handling(request, res, token, username)
+                    if res.status_code >= 400:
+                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                     response = json.loads(res.text)
                     transformations = SERVER_URL+'/pmml/'+response['_id']
                 else:
@@ -851,7 +889,8 @@ def change_params(request):
             res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         task_id = json.loads(res.text)['_id']
         print task_id
         print json.dumps(params)
@@ -904,13 +943,15 @@ def model(request):
             res = requests.get(SERVER_URL+'/model?start=0&max=1', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         total_models= res.headers.get('total')
         try:
             res = requests.get(SERVER_URL+'/model?start=0&max='+total_models, headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         list_resp = json.loads(res.text)
         #for each model
         for l in list_resp:
@@ -922,7 +963,8 @@ def model(request):
             res1 = requests.get(SERVER_URL+'/model/featured?start=0&max=10', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         proposed_model = json.loads(res1.text)
         proposed = []
         for p in proposed_model:
@@ -952,7 +994,8 @@ def model_detail(request):
         res = requests.get(SERVER_URL+'/model/'+name, headers=headers)
     except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-    error_handling(request, res, token, username)
+    if res.status_code >= 400:
+        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
     details = json.loads(res.text)
     algorithm=details['algorithm']['_id']
     if algorithm:
@@ -960,7 +1003,8 @@ def model_detail(request):
             res = requests.get(SERVER_URL+'/algorithm/'+algorithm, headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         alg_details=json.loads(res.text)
     else:
         alg_details = ""
@@ -968,7 +1012,8 @@ def model_detail(request):
         res = requests.get(SERVER_URL+'/model/'+name+'/required', headers=headers)
     except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-    error_handling(request, res, token, username)
+    if res.status_code >= 400:
+        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
     required= json.loads(res.text)
     required_feature = []
     for r in required:
@@ -999,7 +1044,8 @@ def model_delete(request):
         res = requests.delete(SERVER_URL+'/model/'+id, headers=headers)
     except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-    error_handling(request, res, token, username)
+    if res.status_code >= 400:
+        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
     reply = res.text
     return redirect('/model')
 
@@ -1025,7 +1071,8 @@ def model_pmml(request):
         res = requests.get(SERVER_URL+'/model/'+name+'/pmml', headers=headers)
     except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-    error_handling(request, res, token, username)
+    if res.status_code >= 400:
+        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
     #details = json.loads(res.text)
     if res.status_code == 200:
         pmml = res.text
@@ -1040,7 +1087,8 @@ def model_pmml(request):
             res1 = requests.get(SERVER_URL+'/model/'+name, headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         details = json.loads(res1.text)
         algorithm=details['algorithm']['_id']
         if algorithm:
@@ -1048,7 +1096,8 @@ def model_pmml(request):
                 res2 = requests.get(SERVER_URL+'/algorithm/'+algorithm, headers=headers)
             except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res2, token, username)
+            if res2.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res2.text)})
             alg_details=json.loads(res2.text)
         else:
             alg_details = ""
@@ -1056,7 +1105,8 @@ def model_pmml(request):
             res3 = requests.get(SERVER_URL+'/model/'+name+'/required', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res3, token, username)
+        if res3.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res3.text)})
         required= json.loads(res3.text)
         required_feature = []
         for r in required:
@@ -1095,19 +1145,22 @@ def features(request):
                     res = requests.get(SERVER_URL+'/feature?start=0&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             elif last:
                 try:
                     res = requests.get(SERVER_URL+'/feature?start='+last+'&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             else:
                 try:
                     res = requests.get(SERVER_URL+'/feature?start='+k+'&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
 
         else:
             page = 1
@@ -1115,7 +1168,8 @@ def features(request):
                 res = requests.get(SERVER_URL+'/feature?start=0&max=20', headers=headers)
             except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         features=[]
         if res.status_code == 403:
             error = "This request is forbidden (e.g., no authentication token is provided)"
@@ -1162,7 +1216,8 @@ def feature_details(request):
             res = requests.get(SERVER_URL+'/feature/'+name, headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         feature_detail=json.loads(res.text)
         return render(request, "feature_details.html", {'token': token, 'username': username, 'name': name, 'feature_detail': feature_detail})
 
@@ -1224,7 +1279,8 @@ def feature_delete(request):
             res = requests.delete(SERVER_URL+'/feature/'+id, headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         return render(request, "mainPage.html", {'token': token, 'username': username })
 
 #List of algorithms
@@ -1252,7 +1308,8 @@ def algorithm(request):
             res = requests.get(SERVER_URL+'/algorithm?start=0&max=10', headers=headers)
          except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-         error_handling(request, res, token, username)
+         if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
          algorithms = json.loads(res.text)
          print algorithms
 
@@ -1283,7 +1340,8 @@ def algorithm_detail(request):
             res = requests.get(SERVER_URL+'/algorithm/'+algorithm, headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         #get rdf response and convert to json data with details for bibtex
         details = json.loads(res.text)
         return render(request, "algorithm_detail.html", {'token': token, 'username': username, 'details': details, 'id': algorithm})
@@ -1312,7 +1370,8 @@ def algorithm_delete(request):
             res = requests.delete(SERVER_URL+'/algorithm/'+id, headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         return render(request, "mainPage.html", {'token': token, 'username': username})
 
 #List of dataset
@@ -1343,7 +1402,8 @@ def dataset(request):
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
@@ -1359,20 +1419,23 @@ def dataset(request):
                     res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             else:
                 try:
                     res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         else:
             page = 1
             try:
                 res = requests.get(SERVER_URL+'/dataset?start=0&max=100', headers=headers)
             except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         data= json.loads(res.text)
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
@@ -1380,7 +1443,8 @@ def dataset(request):
             res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=100', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         proposed_data = json.loads(res1.text)
         proposed = []
         for p in proposed_data:
@@ -1472,7 +1536,8 @@ def dataset_delete(request):
         res = requests.delete(SERVER_URL+'/dataset/'+id, headers=headers)
     except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-    error_handling(request, res, token, username)
+    if res.status_code >= 400:
+        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
     reply = res.text
     print reply
     return redirect('/data')
@@ -1500,10 +1565,8 @@ def dispay_predicted_dataset(request):
         r = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=0&colStart=0&colMax=0', headers=headers)
     except Exception as e:
         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-    error_handling(request, r, token, username)
     if r.status_code >= 400:
-            #redirect to error page
-            return render(request, "error.html", {'token': token, 'username': username,'error':json.loads(r.text)})
+        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(r.text)})
     data_detail, last, page = paginate_dataset(request, name, token, username, page)
     if data_detail and last and page:
         headers = {'Accept': 'text/uri-list', "subjectid": token}
@@ -1511,7 +1574,8 @@ def dispay_predicted_dataset(request):
             res = requests.get(SERVER_URL+'/model/'+model+'/predicted', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         predicted =  res.text
         predicted = predicted.splitlines()
         properties={}
@@ -1524,7 +1588,8 @@ def dispay_predicted_dataset(request):
             res = requests.get(SERVER_URL+'/model/'+model+'/dependent', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         dependent =  res.text
         if dependent:
             dependent = dependent.splitlines()
@@ -1566,7 +1631,8 @@ def predict(request):
             res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         list_resp = res.text
         models = json.loads(res.text)
         print models
@@ -1577,7 +1643,8 @@ def predict(request):
             res1 = requests.get(SERVER_URL+'/model/featured?start=0&max=10', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         proposed_model = json.loads(res1.text)
         proposed = []
         for p in proposed_model:
@@ -1617,7 +1684,8 @@ def predict_model(request):
             required_res = requests.get(SERVER_URL+'/model/'+model+'/required', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, required_res, token, username)
+        if required_res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(required_res.text)})
         model_req = json.loads(required_res.text)
         #check if is needed image or mocap
         image, mopac = chech_image_mopac(model_req)
@@ -1630,19 +1698,22 @@ def predict_model(request):
                     res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             elif last:
                 try:
                     res = requests.get(SERVER_URL+'/dataset?start='+last+'&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             else:
                 try:
                     res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
 
         else:
             page = 1
@@ -1650,7 +1721,8 @@ def predict_model(request):
                 res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         data= json.loads(res.text)
         for d in data:
             dataset.append({'name': d['_id'], 'title':d['meta']['titles'][0], 'description': d['meta']['descriptions'][0]})
@@ -1661,7 +1733,8 @@ def predict_model(request):
             res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=100', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         proposed_data = json.loads(res1.text)
         proposed = []
         for p in proposed_data:
@@ -1679,7 +1752,8 @@ def predict_model(request):
             required_res = requests.get(SERVER_URL+'/model/'+selected_model+'/required', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, required_res, token, username)
+        if required_res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(required_res.text)})
         required_res = json.loads(required_res.text)
         print required_res
         if request.is_ajax():
@@ -1713,7 +1787,8 @@ def predict_model(request):
                     print res.text
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                 dataset =  res.text
                 print dataset
                 headers = {'Accept': 'application/json', "subjectid": token}
@@ -1723,7 +1798,8 @@ def predict_model(request):
                     res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                 response = json.loads(res.text)
                 print response
                 id = response['_id']
@@ -1741,7 +1817,8 @@ def predict_model(request):
                     res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                 models = json.loads(res.text)
                 for mod in models:
                         m.append({'name': mod['_id'], 'meta': mod['meta']})
@@ -1753,7 +1830,8 @@ def predict_model(request):
                     res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                 response = json.loads(res.text)
                 print response
                 id = response['_id']
@@ -1769,7 +1847,8 @@ def calculate_image_descriptors(request):
         res = requests.post('http://test.jaqpot.org:8880/imageAnalysis/service/analyze', data=body)
     except Exception as e:
                     return render(request, "error.html", {'server_error':e, })
-    #error_handling(request, res, token, username)
+    #if res.status_code >= 400:
+    #      return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
     response = json.loads(res.text)
     for r in response:
         if r['id'] == "Average Particle":
@@ -1797,7 +1876,8 @@ def calculate_mopac_descriptors(request):
         res = requests.post('http://test.jaqpot.org:8080/algorithms/service/mopac/calculate', headers=headers, data=body)
     except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-    error_handling(request, res, token, username)
+    if res.status_code >= 400:
+        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
     response = json.loads(res.text)
     print response
     return HttpResponse(json.dumps(response))
@@ -1825,7 +1905,8 @@ def search(request):
             res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         list_resp = res.text
         es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
         #get each line
@@ -2014,7 +2095,8 @@ def all_substance(request):
                     res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page='+page1+'&pagesize=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                 substance_owner=json.loads(res.text)
                 substance_owner = substance_owner['facet']
             else:
@@ -2024,7 +2106,8 @@ def all_substance(request):
                     res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                 substance_owner=json.loads(res.text)
                 substance_owner = substance_owner['facet']
     else:
@@ -2050,7 +2133,8 @@ def all_substance(request):
                         res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page='+page1+'&pagesize=20', headers=headers)
                     except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    error_handling(request, res, token, username)
+                    if res.status_code >= 400:
+                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                     substance_owner=json.loads(res.text)
                     substance_owner = substance_owner['facet']
                 else:
@@ -2060,7 +2144,8 @@ def all_substance(request):
                         res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
                     except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    error_handling(request, res, token, username)
+                    if res.status_code >= 400:
+                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                     substance_owner=json.loads(res.text)
                     substance_owner = substance_owner['facet']
                 error = "Please select substance owner."
@@ -2073,7 +2158,8 @@ def all_substance(request):
                     res = requests.get(substance_owner+'/substance', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                 substances=json.loads(res.text)
                 request.session['substances'] = substances
                 return redirect('/select_substance', {'token': token, 'username': username})
@@ -2088,7 +2174,8 @@ def all_substance(request):
                     res = requests.get(substanceowner+'/substance', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                 substances=json.loads(res.text)
                 print substances
                 request.session['substances'] = substances
@@ -2150,7 +2237,8 @@ def get_substance(request):
                 res1 = requests.get(SERVER_URL+'/enm/property/categories', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res1, token, username)
+            if res1.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
             properties=json.loads(res1.text)
             request.session['properties'] = properties
             print data
@@ -2221,7 +2309,8 @@ def select_descriptors(request):
                 res1 = requests.get(SERVER_URL+'/enm/descriptor/categories', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res1, token, username)
+            if res1.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
             descriptors=json.loads(res1.text)
             print descriptors
             return render(request, "descriptors.html", {'token': token, 'username': username, 'descriptors':descriptors, 'form':form})
@@ -2233,7 +2322,8 @@ def select_descriptors(request):
                     res1 = requests.get(SERVER_URL+'/enm/descriptor/categories', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res1, token, username)
+                if res1.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
                 descriptors=json.loads(res1.text)
                 return render(request, "descriptors.html", {'token': token, 'username': username, 'descriptors':descriptors, 'form':form})
             title = form['title'].value()
@@ -2248,14 +2338,16 @@ def select_descriptors(request):
                 res = requests.post(url=SERVER_URL+'/enm/bundle', data=body, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             headers = {'content-type': 'application/json', 'subjectid': token,}
             body = json.dumps({'bundle':res.text, 'descriptors':select_descriptors, 'title': title, 'description':description})
             try:
                 res = requests.post(url=SERVER_URL+'/enm/dataset', headers=headers, data=body)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             response = json.loads(res.text)
             task = response['_id']
             #return redirect('/task', {'token': token, 'username': username})
@@ -2289,7 +2381,8 @@ def validate(request):
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
@@ -2306,20 +2399,23 @@ def validate(request):
                     res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             else:
                 try:
                     res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         else:
             page = 1
             try:
                 res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         data= json.loads(res.text)
         print res.text
         for d in data:
@@ -2329,7 +2425,8 @@ def validate(request):
             res1 = requests.get(SERVER_URL+'/dataset/featured', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         proposed_data = json.loads(res1.text)
         proposed = []
         for p in proposed_data:
@@ -2359,14 +2456,16 @@ def choose_dataset_validate(request):
             res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         classification_alg = json.loads(res.text)
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         regression_alg = json.loads(res.text)
         return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset, 'validate': True})
     if request.method == 'POST':
@@ -2377,7 +2476,8 @@ def choose_dataset_validate(request):
                 res = requests.get(SERVER_URL+'/algorithm/'+alg, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             info = json.loads(res.text)
             algorithms.append({"alg":alg, "info":info })
         dataset = request.GET.get('dataset')
@@ -2389,13 +2489,15 @@ def choose_dataset_validate(request):
                 res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             classification_alg = json.loads(res.text)
             try:
                 res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             regression_alg = json.loads(res.text)
             error = "Please select algorithm."
             return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset, 'error':error, 'validate':True})
@@ -2434,13 +2536,15 @@ def valid_params(request):
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         al = json.loads(res.text)
         try:
             res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2',headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res2, token, username)
+        if res2.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res2.text)})
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
             #redirect to error page
@@ -2457,7 +2561,8 @@ def valid_params(request):
             res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         pmml=json.loads(res1.text)
         if pmml:
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
@@ -2485,7 +2590,8 @@ def valid_params(request):
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         al = json.loads(res.text)
         #params, al = get_params3(request, parameters, al)
         params, al = get_params4(request, parameters, al)
@@ -2512,7 +2618,8 @@ def valid_params(request):
             res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         pmml=json.loads(res1.text)
         if pmml:
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
@@ -2548,7 +2655,8 @@ def valid_params(request):
                 res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             response = json.loads(res.text)
             transformations = SERVER_URL+'/pmml/'+response['_id']
 
@@ -2563,7 +2671,8 @@ def valid_params(request):
                         res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
                     except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    error_handling(request, res, token, username)
+                    if res.status_code >= 400:
+                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                     print res.text
                     response = json.loads(res.text)
                     transformations = SERVER_URL+'/pmml/'+response['_id']
@@ -2598,7 +2707,8 @@ def valid_params(request):
             res = requests.post(SERVER_URL+'/validation/training_test_cross', headers=headers, data=body)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         task_id = json.loads(res.text)['_id']
         print task_id
         return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
@@ -2631,7 +2741,8 @@ def valid_split(request):
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         al = json.loads(res.text)
         try:
             res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2',headers=headers)
@@ -2653,7 +2764,8 @@ def valid_split(request):
             res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         pmml=json.loads(res1.text)
         if pmml:
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
@@ -2681,7 +2793,8 @@ def valid_split(request):
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         al = json.loads(res.text)
         params, al = get_params4(request, parameters, al)
         try:
@@ -2704,7 +2817,8 @@ def valid_split(request):
             res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         pmml=json.loads(res1.text)
         if pmml:
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
@@ -2740,7 +2854,8 @@ def valid_split(request):
                 res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             response = json.loads(res.text)
             transformations = SERVER_URL+'/pmml/'+response['_id']
 
@@ -2755,7 +2870,8 @@ def valid_split(request):
                         res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
                     except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    error_handling(request, res, token, username)
+                    if res.status_code >= 400:
+                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                     response = json.loads(res.text)
                     transformations = SERVER_URL+'/pmml/'+response['_id']
                 else:
@@ -2792,7 +2908,8 @@ def valid_split(request):
             res = requests.post(SERVER_URL+'/validation/training_test_split', headers=headers, data=body)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         task_id = json.loads(res.text)['_id']
         print task_id
         return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
@@ -2823,7 +2940,8 @@ def external_validation(request):
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
@@ -2840,20 +2958,23 @@ def external_validation(request):
                     res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             else:
                 try:
                     res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         else:
             page = 1
             try:
                 res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         data= json.loads(res.text)
         print res.text
         for d in data:
@@ -2863,7 +2984,8 @@ def external_validation(request):
             res1 = requests.get(SERVER_URL+'/dataset/featured', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         proposed_data = json.loads(res1.text)
         proposed = []
         for p in proposed_data:
@@ -2894,7 +3016,8 @@ def ext_valid_model(request):
             res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         list_resp = res.text
         models = json.loads(res.text)
         print models
@@ -2905,7 +3028,8 @@ def ext_valid_model(request):
             res1 = requests.get(SERVER_URL+'/model/featured?start=0&max=10', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         proposed_model = json.loads(res1.text)
         proposed = []
         for p in proposed_model:
@@ -2935,7 +3059,8 @@ def get_model_ext_valid(request):
             res = requests.post(SERVER_URL+'/validation/test_set_validation', headers=headers, data=body)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         task_id = json.loads(res.text)['_id']
         print task_id
         return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
@@ -2960,7 +3085,8 @@ def report(request):
             res = requests.get(SERVER_URL+'/report/'+name, headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         report = json.loads(res.text, object_pairs_hook=OrderedDict)
 
         return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })
@@ -2992,7 +3118,8 @@ def experimental(request):
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
@@ -3008,20 +3135,23 @@ def experimental(request):
                     res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             else:
                 try:
                     res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         else:
             page = 1
             try:
                 res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         data= json.loads(res.text)
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
@@ -3029,7 +3159,8 @@ def experimental(request):
             res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         proposed_data = json.loads(res1.text)
         proposed = []
         for p in proposed_data:
@@ -3067,19 +3198,22 @@ def experimental_params(request):
                 res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-x', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         else:
             try:
                 res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-xy', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         al = json.loads(res.text)
         try:
             res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         pmml=json.loads(res1.text)
         if pmml:
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
@@ -3124,7 +3258,8 @@ def experimental_params(request):
                 res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             al = json.loads(res.text)
             parameters = request.POST.getlist('parameters')
             params, al = get_params(request, parameters, al)
@@ -3140,7 +3275,8 @@ def experimental_params(request):
                 res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res1, token, username)
+            if res1.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
             pmml=json.loads(res1.text)
             if pmml:
                 pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
@@ -3187,7 +3323,8 @@ def experimental_params(request):
                     res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                 response = json.loads(res.text)
                 transformations = SERVER_URL+'/pmml/'+response['_id']
 
@@ -3202,7 +3339,8 @@ def experimental_params(request):
                             res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
                         except Exception as e:
                             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                        error_handling(request, res, token, username)
+                        if res.status_code >= 400:
+                            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                         response = json.loads(res.text)
                         transformations = SERVER_URL+'/pmml/'+response['_id']
                     else:
@@ -3237,7 +3375,8 @@ def experimental_params(request):
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             print res.text
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             task_id = json.loads(res.text)['_id']
             print task_id
             #return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
@@ -3245,7 +3384,8 @@ def experimental_params(request):
                 res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res1, token, username)
+            if res1.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
             status = json.loads(res1.text)['status']
             while (status != "COMPLETED"):
                 if(status == "ERROR"):
@@ -3257,7 +3397,8 @@ def experimental_params(request):
                         res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
                     except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    error_handling(request, res1, token, username)
+                    if res1.status_code >= 400:
+                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
                     status = json.loads(res1.text)['status']
             #model: model/{id}
             model = json.loads(res1.text)['result']
@@ -3268,13 +3409,15 @@ def experimental_params(request):
                 res2 = requests.post(SERVER_URL+'/'+model, headers=headers, data=body)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res2, token, username)
+            if res2.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res2.text)})
             task_id = json.loads(res2.text)['_id']
             try:
                 res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res3, token, username)
+            if res3.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res3.text)})
             status = json.loads(res3.text)['status']
             print task_id
             while (status != "COMPLETED"):
@@ -3288,7 +3431,8 @@ def experimental_params(request):
                         res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
                     except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    error_handling(request, res4, token, username)
+                    if res4.status_code >= 400:
+                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res4.text)})
                     status = json.loads(res4.text)['status']
 
             new_dataset = json.loads(res4.text)['result']
@@ -3300,13 +3444,15 @@ def experimental_params(request):
                 res5 = requests.get(SERVER_URL+'/dataset/'+new_dataset, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res5, token, username)
+            if res5.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res5.text)})
             data_detail = json.loads(res5.text)
             try:
                 res6 = requests.get(SERVER_URL+'/'+model, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res6, token, username)
+            if res6.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res6.text)})
             model_detail = json.loads(res6.text)
             predictedFeatures = model_detail['predictedFeatures']
             '''res7 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
@@ -3351,7 +3497,8 @@ def exp_submit(request):
             res = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         prediction_feature = get_prediction_feature_of_dataset(dataset, token)
         print prediction_feature
         #import pdb;pdb.set_trace();
@@ -3396,7 +3543,8 @@ def exp_submit(request):
             res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data, timeout=10)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         print res.text
         data = res.text.split('/dataset/')[1]
         print data
@@ -3424,7 +3572,8 @@ def exp_iter(request):
                 res1 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res1, token, username)
+            if res1.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
             data_detail = json.loads(res1.text)
             model = json.loads(res1.text)['byModel']
             #model = 'A0fU5rK7B64r'
@@ -3432,7 +3581,8 @@ def exp_iter(request):
                 res = requests.get(SERVER_URL+'/model/'+model, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             model_detail = json.loads(res.text)
             predictedFeatures = model_detail['predictedFeatures']
             algorithms = json.loads(res.text)['algorithm']['_id']
@@ -3467,7 +3617,8 @@ def exp_iter(request):
                 res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res1, token, username)
+            if res1.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
             status = json.loads(res1.text)['status']
             while (status != "COMPLETED"):
                 if(status == "ERROR"):
@@ -3479,7 +3630,8 @@ def exp_iter(request):
                         res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
                     except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    error_handling(request, res1, token, username)
+                    if res1.status_code >= 400:
+                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
                     status = json.loads(res1.text)['status']
             #model: model/{id}
             model = json.loads(res1.text)['result']
@@ -3488,13 +3640,15 @@ def exp_iter(request):
                 res2 = requests.post(SERVER_URL+'/'+model, headers=headers, data=body)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res2, token, username)
+            if res2.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res2.text)})
             task_id = json.loads(res2.text)['_id']
             try:
                 res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res3, token, username)
+            if res3.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res3.text)})
             status = json.loads(res3.text)['status']
 
             while (status != "COMPLETED"):
@@ -3506,7 +3660,8 @@ def exp_iter(request):
                         res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
                     except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    error_handling(request, res4, token, username)
+                    if res4.status_code >= 400:
+                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res4.text)})
                     status = json.loads(res4.text)['status']
 
             new_dataset = json.loads(res4.text)['result']
@@ -3516,20 +3671,23 @@ def exp_iter(request):
                 res5 = requests.get(SERVER_URL+'/dataset/'+new_dataset, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res5, token, username)
+            if res5.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res5.text)})
             data_detail = json.loads(res5.text)
             try:
                 res6 = requests.get(SERVER_URL+'/'+model, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res6, token, username)
+            if res6.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res6.text)})
             model_detail = json.loads(res6.text)
             predictedFeatures = model_detail['predictedFeatures']
             try:
                 res7 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res7, token, username)
+            if res7.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res7.text)})
             d_detail = json.loads(res7.text)
             prediction_feature = get_prediction_feature_of_dataset(new_dataset, token)
             print data_detail
@@ -3557,7 +3715,8 @@ def exp_design(request):
             res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         print json.loads(res.text)
         al = json.loads(res.text)
 
@@ -3574,7 +3733,8 @@ def exp_design(request):
                 res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             al = json.loads(res.text)
             parameters = request.POST.getlist('parameters')
 
@@ -3586,7 +3746,8 @@ def exp_design(request):
                 res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers, data=body)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             print res.text
             task_id = json.loads(res.text)['_id']
             print task_id
@@ -3594,7 +3755,8 @@ def exp_design(request):
                 res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res1, token, username)
+            if res1.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
             status = json.loads(res1.text)['status']
             while (status != "COMPLETED"):
                 if(status == "ERROR"):
@@ -3605,7 +3767,8 @@ def exp_design(request):
                         res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
                     except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    error_handling(request, res1, token, username)
+                    if res1.status_code >= 400:
+                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
                     status = json.loads(res1.text)['status']
             #model: model/{id}
             model = json.loads(res1.text)['result']
@@ -3613,13 +3776,15 @@ def exp_design(request):
                 res2 = requests.post(SERVER_URL+'/'+model, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res2, token, username)
+            if res2.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res2.text)})
             task_id = json.loads(res2.text)['_id']
             try:
                 res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res3, token, username)
+            if res3.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res3.text)})
             status = json.loads(res3.text)['status']
 
             while (status != "COMPLETED"):
@@ -3631,7 +3796,8 @@ def exp_design(request):
                         res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
                     except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    error_handling(request, res4, token, username)
+                    if res4.status_code >= 400:
+                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res4.text)})
                     status = json.loads(res4.text)['status']
 
             dataset = json.loads(res4.text)['result']
@@ -3724,7 +3890,8 @@ def interlab_select_substance(request):
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
@@ -3741,27 +3908,31 @@ def interlab_select_substance(request):
                     res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             else:
                 try:
                     res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         else:
             page = 1
             try:
                 res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         data = json.loads(res.text)
         print res.text
         try:
             res = requests.get(SERVER_URL+'/dataset/interlab-dummy', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         d = json.loads(res.text)
         dataset.append({'name': d['_id'], 'meta': d['meta']})
         '''for d in data:
@@ -3772,7 +3943,8 @@ def interlab_select_substance(request):
             res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res1, token, username)
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         proposed_data = json.loads(res1.text)
         for p in proposed_data:
             proposed.append({'name': p['_id'], 'meta': p['meta']})
@@ -3811,7 +3983,8 @@ def interlab_params(request):
             res = requests.post(SERVER_URL+'/interlab/test', headers=headers, data=body)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         print res.text
         print json.loads(res.text)['_id']
         return redirect('/report?name='+json.loads(res.text)['_id'])
@@ -3837,7 +4010,8 @@ def clean_dataset(request):
             res = requests.get(SERVER_URL+'/dataset/ayDPMNB3JcOJAm', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         data= json.loads(res.text)
         prediction_feature = get_prediction_feature_of_dataset(dataset, token)
         suggested=""
@@ -3852,7 +4026,8 @@ def clean_dataset(request):
             res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         dataset = res.text.split('/dataset/')[1]
         print dataset
         return redirect('/dataset?dataset=' +dataset)
@@ -3885,7 +4060,8 @@ def report_list(request):
             res = requests.get(SERVER_URL+'/report?start=0&max=20', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        error_handling(request, res, token, username)
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         total_reports= int(res.headers.get('total'))
         if total_reports%20 == 0:
             last = total_reports/20
@@ -3901,20 +4077,23 @@ def report_list(request):
                     res = requests.get(SERVER_URL+'/report?start=0&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             else:
                 try:
                     res = requests.get(SERVER_URL+'/report?start='+k+'&max=20', headers=headers)
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                error_handling(request, res, token, username)
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         else:
             page = 1
             try:
                 res = requests.get(SERVER_URL+'/report?start=0&max=20', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            error_handling(request, res, token, username)
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         data= json.loads(res.text)
         for d in data:
             report.append({'id':d['_id'], 'meta':d['meta']})
@@ -4002,7 +4181,8 @@ def report_delete(request):
         res = requests.delete(SERVER_URL+'/report/'+id, headers=headers)
     except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-    error_handling(request, res, token, username)
+    if res.status_code >= 400:
+        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
     reply = res.text
     print reply
     return redirect('/reports')
@@ -4034,7 +4214,8 @@ def qrf_report(request):
         res = requests.post(SERVER_URL+'/dataset/'+dataset+'/qprf', headers=headers, data=body)
     except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-    error_handling(request, res, token, username)
+    if res.status_code >= 400:
+        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
     response = json.loads(res.text)
     name=response['_id']
     headers = {'Accept': 'application/json', 'subjectid': token}
@@ -4042,7 +4223,11 @@ def qrf_report(request):
         res = requests.get(SERVER_URL+'/report/'+name, headers=headers)
     except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-    error_handling(request, res, token, username)
+
+    if res.status_code >= 400:
+        #redirect to error page
+        return render(request, "error.html", {'token': token, 'username': username,'error':json.loads(res.text) })
     report = json.loads(res.text, object_pairs_hook=OrderedDict)
+    print request
 
     return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })

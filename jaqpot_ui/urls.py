@@ -6,6 +6,7 @@ from jaqpot_ui import views
 
 urlpatterns = patterns('',
                        url(r'^$', views.index, name='home'),
+                       url(r'^login/?next=/$', views.login),
                        url(r'^login', views.login),
                        url(r'^logout', views.logout),
                        url(r'^task', views.task),

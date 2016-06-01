@@ -1,7 +1,5 @@
 from django.shortcuts import render, redirect
 
-from jaqpot_ui.error_handling import error_handling
-
 __author__ = 'evangelie'
 
 import json
@@ -25,7 +23,8 @@ def paginate_dataset(request, name, token, username, page):
         r = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=0&colStart=0&colMax=0', headers=headers)
     except Exception as e:
         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-    error_handling(request, r, token, username)
+    if r.status_code >= 400:
+        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(r.text)})
     data=json.loads(r.text)
     if str(r) != "<Response [200]>":
         #redirect to error page
