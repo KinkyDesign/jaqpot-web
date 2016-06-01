@@ -77,50 +77,119 @@
         </div>
 
 </div>  -->
-<div class="row" style="position: absolute; top:20%; left:15%;">
-            <div class="col-sm-6 col-md-3">
-              <div class="thumbnail">
-                <img class="img-rounded" style="height:200px; -webkit-filter: grayscale(90%);filter: gray;" src="static/img/explore.jpg">
+<div class="row" style="margin: auto;width: 85%;">
+            <div class="col-sm-4">
+              <div class="thumbnail" style="min-height: 330px; max-height: 330px">
+                <img class="img-rounded" style="height:190px;" src="static/img/data.png">
                 <div class="caption text-center">
                   <h3>Create Dataset</h3>
                   <p>Select substances, properties and descriptors.</p>
                    {% if token %}
                         <p><a href="/substance" class="btn bt-red" role="button">Create Dataset</a></p>
                     {% else %}
-                        <p><a href="/login" class="btn bt-red" role="button">Create</a></p>
+                        <p><a href="/login" class="btn bt-red" role="button">Create Dataset</a></p>
                     {% endif %}
                 </div>
               </div>
-            </div>
-            <div class="col-sm-6 col-md-3">
-              <div class="thumbnail">
-                <img class="img-rounded" style="height:200px;" src="static/img/train.jpg">
+              <div class="thumbnail" style="min-height: 330px; max-height: 330px">
+                <img class="img-rounded" style="height:190px;margin-right:2px;" src="static/img/valid.png">
+
                 <div class="caption text-center">
-                  <h3>Train</h3>
-                  <p>Select dataset, algorithm and scaling method.</p>
+                  <h3>NanoQSAR validation schemes</h3>
+                  <p>Validate model using different validation options.</p>
                    {% if token %}
-                        <p><a href="/train" class="btn bt-red" role="button">Train</a></p>
+                        <p>
+                            <a href="/validate?method=cross" class="btn bt-red" role="button">Cross</a>
+                            <a href="/validate?method=split" class="btn bt-red" role="button">Data Split</a>
+                            <a href="/ext_valid_model" class="btn bt-red" role="button">External</a>
+                        </p>
                     {% else %}
-                        <p><a href="/login" class="btn bt-red" role="button">Train</a></p>
+                        <p>
+                            <a href="/login" class="btn bt-red" role="button">Cross</a>
+                            <a href="/login" class="btn bt-red" role="button">Data Split</a>
+                            <a href="/login" class="btn bt-red" role="button">External</a>
+                        </p>
                     {% endif %}
+
                 </div>
               </div>
             </div>
-            <div class="col-sm-6 col-md-3">
-              <div class="thumbnail">
-                <img class="img-rounded" style="height:200px;"  src="static/img/nanotube.jpg">
+            <div class="col-sm-4">
+              <div class="thumbnail" style="min-height: 680px; max-height: 690px">
+                <img class="img-rounded" style="height:550px;width:100%;float:left;margin-bottom:10px;" src="static/img/model.png">
                 <div class="caption text-center">
-                  <h3>Predict</h3>
-                  <p>Select dataset and model for prediction.</p>
-                  {% if token %}
-                        <p><a href="/predict" class="btn bt-red" role="button">Predict</a></p>
+                  <h3>NanoQSAR modelling</h3>
+                  <p>Train a model or make a prediction.</p>
+                   {% if token %}
+                        <p>
+                            <a href="/train" class="btn bt-red" role="button">Train</a>
+                            <a href="/predict" class="btn bt-red" role="button">Predict</a>
+                        </p>
                     {% else %}
-                        <p><a href="/login" class="btn bt-red" role="button">Predict</a></p>
+                        <p>
+                            <a href="/login" class="btn bt-red" role="button">Train</a>
+                            <a href="/login" class="btn bt-red" role="button">Predict</a>
+                        </p>
                     {% endif %}
                 </div>
               </div>
             </div>
-          </div>
+
+            <div class="col-sm-4">
+              <div class="thumbnail" style="min-height: 210px; max-height: 220px">
+                <img class="img-rounded" style="height:80px;"  src="static/img/exp.png">
+                <div class="caption text-center">
+                  <h3>Optimal Experimental Design</h3>
+                  <p>Optimise the design of the experiments.</p>
+                  {% if token %}
+                        <p>
+                            <a href="#" class="btn bt-red" role="button">Data available</a>
+                            <a href="#" class="btn bt-red" role="button">No data available</a>
+                            <!-- <a href="/experimental" class="btn bt-red" role="button">Data available</a>
+                            <a href="/exp_design" class="btn bt-red" role="button">No data available</a> -->
+                        </p>
+                    {% else %}
+                        <p>
+                            <a href="/login" class="btn bt-red" role="button">Data available</a>
+                            <a href="/login" class="btn bt-red" role="button">No data available</a>
+                        </p>
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+             <div class="col-sm-4">
+              <div class="thumbnail"  style="min-height: 210px; max-height: 210px">
+                <img class="img-rounded" style="height:80px;" src="static/img/inter.png">
+                <div class="caption text-center">
+                  <h3>Interlaboratory Comparison</h3>
+                  <p>Perform statistical laboratory quality control.</p>
+                   {% if token %}
+                        <p><a href="#" class="btn bt-red" role="button">Interlaboratory Proficiency Testing</a></p>
+                        <!--/interlab_substance-->
+                    {% else %}
+                        <p><a href="/login" class="btn bt-red" role="button">Interlaboratory Proficiency Testing</a></p>
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="thumbnail"  style="min-height: 210px; max-height: 220px">
+                <img class="img-rounded" style="height:80px;" src="static/img/read.png">
+                <div class="caption text-center">
+                  <h3>Read Across</h3>
+                  <p>Make a prediction based on the read across method on an existing dataset.</p>
+                   {% if token %}
+                        <p><a href="#" class="btn bt-red" role="button">Read Across</a></p>
+                    {% else %}
+                        <p><a href="/login" class="btn bt-red" role="button">Read Across</a></p>
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+
+            </div>
+
+
 
 
 {% endblock %}

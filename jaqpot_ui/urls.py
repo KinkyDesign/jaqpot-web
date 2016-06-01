@@ -72,6 +72,7 @@ urlpatterns = patterns('',
                        url(r'^exp_iter', views.exp_iter),
                        url(r'^interlab_params', views.interlab_params),
                        url(r'^clean_dataset', views.clean_dataset),
+                       url(r'^qrf_report', views.qrf_report),
 
 
 

@@ -57,15 +57,15 @@ class NoPmmlForm(forms.Form):
 
 class TrainingForm(forms.Form):
     scaling = forms.ChoiceField(widget = forms.Select(), choices=[( 'scaling1', 'None' ), ('scaling2', 'Scaling between zero and one'), ('scaling3', 'Normalization')])
-    doa = forms.ChoiceField(widget = forms.Select(), choices=[( 'doa1', 'None' ), ('doa2', 'Leverage method'), ('doa3', 'Other method')])
+    doa = forms.ChoiceField(widget = forms.Select(), choices=[( 'doa1', 'None' ), ('doa2', 'Leverage method') ])
     modelname = forms.CharField(max_length=50, required= True)
     description = forms.CharField(widget=forms.Textarea, required= True)
     description.widget.attrs.update({'style' : "border-radius: 4px;"})
-    variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'None')])
+    variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable(s) and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'Select endpoint only (all other variables will be used as input variables)')])
 
 class ExperimentalForm(forms.Form):
     scaling = forms.ChoiceField(widget = forms.Select(), choices=[( 'scaling1', 'None' ), ('scaling2', 'Scaling between zero and one'), ('scaling3', 'Normalization')])
-    variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'None')])
+    variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable(s) and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'Select endpoint only (all other variables will be used as input variables)')])
 
 class DatasetForm(forms.Form):
     title = forms.CharField(max_length=50, required= True)
@@ -74,14 +74,18 @@ class DatasetForm(forms.Form):
 class ValidationForm(forms.Form):
     #pred_feature = forms.ChoiceField(widget = forms.Select(), choices=[])
     folds = forms.ChoiceField(widget = forms.Select(), choices=[( '3', '3'), ('5', '5'), ('10', '10')])
-    stratify = forms.ChoiceField(widget = forms.Select(), choices=[( ' ', 'None'), ('1', '1'), ('2', '2')])
-    variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'None')])
+    stratify = forms.ChoiceField(widget = forms.Select(), choices=[( ' ', 'None'), ('random', 'random'), ('normal', 'normal')])
+    variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable(s) and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'Select endpoint only (all other variables will be used as input variables)')])
+    seed = forms.CharField(required=False, error_messages={'required': 'Please enter seed.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))
+    scaling = forms.ChoiceField(widget = forms.Select(), choices=[( 'scaling1', 'None' ), ('scaling2', 'Scaling between zero and one'), ('scaling3', 'Normalization')])
+
 
 class ValidationSplitForm(forms.Form):
     scaling = forms.ChoiceField(widget = forms.Select(), choices=[( 'scaling1', 'None' ), ('scaling2', 'Scaling between zero and one'), ('scaling3', 'Normalization')])
-    variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'None')])
+    variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable(s) and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'Select endpoint only (all other variables will be used as input variables)')])
     split_ratio = forms.CharField(required=True, error_messages={'required': 'Please enter split ratio.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))
-
+    stratify = forms.ChoiceField(widget = forms.Select(), choices=[(' ', 'None'), ('random', 'random'), ('normal', 'normal')])
+    seed = forms.CharField(required=False, error_messages={'required': 'Please enter seed.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))
 
 class ExperimentalParamsForm(forms.Form):
     levels = forms.CharField(required=True, error_messages={'required': 'Please enter levels.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))

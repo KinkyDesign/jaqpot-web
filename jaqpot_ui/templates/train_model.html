@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load templates_extras %}
+
 {% block content %}
 <form method="post" id="form1"> {% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block;">
@@ -22,7 +24,7 @@
              {% paginate 20 regression_alg  %}
              {% for e in regression_alg %}
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio" value="{{e.name}}">{{e.name}}</label>
+                    <input type="radio" name="radio" value="{{e|get:'_id'}}">{{e.meta.titles.0}}</label>
             {% endfor %}
 
             {% get_pages %}
@@ -64,7 +66,7 @@
              {% paginate 20 classification_alg %}
              {% for e in classification_alg %}
                 <label class="algorithms" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
-                    <input type="radio" name="radio" value="{{e.name}}">{{e.name}}</label>
+                    <input type="radio" name="radio" value="{{e|get:'_id'}}">{{e.meta.titles.0}}</label>
             {% endfor %}
 
             {% get_pages %}

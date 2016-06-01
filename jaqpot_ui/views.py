@@ -14,6 +14,7 @@ from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_d
 from jaqpot_ui.get_dataset import paginate_dataset, get_prediction_feature_of_dataset, get_prediction_feature_name_of_dataset, get_number_of_not_null_of_dataset
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalParamsForm, ExperimentalForm, UploadForm, \
     InterlabForm, ValidationSplitForm
+from jaqpot_ui.error_handling import error_handling
 import requests
 import json
 import datetime
@@ -29,6 +30,7 @@ import xmltodict
 import elasticsearch
 import wget
 import collections
+from collections import OrderedDict
 
 # Home page
 def index(request):
@@ -52,38 +54,45 @@ def login(request):
             password = form['password'].value()
 
             # send request to external authenticator
-            r = requests.post(SERVER_URL + '/aa/login', data={'username': username, 'password': password})
-            print r.text
-            if r.status_code == 200:
-                response = json.loads(r.text)
-                token = response['authToken']
+            try:
+                r = requests.post(SERVER_URL + '/aa/login', data={'username': username, 'password': password})
+                if r.status_code == 200:
+                    response = json.loads(r.text)
+                    token = response['authToken']
 
-                # set session request
-                request.session['token'] = token
-                request.session['username'] = username
-                return redirect('/')
-            elif r.status_code == 401:
-                error = "Wrong username or password"
-                return render(request, "login.html", {'form': form, 'error': error})
-            else:
-                error = "An error occurred. Please try again later."
-                return render(request, "login.html", {'form': form, 'error': error})
+                    # set session request
+                    request.session['token'] = token
+                    request.session['username'] = username
+                    return redirect('/')
+                elif r.status_code == 401:
+                    error = "Wrong username or password"
+                    return render(request, "login.html", {'form': form, 'error': error})
+                else:
+                    error = "An error occurred. Please try again later."
+                    return render(request, "login.html", {'form': form, 'error': error})
+            except Exception as e:
+                return render(request, "error.html", {'server_error':e })
+
 
 #User logout
 def logout(request):
     token = request.session.get('token', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
         # send request to logout from auth server
-        r = requests.post(SERVER_URL + '/aa/logout', headers={'subjectid': token})
-        if r.status_code == 200:
-            # remove from session
-            request.session['token'] = ''
-            request.session['username'] = ''
+        try:
+            r = requests.post(SERVER_URL + '/aa/logout', headers=headers)
+            if r.status_code == 200:
+                # remove from session
+                request.session['token'] = ''
+                request.session['username'] = ''
 
-            # send to home page
-            return redirect('/')
-        else:
-            return redirect('/login')
+                # send to home page
+                return redirect('/')
+            else:
+                return redirect('/login')
+        except Exception as e:
+            return render(request, "error.html", {'server_error':e, })
     else:
         return redirect('/')
 
@@ -92,21 +101,31 @@ def logout(request):
 def task(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
+
+
     #else go to tasks
     all_tasks = []
     #get all tasks with status Running
     headers = {'Accept': 'text/uri-list', 'subjectid': token}
     headers = {'Accept': 'application/json', 'subjectid': token}
-    res = requests.get(SERVER_URL+'/task?status=RUNNING&start=0&max=10000', headers=headers)
+    try:
+        res = requests.get(SERVER_URL+'/task?status=RUNNING&start=0&max=10000', headers=headers)
+        error_handling(request, res, token, username)
+    except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     list_resp = json.loads(res.text)
     if res.status_code == 200:
         list_run=[]
@@ -118,14 +137,12 @@ def task(request):
         list_run = json.loads(list_run)
 
         #get all tasks with status Completed
-        res = requests.get(SERVER_URL+'/task?status=COMPLETED&start=0&max=10000', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/task?status=COMPLETED&start=0&max=10000', headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         list_resp = json.loads(res.text)
-
-
-
-
-
-
         list_complete=[]
         for l in list_resp:
             list_complete.append({'name': l['_id'], 'status': "completed", 'meta': l['meta']})
@@ -134,7 +151,11 @@ def task(request):
         list_complete = json.loads(list_complete)
 
         #get all tasks with status Cancelled
-        res = requests.get(SERVER_URL+'/task?status=CANCELLED&start=0&max=10000', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/task?status=CANCELLED&start=0&max=10000', headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         list_resp = json.loads(res.text)
 
         list_cancelled=[]
@@ -146,7 +167,11 @@ def task(request):
         list_cancelled = json.loads(list_cancelled)
 
         #get all tasks with status Error
-        res = requests.get(SERVER_URL+'/task?status=ERROR&start=0&max=10000', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/task?status=ERROR&start=0&max=10000', headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         list_resp = json.loads(res.text)
 
         list_error=[]
@@ -159,7 +184,11 @@ def task(request):
 
 
         #get all tasks with status Queued
-        res = requests.get(SERVER_URL+'/task?status=QUEUED&start=0&max=10000', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/task?status=QUEUED&start=0&max=10000', headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         list_resp = json.loads(res.text)
 
         list_queued=[]
@@ -183,9 +212,12 @@ def taskdetail(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     #status = request.GET.get('status')
@@ -193,7 +225,11 @@ def taskdetail(request):
         output = request.GET.getlist('output')[0]
         name = request.GET.getlist('name')[0]
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         data = json.loads(res.text)
         if data['meta']['date']:
             date=data['meta']['date'].split('T')[0]
@@ -204,7 +240,11 @@ def taskdetail(request):
     if request.method == 'GET':
         #get task details in rdf format
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         #output = json.dumps(res.text)
         output = json.loads(res.text)
         if output['meta']['date']:
@@ -221,16 +261,23 @@ def stop_task(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     id = request.GET.get('id')
     if request.method == 'GET':
         #stop task
         headers = {'content-type': 'text/uri-list', 'subjectid': token}
-        res = requests.delete(SERVER_URL+'/task/'+id, headers=headers)
+        try:
+            res = requests.delete(SERVER_URL+'/task/'+id, headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         return render(request, "mainPage.html", {'token': token, 'username': username })
 
 #List of all BibTex
@@ -242,9 +289,12 @@ def bibtex(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
 
@@ -253,7 +303,10 @@ def bibtex(request):
         #get all bibtex
         headers = {'Accept': 'application/json', 'subjectid': token}
         headers1 = {'Accept': 'text/uri-list', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/bibtex?bibtype=Entry&&&start=0&max=10000', headers=headers1)
+        try:
+            res = requests.get(SERVER_URL+'/bibtex?bibtype=Entry&&&start=0&max=10000', headers=headers1)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         list_resp = res.text
         if res.status_code == 403:
             error = "This request is forbidden (e.g., no authentication token is provided)"
@@ -269,7 +322,11 @@ def bibtex(request):
             list_resp = list_resp.splitlines()
             for l in list_resp:
                 id = l.split('/bibtex/')[1]
-                r = requests.get(l, headers=headers)
+                try:
+                    r = requests.get(l, headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, r, token, username)
                 #get json data
                 info=json.loads(r.text)
                 final_output.append( {"id":id, "info": info })
@@ -286,9 +343,12 @@ def bib_detail(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.is_ajax():
@@ -300,15 +360,22 @@ def bib_detail(request):
         #body = jsonpatch.JsonPatch([{'op': op, 'path': path, 'value': value}])
         headers = {"Content-Type":"application/json-patch+json",'subjectid': token }
         #headers = {'Accept': 'application/json-patch+json', 'subjectid': token}
-        res = requests.patch(url=SERVER_URL+'/bibtex/'+id, data=body, headers=headers)
-        print res.text
+        try:
+            res = requests.patch(url=SERVER_URL+'/bibtex/'+id, data=body, headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         return HttpResponse(res.text)
 
 
     if request.method == 'GET':
         #send request
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/bibtex/'+id, headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/bibtex/'+id, headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         list_resp = res.text
         #get json data
         details = json.loads(res.text)
@@ -323,15 +390,22 @@ def bib_delete(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
         #delete bibtex
         headers = {'content-type': 'text/uri-list', 'subjectid': token}
-        res = requests.delete(SERVER_URL+'/bibtex/'+id, headers=headers)
+        try:
+            res = requests.delete(SERVER_URL+'/bibtex/'+id, headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         return render(request, "mainPage.html", {'token': token, 'username': username })
 
 #Add a Bibtex
@@ -343,9 +417,12 @@ def add_bibtex(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
@@ -370,7 +447,11 @@ def add_bibtex(request):
 
         #send request with the new entry for saving
         headers = {'Content-Type': 'application/json', 'subjectid': token}
-        res = requests.post(SERVER_URL+'/bibtex', data = bibtex_entry, headers=headers)
+        try:
+            res = requests.post(SERVER_URL+'/bibtex', data = bibtex_entry, headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         return render(request, "mainPage.html", {'token': token, 'username': username, 'name': name})
 
 def sub(request):
@@ -381,9 +462,12 @@ def sub(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
 
@@ -399,19 +483,28 @@ def user(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
 
     if request.method == 'GET':
         headers = {'content-type': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/user/'+ username, headers=headers)
-        print res.text
+        try:
+            res = requests.get(SERVER_URL+'/user/'+ username, headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         contacts = json.loads(res.text)
-        res1 = requests.get(SERVER_URL+'/user/'+ username+'/quota', headers=headers)
-        print res1.text
+        try:
+            res1 = requests.get(SERVER_URL+'/user/'+ username+'/quota', headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         percentage = json.loads(res1.text)
         percentage = json.dumps(percentage)
         contacts = json.dumps(contacts)
@@ -424,16 +517,23 @@ def trainmodel(request):
     page = request.GET.get('page')
     last = request.GET.get('last')
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
         #get total number of datasets
-        res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
@@ -446,19 +546,35 @@ def trainmodel(request):
             k=str(page1)
             print k
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
             else:
-                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
         data= json.loads(res.text)
         print res.text
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
         print dataset
         proposed=[]
-        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/dataset/featured', headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         proposed_data = json.loads(res1.text)
         for p in proposed_data:
             proposed.append({'name': p['_id'], 'meta': p['meta']})
@@ -473,63 +589,61 @@ def choose_dataset(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
-        headers = {'Accept': 'text/uri-list', 'subjectid': token}
-        classification_alg = []
-        res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
-        list_resp = res.text
-        list_resp = list_resp.split('\n')[:]
-        for l in list_resp:
-            l = l.split('/algorithm/')[1]
-            classification_alg.append({'name': l})
-        classification_alg = json.dumps(classification_alg)
-        classification_alg = json.loads(classification_alg)
-        regression_alg = []
-        res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
-        list_resp = res.text
-        list_resp = list_resp.split('\n')[:]
-        for l in list_resp:
-            l = l.split('/algorithm/')[1]
-            regression_alg.append({'name': l})
-        regression_alg = json.dumps(regression_alg)
-        regression_alg = json.loads(regression_alg)
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        try:
+            res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
+        classification_alg=json.loads(res.text)
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        try:
+            res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
+        regression_alg = json.loads(res.text)
         return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset})
     if request.method == 'POST':
         algorithms=[]
         for alg in request.POST.getlist('radio'):
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res = requests.get(SERVER_URL+'/algorithm/'+alg, headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/algorithm/'+alg, headers=headers)
+            except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
             info = json.loads(res.text)
             algorithms.append({"alg":alg, "info":info })
         dataset = request.GET.get('dataset')
         print dataset
         print algorithms
         if algorithms == []:
-            headers = {'Accept': 'text/uri-list', 'subjectid': token}
-            classification_alg = []
-            res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
-            list_resp = res.text
-            list_resp = list_resp.split('\n')[:]
-            for l in list_resp:
-                l = l.split('/algorithm/')[1]
-                classification_alg.append({'name': l})
-            classification_alg = json.dumps(classification_alg)
-            classification_alg = json.loads(classification_alg)
-            regression_alg = []
-            res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
-            list_resp = res.text
-            list_resp = list_resp.split('\n')[:]
-            for l in list_resp:
-                l = l.split('/algorithm/')[1]
-                regression_alg.append({'name': l})
-            regression_alg = json.dumps(regression_alg)
-            regression_alg = json.loads(regression_alg)
+
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            try:
+                res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
+            classification_alg = json.loads(res.text)
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            try:
+                res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
+            regression_alg = json.loads(res.text)
             error = "Please select algorithm."
             return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset, 'error':error})
         else:
@@ -544,9 +658,12 @@ def change_params(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
@@ -558,15 +675,27 @@ def change_params(request):
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         al = json.loads(res.text)
-        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         pmml=json.loads(res1.text)
         if pmml:
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
         else:
             pmmlform.fields['pmml'].choices = [("",'No pmml')]
-        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid':token})
+        try:
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res2, token, username)
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
             #redirect to error page
@@ -595,7 +724,11 @@ def change_params(request):
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         al = json.loads(res.text)
         if request.POST.getlist('parameters'):
             parameters = request.POST.getlist('parameters')
@@ -617,13 +750,21 @@ def change_params(request):
             params, al = get_params3(request, parameters, al)
             print json.dumps(params)
 
-        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         pmml=json.loads(res1.text)
         if pmml:
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
         else:
             pmmlform.fields['pmml'].choices = [("",'No pmml')]
-        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid':token})
+        try:
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res2, token, username)
         predicted_features = json.loads(res2.text)
 
         if str(res2) != "<Response [200]>":
@@ -659,7 +800,11 @@ def change_params(request):
             for f in feature_list:
                 feat += str(f)+','
             body = {'features': feat}
-            res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
+            try:
+                res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
+            except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
             response = json.loads(res.text)
             transformations = SERVER_URL+'/pmml/'+response['_id']
 
@@ -670,8 +815,11 @@ def change_params(request):
                     pmml= request.FILES['file'].read()
                     print pmml
                     headers = {'Content-Type': 'application/xml',  'subjectid': token }
-                    res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
-                    print res.text
+                    try:
+                        res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
+                    except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    error_handling(request, res, token, username)
                     response = json.loads(res.text)
                     transformations = SERVER_URL+'/pmml/'+response['_id']
                 else:
@@ -699,8 +847,11 @@ def change_params(request):
         description= tform['description'].value()
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': True}
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
-        print res.text
+        try:
+            res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         task_id = json.loads(res.text)['_id']
         print task_id
         print json.dumps(params)
@@ -715,9 +866,12 @@ def conformer(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
@@ -733,9 +887,12 @@ def model(request):
     if token:
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
@@ -743,9 +900,17 @@ def model(request):
         #get all models
         headers = {'Accept': 'application/json', "subjectid": token}
         #get total number of models
-        res = requests.get(SERVER_URL+'/model?start=0&max=1', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/model?start=0&max=1', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         total_models= res.headers.get('total')
-        res = requests.get(SERVER_URL+'/model?start=0&max='+total_models, headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/model?start=0&max='+total_models, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         list_resp = json.loads(res.text)
         #for each model
         for l in list_resp:
@@ -753,7 +918,11 @@ def model(request):
         models = json.dumps(models)
         models = json.loads(models)
         #Get selected models
-        res1 = requests.get(SERVER_URL+'/model/featured?start=0&max=10', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/model/featured?start=0&max=10', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         proposed_model = json.loads(res1.text)
         proposed = []
         for p in proposed_model:
@@ -769,28 +938,43 @@ def model_detail(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     #get task details in rdf format
     headers = {'Accept': 'application/json', "subjectid": token}
-    res = requests.get(SERVER_URL+'/model/'+name, headers=headers)
+    try:
+        res = requests.get(SERVER_URL+'/model/'+name, headers=headers)
+    except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    error_handling(request, res, token, username)
     details = json.loads(res.text)
     algorithm=details['algorithm']['_id']
     if algorithm:
-        res = requests.get(SERVER_URL+'/algorithm/'+algorithm, headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/algorithm/'+algorithm, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         alg_details=json.loads(res.text)
     else:
         alg_details = ""
-    res = requests.get(SERVER_URL+'/model/'+name+'/required', headers=headers)
+    try:
+        res = requests.get(SERVER_URL+'/model/'+name+'/required', headers=headers)
+    except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    error_handling(request, res, token, username)
     required= json.loads(res.text)
     required_feature = []
     for r in required:
         required_feature.append({'feature': r['uri']})
     if request.method == 'GET':
-        return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name, 'alg': alg_details, 'required':required_feature })
+        return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name, 'alg': alg_details, 'required':required_feature, 'algorithm':algorithm})
 
 #Delete selected model
 def model_delete(request):
@@ -801,16 +985,23 @@ def model_delete(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     #delete model
     headers = {'Accept': 'application/json', "subjectid": token}
-    res = requests.delete(SERVER_URL+'/model/'+id, headers=headers)
+    try:
+        res = requests.delete(SERVER_URL+'/model/'+id, headers=headers)
+    except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    error_handling(request, res, token, username)
     reply = res.text
-    return redirect('/')
+    return redirect('/model')
 
 
 def model_pmml(request):
@@ -820,14 +1011,21 @@ def model_pmml(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     name = request.GET.get('name')
     headers = {'Accept': 'application/xml', "subjectid": token}
-    res = requests.get(SERVER_URL+'/model/'+name+'/pmml', headers=headers)
+    try:
+        res = requests.get(SERVER_URL+'/model/'+name+'/pmml', headers=headers)
+    except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    error_handling(request, res, token, username)
     #details = json.loads(res.text)
     if res.status_code == 200:
         pmml = res.text
@@ -838,15 +1036,27 @@ def model_pmml(request):
         #response = HttpResponse(res.text,  mimetype="application/json")
         print res.text
         headers = {'Accept': 'application/json', "subjectid": token}
-        res1 = requests.get(SERVER_URL+'/model/'+name, headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/model/'+name, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         details = json.loads(res1.text)
         algorithm=details['algorithm']['_id']
         if algorithm:
-            res2 = requests.get(SERVER_URL+'/algorithm/'+algorithm, headers=headers)
+            try:
+                res2 = requests.get(SERVER_URL+'/algorithm/'+algorithm, headers=headers)
+            except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res2, token, username)
             alg_details=json.loads(res2.text)
         else:
             alg_details = ""
-        res3 = requests.get(SERVER_URL+'/model/'+name+'/required', headers=headers)
+        try:
+            res3 = requests.get(SERVER_URL+'/model/'+name+'/required', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res3, token, username)
         required= json.loads(res3.text)
         required_feature = []
         for r in required:
@@ -864,9 +1074,12 @@ def features(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     page = request.GET.get('page')
@@ -878,15 +1091,31 @@ def features(request):
             page1=int(page) * 20 - 20
             k=str(page1)
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/feature?start=0&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/feature?start=0&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
             elif last:
-                res = requests.get(SERVER_URL+'/feature?start='+last+'&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/feature?start='+last+'&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
             else:
-                res = requests.get(SERVER_URL+'/feature?start='+k+'&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/feature?start='+k+'&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
 
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/feature?start=0&max=20', headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/feature?start=0&max=20', headers=headers)
+            except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
         features=[]
         if res.status_code == 403:
             error = "This request is forbidden (e.g., no authentication token is provided)"
@@ -917,16 +1146,23 @@ def feature_details(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     name = request.GET.get('name')
 
     if request.method == 'GET':
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/feature/'+name, headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/feature/'+name, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         feature_detail=json.loads(res.text)
         return render(request, "feature_details.html", {'token': token, 'username': username, 'name': name, 'feature_detail': feature_detail})
 
@@ -938,9 +1174,12 @@ def add_feature(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     name = request.GET.get('name')
@@ -969,16 +1208,23 @@ def feature_delete(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     id = request.GET.get('id')
     if request.method == 'GET':
         #delete bibtex
         headers = {'content-type': 'text/uri-list', 'subjectid': token}
-        res = requests.delete(SERVER_URL+'/feature/'+id, headers=headers)
+        try:
+            res = requests.delete(SERVER_URL+'/feature/'+id, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         return render(request, "mainPage.html", {'token': token, 'username': username })
 
 #List of algorithms
@@ -989,24 +1235,25 @@ def algorithm(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
 
     if request.method == 'GET':
          algorithms = []
          #get all algorithms
-         headers = {'Accept': 'text/uri-list', 'subjectid': token}
-         res = requests.get(SERVER_URL+'/algorithm?start=0&max=10', headers=headers)
-         list_resp = res.text
-         list_resp = list_resp.split('\n')[:]
-         for l in list_resp:
-             l = l.split('/algorithm/')[1]
-             algorithms.append({'name': l})
-         algorithms = json.dumps(algorithms)
-         algorithms = json.loads(algorithms)
+         headers = {'Accept': 'application/json', 'subjectid': token}
+         try:
+            res = requests.get(SERVER_URL+'/algorithm?start=0&max=10', headers=headers)
+         except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+         error_handling(request, res, token, username)
+         algorithms = json.loads(res.text)
          print algorithms
 
          return render(request, "algorithm.html", {'token': token, 'username': username, 'algorithms': algorithms})
@@ -1019,9 +1266,12 @@ def algorithm_detail(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     algorithm = request.GET.get('name')
@@ -1029,7 +1279,11 @@ def algorithm_detail(request):
     if request.method == 'GET':
         #get task details in rdf format
         headers = {'content-type': 'text/uri-list', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/algorithm/'+algorithm, headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/algorithm/'+algorithm, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         #get rdf response and convert to json data with details for bibtex
         details = json.loads(res.text)
         return render(request, "algorithm_detail.html", {'token': token, 'username': username, 'details': details, 'id': algorithm})
@@ -1042,16 +1296,23 @@ def algorithm_delete(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     id = request.GET.get('id')
     if request.method == 'GET':
         #delete algorithm
         headers = {'content-type': 'text/uri-list', 'subjectid': token}
-        res = requests.delete(SERVER_URL+'/algorithm/'+id, headers=headers)
+        try:
+            res = requests.delete(SERVER_URL+'/algorithm/'+id, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         return render(request, "mainPage.html", {'token': token, 'username': username})
 
 #List of dataset
@@ -1062,9 +1323,12 @@ def dataset(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
 
@@ -1075,7 +1339,11 @@ def dataset(request):
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
         #get total number of datasets
-        res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
@@ -1087,16 +1355,32 @@ def dataset(request):
             page1=int(page) * 20 - 20
             k=str(page1)
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
             else:
-                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=100', headers=headers)
+            except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
         data= json.loads(res.text)
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
-        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=100', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         proposed_data = json.loads(res1.text)
         proposed = []
         for p in proposed_data:
@@ -1111,14 +1395,18 @@ def dataset_detail(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
 
     name = request.GET.get('name', '')
     page = request.GET.get('page', '')
+
     data_detail, last, page = paginate_dataset(request, name, token, username, page)
     if data_detail and last and page:
             a=[]
@@ -1169,15 +1457,22 @@ def dataset_delete(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     id = request.GET.get('id')
     #delete dataset
     headers = {'Accept': 'application/json', "subjectid": token}
-    res = requests.delete(SERVER_URL+'/dataset/'+id, headers=headers)
+    try:
+        res = requests.delete(SERVER_URL+'/dataset/'+id, headers=headers)
+    except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    error_handling(request, res, token, username)
     reply = res.text
     print reply
     return redirect('/data')
@@ -1189,18 +1484,34 @@ def dispay_predicted_dataset(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     name = request.GET.get('name', '')
     page = request.GET.get('page', '')
     model = request.GET.get('model', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    try:
+        r = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=0&colStart=0&colMax=0', headers=headers)
+    except Exception as e:
+        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    error_handling(request, r, token, username)
+    if r.status_code >= 400:
+            #redirect to error page
+            return render(request, "error.html", {'token': token, 'username': username,'error':json.loads(r.text)})
     data_detail, last, page = paginate_dataset(request, name, token, username, page)
     if data_detail and last and page:
         headers = {'Accept': 'text/uri-list', "subjectid": token}
-        res = requests.get(SERVER_URL+'/model/'+model+'/predicted', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/model/'+model+'/predicted', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         predicted =  res.text
         predicted = predicted.splitlines()
         properties={}
@@ -1209,7 +1520,11 @@ def dispay_predicted_dataset(request):
             for k in data_detail['features']:
                 if k['uri'] == predicted[i]:
                     new.append(k['name'])
-        res = requests.get(SERVER_URL+'/model/'+model+'/dependent', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/model/'+model+'/dependent', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         dependent =  res.text
         if dependent:
             dependent = dependent.splitlines()
@@ -1222,6 +1537,7 @@ def dispay_predicted_dataset(request):
             properties[key['compound']['URI']] = []
             properties[key['compound']['URI']].append({"compound": key['compound']['URI']})
             properties[key['compound']['URI']].append({"name": key['compound']['name']})
+            print predicted
             for p in predicted:
                 properties[key['compound']['URI']].append({"prop": p, "value": key['values'][p]})
 
@@ -1234,23 +1550,34 @@ def predict(request):
 
     #Check if user is authenticated. Else redirect to login page
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
         m = []
         #get all models
         headers = {'Accept': 'application/json', "subjectid": token}
-        res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         list_resp = res.text
         models = json.loads(res.text)
         print models
         for mod in models:
                 m.append({'name': mod['_id'], 'meta': mod['meta']})
         #Get selected models
-        res1 = requests.get(SERVER_URL+'/model/featured?start=0&max=10', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/model/featured?start=0&max=10', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         proposed_model = json.loads(res1.text)
         proposed = []
         for p in proposed_model:
@@ -1266,9 +1593,12 @@ def predict_model(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     #Get the current page
@@ -1283,7 +1613,11 @@ def predict_model(request):
         dataset=[]
         #Get required feature of selected model
         headers = {'Accept': 'application/json', 'subjectid': token}
-        required_res = requests.get(SERVER_URL+'/model/'+model+'/required', headers=headers)
+        try:
+            required_res = requests.get(SERVER_URL+'/model/'+model+'/required', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, required_res, token, username)
         model_req = json.loads(required_res.text)
         #check if is needed image or mocap
         image, mopac = chech_image_mopac(model_req)
@@ -1292,22 +1626,42 @@ def predict_model(request):
             page1=int(page) * 20 - 20
             k=str(page1)
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
             elif last:
-                res = requests.get(SERVER_URL+'/dataset?start='+last+'&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start='+last+'&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
             else:
-                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
 
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
         data= json.loads(res.text)
         for d in data:
             dataset.append({'name': d['_id'], 'title':d['meta']['titles'][0], 'description': d['meta']['descriptions'][0]})
 
         if len(dataset)< 20:
             last= page
-        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=100', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         proposed_data = json.loads(res1.text)
         proposed = []
         for p in proposed_data:
@@ -1321,7 +1675,11 @@ def predict_model(request):
         method = request.POST.get('radio_method')
         #Get the required model
         headers = {'Accept': 'application/json', 'subjectid': token}
-        required_res = requests.get(SERVER_URL+'/model/'+selected_model+'/required', headers=headers)
+        try:
+            required_res = requests.get(SERVER_URL+'/model/'+selected_model+'/required', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, required_res, token, username)
         required_res = json.loads(required_res.text)
         print required_res
         if request.is_ajax():
@@ -1349,15 +1707,23 @@ def predict_model(request):
                 #Get data from excel and create dataset to the appropriate format
                 new_data = create_dataset(data,username,required_res, img_descriptors, mopac_descriptors)
                 json_data = json.dumps(new_data)
-                print json_data
                 headers1 = {'Content-type': 'application/json', 'subjectid': token}
-                res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
+                try:
+                    res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
+                    print res.text
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
                 dataset =  res.text
                 print dataset
                 headers = {'Accept': 'application/json', "subjectid": token}
                 body = {'dataset_uri': dataset, 'visible': True}
                 print selected_model
-                res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
+                try:
+                    res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
                 response = json.loads(res.text)
                 print response
                 id = response['_id']
@@ -1371,7 +1737,11 @@ def predict_model(request):
                 m = []
                 #get all models
                 headers = {'Accept': 'application/json', "subjectid": token}
-                res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
                 models = json.loads(res.text)
                 for mod in models:
                         m.append({'name': mod['_id'], 'meta': mod['meta']})
@@ -1379,7 +1749,11 @@ def predict_model(request):
             else:
                 headers = {'Accept': 'application/json', "subjectid": token}
                 body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'visible': True}
-                res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
+                try:
+                    res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
                 response = json.loads(res.text)
                 print response
                 id = response['_id']
@@ -1391,7 +1765,11 @@ def calculate_image_descriptors(request):
     print data_uri
     #send request to data uri
     body = {'image': data_uri, }
-    res = requests.post('http://test.jaqpot.org:8880/imageAnalysis/service/analyze', data=body)
+    try:
+        res = requests.post('http://test.jaqpot.org:8880/imageAnalysis/service/analyze', data=body)
+    except Exception as e:
+                    return render(request, "error.html", {'server_error':e, })
+    #error_handling(request, res, token, username)
     response = json.loads(res.text)
     for r in response:
         if r['id'] == "Average Particle":
@@ -1401,18 +1779,25 @@ def calculate_image_descriptors(request):
 
 def calculate_mopac_descriptors(request):
     token = request.session.get('token', '')
+    username = request.session.get('username', '')
     #Check if user is authenticated. Else redirect to login page
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     headers = {'subjectid': token}
     mopac_file = request.GET.get('mopac_file')
     body = {'pdbfile': mopac_file ,}
-    res = requests.post('http://test.jaqpot.org:8080/algorithms/service/mopac/calculate', headers=headers, data=body)
-    print res.text
+    try:
+        res = requests.post('http://test.jaqpot.org:8080/algorithms/service/mopac/calculate', headers=headers, data=body)
+    except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    error_handling(request, res, token, username)
     response = json.loads(res.text)
     print response
     return HttpResponse(json.dumps(response))
@@ -1424,16 +1809,23 @@ def search(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
         search = request.GET.get('search')
         models=[]
         headers = {'Accept': 'text/uri-list', "subjectid": token}
-        res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         list_resp = res.text
         es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
         #get each line
@@ -1456,9 +1848,12 @@ def contact(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
 
@@ -1492,9 +1887,12 @@ def thanks(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
@@ -1507,9 +1905,12 @@ def compound(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
@@ -1523,9 +1924,12 @@ def compound_details(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     name = request.GET.get('name', '')
@@ -1540,9 +1944,12 @@ def source(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
@@ -1556,9 +1963,12 @@ def documentation(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
@@ -1571,9 +1981,12 @@ def explore(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     entries = [ "data", "data2", "data3"]
@@ -1586,21 +1999,32 @@ def all_substance(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         else:
             page=request.GET.get('page')
             if page:
                 headers = {'Accept': 'application/json', 'subjectid': token}
                 page1=str(int(page)-1)
-                res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page='+page1+'&pagesize=20', headers=headers)
+                try:
+                    res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page='+page1+'&pagesize=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
                 substance_owner=json.loads(res.text)
                 substance_owner = substance_owner['facet']
             else:
                 headers = {'Accept': 'application/json', 'subjectid': token}
                 page=1
-                res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
+                try:
+                    res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
                 substance_owner=json.loads(res.text)
                 substance_owner = substance_owner['facet']
     else:
@@ -1622,13 +2046,21 @@ def all_substance(request):
                 if page:
                     headers = {'Accept': 'application/json', 'subjectid': token}
                     page1=str(int(page)-1)
-                    res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page='+page1+'&pagesize=20', headers=headers)
+                    try:
+                        res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page='+page1+'&pagesize=20', headers=headers)
+                    except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    error_handling(request, res, token, username)
                     substance_owner=json.loads(res.text)
                     substance_owner = substance_owner['facet']
                 else:
                     headers = {'Accept': 'application/json', 'subjectid': token}
                     page=1
-                    res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
+                    try:
+                        res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
+                    except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    error_handling(request, res, token, username)
                     substance_owner=json.loads(res.text)
                     substance_owner = substance_owner['facet']
                 error = "Please select substance owner."
@@ -1637,7 +2069,11 @@ def all_substance(request):
                 substance_owner = 'https://apps.ideaconsult.net/enmtest/substanceowner/'+substance_owner
                 request.session['substanceowner']= substance_owner
                 headers = {'Accept': 'application/json', 'subjectid': token}
-                res = requests.get(substance_owner+'/substance', headers=headers)
+                try:
+                    res = requests.get(substance_owner+'/substance', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
                 substances=json.loads(res.text)
                 request.session['substances'] = substances
                 return redirect('/select_substance', {'token': token, 'username': username})
@@ -1648,7 +2084,11 @@ def all_substance(request):
                 print substanceowner
                 request.session['substanceowner']=substanceowner
                 headers = {'Accept': 'application/json', 'subjectid': token}
-                res = requests.get(substanceowner+'/substance', headers=headers)
+                try:
+                    res = requests.get(substanceowner+'/substance', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
                 substances=json.loads(res.text)
                 print substances
                 request.session['substances'] = substances
@@ -1674,9 +2114,12 @@ def select_substance(request):
             #return redirect('/select_substance', {'token': token, 'username': username, 'checkall':checkall})
             return HttpResponse(checkall)
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if request.method == 'GET':
             substances = request.session.get('substances', '')
             print substances
@@ -1691,16 +2134,23 @@ def get_substance(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
      else:
         return redirect('/login')
      if request.method == 'GET':
             data= request.GET.getlist('data[]')
             request.session['selected_substances'] = data
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res1 = requests.get(SERVER_URL+'/enm/property/categories', headers=headers)
+            try:
+                res1 = requests.get(SERVER_URL+'/enm/property/categories', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res1, token, username)
             properties=json.loads(res1.text)
             request.session['properties'] = properties
             print data
@@ -1711,9 +2161,12 @@ def select_properties(request):
     username = request.session.get('username', '')
 
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if request.method == 'GET':
             properties = request.session.get('properties', '')
             return render(request, "properties.html", {'token': token, 'username': username, 'properties':properties})
@@ -1755,13 +2208,20 @@ def select_descriptors(request):
     username = request.session.get('username', '')
 
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if request.method == 'GET':
             form=DatasetForm()
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res1 = requests.get(SERVER_URL+'/enm/descriptor/categories', headers=headers)
+            try:
+                res1 = requests.get(SERVER_URL+'/enm/descriptor/categories', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res1, token, username)
             descriptors=json.loads(res1.text)
             print descriptors
             return render(request, "descriptors.html", {'token': token, 'username': username, 'descriptors':descriptors, 'form':form})
@@ -1769,7 +2229,11 @@ def select_descriptors(request):
             form = DatasetForm(request.POST)
             if not form.is_valid():
                 headers = {'Accept': 'application/json', 'subjectid': token}
-                res1 = requests.get(SERVER_URL+'/enm/descriptor/categories', headers=headers)
+                try:
+                    res1 = requests.get(SERVER_URL+'/enm/descriptor/categories', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res1, token, username)
                 descriptors=json.loads(res1.text)
                 return render(request, "descriptors.html", {'token': token, 'username': username, 'descriptors':descriptors, 'form':form})
             title = form['title'].value()
@@ -1780,10 +2244,18 @@ def select_descriptors(request):
             selected_properties = request.session.get('selected_properties', '')
             headers = {'content-type': 'application/json', 'subjectid': token}
             body = json.dumps({'description': 'a bundle with protein corona data', 'substanceOwner': substanceowner, 'substances': selected_substances, 'properties': selected_properties})
-            res = requests.post(url=SERVER_URL+'/enm/bundle', data=body, headers=headers)
+            try:
+                res = requests.post(url=SERVER_URL+'/enm/bundle', data=body, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
             headers = {'content-type': 'application/json', 'subjectid': token,}
             body = json.dumps({'bundle':res.text, 'descriptors':select_descriptors, 'title': title, 'description':description})
-            res = requests.post(url=SERVER_URL+'/enm/dataset', headers=headers, data=body)
+            try:
+                res = requests.post(url=SERVER_URL+'/enm/dataset', headers=headers, data=body)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
             response = json.loads(res.text)
             task = response['_id']
             #return redirect('/task', {'token': token, 'username': username})
@@ -1801,16 +2273,23 @@ def validate(request):
     method = request.GET.get('method')
     request.session['method'] = method
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
         #get total number of datasets
-        res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
@@ -1823,18 +2302,34 @@ def validate(request):
             k=str(page1)
             print k
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
             else:
-                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
         data= json.loads(res.text)
         print res.text
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
         print dataset
-        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/dataset/featured', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         proposed_data = json.loads(res1.text)
         proposed = []
         for p in proposed_data:
@@ -1848,64 +2343,60 @@ def choose_dataset_validate(request):
     method = request.session.get('method', '')
     print method
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     form = TrainForm(initial={})
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
-        headers = {'Accept': 'text/uri-list', 'subjectid': token}
-        classification_alg = []
-        res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
-        list_resp = res.text
-        list_resp = list_resp.split('\n')[:]
-        for l in list_resp:
-            l = l.split('/algorithm/')[1]
-            classification_alg.append({'name': l})
-        classification_alg = json.dumps(classification_alg)
-        classification_alg = json.loads(classification_alg)
-        regression_alg = []
-        res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
-        list_resp = res.text
-        list_resp = list_resp.split('\n')[:]
-        for l in list_resp:
-            l = l.split('/algorithm/')[1]
-            regression_alg.append({'name': l})
-        regression_alg = json.dumps(regression_alg)
-        regression_alg = json.loads(regression_alg)
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        try:
+            res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
+        classification_alg = json.loads(res.text)
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        try:
+            res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
+        regression_alg = json.loads(res.text)
         return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset, 'validate': True})
     if request.method == 'POST':
         algorithms=[]
         for alg in request.POST.getlist('radio'):
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res = requests.get(SERVER_URL+'/algorithm/'+alg, headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/algorithm/'+alg, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
             info = json.loads(res.text)
             algorithms.append({"alg":alg, "info":info })
         dataset = request.GET.get('dataset')
         print dataset
         print algorithms
         if algorithms == []:
-            headers = {'Accept': 'text/uri-list', 'subjectid': token}
-            classification_alg = []
-            res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
-            list_resp = res.text
-            list_resp = list_resp.split('\n')[:]
-            for l in list_resp:
-                l = l.split('/algorithm/')[1]
-                classification_alg.append({'name': l})
-            classification_alg = json.dumps(classification_alg)
-            classification_alg = json.loads(classification_alg)
-            regression_alg = []
-            res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
-            list_resp = res.text
-            list_resp = list_resp.split('\n')[:]
-            for l in list_resp:
-                l = l.split('/algorithm/')[1]
-                regression_alg.append({'name': l})
-            regression_alg = json.dumps(regression_alg)
-            regression_alg = json.loads(regression_alg)
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            try:
+                res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
+            classification_alg = json.loads(res.text)
+            try:
+                res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
+            regression_alg = json.loads(res.text)
             error = "Please select algorithm."
             return render(request, "train_model.html", {'token': token, 'username': username, 'classification_alg': classification_alg, 'regression_alg': regression_alg, 'form':form, 'dataset': dataset, 'error':error, 'validate':True})
         else:
@@ -1922,9 +2413,12 @@ def valid_params(request):
     method = request.session.get('method', '')
     print method
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
@@ -1936,9 +2430,17 @@ def valid_params(request):
         nform = NoPmmlForm()
         pmmlform = SelectPmmlForm()
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         al = json.loads(res.text)
-        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2',headers={'subjectid': token})
+        try:
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2',headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res2, token, username)
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
             #redirect to error page
@@ -1951,7 +2453,11 @@ def valid_params(request):
             inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
             nform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
             pmmlform.fields['predicted_feature'].choices = [(f['uri'],f['name']) for f in features]
-        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         pmml=json.loads(res1.text)
         if pmml:
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
@@ -1975,13 +2481,21 @@ def valid_params(request):
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         al = json.loads(res.text)
-        params, al = get_params3(request, parameters, al)
+        #params, al = get_params3(request, parameters, al)
+        params, al = get_params4(request, parameters, al)
         #replace al parameters value with request.post
         #al['parameters']= params
         print json.dumps(params)
-        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid': token})
+        try:
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
             #redirect to error page
@@ -1994,7 +2508,11 @@ def valid_params(request):
             inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
             nform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
             pmmlform.fields['predicted_feature'].choices = [(f['uri'],f['name']) for f in features]
-        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         pmml=json.loads(res1.text)
         if pmml:
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
@@ -2026,7 +2544,11 @@ def valid_params(request):
             for f in feature_list:
                 feat += str(f)+','
             body = {'features': feat}
-            res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
+            try:
+                res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
             response = json.loads(res.text)
             transformations = SERVER_URL+'/pmml/'+response['_id']
 
@@ -2037,7 +2559,11 @@ def valid_params(request):
                     pmml= request.FILES['file'].read()
                     print pmml
                     headers = {'Content-Type': 'application/xml',  'subjectid': token }
-                    res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
+                    try:
+                        res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
+                    except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    error_handling(request, res, token, username)
                     print res.text
                     response = json.loads(res.text)
                     transformations = SERVER_URL+'/pmml/'+response['_id']
@@ -2046,15 +2572,33 @@ def valid_params(request):
 
         folds = vform['folds'].value()
         stratify = vform['stratify'].value()
+        print stratify
+        seed = 0
+        if stratify == "random":
+            seed = vform['seed'].value()
+        print seed
+        scaling = vform['scaling'].value()
+        if scaling == "scaling1":
+            scaling=""
+        elif scaling == "scaling2":
+            scaling=SERVER_URL+'/algorithm/scaling'
+        elif scaling == "scaling3":
+            scaling=SERVER_URL+'/algorithm/standarization'
+
 
         print prediction_feature
         print params
-
-        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'stratify': stratify, 'transformations':transformations,}
-
+        if stratify != "random" and "normal":
+            body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'transformations':transformations, 'seed':seed, 'scaling':scaling}
+        else:
+            body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'stratify': stratify, 'transformations':transformations, 'seed':seed, 'scaling':scaling}
+        print body
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.post(SERVER_URL+'/validation/training_test_cross', headers=headers, data=body)
-        print res.text
+        try:
+            res = requests.post(SERVER_URL+'/validation/training_test_cross', headers=headers, data=body)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         task_id = json.loads(res.text)['_id']
         print task_id
         return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
@@ -2066,9 +2610,12 @@ def valid_split(request):
     method = request.session.get('method', '')
     print method
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
@@ -2080,9 +2627,16 @@ def valid_split(request):
         nform = NoPmmlForm()
         pmmlform = SelectPmmlForm()
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         al = json.loads(res.text)
-        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2',headers={'subjectid': token})
+        try:
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2',headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
             #redirect to error page
@@ -2095,7 +2649,11 @@ def valid_split(request):
             inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
             nform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
             pmmlform.fields['predicted_feature'].choices = [(f['uri'],f['name']) for f in features]
-        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         pmml=json.loads(res1.text)
         if pmml:
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
@@ -2119,11 +2677,17 @@ def valid_split(request):
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         al = json.loads(res.text)
         params, al = get_params4(request, parameters, al)
-
-        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid':token})
+        try:
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         predicted_features = json.loads(res2.text)
 
         if str(res2) != "<Response [200]>":
@@ -2136,7 +2700,11 @@ def valid_split(request):
             inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
             nform.fields['pred_feature'].choices = [(f['uri'],f['name']) for f in features]
             pmmlform.fields['predicted_feature'].choices = [(f['uri'],f['name']) for f in features]
-        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         pmml=json.loads(res1.text)
         if pmml:
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
@@ -2168,7 +2736,11 @@ def valid_split(request):
             for f in feature_list:
                 feat += str(f)+','
             body = {'features': feat}
-            res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
+            try:
+                res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
             response = json.loads(res.text)
             transformations = SERVER_URL+'/pmml/'+response['_id']
 
@@ -2179,8 +2751,11 @@ def valid_split(request):
                     pmml= request.FILES['file'].read()
                     print pmml
                     headers = {'Content-Type': 'application/xml',  'subjectid': token }
-                    res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
-                    print res.text
+                    try:
+                        res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
+                    except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    error_handling(request, res, token, username)
                     response = json.loads(res.text)
                     transformations = SERVER_URL+'/pmml/'+response['_id']
                 else:
@@ -2197,15 +2772,27 @@ def valid_split(request):
 
         split_ratio = vform['split_ratio'].value()
 
+        stratify = vform['stratify'].value()
+        print stratify
+        seed = 0
+        if stratify == "random":
+            seed = vform['seed'].value()
+        print seed
+
         print prediction_feature
         params = json.dumps(params)
         print params
-
-        body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio}
+        if stratify != "random" and "normal":
+            body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio}
+        else:
+            body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio, 'stratify':stratify, 'seed':seed}
         print body
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.post(SERVER_URL+'/validation/training_test_split', headers=headers, data=body)
-        print res.text
+        try:
+            res = requests.post(SERVER_URL+'/validation/training_test_split', headers=headers, data=body)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         task_id = json.loads(res.text)['_id']
         print task_id
         return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
@@ -2216,19 +2803,27 @@ def external_validation(request):
     username = request.session.get('username', '')
     page = request.GET.get('page')
     last = request.GET.get('last')
+    model= request.GET.get('model')
     method = request.GET.get('method')
     request.session['method'] = method
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
         #get total number of datasets
-        res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
@@ -2241,63 +2836,93 @@ def external_validation(request):
             k=str(page1)
             print k
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
             else:
-                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
         data= json.loads(res.text)
         print res.text
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
         print dataset
-        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/dataset/featured', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         proposed_data = json.loads(res1.text)
         proposed = []
         for p in proposed_data:
             proposed.append({'name': p['_id'], 'meta': p['meta'] })
-        return render(request, "choose_dataset_ext_valid.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed': proposed,})
+        return render(request, "choose_dataset_ext_valid.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed': proposed, 'model':model})
 
 #Choose model for external validation
 def ext_valid_model(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    dataset= request.GET.get('dataset')
+    #dataset= request.GET.get('dataset')
 
     #Check if user is authenticated. Else redirect to login page
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
         m = []
         #get all models
         headers = {'Accept': 'application/json', "subjectid": token}
-        res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         list_resp = res.text
         models = json.loads(res.text)
         print models
         for mod in models:
                 m.append({'name': mod['_id'], 'meta': mod['meta']})
         #Get selected models
-        res1 = requests.get(SERVER_URL+'/model/featured?start=0&max=10', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/model/featured?start=0&max=10', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         proposed_model = json.loads(res1.text)
         proposed = []
         for p in proposed_model:
             proposed.append({'name': p['_id'], 'meta': p['meta'] })
         #Display all models for selection
-        return render(request, "ext_validation.html", {'token': token, 'username': username, 'my_models': m, 'proposed':proposed, 'dataset':dataset})
+        return render(request, "ext_validation.html", {'token': token, 'username': username, 'my_models': m, 'proposed':proposed,})
 #
 def get_model_ext_valid(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
@@ -2306,8 +2931,11 @@ def get_model_ext_valid(request):
         body = {'test_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'model_uri': SERVER_URL+'/model/'+model,}
         print body
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.post(SERVER_URL+'/validation/test_set_validation', headers=headers, data=body)
-        print res.text
+        try:
+            res = requests.post(SERVER_URL+'/validation/test_set_validation', headers=headers, data=body)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         task_id = json.loads(res.text)['_id']
         print task_id
         return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
@@ -2317,16 +2945,24 @@ def report(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
         name = request.GET.get('name')
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/report/'+name, headers=headers)
-        report = json.loads(res.text)
+        try:
+            res = requests.get(SERVER_URL+'/report/'+name, headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
+        report = json.loads(res.text, object_pairs_hook=OrderedDict)
+
         return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })
 
 
@@ -2335,9 +2971,12 @@ def experimental(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     page = request.GET.get('page')
@@ -2349,7 +2988,11 @@ def experimental(request):
         dataset=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
         #get total number of datasets
-        res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         total_datasets= int(res.headers.get('total'))
         if total_datasets%20 == 0:
             last = total_datasets/20
@@ -2361,16 +3004,32 @@ def experimental(request):
             page1=int(page) * 20 - 20
             k=str(page1)
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
             else:
-                res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
         data= json.loads(res.text)
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
-        res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         proposed_data = json.loads(res1.text)
         proposed = []
         for p in proposed_data:
@@ -2382,9 +3041,12 @@ def experimental_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
@@ -2401,17 +3063,32 @@ def experimental_params(request):
         print prediction_feature
         if prediction_feature == "":
             request.session['alg'] = "ocpu-expdesign-x"
-            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-x', headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-x', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
         else:
-            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-xy', headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-xy', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
         al = json.loads(res.text)
-        res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        try:
+            res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
         pmml=json.loads(res1.text)
         if pmml:
             pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
         else:
             pmmlform.fields['pmml'].choices = [("",'No pmml')]
-        res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid': token})
+        try:
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         predicted_features = json.loads(res2.text)
         if str(res2) != "<Response [200]>":
             #redirect to error page
@@ -2443,7 +3120,11 @@ def experimental_params(request):
             algorithms = request.session.get('alg', '')
             print algorithms
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
             al = json.loads(res.text)
             parameters = request.POST.getlist('parameters')
             params, al = get_params(request, parameters, al)
@@ -2455,13 +3136,20 @@ def experimental_params(request):
                         print p
                         a['value']=request.POST.get(''+p)'''
             print al['parameters']
-            res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+            try:
+                res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res1, token, username)
             pmml=json.loads(res1.text)
             if pmml:
                 pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
             else:
                 pmmlform.fields['pmml'].choices = [("",'No pmml')]
-            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers={'subjectid': token})
+            try:
+                res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             predicted_features = json.loads(res2.text)
             if str(res2) != "<Response [200]>":
                 #redirect to error page
@@ -2495,7 +3183,11 @@ def experimental_params(request):
                 for f in feature_list:
                     feat += str(f)+','
                 body = {'features': feat}
-                res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
+                try:
+                    res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
                 response = json.loads(res.text)
                 transformations = SERVER_URL+'/pmml/'+response['_id']
 
@@ -2506,8 +3198,11 @@ def experimental_params(request):
                         pmml= request.FILES['file'].read()
                         print pmml
                         headers = {'Content-Type': 'application/xml',  'subjectid': token }
-                        res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
-                        print res.text
+                        try:
+                            res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
+                        except Exception as e:
+                            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                        error_handling(request, res, token, username)
                         response = json.loads(res.text)
                         transformations = SERVER_URL+'/pmml/'+response['_id']
                     else:
@@ -2528,18 +3223,29 @@ def experimental_params(request):
             dataset = request.session.get('data', '')
             title= ""
             description= ""
-            print json.dumps(params)
+            params = json.dumps(params)
+            print params
 
-            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': False}
+
+            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params, 'visible': False}
             print('----')
             print body
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
+            #headers = { 'subjectid': token}
+            try:
+                res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             print res.text
+            error_handling(request, res, token, username)
             task_id = json.loads(res.text)['_id']
             print task_id
             #return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
-            res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            try:
+                res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res1, token, username)
             status = json.loads(res1.text)['status']
             while (status != "COMPLETED"):
                 if(status == "ERROR"):
@@ -2547,16 +3253,28 @@ def experimental_params(request):
                     return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True, 'error':error})
 
                 else:
-                    res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    try:
+                        res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    error_handling(request, res1, token, username)
                     status = json.loads(res1.text)['status']
             #model: model/{id}
             model = json.loads(res1.text)['result']
             print model
             print dataset
             body = {'dataset_uri':SERVER_URL+'/dataset/'+dataset}
-            res2 = requests.post(SERVER_URL+'/'+model, headers=headers, data=body)
+            try:
+                res2 = requests.post(SERVER_URL+'/'+model, headers=headers, data=body)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res2, token, username)
             task_id = json.loads(res2.text)['_id']
-            res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            try:
+                res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res3, token, username)
             status = json.loads(res3.text)['status']
             print task_id
             while (status != "COMPLETED"):
@@ -2566,7 +3284,11 @@ def experimental_params(request):
                     return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'uploadform':form, 'pmmlform':pmmlform, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True, 'error':error})
 
                 else:
-                    res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    try:
+                        res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    error_handling(request, res4, token, username)
                     status = json.loads(res4.text)['status']
 
             new_dataset = json.loads(res4.text)['result']
@@ -2574,9 +3296,17 @@ def experimental_params(request):
             print new_dataset
             #dataset = 'jREmfXY9E997Ci'
             #model = 'aTqA637F4O00'
-            res5 = requests.get(SERVER_URL+'/dataset/'+new_dataset, headers=headers)
+            try:
+                res5 = requests.get(SERVER_URL+'/dataset/'+new_dataset, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res5, token, username)
             data_detail = json.loads(res5.text)
-            res6 = requests.get(SERVER_URL+'/'+model, headers=headers)
+            try:
+                res6 = requests.get(SERVER_URL+'/'+model, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res6, token, username)
             model_detail = json.loads(res6.text)
             predictedFeatures = model_detail['predictedFeatures']
             '''res7 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
@@ -2590,15 +3320,19 @@ def experimental_params(request):
             #body
             print model_detail
 
-            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': params })
+            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': json.loads(params) })
 
 def exp_submit(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.is_ajax():
@@ -2613,7 +3347,11 @@ def exp_submit(request):
         #print queryData
         #dataset='ayDPMNB3JcOJAm'
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         prediction_feature = get_prediction_feature_of_dataset(dataset, token)
         print prediction_feature
         #import pdb;pdb.set_trace();
@@ -2654,8 +3392,11 @@ def exp_submit(request):
         json_data = json.dumps(json_data)
         json_data = json.loads(json_data)
         print json_data
-        res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data, timeout=10)
-
+        try:
+            res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data, timeout=10)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         print res.text
         data = res.text.split('/dataset/')[1]
         print data
@@ -2667,19 +3408,31 @@ def exp_submit(request):
 def exp_iter(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if request.method == 'GET':
             dataset = request.GET.get('dataset')
             print dataset
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res1 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+            try:
+                res1 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res1, token, username)
             data_detail = json.loads(res1.text)
             model = json.loads(res1.text)['byModel']
             #model = 'A0fU5rK7B64r'
-            res = requests.get(SERVER_URL+'/model/'+model, headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/model/'+model, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
             model_detail = json.loads(res.text)
             predictedFeatures = model_detail['predictedFeatures']
             algorithms = json.loads(res.text)['algorithm']['_id']
@@ -2702,13 +3455,19 @@ def exp_iter(request):
             print body
             headers = {'Accept': 'application/json', 'subjectid': token}
             #import pdb;pdb.set_trace();
-
-            res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
+            try:
+                res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             print res.text
             task_id = json.loads(res.text)['_id']
             print task_id
             #return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
-            res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            try:
+                res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res1, token, username)
             status = json.loads(res1.text)['status']
             while (status != "COMPLETED"):
                 if(status == "ERROR"):
@@ -2716,14 +3475,26 @@ def exp_iter(request):
                     return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':dataset, 'params': params, 'error':error })
 
                 else:
-                    res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    try:
+                        res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    error_handling(request, res1, token, username)
                     status = json.loads(res1.text)['status']
             #model: model/{id}
             model = json.loads(res1.text)['result']
             body = {'dataset_uri':SERVER_URL+'/dataset/'+dataset}
-            res2 = requests.post(SERVER_URL+'/'+model, headers=headers, data=body)
+            try:
+                res2 = requests.post(SERVER_URL+'/'+model, headers=headers, data=body)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res2, token, username)
             task_id = json.loads(res2.text)['_id']
-            res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            try:
+                res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res3, token, username)
             status = json.loads(res3.text)['status']
 
             while (status != "COMPLETED"):
@@ -2731,18 +3502,34 @@ def exp_iter(request):
                     error = "An error occurred while processing your request.Please try again."
                     return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':dataset, 'params': params, 'error':error })
                 else:
-                    res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    try:
+                        res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    error_handling(request, res4, token, username)
                     status = json.loads(res4.text)['status']
 
             new_dataset = json.loads(res4.text)['result']
             new_dataset = new_dataset.split('dataset/')[1]
             print new_dataset
-            res5 = requests.get(SERVER_URL+'/dataset/'+new_dataset, headers=headers)
+            try:
+                res5 = requests.get(SERVER_URL+'/dataset/'+new_dataset, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res5, token, username)
             data_detail = json.loads(res5.text)
-            res6 = requests.get(SERVER_URL+'/'+model, headers=headers)
+            try:
+                res6 = requests.get(SERVER_URL+'/'+model, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res6, token, username)
             model_detail = json.loads(res6.text)
             predictedFeatures = model_detail['predictedFeatures']
-            res7 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+            try:
+                res7 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res7, token, username)
             d_detail = json.loads(res7.text)
             prediction_feature = get_prediction_feature_of_dataset(new_dataset, token)
             print data_detail
@@ -2755,14 +3542,22 @@ def exp_iter(request):
 def exp_design(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
 
     if request.method == 'GET':
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         print json.loads(res.text)
         al = json.loads(res.text)
 
@@ -2775,7 +3570,11 @@ def exp_design(request):
             return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform })
         else:
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
             al = json.loads(res.text)
             parameters = request.POST.getlist('parameters')
 
@@ -2783,24 +3582,44 @@ def exp_design(request):
 
             body = {'parameters':json.dumps(params), 'visible':False }
             headers = {'Accept': 'application/json', 'subjectid': token}
-            res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers, data=body)
+            try:
+                res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers, data=body)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
             print res.text
             task_id = json.loads(res.text)['_id']
             print task_id
-            res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            try:
+                res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res1, token, username)
             status = json.loads(res1.text)['status']
             while (status != "COMPLETED"):
                 if(status == "ERROR"):
                     error = "An error occurred while processing your request.Please try again."
                     return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform, 'error':error, 'al':al })
                 else:
-                    res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    try:
+                        res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    error_handling(request, res1, token, username)
                     status = json.loads(res1.text)['status']
             #model: model/{id}
             model = json.loads(res1.text)['result']
-            res2 = requests.post(SERVER_URL+'/'+model, headers=headers)
+            try:
+                res2 = requests.post(SERVER_URL+'/'+model, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res2, token, username)
             task_id = json.loads(res2.text)['_id']
-            res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            try:
+                res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res3, token, username)
             status = json.loads(res3.text)['status']
 
             while (status != "COMPLETED"):
@@ -2808,7 +3627,11 @@ def exp_design(request):
                     error = "An error occurred while processing your request.Please try again."
                     return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform, 'error':error, 'al':al })
                 else:
-                    res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    try:
+                        res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                    except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    error_handling(request, res4, token, username)
                     status = json.loads(res4.text)['status']
 
             dataset = json.loads(res4.text)['result']
@@ -2818,11 +3641,12 @@ def exp_design(request):
 
 
 #Interlab testing select substance owners
-def interlab_select_substance(request):
+'''def interlab_select_substance(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
         if r.status_code != 200:
             return redirect('/login')
         else:
@@ -2874,19 +3698,102 @@ def interlab_select_substance(request):
             res = requests.get(substance_owner+'/substance', headers=headers)
             substances=json.loads(res.text)
             request.session['substances'] = substances
-            return redirect('/interlab_params', {'token': token, 'username': username})
+            return redirect('/interlab_params', {'token': token, 'username': username})'''
+
+#Train model
+def interlab_select_substance(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    page = request.GET.get('page')
+    last = request.GET.get('last')
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    if token:
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    else:
+        return redirect('/login')
+    if request.method == 'GET':
+        dataset=[]
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        #get total number of datasets
+        try:
+            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
+        total_datasets= int(res.headers.get('total'))
+        if total_datasets%20 == 0:
+            last = total_datasets/20
+        else:
+            last = (total_datasets/20)+1
+
+        if page:
+            #page1 is the number of first dataset of page
+            page1=int(page) * 20 - 20
+            k=str(page1)
+            print k
+            if page1 <= 1:
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
+            else:
+                try:
+                    res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
+        else:
+            page = 1
+            try:
+                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
+        data = json.loads(res.text)
+        print res.text
+        try:
+            res = requests.get(SERVER_URL+'/dataset/interlab-dummy', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
+        d = json.loads(res.text)
+        dataset.append({'name': d['_id'], 'meta': d['meta']})
+        '''for d in data:
+                dataset.append({'name': d['_id'], 'meta': d['meta']})'''
+        print dataset
+        proposed=[]
+        try:
+            res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res1, token, username)
+        proposed_data = json.loads(res1.text)
+        for p in proposed_data:
+            proposed.append({'name': p['_id'], 'meta': p['meta']})
+        return render(request, "interlab_dataset.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed':proposed})
+
 
 def interlab_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     if request.method == 'GET':
-        #dataset=request.GET.get('dataset')
+        dataset=request.GET.get('dataset')
         form=InterlabForm()
-        dataset = "8aj1O7Vny4uJLl"
+        #dataset = "8aj1O7Vny4uJLl"
         return render(request, "interlab_params.html", {'token': token, 'username': username, 'dataset':dataset, 'form':form})
     if request.method == 'POST':
         dataset=request.GET.get('dataset')
@@ -2895,11 +3802,17 @@ def interlab_params(request):
             return render(request, "interlab_params.html", {'token': token, 'username': username, 'dataset':dataset, 'form':form})
         modelname = form['modelname'].value()
         description = form['description'].value()
-        dataset = "http://test.jaqpot.org:8080/jaqpot/services/dataset/interlab"
+        dataset = "http://test.jaqpot.org:8080/jaqpot/services/dataset/interlab-dummy"
         prediction = "https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
         headers = {'Accept': 'application/json', 'subjectid': token}
         body = {'title': modelname, 'descriptions': description, 'dataset_uri': dataset, 'prediction_feature':prediction}
-        res = requests.post(SERVER_URL+'/interlab/test', headers=headers, data=body)
+        print body
+        try:
+            res = requests.post(SERVER_URL+'/interlab/test', headers=headers, data=body)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
+        print res.text
         print json.loads(res.text)['_id']
         return redirect('/report?name='+json.loads(res.text)['_id'])
 
@@ -2907,16 +3820,24 @@ def interlab_params(request):
 def clean_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
         headers = {'Accept': 'application/json', 'subjectid': token}
-        res = requests.get(SERVER_URL+'/dataset/ayDPMNB3JcOJAm', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/dataset/ayDPMNB3JcOJAm', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         data= json.loads(res.text)
         prediction_feature = get_prediction_feature_of_dataset(dataset, token)
         suggested=""
@@ -2927,7 +3848,11 @@ def clean_dataset(request):
         json_data = json.dumps(new_data)
         print json_data
         headers1 = {'Content-type': 'application/json', 'subjectid': token}
-        res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
+        try:
+            res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         dataset = res.text.split('/dataset/')[1]
         print dataset
         return redirect('/dataset?dataset=' +dataset)
@@ -2936,13 +3861,17 @@ def clean_dataset(request):
 def report_list(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
 
@@ -2952,7 +3881,11 @@ def report_list(request):
         report=[]
         headers = {'Accept': 'application/json', 'subjectid': token}
         #get total number of datasets
-        res = requests.get(SERVER_URL+'/report?start=0&max=20', headers=headers)
+        try:
+            res = requests.get(SERVER_URL+'/report?start=0&max=20', headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        error_handling(request, res, token, username)
         total_reports= int(res.headers.get('total'))
         if total_reports%20 == 0:
             last = total_reports/20
@@ -2964,12 +3897,24 @@ def report_list(request):
             page1=int(page) * 20 - 20
             k=str(page1)
             if page1 <= 1:
-                res = requests.get(SERVER_URL+'/report?start=0&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/report?start=0&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
             else:
-                res = requests.get(SERVER_URL+'/report?start='+k+'&max=20', headers=headers)
+                try:
+                    res = requests.get(SERVER_URL+'/report?start='+k+'&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                error_handling(request, res, token, username)
         else:
             page = 1
-            res = requests.get(SERVER_URL+'/report?start=0&max=20', headers=headers)
+            try:
+                res = requests.get(SERVER_URL+'/report?start=0&max=20', headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            error_handling(request, res, token, username)
         data= json.loads(res.text)
         for d in data:
             report.append({'id':d['_id'], 'meta':d['meta']})
@@ -3037,19 +3982,67 @@ def report_list(request):
 def report_delete(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
     if token:
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
-        if r.status_code != 200:
-            return redirect('/login')
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
     id = request.GET.get('id')
     #delete report
     headers = {'Accept': 'application/json', "subjectid": token}
-    res = requests.delete(SERVER_URL+'/report/'+id, headers=headers)
+    try:
+        res = requests.delete(SERVER_URL+'/report/'+id, headers=headers)
+    except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    error_handling(request, res, token, username)
     reply = res.text
     print reply
     return redirect('/reports')
+
+#Qrf report
+def qrf_report(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    else:
+        return redirect('/login')
+    uri = request.GET.get('uri')
+    dataset = request.GET.get('dataset')
+    print uri
+    print dataset
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    body={'substance_uri':uri}
+    try:
+        res = requests.post(SERVER_URL+'/dataset/'+dataset+'/qprf', headers=headers, data=body)
+    except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    error_handling(request, res, token, username)
+    response = json.loads(res.text)
+    name=response['_id']
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    try:
+        res = requests.get(SERVER_URL+'/report/'+name, headers=headers)
+    except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    error_handling(request, res, token, username)
+    report = json.loads(res.text, object_pairs_hook=OrderedDict)
+
+    return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })

@@ -4,6 +4,7 @@ import json
 def get_params(request, parameters, al):
     params={}
     for p in parameters:
+        print p
         try:
             value = int(request.POST.get(''+p))
             params.update({str(p):[value]})

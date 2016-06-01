@@ -43,3 +43,7 @@ def float(value):
 @register.filter
 def get_key(obj, key):
     return obj[key][0]
+
+@register.filter(name='get')
+def get(d, k):
+    return d.get(k, None)

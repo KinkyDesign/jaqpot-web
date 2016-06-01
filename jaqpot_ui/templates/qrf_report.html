@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="div-table" style="width:100%;display:inline-block;">
+    {% if response.parameters %}
+                <h6><b>Parameters:</b></h6>
+                 {% for k,v in response.parameters.structures.0.items%}
+                    <div >
+                        <label class="align">{{k}}:</label>
+                        <input type="text" name="parameters" style="margin:5px;display:none;" value="{{v}}">
+                    </div>
+                 {% endfor %}
+    {% endif %}
+
+    </div>
+
+{% endblock %}

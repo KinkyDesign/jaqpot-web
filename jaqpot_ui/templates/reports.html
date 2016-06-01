@@ -9,10 +9,10 @@
 
              {% paginate 20 report %}
              <div class="list-group">
-                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:95%">Name <span style="float: left; left:20%; position:absolute;">Comments</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:95%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
                  {% for r in report %}
 
-                    <a href="/report?name={{r.id}}" class="list-group-item" style="width:95%;float:left;">{{r.id}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{{r.meta.comments.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in d.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </a>
+                    <a href="/report?name={{r.id}}" class="list-group-item" style="width:95%;float:left;">{{r.id}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{{r.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{r.meta.descriptions.0}}</span> </a>
                     <button class="btn bt-red" data-toggle="tool" title="Delete Report" style="margin: 4px;" onclick="deleteReport('{{r.id}}')"><i class="glyphicon glyphicon-remove-sign"></i></button>
                  {% endfor %}
              </div>

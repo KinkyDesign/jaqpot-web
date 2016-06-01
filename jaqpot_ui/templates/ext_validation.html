@@ -16,7 +16,7 @@
             <h3>Example models:</h3>
             <p class="list-group-item model" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
             {% for p in proposed %}
-                <a href="/get_model_ext_valid?model={{p.name}}&dataset={{dataset}}" class="list-group-item model">{{p.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{p.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{p.meta.descriptions.0}}</span> </a>
+                <a href="/external_validation?model={{p.name}}" class="list-group-item model">{{p.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{p.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{p.meta.descriptions.0}}</span> </a>
             {% endfor %}
             </div>
         {% endif %}
@@ -25,7 +25,7 @@
         {% paginate 20 my_models using "other_objects_page" %}
             <p class="list-group-item model" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
         {% for m in my_models %}
-            <a href="/get_model_ext_valid?model={{m.name}}&dataset={{dataset}}" class="list-group-item model">{{m.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{m.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{m.meta.descriptions.0}}</span> </a>
+            <a href="/external_validation?model={{m.name}}" class="list-group-item model">{{m.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{m.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{m.meta.descriptions.0}}</span> </a>
         {% endfor %}
             </div>
             {% get_pages %}

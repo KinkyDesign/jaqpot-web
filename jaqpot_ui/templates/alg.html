@@ -43,43 +43,78 @@
             {% if al.parameters %}
                 <h6><b>Parameters:</b></h6>
                  {% for p in al.parameters%}
-                    <div>
+                    <div >
                         <label class="align">{{p.name}}:</label>
                         {% if p.allowedValues %}
-                        <select name="{{p.name}}" >
+                        <select name="{{p|get:'_id'}}">
                             {% for s in p.allowedValues %}
+                            {% if s|get_type == "list" %}
+                            <option value="{{s.0}}" {% if p.value == s %} selected {% endif %}>{{s.0}}</option>
+
+                            {% else %}
                             <option value="{{s}}" {% if p.value == s %} selected {% endif %}>{{s}}</option>
+                            {% endif %}
                             {% endfor %}
-                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                            {% if p.description %}
+                             <span class="glyphicon glyphicon-info-sign" data-bind="" data-toggle="tooltip" data-container="body" title="{{p.description}}"></span>
+                            {% endif %}
                         </select>
+
                         {% elif p.minValue %}
-                        <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
+                        {% if p.value|get_type == "list" %}
+                                {% if p.value.0|get_type == "unicode" %}
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value|joinby:','}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                                    {% if p.description %}
+                                        <span class="glyphicon glyphicon-info-sign" data-bind="" data-toggle="tooltip" title="{{p.description}}"></span>
+                                    {% endif %}
+                                {% elif p.value.0|get_type == "int" %}
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value.0|intiger}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                                    {% if p.description %}
+                                        <span class="glyphicon glyphicon-info-sign" data-bind="" data-toggle="tooltip" title="{{p.description}}"></span>
+                                    {% endif %}
+                                {%else %}
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                                    {% if p.description %}
+                                        <span class="glyphicon glyphicon-info-sign" data-bind="" data-toggle="tooltip" title="{{p.description}}"></span>
+                                    {% endif %}
+                                {% endif %}
+                        {%else %}
+                            <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value='{{p.value}}'>
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                            {% if p.description %}
+                            <span class="glyphicon glyphicon-info-sign" data-bind="" data-toggle="tooltip" title="{{p.description}}"></span>
+                            {% endif %}
+                        {% endif %}
                         <p><small><b>Min value:</b>{{p.minValue}}   <b>Max value:</b>{{p.maxValue}}</small></p>
-                        <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                         {% else%}
                             {% if exp %}
                             {% if p.value|get_type == "list" %}
                                 {% if p.value.0|get_type == "unicode" %}
-                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|joinby:','}}">
-                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value|joinby:','}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                                 {% elif p.value.0|get_type == "int" %}
-                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value.0|intiger}}">
-                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value.0|intiger}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                                 {%else %}
-                                    <input type="text" name="{{p.name}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
-                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                                 {% endif %}
                             {%else%}
-                            <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
-                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                             {%endif %}
                         {% else %}
                             {% if p.value|get_type == "int" %}
-                                    <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|intiger}}">
-                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value|intiger}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                             {%else %}
-                                 <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
-                                 <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                                 <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value}}">
+                                 <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                             {% endif %}
                         {% endif %}
                         {% endif %}
@@ -118,7 +153,7 @@
 
     </div>
     <div style="float:right; width:50%;">
-        <h5>Select variables (optional):</h5>
+        <h5>Select variables :</h5>
         {% if tform.variables.errors %}
                <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
 						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -130,14 +165,14 @@
 
     <div id="input" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
         {% if exp %}
-            <h5><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable:</h5>
+            <h5><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable(s):</h5>
         {% else %}
-            <h5><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable and endpoint:</h5>
+            <h5><input type="radio" name="radio1" value="I/O" style="display:none;">Select Input variable(s) and endpoint:</h5>
         {% endif %}
 
         <div style="float:left; width:50%;" >
 
-        <h5>Input</h5>
+        <h5>Input variable(s)</h5>
             {% if inputform.input.errors %}
                <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-bottom: 0px;">
 						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -155,7 +190,7 @@
             </div>
 
         <div style="float:left; width:50%">
-            <h5>Output</h5>
+            <h5>Endpoint</h5>
                  {% if inputform.output.errors %}
                    <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-bottom: 0px;">
                             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -208,7 +243,7 @@
      {% if not exp %}
          <div id="none" style="float:right; width:50%; border: 3px solid #cf2323;padding:5px;margin:0 0 5px; border-radius:5px;display:none;">
 
-            <h5>Select Prediction Feature:</h5>
+            <h5>Select endpoint:</h5>
                 {{nform.pred_feature}}
 
         </div>
@@ -335,6 +370,13 @@
 
 
 
+});
+$(function () {
+    //display tooltip right
+    $('[data-toggle="tooltip"]').tooltip({
+        container : 'body',
+        placement:'right'
+    });
 });
 </script>
 

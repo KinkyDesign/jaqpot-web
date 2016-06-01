@@ -5,6 +5,18 @@
 {% block content %}
 <div class="div-table" style="width:100%;">
     <h1>Report: <span style="font-size: 20px;">#{{name}}</span> </h1>
+    {% if report.meta.titles %}
+        <div>
+            <label class="align">Title:</label>
+            <input type="text" readonly="readonly" style="margin:5px" value="{{report.meta.titles.0}}">
+        </div>
+    {% endif %}
+     {% if report.meta.descriptions %}
+        <div>
+        <label class="align">Description:</label>
+         <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;width:25%;">{{report.meta.descriptions.0}}</textarea>
+    </div>
+     {% endif %}
     {% if report.singleCalculations %}
         {% for key, value in report.singleCalculations.items  %}
             <div>

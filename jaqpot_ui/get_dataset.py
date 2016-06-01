@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 
+from jaqpot_ui.error_handling import error_handling
+
 __author__ = 'evangelie'
 
 import json
@@ -19,7 +21,11 @@ def paginate_dataset(request, name, token, username, page):
     This function returns the compounds of the selected dataset paginated
     '''
     headers = {'Accept': 'application/json', 'subjectid': token}
-    r = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=0&colStart=0&colMax=0', headers=headers)
+    try:
+        r = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=0&colStart=0&colMax=0', headers=headers)
+    except Exception as e:
+        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    error_handling(request, r, token, username)
     data=json.loads(r.text)
     if str(r) != "<Response [200]>":
         #redirect to error page
@@ -27,7 +33,6 @@ def paginate_dataset(request, name, token, username, page):
     else:
         totalRows = data['totalRows']
         totalColumns = data['totalColumns']
-        print totalRows
         last = (totalRows/20)
         if (totalRows%20) != 0:
             last=last+1

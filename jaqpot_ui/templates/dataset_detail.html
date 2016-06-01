@@ -5,7 +5,7 @@
 <div class="div-table" style="width:100%; min-height:650px;">
     {% load endless %}
      {% paginate 20 a %}
-    <div>
+     <div>
         <div style="float:left;">
             <h1>Dataset: <span  style="font-size: 20px;">{{data_detail.meta.titles.0}}</span> <span style="font-size: 12px;">#{{name}}</span> </h1>
         </div>
@@ -14,41 +14,13 @@
         </div>
         <input type="search" id="search1" onsearch="myFunction()" style="display:none">
     </div>
-    <br>
-
 
     <div id="details">
-         <a id="info" class="btn bt-red" data-toggle="tool-top" title="Dataset info" style="margin: 3px;margin-top: 6%;margin-left: -42%;"><i class="glyphicon glyphicon-plus-sign"></i></a>
-        <div id="data_details" style="display:none;">
 
-         {% if data_detail.meta.subjects%}
-                <h6><b>Subjects:</b></h6>
-                {% for d in data_detail.meta.subjects%}
-                    <div>
-                        <label class="align"></label>
-                        <input type="text" style="margin:5px;" value="{{d}}">
-                    </div>
-                {% endfor %}
-            {% endif %}
-         {% if data_detail.meta.publishers%}
-                <h6><b>Publishers:</b></h6>
-                {% for d in data_detail.meta.publishers%}
-                    <div>
-                        <label class="align"></label>
-                        <input type="text" style="margin:5px;" value="{{d}}">
-                    </div>
-                {% endfor %}
-            {% endif %}
-         {% if data_detail.meta.contributors%}
-                <h6><b>Contributors:</b></h6>
-                {% for d in data_detail.meta.contributors%}
-                    <div>
-                        <label class="align"></label>
-                        <input type="text" style="margin:5px;" value="{{d}}">
-                    </div>
-                {% endfor %}
-            {% endif %}
-            {% if data_detail.meta.doi %}
+        <a id="info" class="btn bt-red" data-toggle="tool-top" title="Dataset info" style="float:left; clear:left"><i class="glyphicon glyphicon-plus-sign"></i></a>
+        <div id="data_details" style="float:left;clear:left;display:none;">
+
+          {% if data_detail.meta.doi %}
             <div>
                 <label class="align">Doi:</label>
                 <input type="text" style="margin:5px;" value="{{data_detail.meta.doi.0}}">
@@ -60,6 +32,26 @@
              <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;width:99%;">{{data_detail.meta.descriptions.0}}</textarea>
         </div>
          {% endif %}
+          {% if data_detail.meta.contributors%}
+                <h6><b>Contributors:</b></h6>
+                {% for d in data_detail.meta.contributors%}
+                   <span class="label" style="font-size:100%;padding: .4em .9em .5em;">{{d}}</span>
+                {% endfor %}
+            {% endif %}
+         {% if data_detail.meta.publishers%}
+                <h6><b>Publishers:</b></h6>
+                {% for d in data_detail.meta.publishers%}
+                        <span class="label" style="font-size:100%;padding: .4em .9em .5em;">{{d}}</span>
+                {% endfor %}
+            {% endif %}
+         {% if data_detail.meta.subjects%}
+                <h6><b>Subjects:</b></h6>
+                {% for d in data_detail.meta.subjects%}
+                        <span class="label label-danger" style="font-size:80%;">{{d}}</span>
+                {% endfor %}
+            {% endif %}
+            <br>
+
     </div>
          <table id="dataset" class="div-form-table display" >
              <thead>
