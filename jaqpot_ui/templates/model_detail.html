@@ -65,6 +65,22 @@
                 </div> -->
             {% endfor %}
         {% endif %}
+        {% if details.transformationModels %}
+        <div>
+            <label class="align">Transformations:</label>
+            {% for d in details.transformationModels%}
+            <input type="text" style="margin:5px;width:50%;" value="{{d}}">
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if details.linkedModels %}
+        <div>
+            <label class="align">Doa:</label>
+            {% for d in details.linkedModels%}
+            <input type="text" style="margin:5px;width:50%;" value="{{d}}">
+            {% endfor %}
+        </div>
+        {% endif %}
         {% if details.meta.description %}
         <div>
         <label class="align">Description:</label>

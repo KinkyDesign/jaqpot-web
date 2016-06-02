@@ -8,20 +8,29 @@
     {% if report.meta.titles %}
         <div>
             <label class="align">Title:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{report.meta.titles.0}}">
+            <input type="text" readonly="readonly" id="in-title" style="margin:5px" value="{{report.meta.titles.0}}">
+            <!--<button type="button" id="btn-title" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+            <button type="button" id="btn-title-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-title-cancel" class="btn btn-danger" style="display:none">Cancel</button> -->
         </div>
     {% endif %}
      {% if report.meta.descriptions %}
         <div>
         <label class="align">Description:</label>
-         <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;width:25%;">{{report.meta.descriptions.0}}</textarea>
+         <textarea class="form-control" rows="3" id="in-desc" readonly="readonly" style="margin:5px;width:25%;">{{report.meta.descriptions.0}}</textarea>
+           <!-- <button type="button" id="btn-desc" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+            <button type="button" id="btn-desc-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-desc-cancel" class="btn btn-danger" style="display:none">Cancel</button>  -->
     </div>
      {% endif %}
     {% if report.singleCalculations %}
         {% for key, value in report.singleCalculations.items  %}
             <div>
                 <label class="align">{{key}}:</label>
-                <input type="text" readonly="readonly" style="margin:5px" value="{{value}}">
+                <input type="text" id="in-{{key}}" readonly="readonly" style="margin:5px" value="{{value}}">
+                <!-- <button type="button" id="btn-{{key}}" data-toggle="tooltip" title="Edit {{key}}" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+                <button type="button" id="btn-{{key}}-save" class="btn btn-success" style="display:none">Save</button>
+                <button type="button" id="btn-{{key}}-cancel" class="btn btn-danger" style="display:none">Cancel</button> -->
             </div>
         {% endfor%}
     {% endif %}
@@ -58,4 +67,70 @@
 
 </div>
 
+<script>
+
+/*edit( $( '#btn-desc' ), $( '#in-desc' ), $( '#btn-desc-save' ),  $( '#btn-desc-cancel' ), '/desc', "Description", "{{report.meta.descriptions.0}}" );
+
+edit( $( '#btn-title' ), $( '#in-title' ), $( '#btn-title-save' ),  $( '#btn-title-cancel' ), '/title', "Title", "{{report.meta.titles.0}}" );
+
+//Edit author field
+{% for k, v in report.singleCalculations.items  %}
+edit( $( '#btn-{{k}}' ), $( '#in-{{k}}' ), $( '#btn-{{k}}-save' ),  $( '#btn-{{k}}-cancel' ), '/{{k}}', "{{k}}", "{{v}}" );
+{% endfor %}  */
+
+
+
+//edit function is called when user push edit buttom and send via ajax the new value of field
+function edit(btn, id_field, save, cancel, path , field, previous_value) {
+
+    btn.click(function() {
+    id_field.removeAttr("readonly");
+    btn.hide();
+    save.show();
+    cancel.show();
+    });
+
+    cancel.click(function() {
+        save.hide();
+        cancel.hide();
+        btn.show();
+        id_field.attr("readonly","readonly");
+        id_field.val(previous_value)
+
+    });
+
+
+    save.click(function() {
+    save.hide();
+    cancel.hide();
+    btn.show();
+    id_field.attr("readonly","readonly");
+    //send via ajax new values
+    /*$.ajax({
+            type: "get",
+            url: "/report_patch",
+            dataType: "json",
+            contentType: 'application/json;',
+            data: { 'op': 'add', 'path': path, 'value': id_field.val() , 'id': '{{id}}', },
+            success: function(data){
+                var json = JSON.stringify(data);
+                var json = JSON.parse(json);
+                 id_field.val(json[field])
+            },
+            error: function(){
+                alert("error");
+            }
+        });  */
+
+});
+
+}
+
+ //display tooltip right
+    $('[data-toggle="tooltip"]').tooltip({
+        'placement': 'right'
+    });
+</script>
+
 {% endblock %}
+
