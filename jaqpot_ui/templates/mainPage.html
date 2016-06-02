@@ -143,10 +143,8 @@
                   <p>Optimise the design of the experiments.</p>
                   {% if token %}
                         <p>
-                            <a href="#" class="btn bt-red" role="button">Data available</a>
-                            <a href="#" class="btn bt-red" role="button">No data available</a>
-                            <!-- <a href="/experimental" class="btn bt-red" role="button">Data available</a>
-                            <a href="/exp_design" class="btn bt-red" role="button">No data available</a> -->
+                            <a href="/experimental" class="btn bt-red" role="button">Data available</a>
+                            <a href="/exp_design" class="btn bt-red" role="button">No data available</a>
                         </p>
                     {% else %}
                         <p>
@@ -164,8 +162,7 @@
                   <h3>Interlaboratory Comparison</h3>
                   <p>Perform statistical laboratory quality control.</p>
                    {% if token %}
-                        <p><a href="#" class="btn bt-red" role="button">Interlaboratory Proficiency Testing</a></p>
-                        <!--/interlab_substance-->
+                        <p><a href="/interlab_substance" class="btn bt-red" role="button">Interlaboratory Proficiency Testing</a></p>
                     {% else %}
                         <p><a href="/login" class="btn bt-red" role="button">Interlaboratory Proficiency Testing</a></p>
                     {% endif %}
@@ -179,7 +176,7 @@
                   <h3>Read Across</h3>
                   <p>Make a prediction based on the read across method on an existing dataset.</p>
                    {% if token %}
-                        <p><a href="#" class="btn bt-red" role="button">Read Across</a></p>
+                        <p><a href="/conformer" class="btn bt-red" role="button">Read Across</a></p>
                     {% else %}
                         <p><a href="/login" class="btn bt-red" role="button">Read Across</a></p>
                     {% endif %}
