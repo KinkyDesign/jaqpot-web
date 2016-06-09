@@ -20,7 +20,7 @@
                      <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:95%;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
                      {% for m in models %}
                              <a href="/m_detail?name={{m.name}}" class="list-group-item" style="width:95%;float:left;">{{m.name}} <span style="float: left; left:20%; position:absolute;">{% for title in m.meta.titles %}{{title}} {% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%} {% endfor %}</span> <span style="float: left; left:50%; position:absolute;">{% for desc in m.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor %}</span> </a>
-                             <a href="/m_delete?id={{m.name}}" class="btn bt-red" data-toggle="tool" title="Delete Model" style="margin: 4px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
+                             <a href="/m_delete?id={{m.name}}" class="btn bt-red" data-toggle="tool" title="Delete Model" style="margin: 4px;"><i class="fa fa-trash-o fa-lg"></i></a>
                      <!--<li>
                             <a href="/m_detail?name={{m.name}}">{{m.name}}</a>
                          </li> -->

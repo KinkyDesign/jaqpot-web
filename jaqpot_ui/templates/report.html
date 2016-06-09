@@ -3,24 +3,28 @@
 {% load templates_extras %}
 
 {% block content %}
-<div class="div-table" style="width:100%;">
+<div class="div-table" style="width:100%;display:inline-block;">
+    <div style="float:right;overflow:hidden; white-space:nowrap; text-overflow:ellipsis; width:12%;">
+          <a href="/download_report?name={{name}}" class="btn btn-danger btn-lg" data-toggle="tooltip" title="Download pdf" style="margin: 5px;"><i class="fa fa-file-pdf-o"></i> Download</a>
+
+      </div>
     <h1>Report: <span style="font-size: 20px;">#{{name}}</span> </h1>
     {% if report.meta.titles %}
         <div>
             <label class="align">Title:</label>
             <input type="text" readonly="readonly" id="in-title" style="margin:5px" value="{{report.meta.titles.0}}">
-            <!--<button type="button" id="btn-title" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+            <button type="button" id="btn-title" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
             <button type="button" id="btn-title-save" class="btn btn-success" style="display:none">Save</button>
-            <button type="button" id="btn-title-cancel" class="btn btn-danger" style="display:none">Cancel</button> -->
+            <button type="button" id="btn-title-cancel" class="btn btn-danger" style="display:none">Cancel</button>
         </div>
     {% endif %}
      {% if report.meta.descriptions %}
         <div>
         <label class="align">Description:</label>
          <textarea class="form-control" rows="3" id="in-desc" readonly="readonly" style="margin:5px;width:25%;">{{report.meta.descriptions.0}}</textarea>
-           <!-- <button type="button" id="btn-desc" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+            <button type="button" id="btn-desc" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
             <button type="button" id="btn-desc-save" class="btn btn-success" style="display:none">Save</button>
-            <button type="button" id="btn-desc-cancel" class="btn btn-danger" style="display:none">Cancel</button>  -->
+            <button type="button" id="btn-desc-cancel" class="btn btn-danger" style="display:none">Cancel</button>
     </div>
      {% endif %}
     {% if report.singleCalculations %}
@@ -28,9 +32,9 @@
             <div>
                 <label class="align">{{key}}:</label>
                 <input type="text" id="in-{{key}}" readonly="readonly" style="margin:5px" value="{{value}}">
-                <!-- <button type="button" id="btn-{{key}}" data-toggle="tooltip" title="Edit {{key}}" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+                <button type="button" id="btn-{{key}}" data-toggle="tooltip" title="Edit {{key}}" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
                 <button type="button" id="btn-{{key}}-save" class="btn btn-success" style="display:none">Save</button>
-                <button type="button" id="btn-{{key}}-cancel" class="btn btn-danger" style="display:none">Cancel</button> -->
+                <button type="button" id="btn-{{key}}-cancel" class="btn btn-danger" style="display:none">Cancel</button>
             </div>
         {% endfor%}
     {% endif %}
@@ -69,14 +73,14 @@
 
 <script>
 
-/*edit( $( '#btn-desc' ), $( '#in-desc' ), $( '#btn-desc-save' ),  $( '#btn-desc-cancel' ), '/desc', "Description", "{{report.meta.descriptions.0}}" );
+edit( $( '#btn-desc' ), $( '#in-desc' ), $( '#btn-desc-save' ),  $( '#btn-desc-cancel' ), '/desc', "Description", "{{report.meta.descriptions.0}}" );
 
 edit( $( '#btn-title' ), $( '#in-title' ), $( '#btn-title-save' ),  $( '#btn-title-cancel' ), '/title', "Title", "{{report.meta.titles.0}}" );
 
 //Edit author field
 {% for k, v in report.singleCalculations.items  %}
 edit( $( '#btn-{{k}}' ), $( '#in-{{k}}' ), $( '#btn-{{k}}-save' ),  $( '#btn-{{k}}-cancel' ), '/{{k}}', "{{k}}", "{{v}}" );
-{% endfor %}  */
+{% endfor %}
 
 
 

@@ -4231,3 +4231,46 @@ def qrf_report(request):
     print request
 
     return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })
+
+
+def report_download(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    if token:
+        request.session.get('token', '')
+        #validate token
+        #if token is not valid redirect to login page
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    else:
+        return redirect('/login')
+    name = request.GET.get('name')
+    headers = {'Accept': 'application/pdf', "subjectid": token}
+    try:
+        res = requests.get(SERVER_URL+'/report/'+name+'/pdf', headers=headers)
+        print res.text
+    except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    if res.status_code >= 400:
+        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+    #details = json.loads(res.text)
+    if res.status_code == 200:
+        pdf = res.text
+        print pdf
+        response = HttpResponse(pdf, content_type='application/xml')
+        response['Content-Disposition'] = 'attachment; filename="report_'+name+'.pdf"'
+        return response
+    else:
+        try:
+            res = requests.get(SERVER_URL+'/report/'+name, headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        report = json.loads(res.text, object_pairs_hook=OrderedDict)
+
+        return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })

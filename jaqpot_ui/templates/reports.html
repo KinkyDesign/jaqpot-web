@@ -13,7 +13,7 @@
                  {% for r in report %}
 
                     <a href="/report?name={{r.id}}" class="list-group-item" style="width:95%;float:left;">{{r.id}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{{r.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{r.meta.descriptions.0}}</span> </a>
-                    <button class="btn bt-red" data-toggle="tool" title="Delete Report" style="margin: 4px;" onclick="deleteReport('{{r.id}}')"><i class="glyphicon glyphicon-remove-sign"></i></button>
+                    <button class="btn bt-red" data-toggle="tool" title="Delete Report" style="margin: 4px;" onclick="deleteReport('{{r.id}}')"><i class="fa fa-trash-o fa-lg"></i></button>
                  {% endfor %}
              </div>
 

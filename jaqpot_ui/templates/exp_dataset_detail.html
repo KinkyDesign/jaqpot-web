@@ -16,6 +16,7 @@
     <div>
         <div>
             <h1>Dataset: <span  style="font-size: 20px;">{{data_detail.meta.titles.0}}</span> <span style="font-size: 12px;">#{{dataset_name}}</span> </h1>
+            <p>{{params|get_key:'r2.threshold'}}</p>
         </div>
         {% if error %}
             <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-top:10px;">
@@ -29,7 +30,7 @@
             {% if k == "r.squared" %}
                     <div>
                         <label class="align">Rsquared:</label>
-                        <input type="text" style="margin:5px;width:40%;" readonly="readonly" value="{{v.0}}">
+                        <input type="text" id="rsquare" style="margin:5px;width:40%;" readonly="readonly" value="{{v.0}}">
                     </div>
                     <span style="font-size: 10px;margin-left: 10%;"><b>Help note:</b>Rsquared greater or equal to Rsquared threshold.</span>
             {% endif %}
