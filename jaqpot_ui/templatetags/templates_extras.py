@@ -47,3 +47,6 @@ def get_key(obj, key):
 @register.filter(name='get')
 def get(d, k):
     return d.get(k, None)
+
+'''date=output['meta']['date'].split('T')[0]
+output['meta']['date'] = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%m/%d/%y')'''

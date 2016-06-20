@@ -13,7 +13,6 @@
 						<span>{{error}}</span>
                </div>
     {% endif %}
-
     {% if al.parameters %}
                  {% for p in al.parameters%}
                     <div>
@@ -109,6 +108,36 @@
             {{pform.form}} -->
     <br>
     <br>
+    <!--
+    <table id="table" class="div-form-table display" >
+             <thead>
+                 <tr>
+
+                     <th style="background-color: #cf2323; min-width: 300px;">Levels</th>
+                      {% for prop in new %}
+                        {% if prop %}
+                        <th style="background-color: #cf2323;" class="column">
+                            <p data-toggle="tooltip" data-placement="top" data-container="body" title="Units: {{prop.units}} Conditions: {% for k,v in prop.conditions.iteritems %}{{k}}:{{v}}, {% endfor %}" >{{prop.name}}</p>
+                        </th>
+
+                         {% endif %}
+                     {% endfor %}
+                 </tr>
+             </thead>
+             <tbody>
+             {% for key, value in properties.items %}
+                    <tr>
+                        <td>{{value.1.name}}</td>
+                        {% for v in value %}
+                            {% if v.prop%}
+                                <td>{{v.value}}</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+             {% endfor %}
+
+             </tbody>
+         </table>  -->
 
     <input id="choose_params" type="submit" value="Experimental Design" class="btn bt-red" style="width: 15%; float:left; left:10%;">
 
@@ -124,6 +153,33 @@
         {
             $("#loading").show();
             });
+
+    $(document).ready( function () {
+
+        var oTable = $('#table').DataTable( {
+        "bJQueryUI": true,
+        "bScrollCollapse": true,
+        "bAutoWidth": false,
+        "bPaginate":false,
+        "dom": 'ft',
+        "sScrollX": "100%",
+        "sScrollXInner": "100%",
+
+         "fnDrawCallback": function( oSettings )
+         {
+            $('.dataTables_scrollBody table thead tr').css({ 'height' : '0px' });
+        },
+        "fnInitComplete": function(oSettings, json)
+         {
+            $('.dataTables_scrollBody table thead tr').css({ 'height' : '0px' });
+        },
+
+        });
+
+
+
+    } );
+
 
 </script>
 

@@ -18,6 +18,38 @@
             <button type="button" id="btn-title-cancel" class="btn btn-danger" style="display:none">Cancel</button>
         </div>
     {% endif %}
+    {% if report.meta.hasSources %}
+        {% for r in report.meta.hasSources  %}
+            {% if 'dataset' in r %}
+                <div>
+                    <label class="align">Dataset:</label>
+                    <input type="text" readonly="readonly" id="in-dataset" style="margin:5px" value="{{ r|split:'dataset/' }}">
+                    <button type="button" id="btn-dataset" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+                    <button type="button" id="btn-dataset-save" class="btn btn-success" style="display:none">Save</button>
+                    <button type="button" id="btn-dataset-cancel" class="btn btn-danger" style="display:none">Cancel</button>
+                </div>
+            {% endif %}
+            {% if 'model' in r %}
+                <div>
+                    <label class="align">Dataset:</label>
+                    <input type="text" readonly="readonly" id="in-model" style="margin:5px" value="{{ r|split:'model/' }}">
+                    <button type="button" id="btn-model" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+                    <button type="button" id="btn-model-save" class="btn btn-success" style="display:none">Save</button>
+                    <button type="button" id="btn-model-cancel" class="btn btn-danger" style="display:none">Cancel</button>
+                </div>
+            {% endif %}
+            {% if 'algorithm' in r %}
+                <div>
+                    <label class="align">Dataset:</label>
+                    <input type="text" readonly="readonly" id="in-algorithm" style="margin:5px" value="{{ r|split:'algorithm/' }}">
+                    <button type="button" id="btn-algorithm" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+                    <button type="button" id="btn-algorithm-save" class="btn btn-success" style="display:none">Save</button>
+                    <button type="button" id="btn-algorithm-cancel" class="btn btn-danger" style="display:none">Cancel</button>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
      {% if report.meta.descriptions %}
         <div>
         <label class="align">Description:</label>

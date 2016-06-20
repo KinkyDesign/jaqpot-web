@@ -5,6 +5,8 @@ from urllib import urlencode
 import urllib
 import urllib2
 import urlparse
+from pattern.web import URL
+
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect, render_to_response
@@ -21,7 +23,7 @@ import subprocess
 from jaqpot_ui.get_params import get_params, get_params2, get_params3, get_params4
 from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, EMAIL_HOST_USER, SERVER_URL
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, FileResponse
 from django.core.mail import send_mail
 from jaqpot_ui.templatetags import templates_extras
 import jsonpatch
@@ -1476,7 +1478,8 @@ def dataset_detail(request):
             a=[]
             #a=collections.OrderedDict()
             # a contains all compound's properties
-            for key in data_detail['dataEntry']:
+            for key in sorted(data_detail['dataEntry']):
+                print key
                 for k, value in key.items():
                     if k =='values':
                         counter=0
@@ -1486,14 +1489,15 @@ def dataset_detail(request):
                                 '''a[counter]=m
                                 counter=counter+1'''
 
-            print a
             properties={}
             new=[]
+            new_a=[]
             compound = []
-            for i in range(len(a)):
-                for k in data_detail['features']:
+            for k in sorted(data_detail['features']):
+                for i in range(len(a)):
                     if k['uri'] == a[i]:
                         new.append(k)
+                        new_a.append(a[i])
 
             #get response json
             for key in data_detail['dataEntry']:
@@ -1504,12 +1508,12 @@ def dataset_detail(request):
                 #for each compound
                 for k, value in key.items():
                     if k =='values':
-                        for i in range(len(a)):
+                        for i in range(len(new_a)):
                             #if a compound haven't value for a property add its value Null
-                            if a[i] in value:
-                                properties[key['compound']['URI']].append({"prop": a[i], "value": value[a[i]]})
+                            if new_a[i] in value:
+                                properties[key['compound']['URI']].append({"prop": new_a[i], "value": value[new_a[i]]})
                             else:
-                                properties[key['compound']['URI']].append({"prop":  a[i], "value": "NULL"})
+                                properties[key['compound']['URI']].append({"prop":  new_a[i], "value": "NULL"})
 
             return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail':data_detail, 'properties': properties, 'a': a, 'new': new, 'page':page, 'last':last})
 
@@ -1789,10 +1793,11 @@ def predict_model(request):
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
                 if res.status_code >= 400:
                     return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-                dataset =  res.text
+                dataset = res.text
                 print dataset
-                headers = {'Accept': 'application/json', "subjectid": token}
-                body = {'dataset_uri': dataset, 'visible': True}
+                headers = {'Content-Type': 'application/json', 'subjectid': token,}
+                body = json.dumps({'dataset_uri': dataset, 'visible': True})
+                print body
                 print selected_model
                 try:
                     res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
@@ -1803,8 +1808,8 @@ def predict_model(request):
                 response = json.loads(res.text)
                 print response
                 id = response['_id']
-
-            return HttpResponse(id)
+                print id
+                return HttpResponse(id)
         if method == 'select_dataset':
             #Get the selected dataset
             dataset = request.POST.get('radio')
@@ -1824,7 +1829,7 @@ def predict_model(request):
                         m.append({'name': mod['_id'], 'meta': mod['meta']})
                 return render(request, "predict.html", {'token': token, 'username': username,'selected_model': selected_model, 'page': page, 'last':last,'error':"You should select a dataset."})
             else:
-                headers = {'Accept': 'application/json', "subjectid": token}
+                headers = {'Content-type': 'application/json', "subjectid": token}
                 body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'visible': True}
                 try:
                     res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
@@ -4112,6 +4117,7 @@ def report_list(request):
         if r.status_code != 200:
             return redirect('/login')
     else:
+
         return redirect('/login')
 
     name = request.GET.get('name', '')
@@ -4249,20 +4255,31 @@ def report_download(request):
     else:
         return redirect('/login')
     name = request.GET.get('name')
-    headers = {'Accept': 'application/pdf', "subjectid": token}
+    headers = {'Accept': 'application/json', "subjectid": token}
     try:
-        res = requests.get(SERVER_URL+'/report/'+name+'/pdf', headers=headers)
-        print res.text
+        res = urllib2.Request(SERVER_URL+'/report/'+name+'/pdf', headers=headers)
+        pdf = urllib2.urlopen(res)
     except Exception as e:
-                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-    if res.status_code >= 400:
+        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    if pdf.getcode() >= 400:
         return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-    #details = json.loads(res.text)
-    if res.status_code == 200:
-        pdf = res.text
-        print pdf
-        response = HttpResponse(pdf, content_type='application/xml')
+
+    if pdf.getcode() == 200:
+        response = FileResponse(pdf, content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="report_'+name+'.pdf"'
+
+        # calculate file size
+        content_length = None
+        for header in pdf.info():
+            if 'Content-Length' in header:
+                try:
+                    content_length = int(header.split(' ')[1].split('\r')[0])
+                except ValueError as e:
+                    pass
+                break
+        if content_length:
+            response['Content-Length'] = content_length
+
         return response
     else:
         try:
@@ -4273,4 +4290,5 @@ def report_download(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         report = json.loads(res.text, object_pairs_hook=OrderedDict)
 
-        return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })
+    return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })
+
