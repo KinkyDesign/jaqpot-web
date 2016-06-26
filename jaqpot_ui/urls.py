@@ -75,7 +75,8 @@ urlpatterns = patterns('',
                        url(r'^clean_dataset', views.clean_dataset),
                        url(r'^qrf_report', views.qrf_report),
                        url(r'^download_report', views.report_download),
-
+                       url(r'^read_across_dataset', views.read_across_dataset),
+                       url(r'^read_across_train', views.read_across_train),
 
 
                        # captcha
