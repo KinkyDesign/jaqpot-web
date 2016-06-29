@@ -5,6 +5,8 @@ from urllib import urlencode
 import urllib
 import urllib2
 import urlparse
+
+import itertools
 from pattern.web import URL
 
 
@@ -3083,6 +3085,30 @@ def report(request):
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
+    if request.is_ajax():
+        print('hi')
+        id = request.GET.getlist('id')[0]
+        op = request.GET.getlist('op')[0]
+        path = request.GET.getlist('path')[0]
+        value = request.GET.getlist('value')[0]
+        print value
+        print path
+        print request.GET.getlist('value')
+        path = path.replace ("_", " ")
+        print path
+        print op
+        body = json.dumps([{'op': op, 'path': path, 'value': value}])
+        #body = jsonpatch.JsonPatch([{'op': op, 'path': path, 'value': value}])
+        headers = {"Content-Type":"application/json-patch+json",'subjectid': token }
+        #headers = {'Accept': 'application/json-patch+json', 'subjectid': token}
+        try:
+            res = requests.patch(url=SERVER_URL+'/report/'+id, data=body, headers=headers)
+            print res.text
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        return HttpResponse(res.text)
     if request.method == 'GET':
         name = request.GET.get('name')
         headers = {'Accept': 'application/json', 'subjectid': token}
@@ -3093,8 +3119,7 @@ def report(request):
         if res.status_code >= 400:
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         report = json.loads(res.text, object_pairs_hook=OrderedDict)
-
-        return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })
+        return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name})
 
 
 #Experimental design

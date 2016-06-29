@@ -63,17 +63,20 @@
         {% for key, value in report.singleCalculations.items  %}
             <div>
                 <label class="align">{{key}}:</label>
-                <input type="text" id="in-{{key}}" readonly="readonly" style="margin:5px" value="{{value}}">
-                <button type="button" id="btn-{{key}}" data-toggle="tooltip" title="Edit {{key}}" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
-                <button type="button" id="btn-{{key}}-save" class="btn btn-success" style="display:none">Save</button>
-                <button type="button" id="btn-{{key}}-cancel" class="btn btn-danger" style="display:none">Cancel</button>
+                <input type="text" id="in-{{key|replace}}" readonly="readonly" style="margin:5px" value="{{value}}">
+                <button type="button" id="btn-{{key|replace}}" data-toggle="tooltip" title="Edit {{key}}" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+                <button type="button" id="btn-{{key|replace}}-save" class="btn btn-success" style="display:none">Save</button>
+                <button type="button" id="btn-{{key|replace}}-cancel" class="btn btn-danger" style="display:none">Cancel</button>
             </div>
         {% endfor%}
     {% endif %}
     {% if report.arrayCalculations %}
         {% for k,v in report.arrayCalculations.items  %}
             <h4>{{k}}</h4>
-            <table>
+            <button type="button" id="btn-{{forloop.counter}}" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+            <button type="button" id="btn-{{forloop.counter }}-save" class="btn btn-success" style="display:none">Save</button>
+            <button type="button" id="btn-{{ forloop.counter }}-cancel" class="btn btn-danger" style="display:none">Cancel</button>
+            <table id="dataset{{ forloop.counter }}" class="div-form-table display" >
                 <tr>
                     <th> </th>
                     {% for col in v.colNames%}
@@ -105,19 +108,70 @@
 
 <script>
 
-edit( $( '#btn-desc' ), $( '#in-desc' ), $( '#btn-desc-save' ),  $( '#btn-desc-cancel' ), '/desc', "Description", "{{report.meta.descriptions.0}}" );
+edit( $( '#btn-desc' ), $( '#in-desc' ), $( '#btn-desc-save' ),  $( '#btn-desc-cancel' ), '/meta/descriptions/1', "Description", "{{report.meta.descriptions.0}}" , "add");
 
-edit( $( '#btn-title' ), $( '#in-title' ), $( '#btn-title-save' ),  $( '#btn-title-cancel' ), '/title', "Title", "{{report.meta.titles.0}}" );
+edit( $( '#btn-title' ), $( '#in-title' ), $( '#btn-title-save' ),  $( '#btn-title-cancel' ), '/meta/titles/1', "Title", "{{report.meta.titles.0}}", "add" );
 
 //Edit author field
 {% for k, v in report.singleCalculations.items  %}
-edit( $( '#btn-{{k}}' ), $( '#in-{{k}}' ), $( '#btn-{{k}}-save' ),  $( '#btn-{{k}}-cancel' ), '/{{k}}', "{{k}}", "{{v}}" );
+edit( $( '#btn-{{k|replace}}' ), $( '#in-{{k|replace}}' ), $( '#btn-{{k|replace}}-save' ),  $( '#btn-{{k|replace}}-cancel' ), '/singleCalculations/{{k|replace}}', "{{k}}", "{{v}}", "replace" );
 {% endfor %}
 
+//Edit array
+{% for k, v in report.arrayCalculations.items %}
+edit_table( $( '#btn-{{ forloop.counter }}' ), $( '#btn-{{ forloop.counter }}-save' ),  $( '#btn-{{ forloop.counter }}-cancel' ), '/meta', "{{k}}", "{{v}}" , {{ forloop.counter }});
+{% endfor %}
 
+/*$("#btn-{{iterator.next}}").on("click", function (){
+    var data =  $('#dataset').DataTable().data()*/
+//edit function is called when user push edit buttom and send via ajax the new value of field
+function edit_table(btn, save, cancel, path , field, previous_value, counter) {
+
+    btn.click(function() {
+    btn.hide();
+    save.show();
+    cancel.show();
+    });
+
+    cancel.click(function() {
+        save.hide();
+        cancel.hide();
+        btn.show();
+
+    });
+
+
+    save.click(function() {
+    save.hide();
+    cancel.hide();
+    btn.show();
+    alert('hi1')
+    var data =  $('#dataset1').DataTable().data()
+    data = JSON.stringify(data)
+    //send via ajax new values
+    $.ajax({
+            type: "get",
+            url: "/report",
+            dataType: "json",
+            contentType: 'application/json;',
+            data: { 'op': 'replace', 'path': path, 'value':data , 'id': '{{name}}', },
+            success: function(data){
+                var json = JSON.stringify(data);
+                var json = JSON.parse(json);
+                 //id_field.val(json[field])
+                 alert("success")
+            },
+            error: function(){
+                alert("error");
+            }
+        });
+
+});
+
+}
 
 //edit function is called when user push edit buttom and send via ajax the new value of field
-function edit(btn, id_field, save, cancel, path , field, previous_value) {
+function edit(btn, id_field, save, cancel, path , field, previous_value,op) {
 
     btn.click(function() {
     id_field.removeAttr("readonly");
@@ -142,21 +196,21 @@ function edit(btn, id_field, save, cancel, path , field, previous_value) {
     btn.show();
     id_field.attr("readonly","readonly");
     //send via ajax new values
-    /*$.ajax({
+    $.ajax({
             type: "get",
-            url: "/report_patch",
+            url: "/report",
             dataType: "json",
             contentType: 'application/json;',
-            data: { 'op': 'add', 'path': path, 'value': id_field.val() , 'id': '{{id}}', },
+            data: { 'op': op, 'path': path, 'value': id_field.val() , 'id': '{{name}}', },
             success: function(data){
                 var json = JSON.stringify(data);
                 var json = JSON.parse(json);
-                 id_field.val(json[field])
+                 //id_field.val(json[field])
             },
             error: function(){
                 alert("error");
             }
-        });  */
+        });
 
 });
 
@@ -166,6 +220,49 @@ function edit(btn, id_field, save, cancel, path , field, previous_value) {
     $('[data-toggle="tooltip"]').tooltip({
         'placement': 'right'
     });
+
+    $(document).ready( function () {
+        var oTable = $('#dataset1').DataTable( {
+        "bJQueryUI": true,
+        "bScrollCollapse": true,
+        "bAutoWidth": false,
+        "bPaginate":false,
+        "dom": 'ft',
+        "sScrollX": "100%",
+        "sScrollXInner": "100%",
+        "editable": true,
+
+         "fnDrawCallback": function( oSettings )
+         {
+            $('.dataTables_scrollBody table thead tr').css({ 'height' : '0px' });
+        },
+        "fnInitComplete": function(oSettings, json)
+         {
+            $('.dataTables_scrollBody table thead tr').css({ 'height' : '0px' });
+        },
+
+        });
+
+
+    } );
+
+ {% for k, v in report.arrayCalculations.items %}
+    $('#dataset{{ forloop.counter }} tbody td').editable( function(  ) {
+		/* Get the position of the current data from the node */
+		 var oTable = $('#dataset{{ forloop.counter }}').dataTable()
+		 var aPos = oTable.fnGetPosition( this );
+
+		/* Get the data array for this row */
+		var aData = oTable.fnGetData( aPos[0] );
+
+		/* Update the data array and return the value */
+		aData[ aPos[2] ] = sValue;
+		return sValue;
+	}, { "onblur": 'submit' } );
+	 /* Submit the form when bluring a field */
+
+{% endfor%}
+
 </script>
 
 {% endblock %}

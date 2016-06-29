@@ -50,3 +50,12 @@ def get(d, k):
 
 '''date=output['meta']['date'].split('T')[0]
 output['meta']['date'] = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%m/%d/%y')'''
+
+
+@register.filter
+def replace(string):
+    """Return the last string split by sep.
+
+    Example usage: {{ value|replace }}
+    """
+    return string.replace (" ", "_")
