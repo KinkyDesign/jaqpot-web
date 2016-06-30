@@ -6,10 +6,6 @@ import urllib
 import urllib2
 import urlparse
 
-import itertools
-from pattern.web import URL
-
-
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
