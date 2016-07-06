@@ -42,26 +42,6 @@
             {% endif %}
             {% if al.parameters %}
                 <h6><b>Parameters:</b></h6>
-                 {% for p in al.parameters%}
-                    <div >
-                        {% if p.name == "Confidence" %}
-                        <label class="align">{{p.name}}:</label>
-                        <select name="{{p|get:'_id'}}">
-                            {% for s in p.allowedValues %}
-                                {%if s == 0%}
-                                    <option value="{{s.0}}" {% if p.value == s %} selected {% endif %}>None</option>
-                                {% elif s == 1%}
-                                    <option value="{{s.0}}" {% if p.value == s %} selected {% endif %}>Leverage method</option>
-                                {% endif %}
-                            {% endfor %}
-                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
-                            {% if p.description %}
-                             <span class="glyphicon glyphicon-info-sign" data-bind="" data-toggle="tooltip" data-container="body" title="{{p.description}}"></span>
-                            {% endif %}
-                        </select>
-                        {% endif%}
-                          </div>
-                        {%endfor %}
 
                         <h6><b>Distance:</b></h6>
                         <select id="distance">
@@ -240,9 +220,29 @@
     <div style="float:right; width:50%;">
         <h3>Select scaling method:</h3>
         {{tform.scaling}}
-        <br>
-        <br>
 
+        {% for p in al.parameters%}
+                    <div >
+                        {% if p.name == "Confidence" %}
+                        <h3>Select method of calculating condidence value:</h3>
+                        <select name="{{p|get:'_id'}}">
+                            {% for s in p.allowedValues %}
+                                {%if s == 0%}
+                                    <option value="{{s.0}}" {% if p.value == s %} selected {% endif %}>None</option>
+                                {% elif s == 1%}
+                                    <option value="{{s.0}}" {% if p.value == s %} selected {% endif %}>Nearest Neighbor Confidence</option>
+                                {% endif %}
+                            {% endfor %}
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                            {% if p.description %}
+                             <span class="glyphicon glyphicon-info-sign" data-bind="" data-toggle="tooltip" data-container="body" title="{{p.description}}"></span>
+                            {% endif %}
+                        </select>
+                        {% endif%}
+                          </div>
+                        {%endfor %}
+        <br>
+        <br>
          <!-- <a href="/change_params?data={{dataset}}&alg={{algorithms}}" class="btn bt-red" style="width:10%; float:left; left:10%;" >Train</a> -->
         {% if exp %}
             <input id="choose_alg" type="submit" value="Experimental design" class="btn bt-red" style="width: 30%; float:left; left:10%;">

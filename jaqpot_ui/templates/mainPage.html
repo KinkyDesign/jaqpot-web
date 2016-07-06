@@ -176,9 +176,11 @@
                   <h3>Read Across</h3>
                   <p>Make a prediction based on the read across method on an existing dataset.</p>
                    {% if token %}
-                        <p><a href="/read_across_dataset" class="btn bt-red" role="button">Read Across</a></p>
+                        <p><a href="/read_across_dataset" class="btn bt-red" role="button">Train</a>
+                        <a href="/read_across_predict" class="btn bt-red" role="button">Predict</a></p>
                     {% else %}
-                        <p><a href="/login" class="btn bt-red" role="button">Read Across</a></p>
+                        <p><a href="/login" class="btn bt-red" role="button">Train</a>
+                        <a href="/login" class="btn bt-red" role="button">Predict</a></p>
                     {% endif %}
                 </div>
               </div>
