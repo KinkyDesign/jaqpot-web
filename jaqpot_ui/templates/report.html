@@ -82,9 +82,9 @@
                 </tr>
                 {% for key,val in v.values.items%}
                 <tr>
-                    <td>{{key}}</td>
+                    <td>{% autoescape off %}{{key}} {% endautoescape %}</td>
                     {%for d in val%}
-                    <td id="{{key}}_{{forloop.counter}}" contenteditable='true' onclick="edit_table('/arrayCalculations/{{k|replace}}/values/{{key}}/{{forloop.counter}}','{{d}}',$( '#{{k|replace}} #{{key}}_{{forloop.counter}}' ) )">{{d}}</td>
+                    <td id="{{key}}_{{forloop.counter}}" contenteditable='true' onclick="edit_table('/arrayCalculations/{{k|replace}}/values/{{key}}/{{forloop.counter|sub}}','{{d}}',$( '#{{k|replace}} #{{key}}_{{forloop.counter}}' ) )">{{d}}</td>
                     {% endfor %}
                 </tr>
                 {% endfor %}
@@ -127,7 +127,7 @@ setTimeout(function(){ $.ajax({
             url: "/report",
             dataType: "json",
             contentType: 'application/json;',
-            data: { 'op': 'replace', 'path': path, 'value': id_field.text() , 'id': '{{name}}'},
+            data: { 'op': 'replace', 'path': path, 'value': encodeURIComponent(id_field.text()) , 'id': '{{name}}'},
             success: function(data){
                 var json = JSON.stringify(data);
                 var json = JSON.parse(json);

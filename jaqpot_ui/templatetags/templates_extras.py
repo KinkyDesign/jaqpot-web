@@ -59,3 +59,11 @@ def replace(string):
     Example usage: {{ value|replace }}
     """
     return string.replace (" ", "_")
+
+@register.filter
+def sub(string):
+    """Return the last string split by sep.
+
+    Example usage: {{ value|sub }}
+    """
+    return string-1

@@ -15,6 +15,7 @@
     {% endif %}
     <div style="float:left; width:50%;">
             <h1>Algorithm</h1>
+            {{al}}
             <h3>Title: {{algorithms}}</h3>
             {% if al.meta.titles %}
                 <div>
@@ -42,16 +43,38 @@
             {% endif %}
             {% if al.parameters %}
                 <h6><b>Parameters:</b></h6>
-
+                    {% for p in al.parameters%}
+                        {% if p.name == "Distance" %}
                         <h6><b>Distance:</b></h6>
-                        <select id="distance">
-                            <option value="Euclidean">Euclidean</option>
+                        <select id="{{p|get:'_id'}}">
+                            {% if p.value == "euclidean"%}
+                            <option value="Euclidean" selected >Euclidean</option>
                             <option value="Manhattan">Manhattan</option>
                             <option value="Ensemble">Ensemble</option>
+                            {% elif p.value == "manhattan" %}
+                            <option value="Euclidean" >Euclidean</option>
+                            <option value="Manhattan" selected>Manhattan</option>
+                            <option value="Ensemble">Ensemble</option>
+                            {% elif p.value == "ensemble" %}
+                            <option value="Euclidean">Euclidean</option>
+                            <option value="Manhattan">Manhattan</option>
+                            <option value="Ensemble" selected>Ensemble</option>
+                            {% endif %}
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                         </select>
+
+                        {% endif %}
+                        {% if p.name == "Threshold"%}
+                            <label class="align">{{p.name}}:</label>
+                            <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                            <p><small><b>Min value:</b>{{p.minValue}}   <b>Max value:</b>{{p.maxValue}}</small></p>
+                        {% endif%}
+                {% endfor%}
+                        <!--
                          {% for p in al.parameters%}
                             {% if p.name == "Euclidean" %}
-                                <div id="Euclidean">
+                                <div>
                                     <label class="align">{{p.name}}:</label>
                                     <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value='{{p.value}}'>
                                     <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
@@ -87,7 +110,7 @@
                                 </div>
                             {% endif %}
                         {% endfor %}
-            {% endif%}
+            {% endif%} -->
             {% if al.rights %}
                 <p><b>Copyright:</b></p>
                 <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;">{{al.info.rights}}
@@ -233,11 +256,11 @@
                                     <option value="{{s.0}}" {% if p.value == s %} selected {% endif %}>Nearest Neighbor Confidence</option>
                                 {% endif %}
                             {% endfor %}
-                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                             {% if p.description %}
                              <span class="glyphicon glyphicon-info-sign" data-bind="" data-toggle="tooltip" data-container="body" title="{{p.description}}"></span>
                             {% endif %}
                         </select>
+                        <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                         {% endif%}
                           </div>
                         {%endfor %}
@@ -363,12 +386,14 @@ $(function () {
 });
 
 
- $('#distance').change(function() {
+ /*$('#distance').change(function() {
         $('#Euclidean').hide();
         $('#Manhattan').hide();
         $('#Ensemble').hide();
-        $('#' + $(this).val()).show();
- });
+        var valueSelected = this.value;
+        $('#'+valueSelected).show();
+ });*/
+
 </script>
 
 {%endblock%}

@@ -8,6 +8,12 @@
     <div id="error_details" style="display:none">
         <h6>Error : {{server_error}}</h6>
     </div>
+    {%elif error%}
+        <h3>Error Message:</h3>
+        <h6>{{error.errorReport.message}}</h6>
+        <h3>Error Details:</h3>
+        <h6>{{error.errorReport.details}}</h6>
+    </div>
     {% else %}
     <h3>Error: {{error.message}}</h3>
     <h6>{{error.details}}</h6>

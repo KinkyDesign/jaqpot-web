@@ -20,7 +20,11 @@
                         {% if p.allowedValues %}
                         <select name="{{p.name}}" >
                             {% for s in p.allowedValues %}
+                             {% if s|get_type == "list" %}
+                            <option value="{{s.0}}" {% if p.value == s %} selected {% endif %}>{{s.0}}</option>
+                            {% else %}
                             <option value="{{s}}" {% if p.value == s %} selected {% endif %}>{{s}}</option>
+                            {% endif %}
                             {% endfor %}
                             <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
                         </select>

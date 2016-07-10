@@ -230,20 +230,36 @@ def taskdetail(request):
         return redirect('/login')
     #status = request.GET.get('status')
     if request.is_ajax():
-        output = request.GET.getlist('output')[0]
+        token = request.session.get('token', '')
+        username = request.session.get('username', '')
+        print('hh')
+        #output = request.GET.getlist('output')[0]
         name = request.GET.getlist('name')[0]
+        print(name)
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
-            res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
+            res = requests.get(SERVER_URL+'/task/ocGR1A5o47Jb', headers=headers)
+            print('hg')
+            print(res.text)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        if res.status_code >= 400:
-            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        '''if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
         data = json.loads(res.text)
+        print('hgvft')
         if data['meta']['date']:
             date=data['meta']['date'].split('T')[0]
             data['meta']['date'] = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%m/%d/%y')
         data = json.dumps(data)
+        status = json.loads(res.text)['status']
+        print status
+        if(status == "ERROR"):
+            error = "An error occurred while processing your request.Please try again."
+            return render(request, "error.html", {'token': token, 'username': username, 'name': name, 'error': error})
+        while (status != "COMPLETED"):
+            if(status == "ERROR"):
+                error = "An error occurred while processing your request.Please try again."
+                return render(request, "error.html", {'token': token, 'username': username, 'name': name, 'error': error})
         return HttpResponse(data)
 
     if request.method == 'GET':
@@ -264,12 +280,21 @@ def taskdetail(request):
         except Exception as e:
              return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         status = json.loads(res.text)['status']
+        print status
         while (status != "COMPLETED"):
-                if(status == "ERROR"):
-                    error = "An error occurred while processing your request.Please try again."
-                    return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output, 'error': error})
-                else:
-                    return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
+            try:
+                res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
+            except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+            status = json.loads(res.text)['status']
+            print status
+            if(status == "ERROR"):
+                error = "An error occurred while processing your request.Please try again."
+                return render(request, "error.html", {'token': token, 'username': username, 'name': name, 'output': output, 'error': error})
+            else:
+                return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
         return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
 
 #stop running task
@@ -3112,6 +3137,7 @@ def report(request):
         #headers = {'Accept': 'application/json-patch+json', 'subjectid': token}
         try:
             res = requests.patch(url=SERVER_URL+'/report/'+id, data=body, headers=headers)
+            print res.status_code
             print res.text
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
@@ -3749,6 +3775,7 @@ def exp_design(request):
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
 
     if request.method == 'GET':
+
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
@@ -3759,90 +3786,89 @@ def exp_design(request):
         print json.loads(res.text)
         al = json.loads(res.text)
 
-        return render(request, "ocpu_params.html", {'token': token, 'username': username, 'al':al })
+        return render(request, "ocpu_params.html", {'token': token, 'username': username, 'al':al, })
 
     if request.method == 'POST':
 
-        pform = ExperimentalParamsForm(request.POST)
-        if not pform.is_valid():
-            return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform })
-        else:
-            headers = {'Accept': 'application/json', 'subjectid': token}
-            try:
-                res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
-            except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            if res.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-            al = json.loads(res.text)
-            parameters = request.POST.getlist('parameters')
+        parameters = request.POST.getlist('parameters')
 
-            params, al = get_params(request, parameters, al)
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        try:
+            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        al = json.loads(res.text)
 
-            body = {'parameters':json.dumps(params), 'visible':False }
-            headers = {'Accept': 'application/json', 'subjectid': token}
-            try:
-                res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers, data=body)
-            except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            if res.status_code >= 400:
+
+        params, al = get_params(request, parameters, al)
+
+        body = {'parameters':json.dumps(params), 'visible':False }
+        headers = {'Accept': 'application/json', 'subjectid': token}
+
+        try:
+            res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers, data=body)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
                 return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-            print res.text
-            task_id = json.loads(res.text)['_id']
-            print task_id
-            try:
-                res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
-            except Exception as e:
+        print res.text
+        task_id = json.loads(res.text)['_id']
+        print task_id
+        try:
+            res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
+        status = json.loads(res1.text)['status']
+        while (status != "COMPLETED"):
+            if(status == "ERROR"):
+                error = "An error occurred while processing your request.Please try again."
+                return render(request, "ocpu_params.html", {'token': token, 'username': username, 'error':error, 'al':al })
+            else:
+                try:
+                     res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            if res1.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
-            status = json.loads(res1.text)['status']
-            while (status != "COMPLETED"):
-                if(status == "ERROR"):
-                    error = "An error occurred while processing your request.Please try again."
-                    return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform, 'error':error, 'al':al })
-                else:
-                    try:
-                        res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
-                    except Exception as e:
-                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    if res1.status_code >= 400:
-                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
-                    status = json.loads(res1.text)['status']
+                if res1.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
+                status = json.loads(res1.text)['status']
             #model: model/{id}
-            model = json.loads(res1.text)['result']
-            try:
-                res2 = requests.post(SERVER_URL+'/'+model, headers=headers)
-            except Exception as e:
+        model = json.loads(res1.text)['result']
+        try:
+            res2 = requests.post(SERVER_URL+'/'+model, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res2.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res2.text)})
+        task_id = json.loads(res2.text)['_id']
+        try:
+            res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res3.status_code >= 400:
+             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res3.text)})
+        status = json.loads(res3.text)['status']
+
+        while (status != "COMPLETED"):
+            if(status == "ERROR"):
+                error = "An error occurred while processing your request.Please try again."
+                return render(request, "ocpu_params.html", {'token': token, 'username': username,'error':error, 'al':al })
+            else:
+                try:
+                    res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            if res2.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res2.text)})
-            task_id = json.loads(res2.text)['_id']
-            try:
-                res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
-            except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            if res3.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res3.text)})
-            status = json.loads(res3.text)['status']
+                if res4.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res4.text)})
+                status = json.loads(res4.text)['status']
 
-            while (status != "COMPLETED"):
-                if(status == "ERROR"):
-                    error = "An error occurred while processing your request.Please try again."
-                    return render(request, "ocpu_params.html", {'token': token, 'username': username, 'pform':pform, 'error':error, 'al':al })
-                else:
-                    try:
-                        res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
-                    except Exception as e:
-                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    if res4.status_code >= 400:
-                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res4.text)})
-                    status = json.loads(res4.text)['status']
+        dataset = json.loads(res4.text)['result']
+        dataset = dataset.split('dataset/')[1]
 
-            dataset = json.loads(res4.text)['result']
-            dataset = dataset.split('dataset/')[1]
-
-            return redirect('/data_detail?name='+dataset, {'token': token, 'username': username})
+        return redirect('/data_detail?name='+dataset, {'token': token, 'username': username})
 
 
 #Interlab testing select substance owners
@@ -4455,7 +4481,7 @@ def read_across_train(request):
             #redirect to error page
             return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
         else:
-            features = predicted_features['features']
+            features = predicted_features["features"]
             form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
             inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
             inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
