@@ -105,7 +105,6 @@ class InterlabForm(forms.Form):
      description = forms.CharField(required=True, error_messages={'required': 'Please enter description.'},  widget=forms.Textarea(attrs={'cols': 40, 'rows': 4, 'style': "margin:5px;"}))
 
 class ReadAcrossTrainingForm(forms.Form):
-    scaling = forms.ChoiceField(widget = forms.Select(), choices=[( 'scaling1', 'None' ), ('scaling2', 'Scaling between zero and one'), ('scaling3', 'Normalization')])
     modelname = forms.CharField(max_length=50, required= True)
     description = forms.CharField(widget=forms.Textarea, required= True)
     description.widget.attrs.update({'style' : "border-radius: 4px;"})

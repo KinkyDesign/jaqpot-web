@@ -15,7 +15,6 @@
     {% endif %}
     <div style="float:left; width:50%;">
             <h1>Algorithm</h1>
-            {{al}}
             <h3>Title: {{algorithms}}</h3>
             {% if al.meta.titles %}
                 <div>
@@ -46,19 +45,19 @@
                     {% for p in al.parameters%}
                         {% if p.name == "Distance" %}
                         <h6><b>Distance:</b></h6>
-                        <select id="{{p|get:'_id'}}">
+                        <select name="{{p|get:'_id'}}">
                             {% if p.value == "euclidean"%}
-                            <option value="Euclidean" selected >Euclidean</option>
-                            <option value="Manhattan">Manhattan</option>
-                            <option value="Ensemble">Ensemble</option>
+                            <option value="euclidean" selected >Euclidean</option>
+                            <option value="manhattan">Manhattan</option>
+                            <option value="ensemble">Ensemble</option>
                             {% elif p.value == "manhattan" %}
-                            <option value="Euclidean" >Euclidean</option>
-                            <option value="Manhattan" selected>Manhattan</option>
-                            <option value="Ensemble">Ensemble</option>
+                            <option value="euclidean" >Euclidean</option>
+                            <option value="manhattan" selected>Manhattan</option>
+                            <option value="ensemble">Ensemble</option>
                             {% elif p.value == "ensemble" %}
-                            <option value="Euclidean">Euclidean</option>
-                            <option value="Manhattan">Manhattan</option>
-                            <option value="Ensemble" selected>Ensemble</option>
+                            <option value="euclidean">Euclidean</option>
+                            <option value="manhattan">Manhattan</option>
+                            <option value="ensemble" selected>Ensemble</option>
                             {% endif %}
                             <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                         </select>
@@ -241,9 +240,6 @@
     <br>
     <br>
     <div style="float:right; width:50%;">
-        <h3>Select scaling method:</h3>
-        {{tform.scaling}}
-
         {% for p in al.parameters%}
                     <div >
                         {% if p.name == "Confidence" %}
@@ -251,9 +247,9 @@
                         <select name="{{p|get:'_id'}}">
                             {% for s in p.allowedValues %}
                                 {%if s == 0%}
-                                    <option value="{{s.0}}" {% if p.value == s %} selected {% endif %}>None</option>
+                                    <option value="{{s}}" {% if p.value == s %} selected {% endif %}>None</option>
                                 {% elif s == 1%}
-                                    <option value="{{s.0}}" {% if p.value == s %} selected {% endif %}>Nearest Neighbor Confidence</option>
+                                    <option value="{{s}}" {% if p.value == s %} selected {% endif %}>Nearest Neighbor Confidence</option>
                                 {% endif %}
                             {% endfor %}
                             {% if p.description %}
