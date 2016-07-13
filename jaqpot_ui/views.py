@@ -4481,7 +4481,9 @@ def read_across_train(request):
             #redirect to error page
             return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
         else:
-            features = predicted_features["features"]
+            if 'features' not in predicted_features:
+                return render(request, "error.html", {'token': token, 'username': username,'error':"No features in given dataset"})
+            features = predicted_features['features']
             form.fields['feature'].choices = [(f['uri'],f['name']) for f in features]
             inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
             inputform.fields['output'].choices = [(f['uri'],f['name']) for f in features]
