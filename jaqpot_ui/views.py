@@ -233,12 +233,13 @@ def taskdetail(request):
         token = request.session.get('token', '')
         username = request.session.get('username', '')
         print('hh')
-        #output = request.GET.getlist('output')[0]
+        output = request.GET.getlist('output')[0]
         name = request.GET.getlist('name')[0]
         print(name)
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
-            res = requests.get(SERVER_URL+'/task/ocGR1A5o47Jb', headers=headers)
+            #res = requests.get(SERVER_URL+'/task/ocGR1A5o47Jb', headers=headers)
+            res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
             print('hg')
             print(res.text)
         except Exception as e:
@@ -253,9 +254,9 @@ def taskdetail(request):
         data = json.dumps(data)
         status = json.loads(res.text)['status']
         print status
-        if(status == "ERROR"):
+        '''if(status == "ERROR"):
             error = "An error occurred while processing your request.Please try again."
-            return render(request, "error.html", {'token': token, 'username': username, 'name': name, 'error': error})
+            return render(request, "error.html", {'token': token, 'username': username, 'name': name, 'error': error})'''
         while (status != "COMPLETED"):
             if(status == "ERROR"):
                 error = "An error occurred while processing your request.Please try again."
@@ -269,9 +270,6 @@ def taskdetail(request):
             res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        if res.status_code >= 400:
-            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-        #output = json.dumps(res.text)
         output = json.loads(res.text)
         try:
             if output['meta']['date']:
@@ -286,15 +284,9 @@ def taskdetail(request):
                 res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
             except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            if res.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             status = json.loads(res.text)['status']
             print status
-            if(status == "ERROR"):
-                error = "An error occurred while processing your request.Please try again."
-                return render(request, "error.html", {'token': token, 'username': username, 'name': name, 'output': output, 'error': error})
-            else:
-                return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
+            return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
         return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
 
 #stop running task
@@ -3829,12 +3821,12 @@ def exp_design(request):
                 return render(request, "ocpu_params.html", {'token': token, 'username': username, 'error':error, 'al':al })
             else:
                 try:
-                     res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                         res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
                 except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                if res1.status_code >= 400:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            if res1.status_code >= 400:
                     return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
-                status = json.loads(res1.text)['status']
+            status = json.loads(res1.text)['status']
             #model: model/{id}
         model = json.loads(res1.text)['result']
         try:
@@ -4471,6 +4463,7 @@ def read_across_train(request):
         else:
             pmmlform.fields['pmml'].choices = [("",'No pmml')]
         try:
+            headers = {'Accept': 'application/json', 'subjectid': token}
             res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
@@ -4481,6 +4474,8 @@ def read_across_train(request):
             #redirect to error page
             return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
         else:
+            print('----')
+            print predicted_features
             if 'features' not in predicted_features:
                 return render(request, "error.html", {'token': token, 'username': username,'error':"No features in given dataset"})
             features = predicted_features['features']
@@ -4622,14 +4617,14 @@ def read_across_train(request):
             scaling=SERVER_URL+'/algorithm/standarization'
         #get doa
         doa=""
-        algorithms = request.session.get('alg', '')
+        #algorithms = request.session.get('alg', '')
         dataset = request.session.get('data', '')
         title= tform['modelname'].value()
         description= tform['description'].value()
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': True}
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
-            res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
+            res = requests.post(SERVER_URL+'/algorithm/python-readacross', headers=headers, data=body)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:

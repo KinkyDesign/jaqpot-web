@@ -67,3 +67,15 @@ def sub(string):
     Example usage: {{ value|sub }}
     """
     return string-1
+
+@register.filter
+def id(obj):
+    """Return id.
+
+    Example usage: {{ value|id }}
+    """
+    return obj['_id']
+
+@register.filter(name='times')
+def times(number):
+    return range(number)

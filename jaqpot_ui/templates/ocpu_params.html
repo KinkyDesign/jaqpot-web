@@ -112,36 +112,46 @@
             {{pform.form}} -->
     <br>
     <br>
-    <!--
     <table id="table" class="div-form-table display" >
              <thead>
                  <tr>
-
-                     <th style="background-color: #cf2323; min-width: 300px;">Levels</th>
-                      {% for prop in new %}
-                        {% if prop %}
-                        <th style="background-color: #cf2323;" class="column">
-                            <p data-toggle="tooltip" data-placement="top" data-container="body" title="Units: {{prop.units}} Conditions: {% for k,v in prop.conditions.iteritems %}{{k}}:{{v}}, {% endfor %}" >{{prop.name}}</p>
-                        </th>
+                     <th style="background-color: #cf2323; min-width: 50px;">Levels</th>
+                      {% for p in al.parameters%}
+                        {% if p|id == "varNames" %}
+                            {% for var in p.value%}
+                                <th style="background-color: #cf2323;min-width: 50px;" class="column">
+                                    <p data-toggle="tooltip" data-placement="top" data-container="body">{{var.0}}</p>
+                                </th>
+                            {% endfor%}
 
                          {% endif %}
                      {% endfor %}
                  </tr>
              </thead>
              <tbody>
-             {% for key, value in properties.items %}
-                    <tr>
-                        <td>{{value.1.name}}</td>
-                        {% for v in value %}
-                            {% if v.prop%}
-                                <td>{{v.value}}</td>
-                            {% endif %}
-                        {% endfor %}
-                    </tr>
+              {% for p in al.parameters%}
+                        {% if p|id == "levels" %}
+                            {% for i in p.value.0|times %}
+                                <tr>
+                                    <td>{{i}}</td>
+                                    {% for p in al.parameters%}
+                                    {% if p|id == "varNames" %}
+                                        {% for var in p.value%}
+                                            <td contenteditable='true'>
+                                               0
+                                            </td>
+                                        {% endfor%}
+
+                                     {% endif %}
+                                 {% endfor %}
+                                </tr>
+                            {%endfor%}
+                        {% endif %}
              {% endfor %}
 
              </tbody>
-         </table>  -->
+         </table>
+    <br>
 
     <input id="choose_params" type="submit" value="Experimental Design" class="btn bt-red" style="width: 15%; float:left; left:10%;">
 
@@ -158,7 +168,7 @@
             $("#loading").show();
             });
 
-    $(document).ready( function () {
+    /*$(document).ready( function () {
 
         var oTable = $('#table').DataTable( {
         "bJQueryUI": true,
@@ -182,7 +192,7 @@
 
 
 
-    } );
+    } );  */
 
 
 </script>

@@ -107,7 +107,10 @@
         <br>
 
     </div>
-    <input type="submit" id="exp" value="Experimental Design" class="btn bt-red" style="width: 20%;">
+    <input id="exp_submit" type="submit" id="exp" value="Experimental Design" class="btn bt-red" style="width: 20%;">
+     <div id="loading" style="display: none"><!-- Place at bottom of page -->
+            <img id="loading-image" src="http://i.stack.imgur.com/FhHRx.gif" alt="Loading..." />
+        </div>
     <!-- <div id="dialog-confirm" title="Empty the recycle bin?">
       <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
     </div> -->
@@ -137,6 +140,11 @@
 </div>
 
 <script>
+     /* $('#exp_submit').bind('click', function(e)
+        {
+            $("#loading").show();
+            }); */
+
     var DATASET_NAME = '{{dataset_name}}';
     var THRESHOLD = '{{params|get_key:'r2.threshold'}}';
     var SQUARED = '{{model.additionalInfo|get_key:'r.squared'}}';

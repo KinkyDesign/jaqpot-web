@@ -74,7 +74,7 @@
              <tbody>
              {% for key, value in properties.items %}
                     <tr>
-                        <td>{{value.1.name}}</td>
+                        <td><a href="{{value.0.compound}}">{{value.1.name}}</a></td>
                         {% for v in value %}
                             {% if v.prop%}
                                 <td>{{v.value}}</td>

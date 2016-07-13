@@ -4,6 +4,11 @@
 
 {% block content %}
 <div class="div-table" style="width:100%;">
+    {% if output.status == "QUEUED" %}
+         <div style="float:right;overflow:hidden; white-space:nowrap; text-overflow:ellipsis; width:3%;">
+             <a href="/stoptask?id={{name}}" class="btn btn-danger" style="margin:3px;" data-toggle="tooltip" title="Stop task"><i class="fa fa-ban fa-lg"></i></a>
+         </div>
+    {% endif %}
     <h1>Task: <span  style="font-size: 20px;">{{output.meta.titles.0}}</span> <span style="font-size: 12px;">#{{name}}</span> </h1>
     {% if  output.status == "RUNNING"%}
     <h3>Running task</h3>
@@ -255,7 +260,6 @@
         <br>
         <a href="https://github.com/KinkyDesign/JaqpotQuattroUI/issues" class="btn btn-danger" title="Report it">Report it</a>
     {%elif output.status == "QUEUED" %}
-
         {% if output.createdBy %}
         <div>
             <label class="align">Creator:</label>
@@ -323,6 +327,7 @@
             <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
                 {{c}}{%endfor%}
             </textarea>
+
             {% endif %}
 
         </div>
