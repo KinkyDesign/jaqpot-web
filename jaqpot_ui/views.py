@@ -4442,6 +4442,7 @@ def read_across_train(request):
         nform = NoPmmlForm()
         pmmlform = SelectPmmlForm()
         dataset = request.session.get('data', '')
+        print('--------------------------------------------------------------')
         print dataset
         algorithms= "python-readacross"
         headers = {'Accept': 'application/json', 'subjectid': token}

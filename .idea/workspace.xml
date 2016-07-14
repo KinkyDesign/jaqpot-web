@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3198a210-b7c6-4410-b845-6dedaa48ee46" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/db.sqlite3" afterPath="$PROJECT_DIR$/db.sqlite3" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/views.py" afterPath="$PROJECT_DIR$/jaqpot_ui/views.py" />
     </list>
@@ -28,8 +27,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.1552795">
-              <caret line="4433" column="30" selection-start-line="4433" selection-start-column="30" selection-end-line="4433" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.3167702">
+              <caret line="4444" column="77" selection-start-line="4444" selection-start-column="77" selection-end-line="4444" selection-end-column="77" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -639,12 +638,6 @@
       <option name="number" value="Default" />
       <updated>1421939727134</updated>
     </task>
-    <task id="LOCAL-00019" summary="Return 404 when no pmml">
-      <created>1454836962691</created>
-      <option name="number" value="00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1454836962691</updated>
-    </task>
     <task id="LOCAL-00020" summary="Fix bug in pmml download.">
       <created>1454843090336</created>
       <option name="number" value="00020" />
@@ -933,7 +926,13 @@
       <option name="project" value="LOCAL" />
       <updated>1468442787748</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="Add print">
+      <created>1468516296523</created>
+      <option name="number" value="00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1468516296524</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
     <servers />
   </component>
   <component name="TodoView">
@@ -1005,7 +1004,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Responsive main page." />
     <MESSAGE value="Fix issues. Add images in main page." />
     <MESSAGE value="Make main page responsive. Fix bugs." />
     <MESSAGE value="Fix bug." />
@@ -1030,7 +1028,8 @@
     <MESSAGE value="Fix bug read across train." />
     <MESSAGE value="Align delete button. Fix bug read across train." />
     <MESSAGE value="Align delete button. Close #66. Add cancel button for queued tasks." />
-    <option name="LAST_COMMIT_MESSAGE" value="Align delete button. Close #66. Add cancel button for queued tasks." />
+    <MESSAGE value="Add print" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add print" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1337,23 +1336,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/taskdetail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.3090909">
-          <caret line="303" column="39" selection-start-line="303" selection-start-column="39" selection-end-line="303" selection-end-column="39" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#a#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#23;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#24;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#25;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#26;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#input#0;n#div#27;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#textarea#5;n#div#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/predicted_dataset.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-6.5384617">
@@ -1422,6 +1404,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/taskdetail.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.3090909">
+          <caret line="303" column="39" selection-start-line="303" selection-start-column="39" selection-end-line="303" selection-end-column="39" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#a#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#23;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#24;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#25;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#26;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#27;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#textarea#5;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/read_across_dataset.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-9.230769">
@@ -1432,8 +1431,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1552795">
-          <caret line="4433" column="30" selection-start-line="4433" selection-start-column="30" selection-end-line="4433" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.3167702">
+          <caret line="4444" column="77" selection-start-line="4444" selection-start-column="77" selection-end-line="4444" selection-end-column="77" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>
