@@ -3491,6 +3491,10 @@ def experimental_params(request):
                     if res4.status_code >= 400:
                         return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res4.text)})
                     status = json.loads(res4.text)['status']
+            try:
+                res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+            except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
 
             new_dataset = json.loads(res4.text)['result']
             new_dataset = new_dataset.split('dataset/')[1]
@@ -3522,6 +3526,14 @@ def experimental_params(request):
             #body = { 'scaling': scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
             #body
             print model_detail
+            #Delete model
+            '''headers = {'Accept': 'application/json', "subjectid": token}
+            try:
+                res = requests.delete(SERVER_URL+'/model/'+model.split('model/')[1], headers=headers)
+            except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
 
             return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': json.loads(params) })
 
@@ -3767,7 +3779,7 @@ def exp_design(request):
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
 
     if request.method == 'GET':
-
+        tform=DatasetForm()
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
@@ -3778,12 +3790,14 @@ def exp_design(request):
         print json.loads(res.text)
         al = json.loads(res.text)
 
-        return render(request, "ocpu_params.html", {'token': token, 'username': username, 'al':al, })
+        return render(request, "ocpu_params.html", {'token': token, 'username': username, 'al':al,'tform':tform })
 
     if request.method == 'POST':
 
         parameters = request.POST.getlist('parameters')
-
+        tform=DatasetForm(request.POST)
+        title = tform['title'].value()
+        description = tform['description'].value()
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
@@ -3796,7 +3810,7 @@ def exp_design(request):
 
         params, al = get_params(request, parameters, al)
 
-        body = {'parameters':json.dumps(params), 'visible':False }
+        body = {'parameters':json.dumps(params), 'visible':False, 'title':title, 'description':description }
         headers = {'Accept': 'application/json', 'subjectid': token}
 
         try:
@@ -3984,16 +3998,16 @@ def interlab_select_substance(request):
                 return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         data = json.loads(res.text)
         print res.text
-        try:
+        '''try:
             res = requests.get(SERVER_URL+'/dataset/interlab-dummy', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         d = json.loads(res.text)
-        dataset.append({'name': d['_id'], 'meta': d['meta']})
-        '''for d in data:
-                dataset.append({'name': d['_id'], 'meta': d['meta']})'''
+        dataset.append({'name': d['_id'], 'meta': d['meta']})'''
+        for d in data:
+                dataset.append({'name': d['_id'], 'meta': d['meta']})
         print dataset
         proposed=[]
         try:
@@ -4441,9 +4455,8 @@ def read_across_train(request):
         inputform = InputForm()
         nform = NoPmmlForm()
         pmmlform = SelectPmmlForm()
-        dataset = request.session.get('data', '')
-        print('--------------------------------------------------------------')
-        print dataset
+        dataset = request.GET.get('dataset')
+
         algorithms= "python-readacross"
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:

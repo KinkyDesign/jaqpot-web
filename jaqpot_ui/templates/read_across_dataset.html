@@ -14,17 +14,17 @@
         {% load endless %}
          <h3>Example datasets:</h3>
          <div class="publicdataset list-group" style="height: 300px;overflow: scroll;">
-            <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+            <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:40%; position:absolute;">Description</span> <span style="float: left; left:80%; position:absolute;">Date</span> </p>
         {% for p in proposed %}
-             <a href="/read_across_train?dataset={{p.name}}" class="list-group-item">{{p.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{p.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{p.meta.descriptions.0}}</span> </a>
+             <a href="/read_across_train?dataset={{p.name}}" class="list-group-item">{{p.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{p.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:50%;">{{p.meta.descriptions.0}}</span><span class="overflow-span" style="float: left; left:80%; position:absolute;width:20%;">{{p.meta.date}}</span>  </a>
         {% endfor %}
             </div>
         <div class="publicdataset list-group">
         <h3>All Datasets:</h3>
         {% paginate 20 entries2 using "other_objects_page" %}
-            <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+            <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:40%; position:absolute;">Description</span> <span style="float: left; left:80%; position:absolute;">Date</span> </p>
         {% for e in entries2 %}
-             <a href="/read_across_train?dataset={{e.name}}" class="list-group-item">{{e.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{e.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{e.meta.descriptions.0}}</span> </a>
+             <a href="/read_across_train?dataset={{e.name}}" class="list-group-item">{{e.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{e.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:50%;">{{e.meta.descriptions.0}}</span><span class="overflow-span" style="float: left; left:80%; position:absolute;width:20%;">{{e.meta.date}}</span>  </a>
         {% endfor %}
             </div>
             {% get_pages %}

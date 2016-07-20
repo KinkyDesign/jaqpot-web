@@ -20,10 +20,10 @@
         <h3>Example Datasets:</h3>
        <div class="list-group" style="height: 300px;overflow: scroll;">
 
-                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:40%; position:absolute;">Description</span> <span style="float: left; left:80%; position:absolute;">Date</span> </p>
                   {% for p in proposed %}
 
-                    <a class="list-group-item" style="width:100%;float:left;" onclick="document.getElementById('{{p.name}}').checked=true;document.getElementById('predict_form').submit();"><input type="radio" id="{{p.name}}" name="radio" value="{{p.name}}" style="display:none;" >{{p.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{% for title in p.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </label></a>
+                    <a class="list-group-item" style="width:100%;float:left;" onclick="document.getElementById('{{p.name}}').checked=true;document.getElementById('predict_form').submit();"><input type="radio" id="{{p.name}}" name="radio" value="{{p.name}}" style="display:none;" >{{p.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{% for title in p.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:40%;">{%for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> <span class="overflow-span" style="float: left; left:80%; position:absolute;width:20%;">{{p.meta.date}}</span></label></a>
                     <!-- onclick="$(this).is(':checked');document.getElementById('predict_form').submit();" -->
                  {% endfor %}
              </div>
@@ -31,11 +31,11 @@
         {% load endless %}
        <div class="list-group">
                  <h3>All Datasets:</h3>
-                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:40%; position:absolute;">Description</span> <span style="float: left; left:80%; position:absolute;">Date</span> </p>
                   {% paginate 20 dataset %}
                   {% for data in dataset %}
 
-                    <a class="list-group-item" style="width:100%;float:left;" onclick="document.getElementById('{{data.name}}').checked=true;document.getElementById('predict_form').submit();"><input type="radio" name="radio" id="{{data.name}}" value="{{data.name}}" style="display:none;">{{data.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{data.title}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{data.description}}</span> </label></a>
+                    <a class="list-group-item" style="width:100%;float:left;" onclick="document.getElementById('{{data.name}}').checked=true;document.getElementById('predict_form').submit();"><input type="radio" name="radio" id="{{data.name}}" value="{{data.name}}" style="display:none;">{{data.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{data.title}}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:40%;">{{data.description}}</span> <span class="overflow-span" style="float: left; left:80%; position:absolute;width:20%;">{{data.meta.date}}</span></label></a>
 
                  {% endfor %}
              </div>

@@ -15,6 +15,7 @@
     {% endif %}
     {% if al.parameters %}
                  {% for p in al.parameters%}
+                    {% if p|id == "criterion" or p|id == "formula" %}
                     <div>
                         <label class="align">{{p.name}}:</label>
                         {% if p.allowedValues %}
@@ -45,6 +46,7 @@
                         {%endif %}
                         {%endif%}
                     </div>
+                    {%endif%}
                  {% endfor %}
             {% endif %}
 
@@ -112,6 +114,9 @@
             {{pform.form}} -->
     <br>
     <br>
+    <button id="addRow">Add Row</button>
+    <button id="delete">Delete Row</button>
+    <!-- <button id="btnAddCol">Add column</button> -->
     <table id="table" class="div-form-table display" >
              <thead>
                  <tr>
@@ -151,6 +156,26 @@
 
              </tbody>
          </table>
+     <h3>Fill in the title and description of the produced model</h3>
+        <div>
+            <label class="align" >Model name:</label>
+            {% if tform.title.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{tform.title.errors.as_text}}</span>
+               </div>
+            {% endif %}
+            {{tform.title}}
+        </div>
+        <br>
+        <p><b>Model description:</b></p>
+         {% if tform.description.errors %}
+               <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span>{{tform.description.errors.as_text}}</span>
+               </div>
+            {% endif %}
+        {{tform.description}}
     <br>
 
     <input id="choose_params" type="submit" value="Experimental Design" class="btn bt-red" style="width: 15%; float:left; left:10%;">
@@ -168,7 +193,7 @@
             $("#loading").show();
             });
 
-    /*$(document).ready( function () {
+    $(document).ready( function () {
 
         var oTable = $('#table').DataTable( {
         "bJQueryUI": true,
@@ -178,6 +203,7 @@
         "dom": 'ft',
         "sScrollX": "100%",
         "sScrollXInner": "100%",
+
 
          "fnDrawCallback": function( oSettings )
          {
@@ -189,10 +215,59 @@
         },
 
         });
+    //Add row
+    var counter = 3;
+
+    $('#addRow').on( 'click', function () {
+        oTable.row.add( [
+            counter ,
+            0,
+            0,
+            0,
+            0
+        ] ).draw( false );
+
+        counter++;
+    } );
+
+    //Delete selected row
+
+    $('#table tbody').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            oTable.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    } );
+
+    $('#delete').click( function () {
+        oTable.row('.selected').remove().draw( false );
+    } );
+
+    //Add column
+     $("#table thead tr th").click(function() {    
+            col_num = parseInt( $(this).index() );
+            console.log("column_num ="+ col_num );  
+    });
+    $('#btnAddCol').click(function () {
+		var oSettings = oTable.fnSettings();
+		$("#table thead tr th").eq(col_num).after('<th></th>');
+		cols.push( {"mDataProp": "Field5"} );
+		colDef.push({aTargets: [4], sTitle: "Message"});
+		results[0].Field5 = "Msg1";
+		results[1].Field5 = "Msg2";
+		data_table.fnDestroy();
+		data_table.oApi._fnAddColumn(oSettings,null);
+		//initDT();
+    });
+
+
+    } );
 
 
 
-    } );  */
 
 
 </script>
