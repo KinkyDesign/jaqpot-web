@@ -4633,8 +4633,6 @@ def read_across_train(request):
             scaling=SERVER_URL+'/algorithm/standarization'
         #get doa
         doa=""
-        #algorithms = request.session.get('alg', '')
-        dataset = request.session.get('data', '')
         title= tform['modelname'].value()
         description= tform['description'].value()
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': True}
