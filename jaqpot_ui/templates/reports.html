@@ -9,10 +9,10 @@
 
              {% paginate 20 report %}
              <div class="list-group">
-                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:96%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:40%; position:absolute;">Description</span> <span style="float: left; left:80%; position:absolute;">Date</span></p>
+                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:97%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:40%; position:absolute;">Description</span> <span style="float: left; left:80%; position:absolute;">Date</span></p>
                  {% for r in report %}
 
-                    <a href="/report?name={{r.id}}" class="list-group-item" style="width:96%;float:left;">{{r.id}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{{r.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:40%;">{{r.meta.descriptions.0}}</span> <span class="overflow-span" style="float: left; left:80%; position:absolute;width:20%;">{{r.meta.date}}</span> </a>
+                    <a href="/report?name={{r.id}}" class="list-group-item" style="width:97%;float:left;">{{r.id}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{{r.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:40%;">{{r.meta.descriptions.0}}</span> <span class="overflow-span" style="float: left; left:80%; position:absolute;width:20%;">{{r.meta.date}}</span> </a>
                     <button class="btn bt-red" data-toggle="tool" title="Delete Report" style="margin:0.1%;margin-right:0px;margin-bottom:0px;" onclick="deleteReport('{{r.id}}')"><i class="fa fa-trash-o" style="font-size:1.75em;"></i></button>
                  {% endfor %}
              </div>

@@ -4513,7 +4513,8 @@ def read_across_train(request):
         form = UploadFileForm(request.POST, request.FILES)
         nform = NoPmmlForm(request.POST)
         pmmlform = SelectPmmlForm(request.POST)
-        dataset = request.session.get('data', '')
+        dataset = request.GET.get('dataset')
+        print dataset
         algorithms= "python-readacross"
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:

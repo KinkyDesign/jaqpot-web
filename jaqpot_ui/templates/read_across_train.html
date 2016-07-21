@@ -243,7 +243,7 @@
         {% for p in al.parameters%}
                     <div >
                         {% if p.name == "Confidence" %}
-                        <h3>Select method of calculating condidence value:</h3>
+                        <h3>Select method of calculating confidence value:</h3>
                         <select name="{{p|get:'_id'}}">
                             {% for s in p.allowedValues %}
                                 {%if s == 0%}
