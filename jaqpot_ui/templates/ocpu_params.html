@@ -27,22 +27,22 @@
                             <option value="{{s}}" {% if p.value == s %} selected {% endif %}>{{s}}</option>
                             {% endif %}
                             {% endfor %}
-                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|id}}">
                         </select>
                         {% elif p.minValue %}
                         <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value}}">
                         <p><small><b>Min value:</b>{{p.minValue}}   <b>Max value:</b>{{p.maxValue}}</small></p>
-                        <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                        <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|id}}">
                         {% else%}
                         {% if p.value.0|get_type == "unicode" %}
                             <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value|joinby:','}}">
-                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|id}}">
                         {% elif p.value.0|get_type == "int" %}
                             <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value.0|intiger}}">
-                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|id}}">
                         {%else %}
                             <input type="text" name="{{p.name}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
-                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p.name}}">
+                            <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|id}}">
                         {%endif %}
                         {%endif%}
                     </div>
@@ -188,6 +188,7 @@
     </form>
 
 <script>
+
     $('#choose_params').bind('click', function(e)
         {
             $("#loading").show();
@@ -203,6 +204,7 @@
         "dom": 'ft',
         "sScrollX": "100%",
         "sScrollXInner": "100%",
+        "editable": true,
 
 
          "fnDrawCallback": function( oSettings )
@@ -218,17 +220,37 @@
     //Add row
     var counter = 3;
 
-    $('#addRow').on( 'click', function () {
+    $('#addRow').on( 'click', function (e) {
         oTable.row.add( [
             counter ,
             0,
             0,
-            0,
             0
-        ] ).draw( false );
-
+        ] ).draw( true );
+         //$this.addClass( 'contenteditable' );
         counter++;
+        e.preventDefault()
+        e.stopPropagation()
     } );
+
+    //Edit datatable
+    //$('#table').on( 'click', 'tbody td', function () {
+    //    oTable.cell(this).edit();
+    //} );
+    $('#table tbody td').editable( function( sValue ) {
+        //editor.inline( this );
+		/* Get the position of the current data from the node */
+		var oTable = $('#table').dataTable()
+		var aPos = oTable.fnGetPosition( this );
+
+		/* Get the data array for this row */
+		var aData = oTable.fnGetData( aPos[0] );
+
+		/* Update the data array and return the value */
+		aData[ aPos[2] ] = sValue;
+		return sValue;
+	}, { "onblur": 'submit' } ); /* Submit the form when bluring a field */
+
 
     //Delete selected row
 
@@ -242,8 +264,10 @@
         }
     } );
 
-    $('#delete').click( function () {
+    $('#delete').click( function (e) {
         oTable.row('.selected').remove().draw( false );
+        e.preventDefault()
+        e.stopPropagation()
     } );
 
     //Add column

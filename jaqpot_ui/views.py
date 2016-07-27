@@ -18,7 +18,7 @@ import requests
 import json
 import datetime
 import subprocess
-from jaqpot_ui.get_params import get_params, get_params2, get_params3, get_params4
+from jaqpot_ui.get_params import get_params, get_params2, get_params3, get_params4, get_params_id
 from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, EMAIL_HOST_USER, SERVER_URL
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect, HttpResponse, FileResponse
@@ -3293,241 +3293,254 @@ def experimental_params(request):
             else:
                  inputform.fields['output'].choices = [ (prediction_feature, get_prediction_feature_name_of_dataset(dataset, token, prediction_feature) )]
             pmmlform.fields['predicted_feature'] = prediction_feature
-
+            print('evangelia')
             return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'uploadform':form, 'tform':tform ,'features':features, 'inputform':inputform, 'pmmlform': pmmlform, 'exp':True})
 
     if request.method == 'POST':
-            #get parameters of algorithm
-            params=[]
-            print request.POST
+        print('------')
+        #get parameters of algorithm
+        params=[]
+        print request.POST
 
-            tform = ExperimentalForm(request.POST)
-            inputform = InputForm(request.POST)
-            form = UploadForm(request.POST, request.FILES)
-            #nform = NoPmmlForm(request.POST)
-            pmmlform = SelectPmmlForm(request.POST)
-            dataset = request.session.get('data', '')
-            prediction_feature = get_prediction_feature_of_dataset(dataset, token)
-            algorithms = request.session.get('alg', '')
-            print algorithms
-            headers = {'Accept': 'application/json', 'subjectid': token}
-            try:
-                res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
-            except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            if res.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-            al = json.loads(res.text)
-            parameters = request.POST.getlist('parameters')
-            params, al = get_params(request, parameters, al)
+        tform = ExperimentalForm(request.POST)
+        inputform = InputForm(request.POST)
+        form = UploadForm(request.POST, request.FILES)
+        #nform = NoPmmlForm(request.POST)
+        pmmlform = SelectPmmlForm(request.POST)
+        dataset = request.session.get('data', '')
+        prediction_feature = get_prediction_feature_of_dataset(dataset, token)
+        algorithms = request.session.get('alg', '')
+        print algorithms
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        try:
+            res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        al = json.loads(res.text)
+        parameters = request.POST.getlist('parameters')
+        params, al = get_params(request, parameters, al)
 
-            '''for p in parameters:
+        '''for p in parameters:
                 params.append({'name': p, 'value': request.POST.get(''+p)})
                 for a in al['parameters']:
                     if (a['name'] == p):
                         print p
                         a['value']=request.POST.get(''+p)'''
-            print al['parameters']
-            try:
-                res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
-            except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            if res1.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
-            pmml=json.loads(res1.text)
-            if pmml:
-                pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
+        print al['parameters']
+        try:
+            res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
+        pmml=json.loads(res1.text)
+        if pmml:
+            pmmlform.fields['pmml'].choices = [(p['_id'],p['_id']) for p in pmml]
+        else:
+            pmmlform.fields['pmml'].choices = [("",'No pmml')]
+        try:
+            res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        predicted_features = json.loads(res2.text)
+        if str(res2) != "<Response [200]>":
+            #redirect to error page
+            return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
+        else:
+            features = predicted_features['features']
+            #form.fields['feature'] = prediction_feature
+            inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
+            if prediction_feature== "":
+                inputform.fields['output'].choices = [ (prediction_feature, "")]
             else:
-                pmmlform.fields['pmml'].choices = [("",'No pmml')]
-            try:
-                res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
-            except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            predicted_features = json.loads(res2.text)
-            if str(res2) != "<Response [200]>":
-                #redirect to error page
-                return render(request, "error.html", {'token': token, 'username': username,'error':predicted_features})
-            else:
-                features = predicted_features['features']
-                #form.fields['feature'] = prediction_feature
-                inputform.fields['input'].choices = [(f['uri'],f['name']) for f in features]
-                if prediction_feature== "":
-                    inputform.fields['output'].choices = [ (prediction_feature, "")]
-                else:
-                    inputform.fields['output'].choices = [ (prediction_feature, get_prediction_feature_name_of_dataset(dataset, token, prediction_feature))]
-                pmmlform.fields['predicted_feature'] = prediction_feature
-            if not tform.is_valid():
+                inputform.fields['output'].choices = [ (prediction_feature, get_prediction_feature_name_of_dataset(dataset, token, prediction_feature))]
+            pmmlform.fields['predicted_feature'] = prediction_feature
+        if not tform.is_valid():
+            return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'pmmlform':pmmlform, 'exp':True})
+        #get transformations
+        transformations=""
+        if request.POST.get('variables') == "none":
+            transformations = ""
+            prediction_feature = prediction_feature
+        elif request.POST.get('variables') == "pm":
+            transformations = SERVER_URL+'/pmml/'+pmmlform['pmml'].value()
+            prediction_feature = prediction_feature
+        elif request.POST.get('variables') == "input":
+            prediction_feature = prediction_feature
+            feature_list = inputform['input'].value()
+            if not inputform.is_valid():
                 return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'pmmlform':pmmlform, 'exp':True})
-            #get transformations
-            transformations=""
-            if request.POST.get('variables') == "none":
-                transformations = ""
-                prediction_feature = prediction_feature
-            elif request.POST.get('variables') == "pm":
-                transformations = SERVER_URL+'/pmml/'+pmmlform['pmml'].value()
-                prediction_feature = prediction_feature
-            elif request.POST.get('variables') == "input":
-                prediction_feature = prediction_feature
-                feature_list = inputform['input'].value()
-                if not inputform.is_valid():
-                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'pmmlform':pmmlform, 'exp':True})
-                headers = {'Accept': 'application/json',  'subjectid': token}
-                feat=""
-                for f in feature_list:
-                    feat += str(f)+','
-                body = {'features': feat}
-                try:
-                    res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
-                except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                if res.status_code >= 400:
-                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-                response = json.loads(res.text)
-                transformations = SERVER_URL+'/pmml/'+response['_id']
-
-            elif request.POST.get('variables') == "file":
-                prediction_feature = prediction_feature
-                if form.is_valid:
-                    if 'file' in request.FILES:
-                        pmml= request.FILES['file'].read()
-                        print pmml
-                        headers = {'Content-Type': 'application/xml',  'subjectid': token }
-                        try:
-                            res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
-                        except Exception as e:
-                            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                        if res.status_code >= 400:
-                            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-                        response = json.loads(res.text)
-                        transformations = SERVER_URL+'/pmml/'+response['_id']
-                    else:
-                        return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True})
-
-             #get scaling
-            scaling=""
-            if request.POST.get('scaling') == "scaling1":
-                scaling=""
-            elif request.POST.get('scaling') == "scaling2":
-                scaling=SERVER_URL+'/algorithm/scaling'
-            elif request.POST.get('scaling') == "scaling3":
-                scaling=SERVER_URL+'/algorithm/standarization'
-            #get doa
-            doa=""
-
-            #algorithms = request.session.get('alg', '')
-            dataset = request.session.get('data', '')
-            title= ""
-            description= ""
-            params = json.dumps(params)
-            print params
-
-
-            body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params, 'visible': False}
-            print('----')
-            print body
-            headers = {'Accept': 'application/json', 'subjectid': token}
-            #headers = { 'subjectid': token}
+            headers = {'Accept': 'application/json',  'subjectid': token}
+            feat=""
+            for f in feature_list:
+                feat += str(f)+','
+            body = {'features': feat}
             try:
-                res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
-            except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            print res.text
-            if res.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-            task_id = json.loads(res.text)['_id']
-            print task_id
-            #return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
-            try:
-                res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
-            except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            if res1.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
-            status = json.loads(res1.text)['status']
-            while (status != "COMPLETED"):
-                if(status == "ERROR"):
-                    error = "An error occurred while processing your request.Please try again."
-                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True, 'error':error})
-
-                else:
-                    try:
-                        res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
-                    except Exception as e:
-                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    if res1.status_code >= 400:
-                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
-                    status = json.loads(res1.text)['status']
-            #model: model/{id}
-            model = json.loads(res1.text)['result']
-            print model
-            print dataset
-            body = {'dataset_uri':SERVER_URL+'/dataset/'+dataset}
-            try:
-                res2 = requests.post(SERVER_URL+'/'+model, headers=headers, data=body)
-            except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            if res2.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res2.text)})
-            task_id = json.loads(res2.text)['_id']
-            try:
-                res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
-            except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            if res3.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res3.text)})
-            status = json.loads(res3.text)['status']
-            print task_id
-            while (status != "COMPLETED"):
-                if(status == "ERROR"):
-                    error = "An error occurred while processing your request.Please try again."
-                    print form
-                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'uploadform':form, 'pmmlform':pmmlform, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True, 'error':error})
-
-                else:
-                    try:
-                        res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
-                    except Exception as e:
-                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                    if res4.status_code >= 400:
-                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res4.text)})
-                    status = json.loads(res4.text)['status']
-            try:
-                res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                res = requests.post(SERVER_URL+'/pmml/selection', headers=headers, data=body)
             except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+            response = json.loads(res.text)
+            transformations = SERVER_URL+'/pmml/'+response['_id']
 
-            new_dataset = json.loads(res4.text)['result']
-            new_dataset = new_dataset.split('dataset/')[1]
-            print new_dataset
-            #dataset = 'jREmfXY9E997Ci'
-            #model = 'aTqA637F4O00'
-            try:
-                res5 = requests.get(SERVER_URL+'/dataset/'+new_dataset, headers=headers)
-            except Exception as e:
+        elif request.POST.get('variables') == "file":
+            prediction_feature = prediction_feature
+            if form.is_valid:
+                if 'file' in request.FILES:
+                    pmml= request.FILES['file'].read()
+                    print pmml
+                    headers = {'Content-Type': 'application/xml',  'subjectid': token }
+                    try:
+                        res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
+                    except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    if res.status_code >= 400:
+                        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+                    response = json.loads(res.text)
+                    transformations = SERVER_URL+'/pmml/'+response['_id']
+                else:
+                    return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True})
+
+            #get scaling
+        scaling=""
+        if request.POST.get('scaling') == "scaling1":
+            scaling=""
+        elif request.POST.get('scaling') == "scaling2":
+            scaling=SERVER_URL+'/algorithm/scaling'
+        elif request.POST.get('scaling') == "scaling3":
+            scaling=SERVER_URL+'/algorithm/standarization'
+        #get doa
+        doa=""
+
+        #algorithms = request.session.get('alg', '')
+        dataset = request.session.get('data', '')
+        title= ""
+        description= ""
+        params = json.dumps(params)
+        print params
+        prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
+
+        body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params, 'visible': False}
+        print('----')
+        print body
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        #headers = { 'subjectid': token}
+        try:
+            res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        print res.text
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        task_id = json.loads(res.text)['_id']
+        print task_id
+        #return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+        try:
+            res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
+        status = json.loads(res1.text)['status']
+        while (status != "COMPLETED"):
+            if(status == "ERROR"):
+                error = "An error occurred while processing your request.Please try again."
+                return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True, 'error':error})
+
+            else:
+                try:
+                    res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            if res5.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res5.text)})
-            data_detail = json.loads(res5.text)
-            try:
-                res6 = requests.get(SERVER_URL+'/'+model, headers=headers)
-            except Exception as e:
+                if res1.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
+                status = json.loads(res1.text)['status']
+        #model: model/{id}
+        model = json.loads(res1.text)['result']
+        print model
+        print dataset
+        body = {'dataset_uri':SERVER_URL+'/dataset/'+dataset}
+        try:
+            res2 = requests.post(SERVER_URL+'/'+model, headers=headers, data=body)
+        except Exception as e:
+                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res2.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res2.text)})
+        task_id = json.loads(res2.text)['_id']
+        try:
+            res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res3.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res3.text)})
+        status = json.loads(res3.text)['status']
+        print task_id
+        while (status != "COMPLETED"):
+            if(status == "ERROR"):
+                error = "An error occurred while processing your request.Please try again."
+                print form
+                return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'uploadform':form, 'pmmlform':pmmlform, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True, 'error':error})
+
+            else:
+                try:
+                    res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            if res6.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res6.text)})
-            model_detail = json.loads(res6.text)
-            predictedFeatures = model_detail['predictedFeatures']
-            '''res7 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
-            d_detail = json.loads(res7.text)'''
-            print predicted_features
-            print data_detail
-            if prediction_feature == "":
-                prediction_feature = get_prediction_feature_of_dataset(new_dataset, token)
-                print prediction_feature
-            #body = { 'scaling': scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
-            #body
-            print model_detail
-            #Delete model
-            '''headers = {'Accept': 'application/json', "subjectid": token}
+                if res4.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res4.text)})
+                status = json.loads(res4.text)['status']
+        try:
+            res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        #Delete model
+        #model: model/{id}
+        '''print('----------------------')
+            print(json.loads(res2.text))
+            new_model = json.loads(res2.text)['result']
+            print new_model
+            headers = {'Accept': 'application/json', "subjectid": token}
+            try:
+                res = requests.delete(SERVER_URL+'/model/'+new_model.split('model/')[1], headers=headers)
+            except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
+        new_dataset = json.loads(res4.text)['result']
+        new_dataset = new_dataset.split('dataset/')[1]
+        print new_dataset
+        #dataset = 'jREmfXY9E997Ci'
+        #model = 'aTqA637F4O00'
+        try:
+            res5 = requests.get(SERVER_URL+'/dataset/'+new_dataset, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res5.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res5.text)})
+        data_detail = json.loads(res5.text)
+        try:
+            res6 = requests.get(SERVER_URL+'/'+model, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res6.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res6.text)})
+        model_detail = json.loads(res6.text)
+        predictedFeatures = model_detail['predictedFeatures']
+        '''res7 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+        d_detail = json.loads(res7.text)'''
+        print predicted_features
+        print data_detail
+        if prediction_feature == "":
+            prediction_feature = get_prediction_feature_of_dataset(new_dataset, token)
+            print prediction_feature
+        #body = { 'scaling': scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
+        #body
+        print model_detail
+        #Delete model
+        '''headers = {'Accept': 'application/json', "subjectid": token}
             try:
                 res = requests.delete(SERVER_URL+'/model/'+model.split('model/')[1], headers=headers)
             except Exception as e:
@@ -3535,7 +3548,7 @@ def experimental_params(request):
             if res.status_code >= 400:
                 return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
 
-            return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': json.loads(params) })
+        return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': json.loads(params) })
 
 def exp_submit(request):
     token = request.session.get('token', '')
@@ -3795,6 +3808,9 @@ def exp_design(request):
     if request.method == 'POST':
 
         parameters = request.POST.getlist('parameters')
+        print parameters
+        print request.POST
+
         tform=DatasetForm(request.POST)
         title = tform['title'].value()
         description = tform['description'].value()
@@ -3809,10 +3825,11 @@ def exp_design(request):
 
 
         params, al = get_params(request, parameters, al)
+        prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
 
-        body = {'parameters':json.dumps(params), 'visible':False, 'title':title, 'description':description }
+        body = {'parameters':json.dumps(params), 'visible':False, 'title':title, 'description':description, 'prediction_feature':prediction_feature }
         headers = {'Accept': 'application/json', 'subjectid': token}
-
+        print body
         try:
             res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers, data=body)
         except Exception as e:
@@ -3843,6 +3860,7 @@ def exp_design(request):
             status = json.loads(res1.text)['status']
             #model: model/{id}
         model = json.loads(res1.text)['result']
+        print(model)
         try:
             res2 = requests.post(SERVER_URL+'/'+model, headers=headers)
         except Exception as e:
