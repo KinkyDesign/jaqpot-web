@@ -771,7 +771,6 @@ def change_params(request):
         params={}
         print request.POST
 
-
         tform = TrainingForm(request.POST)
         inputform = InputForm(request.POST)
         form = UploadFileForm(request.POST, request.FILES)
@@ -3810,7 +3809,10 @@ def exp_design(request):
         parameters = request.POST.getlist('parameters')
         print parameters
         print request.POST
-
+        datatable=request.POST.get('json')
+        print datatable
+        for row in datatable:
+            print row
         tform=DatasetForm(request.POST)
         title = tform['title'].value()
         description = tform['description'].value()
@@ -4654,6 +4656,7 @@ def read_across_train(request):
         title= tform['modelname'].value()
         description= tform['description'].value()
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': True}
+        print body
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
             res = requests.post(SERVER_URL+'/algorithm/python-readacross', headers=headers, data=body)

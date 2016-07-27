@@ -120,12 +120,12 @@
     <table id="table" class="div-form-table display" >
              <thead>
                  <tr>
-                     <th style="background-color: #cf2323; min-width: 50px;">Levels</th>
+                     <th style="background-color: #cf2323; min-width: 50px;">Variables</th>
                       {% for p in al.parameters%}
-                        {% if p|id == "varNames" %}
-                            {% for var in p.value%}
+                         {% if p|id == "levels" %}
+                            {% for i in p.value.0|times %}
                                 <th style="background-color: #cf2323;min-width: 50px;" class="column">
-                                    <p data-toggle="tooltip" data-placement="top" data-container="body">{{var.0}}</p>
+                                    <p data-toggle="tooltip" data-placement="top" data-container="body">Level {{i|add}}</p>
                                 </th>
                             {% endfor%}
 
@@ -135,16 +135,14 @@
              </thead>
              <tbody>
               {% for p in al.parameters%}
-                        {% if p|id == "levels" %}
-                            {% for i in p.value.0|times %}
+                        {% if p|id == "varNames" %}
+                            {% for var in p.value%}
                                 <tr>
-                                    <td>{{i}}</td>
+                                    <td>{{var.0}}</td>
                                     {% for p in al.parameters%}
                                     {% if p|id == "varNames" %}
                                         {% for var in p.value%}
-                                            <td contenteditable='true'>
-                                               0
-                                            </td>
+                                            <td contenteditable='true'>0</td>
                                         {% endfor%}
 
                                      {% endif %}
@@ -153,6 +151,7 @@
                             {%endfor%}
                         {% endif %}
              {% endfor %}
+
 
              </tbody>
          </table>
@@ -191,6 +190,10 @@
 
     $('#choose_params').bind('click', function(e)
         {
+            var data = JSON.stringify({
+                "tabledata": $('#table').DataTable().data()
+            })
+            $('<input type="hidden" name="json"/>').val(data).appendTo('#form1');
             $("#loading").show();
             });
 
@@ -218,17 +221,31 @@
 
         });
     //Add row
-    var counter = 3;
+    //var counter = 3;
 
     $('#addRow').on( 'click', function (e) {
-        oTable.row.add( [
-            counter ,
+        var newRow = oTable.row.add( [
+            "new",
             0,
             0,
             0
-        ] ).draw( true );
-         //$this.addClass( 'contenteditable' );
-        counter++;
+        ] ).draw().nodes();
+        $( newRow ).attr('contenteditable', 'true');
+        //Edit new row
+        $('#table tbody td').editable( function( sValue ) {
+            //editor.inline( this );
+            /* Get the position of the current data from the node */
+            var oTable = $('#table').dataTable()
+            var aPos = oTable.fnGetPosition( this );
+
+            /* Get the data array for this row */
+            var aData = oTable.fnGetData( aPos[0] );
+
+            /* Update the data array and return the value */
+            aData[ aPos[2] ] = sValue;
+            return sValue;
+        }, { "onblur": 'submit' } ); /* Submit the form when bluring a field */
+        //counter++;
         e.preventDefault()
         e.stopPropagation()
     } );
@@ -237,6 +254,7 @@
     //$('#table').on( 'click', 'tbody td', function () {
     //    oTable.cell(this).edit();
     //} );
+
     $('#table tbody td').editable( function( sValue ) {
         //editor.inline( this );
 		/* Get the position of the current data from the node */

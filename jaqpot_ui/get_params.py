@@ -20,7 +20,7 @@ def get_params(request, parameters, al):
         for a in al['parameters']:
 
             if (a['_id'] == p):
-                if type(a['value']) is list:
+                if isinstance(a['value'], list):
                     try:
                         value = int(request.POST.get(''+p))
                         params.update({str(p):[value]})
@@ -34,7 +34,7 @@ def get_params(request, parameters, al):
                             value = request.POST.get(''+p)
                             '''if value.split(','):
                                 value = value.split(',')'''
-                            params.update({str(p):value})
+                            params.update({str(p):[value]})
                             a['value']=[request.POST.get(''+p)]
                 else:
                     value = request.POST.get(''+p)

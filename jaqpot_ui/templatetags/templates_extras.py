@@ -79,3 +79,7 @@ def id(obj):
 @register.filter(name='times')
 def times(number):
     return range(number)
+
+@register.filter
+def add(string):
+    return string+1
