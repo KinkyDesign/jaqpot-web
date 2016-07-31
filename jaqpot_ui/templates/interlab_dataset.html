@@ -20,7 +20,7 @@
                  {% for p in proposed %}
 
                     <li>
-                        <a href="/data_detail?name={{p.name}}" class="list-group-item" style="width:100%;">{{p.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{% for title in p.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:40%;">{%for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> <span class="overflow-span" style="float: left; left:80%; position:absolute;width:20%;">{{p.meta.date}}</span> </a>
+                        <a href="/interlab_params?dataset={{p.name}}" class="list-group-item" style="width:100%;">{{p.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{% for title in p.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:40%;">{%for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> <span class="overflow-span" style="float: left; left:80%; position:absolute;width:20%;">{{p.meta.date}}</span> </a>
                     </li>
                  {% endfor %}
                  </ul>

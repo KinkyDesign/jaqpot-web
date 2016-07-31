@@ -78,8 +78,18 @@ def id(obj):
 
 @register.filter(name='times')
 def times(number):
-    return range(number)
+    max=0
+    for attribute, value in number.iteritems():
+        print attribute, value # example usage
+        length= len(value)
+        if length>max:
+            max=length
+    return range(0,max)
+
+'''@register.filter
+def add(string):
+    return string+1'''
 
 @register.filter
-def add(string):
-    return string+1
+def getlevel(d,k):
+    return d[k][0]

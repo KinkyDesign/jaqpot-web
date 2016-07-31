@@ -15,11 +15,11 @@
     {% endif %}
     {% if al.parameters %}
                  {% for p in al.parameters%}
-                    {% if p|id == "criterion" or p|id == "formula" %}
+                    {% if p|id == "criterion" or p|id == "form" %}
                     <div>
                         <label class="align">{{p.name}}:</label>
                         {% if p.allowedValues %}
-                        <select name="{{p.name}}" >
+                        <select name="{{p|id}}" >
                             {% for s in p.allowedValues %}
                              {% if s|get_type == "list" %}
                             <option value="{{s.0}}" {% if p.value == s %} selected {% endif %}>{{s.0}}</option>
@@ -121,11 +121,12 @@
              <thead>
                  <tr>
                      <th style="background-color: #cf2323; min-width: 50px;">Variables</th>
+                     <th style="background-color: #cf2323; min-width: 50px;">Type</th>
                       {% for p in al.parameters%}
                          {% if p|id == "levels" %}
-                            {% for i in p.value.0|times %}
+                            {% for i in p.value|times %}
                                 <th style="background-color: #cf2323;min-width: 50px;" class="column">
-                                    <p data-toggle="tooltip" data-placement="top" data-container="body">Level {{i|add}}</p>
+                                    <p data-toggle="tooltip" data-placement="top" data-container="body">Level {{i|add:"1"}}</p>
                                 </th>
                             {% endfor%}
 
@@ -138,11 +139,13 @@
                         {% if p|id == "varNames" %}
                             {% for var in p.value%}
                                 <tr>
-                                    <td>{{var.0}}</td>
-                                    {% for p in al.parameters%}
-                                    {% if p|id == "varNames" %}
-                                        {% for var in p.value%}
-                                            <td contenteditable='true'>0</td>
+                                    <td class="edit">{{var.0}}</td>
+                                    <td><select class="form-control"><option value="numerical">numerical</option><option value="categorical">categorical</option></select></td>
+                                    {% for par in al.parameters%}
+                                    {% if par|id == "levels" %}
+                                        {% for tim in par.value|times %}
+                                            <td contenteditable='true' class="edit">0</td>
+                                            <!--{{par.value|getlevel:var}}-->
                                         {% endfor%}
 
                                      {% endif %}
@@ -193,6 +196,8 @@
             var data = JSON.stringify({
                 "tabledata": $('#table').DataTable().data()
             })
+            var data_json=JSON.stringify(data)
+
             $('<input type="hidden" name="json"/>').val(data).appendTo('#form1');
             $("#loading").show();
             });
@@ -226,13 +231,14 @@
     $('#addRow').on( 'click', function (e) {
         var newRow = oTable.row.add( [
             "new",
+            "se",
             0,
             0,
             0
         ] ).draw().nodes();
         $( newRow ).attr('contenteditable', 'true');
         //Edit new row
-        $('#table tbody td').editable( function( sValue ) {
+        $('#table tbody td .edit').editable( function( sValue ) {
             //editor.inline( this );
             /* Get the position of the current data from the node */
             var oTable = $('#table').dataTable()
@@ -255,7 +261,7 @@
     //    oTable.cell(this).edit();
     //} );
 
-    $('#table tbody td').editable( function( sValue ) {
+    $('#table tbody td.edit').editable( function( sValue ) {
         //editor.inline( this );
 		/* Get the position of the current data from the node */
 		var oTable = $('#table').dataTable()
@@ -309,7 +315,13 @@
     } );
 
 
-
+$(".form-control").change(function(e) {
+  alert('change!!'); //only works if there's a change in the select dropdown on the first row
+  console.log($(this).find("option:selected").text());
+  console.log(e.currentTarget)
+  //var cell = $('#table').DataTable().cell(0);
+  //cell.data($(this).find("option:selected").text()).draw();
+});
 
 
 </script>

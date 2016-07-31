@@ -3794,7 +3794,7 @@ def exp_design(request):
         tform=DatasetForm()
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
-            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
+            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign2-noxy', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
@@ -3811,14 +3811,28 @@ def exp_design(request):
         print request.POST
         datatable=request.POST.get('json')
         print datatable
-        for row in datatable:
-            print row
+        datatable=json.loads(datatable)
+        length = datatable['tabledata']['length']
+        nVars=[int(length)]
+        #import pdb;pdb.set_trace();
+        #Create levels and varNames params from datatable json
+        varNames=[]
+        levels={}
+        for row in range(0, int(length)):
+            varNames.append(datatable['tabledata'][str(row)][0])
+            l_val=[]
+            for i in range(2, int(len(datatable['tabledata'][str(row)]))):
+                l_val.append(int(datatable['tabledata'][str(row)][i]))
+            levels.update({datatable['tabledata'][str(row)][0]: l_val})
+            #print datatable['tabledata'][str(row)]
+        print json.dumps(levels)
+        print json.dumps(varNames)
         tform=DatasetForm(request.POST)
         title = tform['title'].value()
         description = tform['description'].value()
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
-            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers)
+            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign2-noxy', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
@@ -3827,13 +3841,14 @@ def exp_design(request):
 
 
         params, al = get_params(request, parameters, al)
+        params.update({"nVars": nVars, "levels":levels, "nTrials":[6], "varNames":varNames, "factors":[2]})
         prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
 
         body = {'parameters':json.dumps(params), 'visible':False, 'title':title, 'description':description, 'prediction_feature':prediction_feature }
         headers = {'Accept': 'application/json', 'subjectid': token}
         print body
         try:
-            res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign-noxy', headers=headers, data=body)
+            res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign2-noxy', headers=headers, data=body)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
