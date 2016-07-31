@@ -3238,7 +3238,7 @@ def experimental_params(request):
         return redirect('/login')
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
-        request.session['alg'] = "ocpu-expdesign-xy"
+        request.session['alg'] = "ocpu-expdesign2-xy"
         request.session['data'] = dataset
         prediction_feature = get_prediction_feature_of_dataset(dataset, token)
         form = UploadForm()
@@ -3249,16 +3249,16 @@ def experimental_params(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         print prediction_feature
         if prediction_feature == "":
-            request.session['alg'] = "ocpu-expdesign-x"
+            request.session['alg'] = "ocpu-expdesign2-x"
             try:
-                res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-x', headers=headers)
+                res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign2-x', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             if res.status_code >= 400:
                 return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         else:
             try:
-                res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign-xy', headers=headers)
+                res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign2-xy', headers=headers)
             except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             if res.status_code >= 400:
