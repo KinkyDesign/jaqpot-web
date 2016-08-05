@@ -3657,6 +3657,7 @@ def exp_iter(request):
                 return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
             data_detail = json.loads(res1.text)
             model = json.loads(res1.text)['byModel']
+            print model
             #model = 'A0fU5rK7B64r'
             try:
                 res = requests.get(SERVER_URL+'/model/'+model, headers=headers)
@@ -3668,8 +3669,8 @@ def exp_iter(request):
             predictedFeatures = model_detail['predictedFeatures']
             algorithms = json.loads(res.text)['algorithm']['_id']
             params = json.loads(res.text)['parameters']
-            if algorithms == "ocpu-expdesign-x":
-                algorithms = "ocpu-expdesign-xy"
+            if algorithms == "ocpu-expdesign2-x":
+                algorithms = "ocpu-expdesign2-xy"
                 par = {}
                 for k,v in params.items():
                     if k != "newY":
@@ -3679,6 +3680,8 @@ def exp_iter(request):
             total=get_number_of_not_null_of_dataset(dataset, token, prediction_feature)
             if total < 4:
                 error="You should change the prediction feature of 4 compounds at least."
+                print data_detail
+                print prediction_feature
                 return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':dataset, 'params': params, 'error':error })
 
             body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': "", 'doa': "", 'title': "", 'description':"", 'transformations':"", 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': False}
@@ -3776,6 +3779,63 @@ def exp_iter(request):
             #body
             return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail,'d_detail':d_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params':params})
 
+#Facrorial Validation
+def factorial_validation(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    if token:
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    if request.is_ajax():
+        datatable = request.GET.get('data')
+        datatable=json.loads(datatable)
+        print datatable
+        length = datatable['tabledata']['length']
+        print length
+        error=""
+        for row in range(0, int(length)):
+            tp=datatable['tabledata'][str(row)][1]
+            print tp
+            if "selected" in tp:
+                num=tp.split('numerical')[1]
+                print num
+                if "selected" in num:
+                    type ='numerical'
+                else:
+                    type ="categorical"
+            else:
+                type="numerical"
+            print type
+            if type == "categorical":
+                for i in range(2, int(len(datatable['tabledata'][str(row)]))):
+                    if (datatable['tabledata'][str(row)][i])!="None":
+                        try:
+                            str(datatable['tabledata'][str(row)][i])
+                        except:
+                            error="Wrong input"
+                    else:
+                        for j in range(i+1,int(len(datatable['tabledata'][str(row)]))):
+                            if (datatable['tabledata'][str(row)][j])!="None":
+                                error="Wrong"
+            elif type == "numerical":
+                for i in range(2, int(len(datatable['tabledata'][str(row)]))):
+                    if (datatable['tabledata'][str(row)][i])!="None":
+                        try:
+                            int(datatable['tabledata'][str(row)][i])
+                        except:
+                            error="Wrong input"
+                    else:
+                        for j in range(i+1,int(len(datatable['tabledata'][str(row)]))):
+                            if (datatable['tabledata'][str(row)][j])!="None":
+                                error="Wrong"
+        error= json.dumps(error)
+        print error
+        return HttpResponse(error)
 
 #Experimental design without input
 def exp_design(request):
@@ -3821,8 +3881,13 @@ def exp_design(request):
         for row in range(0, int(length)):
             varNames.append(datatable['tabledata'][str(row)][0])
             l_val=[]
+            #if datatable['tabledata'][str(row)][1] == "categorical":
             for i in range(2, int(len(datatable['tabledata'][str(row)]))):
-                l_val.append(int(datatable['tabledata'][str(row)][i]))
+                if (datatable['tabledata'][str(row)][i])!="None":
+                    try:
+                        l_val.append(int(datatable['tabledata'][str(row)][i]))
+                    except:
+                        l_val.append(str(datatable['tabledata'][str(row)][i]))
             levels.update({datatable['tabledata'][str(row)][0]: l_val})
             #print datatable['tabledata'][str(row)]
         print json.dumps(levels)
@@ -3838,21 +3903,30 @@ def exp_design(request):
         if res.status_code >= 400:
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         al = json.loads(res.text)
-
+        #Create empty dataset
+        try:
+            res = requests.post(SERVER_URL+'/dataset/empty', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        print res.text
+        dataset = json.loads(res.text)['_id']
+        dataset_uri='http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset
 
         params, al = get_params(request, parameters, al)
         params.update({"nVars": nVars, "levels":levels, "nTrials":[6], "varNames":varNames, "factors":[2]})
         prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
 
-        body = {'parameters':json.dumps(params), 'visible':False, 'title':title, 'description':description, 'prediction_feature':prediction_feature }
+        body = {'dataset_uri':dataset_uri, 'parameters':json.dumps(params), 'title':title, 'description':description, 'prediction_feature':prediction_feature }
         headers = {'Accept': 'application/json', 'subjectid': token}
         print body
         try:
             res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign2-noxy', headers=headers, data=body)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        if res.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        '''if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
         print res.text
         task_id = json.loads(res.text)['_id']
         print task_id
@@ -3877,9 +3951,22 @@ def exp_design(request):
             status = json.loads(res1.text)['status']
             #model: model/{id}
         model = json.loads(res1.text)['result']
+        model=model.split('model/')[1]
         print(model)
+        #Create empty dataset
+        '''try:
+            res = requests.post(SERVER_URL+'/dataset/empty', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        print res.text
+        dataset = json.loads(res.text)['_id']'''
+        #dataset_uri='http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset
+        dataset_uri='http://test.jaqpot.org:8080/jaqpot/services/dataset/corona'
+        body={'dataset_uri':dataset_uri}
         try:
-            res2 = requests.post(SERVER_URL+'/'+model, headers=headers)
+            res2 = requests.post(SERVER_URL+'/model/'+model, headers=headers, data=body)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res2.status_code >= 400:
@@ -3905,7 +3992,7 @@ def exp_design(request):
                 if res4.status_code >= 400:
                     return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res4.text)})
                 status = json.loads(res4.text)['status']
-
+        print json.loads(res4.text)
         dataset = json.loads(res4.text)['result']
         dataset = dataset.split('dataset/')[1]
 

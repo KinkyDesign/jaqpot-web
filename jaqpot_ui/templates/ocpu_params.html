@@ -13,6 +13,7 @@
 						<span>{{error}}</span>
                </div>
     {% endif %}
+    <div id="er"></div>
     {% if al.parameters %}
                  {% for p in al.parameters%}
                     {% if p|id == "criterion" or p|id == "form" %}
@@ -116,6 +117,7 @@
     <br>
     <button id="addRow">Add Row</button>
     <button id="delete">Delete Row</button>
+
     <!-- <button id="btnAddCol">Add column</button> -->
     <table id="table" class="div-form-table display" >
              <thead>
@@ -140,12 +142,11 @@
                             {% for var in p.value%}
                                 <tr>
                                     <td class="edit">{{var.0}}</td>
-                                    <td><select class="form-control"><option value="numerical">numerical</option><option value="categorical">categorical</option></select></td>
+                                    <td class="option"><select class="form-control"><option value="numerical">numerical</option><option value="categorical">categorical</option></select></td>
                                     {% for par in al.parameters%}
                                     {% if par|id == "levels" %}
                                         {% for tim in par.value|times %}
-                                            <td contenteditable='true' class="edit">0</td>
-                                            <!--{{par.value|getlevel:var}}-->
+                                            <td contenteditable='true' class="edit">{{par.value|getlevel:var|getvalue:tim}}</td>
                                         {% endfor%}
 
                                      {% endif %}
@@ -180,7 +181,9 @@
         {{tform.description}}
     <br>
 
-    <input id="choose_params" type="submit" value="Experimental Design" class="btn bt-red" style="width: 15%; float:left; left:10%;">
+     <div id="error" style="margin-top:5px;"></div>
+
+    <input id="choose_params" value="Experimental Design" class="btn bt-red" style="width: 15%; float:left; left:10%;">
 
     <div id="loading" style="display: none"><!-- Place at bottom of page -->
             <img id="loading-image" src="http://i.stack.imgur.com/FhHRx.gif" alt="Loading..." />
@@ -193,13 +196,43 @@
 
     $('#choose_params').bind('click', function(e)
         {
+            //var table= $('#table').DataTable().data()
+            //var cell = table.cell[0][1];
+            //cell.data( cell.find("option:selected").text() ).draw();
+
             var data = JSON.stringify({
                 "tabledata": $('#table').DataTable().data()
             })
-            var data_json=JSON.stringify(data)
+            //var data_json=JSON.stringify(data)
+            //send via ajax for validation
+            $.ajax({
+                type: "GET",
+                url: "/factorial_validation",
+                dataType: "json",
+                contentType: 'application/json;',
+                data: { 'data': data},
+                success: function(error){
+                   console.log("sucess")
+                   if (error != ""){
+                        $('.glyphicon').remove();
+                        $('.data').remove();
+                        document.getElementById("er").remove();
+                        $('#error').prepend('<div id="er" class="alert alert-danger" role="alert" style="width: 40%;padding: 5px;"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="data">'+error+'</span></div>');
+                   }
+                   else{
+                        $('<input type="hidden" name="json"/>').val(data).appendTo('#form1');
+                        document.getElementById("form1").submit();
+                        $("#loading").show();
+                   }
 
-            $('<input type="hidden" name="json"/>').val(data).appendTo('#form1');
-            $("#loading").show();
+                },
+                error: function(error){
+                    console.log("error");
+                    $('<input name="error"/>').val(error).appendTo('#form1');
+
+                }
+            });
+
             });
 
     $(document).ready( function () {
@@ -213,6 +246,7 @@
         "sScrollX": "100%",
         "sScrollXInner": "100%",
         "editable": true,
+
 
 
          "fnDrawCallback": function( oSettings )
@@ -231,10 +265,10 @@
     $('#addRow').on( 'click', function (e) {
         var newRow = oTable.row.add( [
             "new",
-            "se",
-            0,
-            0,
-            0
+            '<select class="form-control"><option value="numerical">numerical</option><option value="categorical">categorical</option></select>',
+            "None",
+            "None",
+            "None",
         ] ).draw().nodes();
         $( newRow ).attr('contenteditable', 'true');
         //Edit new row
@@ -295,33 +329,40 @@
     } );
 
     //Add column
-     $("#table thead tr th").click(function() {    
+    /* $("#table thead tr th").click(function() {    
             col_num = parseInt( $(this).index() );
             console.log("column_num ="+ col_num );  
-    });
-    $('#btnAddCol').click(function () {
-		var oSettings = oTable.fnSettings();
-		$("#table thead tr th").eq(col_num).after('<th></th>');
-		cols.push( {"mDataProp": "Field5"} );
-		colDef.push({aTargets: [4], sTitle: "Message"});
-		results[0].Field5 = "Msg1";
-		results[1].Field5 = "Msg2";
-		data_table.fnDestroy();
-		data_table.oApi._fnAddColumn(oSettings,null);
-		//initDT();
+    }); */
+    $('#btnAddCol').click(function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+       // var oTable = $('#table').DataTable()
+        var newRow =  oTable.columns.add( [
+            "new",
+            "se",
+            "None",
+            "None",
+            "None",
+        ] ).draw().nodes();
+
     });
 
 
     } );
 
 
-$(".form-control").change(function(e) {
-  alert('change!!'); //only works if there's a change in the select dropdown on the first row
-  console.log($(this).find("option:selected").text());
-  console.log(e.currentTarget)
-  //var cell = $('#table').DataTable().cell(0);
-  //cell.data($(this).find("option:selected").text()).draw();
-});
+
+$('#table tbody').on( 'click', 'td.option', function () {
+    var table = $('#table').DataTable();
+    var cell = table.cell( this );
+    $(".form-control").change(function(e) {
+      //alert('change!!'); //only works if there's a change in the select dropdown on the first row
+      $(this).find("option:selected").attr('selected','selected');
+      //console.log($(this).find("option:selected").text());
+      //console.log(e.currentTarget)
+      cell.data('<select class="form-control">'+$(this).html()+'</select>' ).draw();
+    });
+} );
 
 
 </script>

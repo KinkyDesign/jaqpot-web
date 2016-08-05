@@ -92,4 +92,12 @@ def add(string):
 
 @register.filter
 def getlevel(d,k):
-    return d[k][0]
+    return d[k]
+
+@register.filter
+def getvalue(d,k):
+    n=0
+    for value in d:
+        if int(k) == n:
+            return value
+        n=n+1
