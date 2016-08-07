@@ -101,9 +101,9 @@ def get_number_of_not_null_of_dataset(dataset, token, prediction_feature):
     data=json.loads(r.text)
     total = 0
     for d in data['dataEntry']:
-        values =  d['values']
+        values = d['values']
         for k,v in values.items():
-            if k  == prediction_feature:
+            if k == prediction_feature:
                 if v != None:
                     total = total+1
     return total
