@@ -3238,7 +3238,6 @@ def experimental_params(request):
         return redirect('/login')
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
-        request.session['alg'] = "ocpu-expdesign2-xy"
         request.session['data'] = dataset
         prediction_feature = get_prediction_feature_of_dataset(dataset, token)
         form = UploadForm()
@@ -3257,6 +3256,7 @@ def experimental_params(request):
             if res.status_code >= 400:
                 return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         else:
+            request.session['alg'] = "ocpu-expdesign2-xy"
             try:
                 res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign2-xy', headers=headers)
             except Exception as e:
@@ -3310,6 +3310,7 @@ def experimental_params(request):
         prediction_feature = get_prediction_feature_of_dataset(dataset, token)
         algorithms = request.session.get('alg', '')
         print algorithms
+        print prediction_feature
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
@@ -3420,8 +3421,8 @@ def experimental_params(request):
         description= ""
         params = json.dumps(params)
         print params
-        prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
-
+        #prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
+        prediction_feature = get_prediction_feature_of_dataset(dataset, token)
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params, 'visible': False}
         print('----')
         print body

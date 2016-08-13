@@ -84,7 +84,7 @@
                 <tr>
                     <td>{% autoescape off %}{{key}} {% endautoescape %}</td>
                     {%for d in val%}
-                    <td id="{{key}}_{{forloop.counter}}" contenteditable='true' onclick="edit_table('/arrayCalculations/{{k|replace}}/values/{{key}}/{{forloop.counter|sub}}','{{d}}',$( '#{{k|replace}} #{{key}}_{{forloop.counter}}' ) )">{{d}}</td>
+                    <td id="{{key|replaceid}}_{{forloop.counter}}" contenteditable='true' onclick="edit_table('/arrayCalculations/{{k|replace}}/values/{{key}}/{{forloop.counter|sub}}','{{d}}',$( '#{{key|replaceid}}_{{forloop.counter}}' ) )">{{d}}</td>
                     {% endfor %}
                 </tr>
                 {% endfor %}

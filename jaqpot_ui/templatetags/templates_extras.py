@@ -53,12 +53,22 @@ output['meta']['date'] = datetime.datetime.strptime(date, '%Y-%m-%d').strftime('
 
 
 @register.filter
+def replaceid(string):
+    """Return the last string split by sep.
+
+    Example usage: {{ value|replace }}
+    """
+    new = string.replace(" ", "_")
+    return new.replace (".", "-")
+
+@register.filter
 def replace(string):
     """Return the last string split by sep.
 
     Example usage: {{ value|replace }}
     """
-    return string.replace (" ", "_")
+    return string.replace(" ", "_")
+
 
 @register.filter
 def sub(string):
