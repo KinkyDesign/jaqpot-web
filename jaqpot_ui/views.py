@@ -3969,8 +3969,8 @@ def exp_design(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         print res.text
         dataset = json.loads(res.text)['_id']'''
-        #dataset_uri='http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset
-        dataset_uri='http://test.jaqpot.org:8080/jaqpot/services/dataset/corona'
+        dataset_uri='http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset
+        #dataset_uri='http://test.jaqpot.org:8080/jaqpot/services/dataset/corona'
         body={'dataset_uri':dataset_uri}
         try:
             res2 = requests.post(SERVER_URL+'/model/'+model, headers=headers, data=body)
