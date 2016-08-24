@@ -9,6 +9,7 @@ import urlparse
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
 from elasticsearch import Elasticsearch
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_dataset2, create_and_clean_dataset
 from jaqpot_ui.get_dataset import paginate_dataset, get_prediction_feature_of_dataset, get_prediction_feature_name_of_dataset, get_number_of_not_null_of_dataset
@@ -3787,6 +3788,7 @@ def exp_iter(request):
             return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail,'d_detail':d_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params':params})
 
 #Facrorial Validation
+@csrf_exempt
 def factorial_validation(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -3798,8 +3800,9 @@ def factorial_validation(request):
                 return redirect('/login')
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    #if request.method == 'POST':  #request.is_ajax():
     if request.is_ajax():
-        datatable = request.GET.get('data')
+        datatable = request.POST.get('data')
         datatable=json.loads(datatable)
         print datatable
         length = datatable['tabledata']['length']
@@ -3842,6 +3845,7 @@ def factorial_validation(request):
                                 error="Wrong"
         error= json.dumps(error)
         print error
+        print('------')
         return HttpResponse(error)
 
 #Experimental design without input

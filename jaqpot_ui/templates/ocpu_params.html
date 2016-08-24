@@ -115,8 +115,6 @@
             {{pform.form}} -->
     <br>
     <br>
-    <button id="addRow">Add Row</button>
-    <button id="delete">Delete Row</button>
 
     <!-- <button id="btnAddCol">Add column</button> -->
     <table id="table" class="div-form-table display" >
@@ -159,6 +157,8 @@
 
              </tbody>
          </table>
+    <button id="addRow" class="btn bt-red" style="margin-top:10px;"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add Row</button>
+    <button id="delete" class="btn bt-red"  style="margin-top:10px;"><i class="fa fa-minus-circle" aria-hidden="true"></i> Delete Row</button>
      <h3>Fill in the title and description of the produced model</h3>
         <div>
             <label class="align" >Model name:</label>
@@ -206,10 +206,10 @@
             //var data_json=JSON.stringify(data)
             //send via ajax for validation
             $.ajax({
-                type: "GET",
+                type: "POST",
                 url: "/factorial_validation",
                 dataType: "json",
-                contentType: 'application/json;',
+                // contentType: 'application/json;',
                 data: { 'data': data},
                 success: function(error){
                    console.log("sucess")
@@ -227,9 +227,11 @@
 
                 },
                 error: function(error){
-                    console.log("error");
-                    $('<input name="error"/>').val(error).appendTo('#form1');
-
+                    console.log(error);
+                    $('#error').prepend('<div id="er" class="alert alert-danger" role="alert" style="width: 40%;padding: 5px;"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="data">'+error+'</span></div>');
+                    /*$('<input type="hidden" name="json"/>').val(data).appendTo('#form1');
+                        document.getElementById("form1").submit();
+                        $("#loading").show();*/
                 }
             });
 
@@ -246,6 +248,7 @@
         "sScrollX": "100%",
         "sScrollXInner": "100%",
         "editable": true,
+        "bFilter": false,
 
 
 

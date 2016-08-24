@@ -51,10 +51,11 @@ $(function () {
 
 });
 
-//display tooltip right
+//display tooltip left
 $('[data-toggle="tool"]').tooltip({
     'placement': 'left'
 });
+
 
 /* setTimeout(function ()
   {
