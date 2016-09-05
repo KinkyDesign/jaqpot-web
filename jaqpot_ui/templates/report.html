@@ -31,7 +31,7 @@
             {% endif %}
             {% if 'model' in r %}
                 <div>
-                    <label class="align">Dataset:</label>
+                    <label class="align">Model:</label>
                     <input type="text" readonly="readonly" id="in-model" style="margin:5px" value="{{ r|split:'model/' }}">
                     <button type="button" id="btn-model" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
                     <button type="button" id="btn-model-save" class="btn btn-success" style="display:none">Save</button>
@@ -40,7 +40,7 @@
             {% endif %}
             {% if 'algorithm' in r %}
                 <div>
-                    <label class="align">Dataset:</label>
+                    <label class="align">Algorithm:</label>
                     <input type="text" readonly="readonly" id="in-algorithm" style="margin:5px" value="{{ r|split:'algorithm/' }}">
                     <button type="button" id="btn-algorithm" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
                     <button type="button" id="btn-algorithm-save" class="btn btn-success" style="display:none">Save</button>

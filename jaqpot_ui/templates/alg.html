@@ -109,7 +109,18 @@
                             <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                             {%endif %}
                         {% else %}
-                            {% if p.value|get_type == "int" %}
+                            {% if p.value|get_type == "list" %}
+                                {% if p.value.0|get_type == "unicode" %}
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value|joinby:','}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                                {% elif p.value.0|get_type == "int" %}
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value.0|intiger}}">
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                                {%else %}
+                                    <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value='{%for x in p.value%}{{x}}{%endfor%}'>
+                                    <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
+                                {% endif %}
+                            {% elif p.value|get_type == "int" %}
                                     <input type="text" name="{{p|get:'_id'}}" style="margin:5px;" value="{{p.value|intiger}}">
                                     <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|get:'_id'}}">
                             {%else %}

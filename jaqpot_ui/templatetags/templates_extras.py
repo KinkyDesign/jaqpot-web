@@ -86,7 +86,7 @@ def id(obj):
     """
     return obj['_id']
 
-@register.filter(name='times')
+'''@register.filter(name='times')
 def times(number):
     max=0
     for attribute, value in number.iteritems():
@@ -94,7 +94,11 @@ def times(number):
         length= len(value)
         if length>max:
             max=length
-    return range(0,max)
+    return range(0,max)'''
+
+@register.filter(name='times')
+def times(number):
+    return range(0,5)
 
 '''@register.filter
 def add(string):

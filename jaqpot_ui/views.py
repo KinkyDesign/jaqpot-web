@@ -3424,6 +3424,8 @@ def experimental_params(request):
         print params
         #prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
         prediction_feature = get_prediction_feature_of_dataset(dataset, token)
+        if prediction_feature=="":
+            prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params, 'visible': False}
         print('----')
         print body
@@ -3800,7 +3802,6 @@ def factorial_validation(request):
                 return redirect('/login')
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-    #if request.method == 'POST':  #request.is_ajax():
     if request.is_ajax():
         datatable = request.POST.get('data')
         datatable=json.loads(datatable)
@@ -3845,7 +3846,6 @@ def factorial_validation(request):
                                 error="Wrong"
         error= json.dumps(error)
         print error
-        print('------')
         return HttpResponse(error)
 
 #Experimental design without input
@@ -4004,10 +4004,133 @@ def exp_design(request):
                     return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res4.text)})
                 status = json.loads(res4.text)['status']
         print json.loads(res4.text)
-        dataset = json.loads(res4.text)['result']
-        dataset = dataset.split('dataset/')[1]
+        new_dataset = json.loads(res4.text)['result']
+        new_dataset = new_dataset.split('dataset/')[1]
+        try:
+            res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign2-x', headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        al=json.loads(res.text)
+        '''for a in al['parameters']:
+            params.update({a['_id']:a['value']})'''
+        params='{"nTrials": [11], "criterion": ["D"], "form": ["linear"], "r2.threshold": [0.9], "newY": "New Y"}'
+        prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
 
-        return redirect('/data_detail?name='+dataset, {'token': token, 'username': username})
+        body = {'dataset_uri': SERVER_URL+'/dataset/'+new_dataset, 'scaling': '', 'doa': '', 'title': 'new', 'description':'new', 'transformations':'', 'prediction_feature': prediction_feature, 'parameters':params, 'visible': False}
+        print('----')
+        print body
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        #headers = { 'subjectid': token}
+        try:
+            res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign2-x', headers=headers, data=body)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        print res.text
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        task_id = json.loads(res.text)['_id']
+        print task_id
+        #return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+        try:
+            res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
+        status = json.loads(res1.text)['status']
+        while (status != "COMPLETED"):
+            if(status == "ERROR"):
+                error = "An error occurred while processing your request.Please try again."
+                #return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'pmmlform':pmmlform, 'uploadform':form, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True, 'error':error})
+
+            else:
+                try:
+                    res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                if res1.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
+                status = json.loads(res1.text)['status']
+        #model: model/{id}
+        model = json.loads(res1.text)['result']
+        print model
+        #Create dataset with extra column
+        body = {'dataset_uri':SERVER_URL+'/dataset/'+new_dataset}
+        try:
+            res2 = requests.post(SERVER_URL+'/'+model, headers=headers, data=body)
+        except Exception as e:
+                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res2.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res2.text)})
+        task_id = json.loads(res2.text)['_id']
+        try:
+            res3 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res3.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res3.text)})
+        status = json.loads(res3.text)['status']
+        print task_id
+        while (status != "COMPLETED"):
+            if(status == "ERROR"):
+                error = "An error occurred while processing your request.Please try again."
+                #return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms, 'uploadform':form, 'pmmlform':pmmlform, 'tform':tform, 'features':features, 'inputform': inputform, 'exp':True, 'error':error})
+
+            else:
+                try:
+                    res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                if res4.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res4.text)})
+                status = json.loads(res4.text)['status']
+        try:
+            res4 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+
+        exp_dataset = json.loads(res4.text)['result']
+        exp_dataset = exp_dataset.split('dataset/')[1]
+        print exp_dataset
+        try:
+            res5 = requests.get(SERVER_URL+'/dataset/'+exp_dataset, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res5.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res5.text)})
+        data_detail = json.loads(res5.text)
+        try:
+            res6 = requests.get(SERVER_URL+'/model/'+model, headers=headers)
+        except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res6.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res6.text)})
+        model_detail = json.loads(res6.text)
+        predictedFeatures = model_detail['predictedFeatures']
+        '''res7 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+        d_detail = json.loads(res7.text)'''
+        print data_detail
+        if prediction_feature == "":
+            prediction_feature = get_prediction_feature_of_dataset(exp_dataset, token)
+            print prediction_feature
+        #body = { 'scaling': scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
+        #body
+        print model_detail
+        #Delete model
+        '''headers = {'Accept': 'application/json', "subjectid": token}
+            try:
+                res = requests.delete(SERVER_URL+'/model/'+model.split('model/')[1], headers=headers)
+            except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
+
+        return render(request, "factorial.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':exp_dataset })
+
+
+        #return redirect('/data_detail?name='+dataset, {'token': token, 'username': username})
 
 
 #Interlab testing select substance owners

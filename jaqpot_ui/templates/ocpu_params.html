@@ -159,9 +159,9 @@
          </table>
     <button id="addRow" class="btn bt-red" style="margin-top:10px;"><i class="fa fa-plus-circle" aria-hidden="true"></i> Add Row</button>
     <button id="delete" class="btn bt-red"  style="margin-top:10px;"><i class="fa fa-minus-circle" aria-hidden="true"></i> Delete Row</button>
-     <h3>Fill in the title and description of the produced model</h3>
+     <h3>Fill in the title and description of the produced dataset</h3>
         <div>
-            <label class="align" >Model name:</label>
+            <label class="align" >Dataset name:</label>
             {% if tform.title.errors %}
                <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
 						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -171,7 +171,7 @@
             {{tform.title}}
         </div>
         <br>
-        <p><b>Model description:</b></p>
+        <p><b>Dataset description:</b></p>
          {% if tform.description.errors %}
                <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;">
 						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>

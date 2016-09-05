@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% load templates_extras %}
+
+{% block content %}
+
+<div class="div-table" style="width:100%; min-height:650px; ">
+    <div id="dialog-confirm"></div>
+    <div>
+        <div style= "float:left;"></div>
+        <div style="float:right;">
+            <a href="/d_delete?id={{name}}" class="btn bt-red" data-toggle="tool" title="Delete Dataset" style="margin: 3px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
+        </div>
+    </div>
+
+    <div>
+        <div>
+            <h1>Dataset: <span  style="font-size: 20px;">{{data_detail.meta.titles.0}}</span> <span style="font-size: 12px;">#{{dataset_name}}</span> </h1>
+        </div>
+        {% if error %}
+            <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-top:10px;">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span>{{error}}</span>
+            </div>
+        {% endif %}
+        <br>
+        <div>
+            {% for k,v in model.additionalInfo.items %}
+            {% if k == "r.squared" %}
+                    <div>
+                        <label class="align">Rsquared:</label>
+                        <input type="text" id="rsquare" style="margin:5px;width:40%;" readonly="readonly" value="{{v.0}}">
+                    </div>
+                    <span style="font-size: 10px;margin-left: 10%;"><b>Help note:</b>Rsquared greater or equal to Rsquared threshold.</span>
+            {% endif %}
+            {% endfor %}
+            {% for k,v in model.additionalInfo.items %}
+            {% if k == "norm.var" %}
+                    <div>
+                        <label class="align">Normalised variance:</label>
+                        <input type="text" style="margin:5px;width:40%;" readonly="readonly" value="{{v.0}}">
+                    </div>
+                    <span style="font-size: 10px;margin-left: 10%;"><b>Help note:</b>Minimax normalised variance over input matrix.</span>
+            {% endif %}
+            {% endfor %}
+            {% for k,v in model.additionalInfo.items %}
+            {% if k == "confounding.effect" %}
+                    <div>
+                        <label class="align">Confounding effect:</label>
+                        <input type="text" style="margin:5px;width:40%;" readonly="readonly" value="{{v.0}}">
+                    </div>
+                    <span style="font-size: 10px;margin-left: 10%;"><b>Help note:</b>The diagonality of the design.</span>
+            {% endif %}
+            {% endfor %}
+            {% for k,v in model.additionalInfo.items %}
+            {% if k == "verbal.notes" %}
+
+                    <p><b>Notes:</b>
+                    <i class="fa fa-info-circle fa-2x" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="{% for note in v %}{{note}}{% endfor %}" style="left: 130px;float: left;position: relative;"></i></p>
+                    <!-- <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;width:50%;">{% for note in v %}
+                        {{note}}{% endfor %}
+                         </textarea>  -->
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <input type="search" id="search1" onsearch="myFunction()" style="display:none">
+
+    </div>
+
+
+    <div id="details">
+
+         <table id="dataset" class="div-form-table display" >
+             <thead>
+                 <tr>
+
+                     <th style="background-color: #cf2323; min-width: 300px;">Compounds</th>
+                       <th style="background-color: #cf2323;" class="column">
+                            <p>{{predicted.0}}</p>
+                       </th>
+                       <th style="background-color: #cf2323;" class="column">
+                            <p>Prediction feature</p>
+                       </th>
+                 </tr>
+             </thead>
+             <tbody>
+             {{prediction}}
+             {{predicted}}
+             {% for key in data_detail.dataEntry%}
+                    <tr>
+                        <td>{{key.compound.name}}</td>
+                        {% for k,v in key.values.items %}
+                            {% if k == predicted.3%}
+                                <td>{{v}}</td>
+                            {% endif %}
+                        {% endfor %}
+                        {% for k,v in key.values.items %}
+                            {% if k == prediction %}
+                                <td>{{v}}</td>
+                            {% endif %}
+
+                        {% endfor%}
+
+                    </tr>
+             {% endfor %}
+
+             </tbody>
+         </table>
+        <br>
+
+    </div>
+    <input type="submit" id="exp" value="Experimental Design" class="btn bt-red" style="width: 20%;">
+     <div id="loading" style="display: none"><!-- Place at bottom of page -->
+            <img id="loading-image" src="http://i.stack.imgur.com/FhHRx.gif" alt="Loading..." />
+        </div>
+    <!-- <div id="dialog-confirm" title="Empty the recycle bin?">
+      <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
+    </div> -->
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Warning</h4>
+          </div>
+          <div class="modal-body">
+            <p>You have reached your desired R Squared threshold. Do you want to use this dataset for modelling?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" id="btnYes">Yes</button>
+            <button type="button" class="btn btn-default" id="btnNo">No</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+</div>
+
+<script>
+     /* $('#exp_submit').bind('click', function(e)
+        {
+            $("#loading").show();
+            }); */
+
+    var DATASET_NAME = '{{dataset_name}}';
+    var SQUARED = 0;
+</script>
+<script src="/static/js/factorial.js"></script>
+
+
+
+{% endblock %}
