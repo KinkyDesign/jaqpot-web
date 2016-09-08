@@ -3876,7 +3876,7 @@ def exp_design(request):
         return render(request, "ocpu_params.html", {'token': token, 'username': username, 'al':al,'tform':tform })
 
     if request.method == 'POST':
-
+        
         parameters = request.POST.getlist('parameters')
         print parameters
         print request.POST
@@ -3889,7 +3889,21 @@ def exp_design(request):
         #Create levels and varNames params from datatable json
         varNames=[]
         levels={}
+        factors = []
         for row in range(0, int(length)):
+            #Find type of row
+            tp=datatable['tabledata'][str(row)][1]
+            if "selected" in tp:
+                num=tp.split('numerical')[1]
+                print num
+                if "selected" in num:
+                    type ='numerical'
+                else:
+                    type ="categorical"
+            else:
+                type="numerical"
+            if type == "categorical":
+                factors.append(int(row+1))
             varNames.append(datatable['tabledata'][str(row)][0])
             l_val=[]
             #if datatable['tabledata'][str(row)][1] == "categorical":
@@ -3900,7 +3914,8 @@ def exp_design(request):
                     except:
                         l_val.append(str(datatable['tabledata'][str(row)][i]))
             levels.update({datatable['tabledata'][str(row)][0]: l_val})
-            #print datatable['tabledata'][str(row)]
+        if factors ==[]:
+            factors.append(0)
         print json.dumps(levels)
         print json.dumps(varNames)
         tform=DatasetForm(request.POST)
@@ -3915,8 +3930,9 @@ def exp_design(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         al = json.loads(res.text)
         #Create empty dataset
+        body = {'title':title, 'description':description}
         try:
-            res = requests.post(SERVER_URL+'/dataset/empty', headers=headers)
+            res = requests.post(SERVER_URL+'/dataset/empty', headers=headers, data=body)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
@@ -3926,10 +3942,10 @@ def exp_design(request):
         dataset_uri='http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset
 
         params, al = get_params(request, parameters, al)
-        params.update({"nVars": nVars, "levels":levels, "nTrials":[6], "varNames":varNames, "factors":[2]})
+        params.update({"nVars": nVars, "levels":levels, "nTrials":[10], "varNames":varNames, "factors":factors, "newY":['CA']})
         prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
 
-        body = {'dataset_uri':dataset_uri, 'parameters':json.dumps(params), 'title':title, 'description':description, 'prediction_feature':prediction_feature }
+        body = {'dataset_uri':dataset_uri, 'parameters':json.dumps(params), 'title':'', 'description':'', 'prediction_feature':prediction_feature }
         headers = {'Accept': 'application/json', 'subjectid': token}
         print body
         try:
@@ -3964,6 +3980,14 @@ def exp_design(request):
         model = json.loads(res1.text)['result']
         model=model.split('model/')[1]
         print(model)
+        #Delete empty dataset
+        '''headers = {'Accept': 'application/json', 'subjectid': token}
+        try:
+            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
         #Create empty dataset
         '''try:
             res = requests.post(SERVER_URL+'/dataset/empty', headers=headers)
@@ -4006,6 +4030,16 @@ def exp_design(request):
         print json.loads(res4.text)
         new_dataset = json.loads(res4.text)['result']
         new_dataset = new_dataset.split('dataset/')[1]
+        print(new_dataset)
+        #Delete model
+        '''headers = {'Accept': 'application/json', "subjectid": token}
+        try:
+            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/model/'+model, headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
+        print('ehvfhnj')
         try:
             res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign2-x', headers=headers)
         except Exception as e:
