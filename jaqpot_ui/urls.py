@@ -80,6 +80,9 @@ urlpatterns = patterns('',
                        url(r'^read_across_predict_model', views.read_across_predict_model),
                        url(r'^read_across_predict', views.read_across_predict),
                        url(r'^factorial_validation', views.factorial_validation),
+                       url(r'^factorial_dataset', views.factorial_dataset),
+                       url(r'^fact_submit', views.fact_submit),
+
 
                        # captcha
                        url(r'^captcha/', include('captcha.urls')),

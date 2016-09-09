@@ -150,6 +150,46 @@ def create_dataset2( data, username, features, bymodel, rows, columns):
     data7.update(data10)
     data7.update(data11)
     return data7
+def create_dataset2_with_title( data, username, features, bymodel, rows, columns, title, description):
+   #This function creates json dataset
+
+
+    data1 = {}
+    data2 = {}
+    data3 = {}
+    data4 = {}
+    data5 = []
+    data6 = {}
+    data7 = {}
+    data8 = {}
+    data9 = {}
+    data10 = {}
+    data11= {}
+
+    data1['comments'] = [""]
+    data1['descriptions'] = [description]
+    data1['titles'] = [title]
+    data1['creators'] = [username]
+    data1['hasSources'] = [""]
+    #data1['byModel'] = [bymodel]
+    data2['meta'] = data1
+
+    data3['byModel'] = bymodel
+    data8["dataEntry"]= data
+
+    data6["descriptors"] = [ "EXPERIMENTAL" ]
+    data9["totalColumns"] = columns
+    data10["totalRows"] = rows
+    data11["features"] = features
+
+    data7.update(data2)
+    data7.update(data3)
+    data7.update(data8)
+    data7.update(data6)
+    data7.update(data9)
+    data7.update(data10)
+    data7.update(data11)
+    return data7
 
 def create_and_clean_dataset(data, prediction, suggested):
    #This function creates json dataset

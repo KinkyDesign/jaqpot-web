@@ -11,7 +11,8 @@ from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from elasticsearch import Elasticsearch
-from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_dataset2, create_and_clean_dataset
+from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_dataset2, create_and_clean_dataset, \
+    create_dataset2_with_title
 from jaqpot_ui.get_dataset import paginate_dataset, get_prediction_feature_of_dataset, get_prediction_feature_name_of_dataset, get_number_of_not_null_of_dataset
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalParamsForm, ExperimentalForm, UploadForm, \
     InterlabForm, ValidationSplitForm, ReadAcrossTrainingForm
@@ -3553,6 +3554,7 @@ def experimental_params(request):
 
         return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': json.loads(params) })
 
+
 def exp_submit(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -3594,11 +3596,13 @@ def exp_submit(request):
         length = data['length']
         print length
         new = {}
+        total=0
         for i in range(0,int(length)):
             if data[str(i)][2] == "None":
                  new[data[str(i)][0]]= None
             else:
                 new[data[str(i)][0]]= float(data[str(i)][2])
+                total=total+1
         print new
         data_Entry = []
         for det in d_detail['dataEntry']:
@@ -3788,6 +3792,134 @@ def exp_iter(request):
                 prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
 
             return render(request, "exp_dataset_detail.html", {'token': token, 'username': username, 'data_detail': data_detail,'d_detail':d_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params':params})
+
+@csrf_exempt
+def fact_submit(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    if token:
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+    else:
+        return redirect('/login')
+    if request.method == 'POST':
+        #queryData = request.GET.get('queryData')
+        data = request.POST.get('data')
+        dataset = request.POST.get('dataset_name')
+        #threshold = request.GET.get('threshold')
+        #print threshold
+        print data
+        #dataset = data['dataset_name']
+        dataset = json.loads(dataset)
+        #print queryData
+        #dataset='ayDPMNB3JcOJAm'
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        try:
+            res = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        prediction_feature = get_prediction_feature_of_dataset(dataset, token)
+        print prediction_feature
+        d_detail = json.loads(res.text)
+
+        data = json.loads(data)
+        length = data['length']
+        print length
+        new = {}
+        total=0
+        for i in range(0,int(length)):
+            if data[str(i)][2] == "None":
+                 new[data[str(i)][0]]= None
+            else:
+                new[data[str(i)][0]]= float(data[str(i)][2])
+                total=total+1
+        print new
+        data_Entry = []
+        for det in d_detail['dataEntry']:
+            name = det['compound']['name']
+            det['values'][prediction_feature] = new[name]
+            data_Entry.append(det)
+        #d_detail contains dataset with new values
+        d_detail['dataEntry']= data_Entry
+        #data = json.dumps(d_detail['dataEntry'])
+        data = json.dumps(d_detail)
+
+        #data=json.dumps(data1)
+        print data
+        headers1 = {'content-type': 'application/json', 'subjectid':token}
+        rows= d_detail['totalRows']
+        columns = d_detail['totalColumns']
+        new_data = create_dataset2_with_title(d_detail['dataEntry'], "guest", d_detail['features'], d_detail['byModel'], rows, columns, d_detail['meta']['titles'][0], d_detail['meta']['descriptions'][0])
+        print new_data
+        json_data = json.dumps(new_data)
+        json_data = json.dumps(json_data)
+        json_data = json.loads(json_data)
+        print json_data
+        try:
+            res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data, timeout=10)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        print res.text
+        data = res.text.split('/dataset/')[1]
+        print data
+        #Delete previous dataset
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        try:
+            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+        except Exception as e:
+            print('error')
+        json_data = json.dumps(data)
+        return HttpResponse(json_data)
+
+def factorial_dataset(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    headers = {'Accept': 'application/json', 'subjectid': token}
+    if token:
+        try:
+            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            if r.status_code != 200:
+                return redirect('/login')
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if request.method == 'GET':
+            dataset = request.GET.get('dataset')
+            print dataset
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            try:
+                res1 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            if res1.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
+            data_detail = json.loads(res1.text)
+            model = json.loads(res1.text)['byModel']
+            try:
+                res = requests.get(SERVER_URL+'/model/'+model, headers=headers)
+            except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+            model_detail = json.loads(res.text)
+            predictedFeatures = model_detail['predictedFeatures']
+
+            prediction_feature = get_prediction_feature_of_dataset(dataset, token)
+            total = get_number_of_not_null_of_dataset(dataset, token, prediction_feature)
+            if total < 4:
+                error="You should change the prediction feature of 4 compounds at least."
+                return render(request, "factorial.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':dataset, 'error':error })
+
+            return render(request, "factorial.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':dataset })
+
 
 #Facrorial Validation
 @csrf_exempt
@@ -3980,23 +4112,6 @@ def exp_design(request):
         model = json.loads(res1.text)['result']
         model=model.split('model/')[1]
         print(model)
-        #Delete empty dataset
-        '''headers = {'Accept': 'application/json', 'subjectid': token}
-        try:
-            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
-        except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        if res.status_code >= 400:
-            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
-        #Create empty dataset
-        '''try:
-            res = requests.post(SERVER_URL+'/dataset/empty', headers=headers)
-        except Exception as e:
-                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        if res.status_code >= 400:
-            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-        print res.text
-        dataset = json.loads(res.text)['_id']'''
         dataset_uri='http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset
         #dataset_uri='http://test.jaqpot.org:8080/jaqpot/services/dataset/corona'
         body={'dataset_uri':dataset_uri}
@@ -4031,14 +4146,14 @@ def exp_design(request):
         new_dataset = json.loads(res4.text)['result']
         new_dataset = new_dataset.split('dataset/')[1]
         print(new_dataset)
-        #Delete model
-        '''headers = {'Accept': 'application/json', "subjectid": token}
+        #Delete empty dataset
+        headers = {'Accept': 'application/json', 'subjectid': token}
         try:
-            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/model/'+model, headers=headers)
+            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
-            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         print('ehvfhnj')
         try:
             res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign2-x', headers=headers)
@@ -4087,6 +4202,14 @@ def exp_design(request):
                 if res1.status_code >= 400:
                     return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
                 status = json.loads(res1.text)['status']
+        #Delete model
+        headers = {'Accept': 'application/json', "subjectid": token}
+        try:
+            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/model/'+model, headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         #model: model/{id}
         model = json.loads(res1.text)['result']
         print model
@@ -4128,6 +4251,14 @@ def exp_design(request):
         exp_dataset = json.loads(res4.text)['result']
         exp_dataset = exp_dataset.split('dataset/')[1]
         print exp_dataset
+        #Delete previous dataset (new_dataset)
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        try:
+            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+new_dataset, headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         try:
             res5 = requests.get(SERVER_URL+'/dataset/'+exp_dataset, headers=headers)
         except Exception as e:
@@ -4155,17 +4286,14 @@ def exp_design(request):
         print model_detail
         #Delete model
         '''headers = {'Accept': 'application/json', "subjectid": token}
-            try:
-                res = requests.delete(SERVER_URL+'/model/'+model.split('model/')[1], headers=headers)
-            except Exception as e:
-                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            if res.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
+        try:
+            res = requests.delete(SERVER_URL+'/model/'+model.split('model/')[1], headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
 
         return render(request, "factorial.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':exp_dataset })
-
-
-        #return redirect('/data_detail?name='+dataset, {'token': token, 'username': username})
 
 
 #Interlab testing select substance owners

@@ -8,7 +8,7 @@
         "dom": 'ft',
         "sScrollX": "100%",
         "sScrollXInner": "100%",
-        "editable": true,
+
 
          "fnDrawCallback": function( oSettings )
          {
@@ -57,10 +57,7 @@ $('[data-toggle="tool"]').tooltip({
 });
 
 
-/* setTimeout(function ()
-  {
-    oTable.fnAdjustColumnSizing();
-  }, 10 );*/
+
  $('#dataset tbody td').editable( function( sValue ) {
 		/* Get the position of the current data from the node */
 		 var oTable = $('#dataset').dataTable()
@@ -73,25 +70,3 @@ $('[data-toggle="tool"]').tooltip({
 		aData[ aPos[2] ] = sValue;
 		return sValue;
 	}, { "onblur": 'submit' } ); /* Submit the form when bluring a field */
-
- $("#exp").on("click", function (){
-    var data =  $('#dataset').DataTable().data()
-    data = JSON.stringify(data)
-    $.ajax({
-                type: "get",
-                url: "/exp_submit",
-                dataType: "json",
-                contentType: 'application/json;',
-                data: { 'data': data, 'dataset_name': JSON.stringify(DATASET_NAME) },
-                //data: {queryData : JSON.stringify({'data': data, 'dataset_name': DATASET_NAME})},
-                success: function(data){
-                    alert(data)
-                    window.location = '/exp_iter?dataset=' + data;
-
-                },
-                error: function(){
-                    console.log("error");
-                }
-            });
-
-    });

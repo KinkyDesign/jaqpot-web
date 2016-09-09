@@ -115,3 +115,7 @@ def getvalue(d,k):
         if int(k) == n:
             return value
         n=n+1
+
+@register.filter
+def feat(d):
+    return d.split('feature/')[1]
