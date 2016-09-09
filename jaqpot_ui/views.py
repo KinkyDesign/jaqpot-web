@@ -3876,7 +3876,7 @@ def exp_design(request):
         return render(request, "ocpu_params.html", {'token': token, 'username': username, 'al':al,'tform':tform })
 
     if request.method == 'POST':
-        
+
         parameters = request.POST.getlist('parameters')
         print parameters
         print request.POST
@@ -4136,7 +4136,7 @@ def exp_design(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res5.text)})
         data_detail = json.loads(res5.text)
         try:
-            res6 = requests.get(SERVER_URL+'/model/'+model, headers=headers)
+            res6 = requests.get(SERVER_URL+'/'+model, headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res6.status_code >= 400:
@@ -4146,6 +4146,7 @@ def exp_design(request):
         '''res7 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
         d_detail = json.loads(res7.text)'''
         print data_detail
+        prediction_feature = get_prediction_feature_of_dataset(exp_dataset, token)
         if prediction_feature == "":
             prediction_feature = get_prediction_feature_of_dataset(exp_dataset, token)
             print prediction_feature
