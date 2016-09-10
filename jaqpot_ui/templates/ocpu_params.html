@@ -15,7 +15,14 @@
     {% endif %}
     <div id="er"></div>
     {% if al.parameters %}
-                 {% for p in al.parameters%}
+         {% for p in al.parameters%}
+            {% if p|id == "nTrials" %}
+                <label class="align">{{p.name}}:</label>
+                <input type="text" name="{{p.name}}" style="margin:5px;" value="{{p.value.0|intiger}}">
+                <input type="text" name="parameters" style="margin:5px;display:none;" value="{{p|id}}">
+            {% endif %}
+         {% endfor %}
+         {% for p in al.parameters%}
                     {% if p|id == "criterion" or p|id == "form" %}
                     <div>
                         <label class="align">{{p.name}}:</label>
@@ -48,8 +55,8 @@
                         {%endif%}
                     </div>
                     {%endif%}
-                 {% endfor %}
-            {% endif %}
+         {% endfor %}
+    {% endif %}
 
     <!-- <label class="align" >Levels:</label>
             {% if pform.levels.errors %}
@@ -185,7 +192,7 @@
 
      <div id="error" style="margin-top:5px;"></div>
 
-    <input id="choose_params" value="Experimental Design" class="btn bt-red" style="width: 15%; float:left; left:10%;">
+    <input id="choose_params" value="Experimental Design" class="btn bt-red" style="width: 20%; float:left; left:10%;">
 
     <div id="loading" style="display: none"><!-- Place at bottom of page -->
             <img id="loading-image" src="http://i.stack.imgur.com/FhHRx.gif" alt="Loading..." />
@@ -356,21 +363,22 @@
     } );
 
 
+/* On DataTable cell select change */
+$('#table tbody').on( 'change', 'td.option select', function () {
+    // update select html to reflect selection change
+    $(this).find('option:selected').attr('selected', 'selected');
+    $(this).find('option:not(:selected)').removeAttr('selected');
+    var selectHtml = $(this).closest('td').html();
 
-$('#table tbody').on( 'click', 'td.option', function () {
+    // find cell coordinates to build the selector
+    var rowIndex = $(this).closest('tr').index() + 1;
+    var colIndex = $(this).closest('td').index() + 1;
+
+    // update dataTable data
     var table = $('#table').DataTable();
-    var cell = table.cell( this );
-    $(".form-control").change(function(e) {
-      //alert('change!!'); //only works if there's a change in the select dropdown on the first row
-      //$(this).find('option').removeAttr("selected");
-      $(this).find("option:selected").attr('selected','true');
-      //$(this).addClass('selected');
-      //console.log($(this).find("option:selected").text());
-      //console.log(e.currentTarget)
-      cell.data('<select class="form-control">'+$(this).html()+'</select>' ).draw();
-    });
-} );
-
+    var cell = table.cell('tr:nth-of-type(' + rowIndex + ') td:nth-of-type(' + colIndex + ')');
+    cell.data(selectHtml);
+});
 
 </script>
 

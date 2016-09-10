@@ -12,7 +12,7 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from elasticsearch import Elasticsearch
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_dataset2, create_and_clean_dataset, \
-    create_dataset2_with_title
+    create_dataset2_with_title, create_and_clean_dataset2_with_title
 from jaqpot_ui.get_dataset import paginate_dataset, get_prediction_feature_of_dataset, get_prediction_feature_name_of_dataset, get_number_of_not_null_of_dataset
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalParamsForm, ExperimentalForm, UploadForm, \
     InterlabForm, ValidationSplitForm, ReadAcrossTrainingForm
@@ -3856,14 +3856,20 @@ def fact_submit(request):
         headers1 = {'content-type': 'application/json', 'subjectid':token}
         rows= d_detail['totalRows']
         columns = d_detail['totalColumns']
-        new_data = create_dataset2_with_title(d_detail['dataEntry'], "guest", d_detail['features'], d_detail['byModel'], rows, columns, d_detail['meta']['titles'][0], d_detail['meta']['descriptions'][0])
+        print d_detail
+        suggested=""
+        for d in d_detail['features']:
+            if d['name']=='suggestedTrials':
+                suggested= d['uri']
+        print('----')
+        new_data = create_dataset2_with_title(d_detail['dataEntry'], "guest", d_detail['features'], d_detail['byModel'], rows, columns, d_detail['meta']['titles'][0], d_detail['meta']['descriptions'][0], prediction_feature, suggested)
         print new_data
         json_data = json.dumps(new_data)
         json_data = json.dumps(json_data)
         json_data = json.loads(json_data)
         print json_data
         try:
-            res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data, timeout=10)
+            res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data, timeout=30)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
@@ -4053,6 +4059,7 @@ def exp_design(request):
         tform=DatasetForm(request.POST)
         title = tform['title'].value()
         description = tform['description'].value()
+        nTrials= request.POST.get('Number of trials')
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign2-noxy', headers=headers)
@@ -4074,7 +4081,7 @@ def exp_design(request):
         dataset_uri='http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset
 
         params, al = get_params(request, parameters, al)
-        params.update({"nVars": nVars, "levels":levels, "nTrials":[10], "varNames":varNames, "factors":factors, "newY":['CA']})
+        params.update({"nVars": nVars, "levels":levels, "nTrials":[int(nTrials)], "varNames":varNames, "factors":factors, "newY":['CA']})
         prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
 
         body = {'dataset_uri':dataset_uri, 'parameters':json.dumps(params), 'title':'', 'description':'', 'prediction_feature':prediction_feature }
@@ -4162,8 +4169,8 @@ def exp_design(request):
         if res.status_code >= 400:
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         al=json.loads(res.text)
-        '''for a in al['parameters']:
-            params.update({a['_id']:a['value']})'''
+        #for a in al['parameters']:
+            #params.update({a['_id']:a['value']})
         params='{"nTrials": [11], "criterion": ["D"], "form": ["linear"], "r2.threshold": [0.9], "newY": "New Y"}'
         prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
 
@@ -4252,13 +4259,59 @@ def exp_design(request):
         exp_dataset = exp_dataset.split('dataset/')[1]
         print exp_dataset
         #Delete previous dataset (new_dataset)
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        '''headers = {'Accept': 'application/json', 'subjectid': token}
         try:
             res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+new_dataset, headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
+        try:
+            res = requests.get(SERVER_URL+'/dataset/'+exp_dataset, headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        d_detail = json.loads(res.text)
+        #Clean new dataset
+        suggested="http://test.jaqpot.org:8080/jaqpot/services/feature/289iHuKmMM3M"
+        '''for d in d_detail['features']:
+            if d['name']=='suggestedTrials':
+                suggested= d['uri']
+        print('----')'''
+        rows= d_detail['totalRows']
+        columns = d_detail['totalColumns']
+        new_data = create_and_clean_dataset2_with_title(d_detail['dataEntry'], "guest", d_detail['features'], d_detail['byModel'], rows, columns, d_detail['meta']['titles'][0], d_detail['meta']['descriptions'][0], prediction_feature, suggested)
+        print new_data
+        json_data = json.dumps(new_data)
+        json_data = json.dumps(json_data)
+        json_data = json.loads(json_data)
+        print json_data
+        headers1 = {'Content-type': 'application/json', 'subjectid': token}
+        try:
+            res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data, timeout=30)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        print res.text
+        data = res.text.split('/dataset/')[1]
+        print data
+        #Delete previous dataset
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        try:
+            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+new_dataset, headers=headers)
+        except Exception as e:
+            print('error')
+         #Delete previous dataset (exp_dataset)
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        try:
+            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+exp_dataset, headers=headers)
+        except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        if res.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        exp_dataset=data
         try:
             res5 = requests.get(SERVER_URL+'/dataset/'+exp_dataset, headers=headers)
         except Exception as e:
@@ -4292,7 +4345,6 @@ def exp_design(request):
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
-
         return render(request, "factorial.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':exp_dataset })
 
 

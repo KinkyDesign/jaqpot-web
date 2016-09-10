@@ -150,7 +150,7 @@ def create_dataset2( data, username, features, bymodel, rows, columns):
     data7.update(data10)
     data7.update(data11)
     return data7
-def create_dataset2_with_title( data, username, features, bymodel, rows, columns, title, description):
+def create_dataset2_with_title( data, username, features, bymodel, rows, columns, title, description, prediction, suggested):
    #This function creates json dataset
 
 
@@ -175,12 +175,85 @@ def create_dataset2_with_title( data, username, features, bymodel, rows, columns
     data2['meta'] = data1
 
     data3['byModel'] = bymodel
+    #Clean dataset
+    '''new_data= []
+    print data
+    for d in data:
+       new_comp={}
+       new_comp.update({'compound': d['compound']})
+       new_val={}
+       for k,v in d['values'].iteritems():
+           if (k!= suggested):
+               new_val.update({k:v})
+       new_comp.update({'values':new_val})
+       new_data.append(new_comp)'''
     data8["dataEntry"]= data
 
     data6["descriptors"] = [ "EXPERIMENTAL" ]
     data9["totalColumns"] = columns
     data10["totalRows"] = rows
+    '''new_f = []
+    for f in features:
+        if (f['uri']!= suggested):
+                new_f.append(f)'''
     data11["features"] = features
+
+    data7.update(data2)
+    data7.update(data3)
+    data7.update(data8)
+    data7.update(data6)
+    data7.update(data9)
+    data7.update(data10)
+    data7.update(data11)
+    return data7
+
+def create_and_clean_dataset2_with_title( data, username, features, bymodel, rows, columns, title, description, prediction, suggested):
+   #This function creates json dataset
+
+
+    data1 = {}
+    data2 = {}
+    data3 = {}
+    data4 = {}
+    data5 = []
+    data6 = {}
+    data7 = {}
+    data8 = {}
+    data9 = {}
+    data10 = {}
+    data11= {}
+
+    data1['comments'] = [""]
+    data1['descriptions'] = [description]
+    data1['titles'] = [title]
+    data1['creators'] = [username]
+    data1['hasSources'] = [""]
+    #data1['byModel'] = [bymodel]
+    data2['meta'] = data1
+
+    data3['byModel'] = bymodel
+    #Clean dataset
+    new_data= []
+    print data
+    for d in data:
+       new_comp={}
+       new_comp.update({'compound': d['compound']})
+       new_val={}
+       for k,v in d['values'].iteritems():
+           if (k!= suggested):
+               new_val.update({k:v})
+       new_comp.update({'values':new_val})
+       new_data.append(new_comp)
+    data8["dataEntry"]= new_data
+
+    data6["descriptors"] = [ "EXPERIMENTAL" ]
+    data9["totalColumns"] = columns
+    data10["totalRows"] = rows
+    new_f = []
+    for f in features:
+        if (f['uri']!= suggested):
+                new_f.append(f)
+    data11["features"] = new_f
 
     data7.update(data2)
     data7.update(data3)
