@@ -52,6 +52,14 @@ class InputForm(forms.Form):
     input = forms.MultipleChoiceField(error_messages={'required': 'Please select input.'}, widget = forms.CheckboxSelectMultiple(), choices=[], required=True)
     input.widget.attrs.update({'class' : "input"})
     output = forms.ChoiceField(error_messages={'required': 'Please select output.'}, widget = forms.RadioSelect(), choices=[], required= True)
+
+class InputFormExpX(forms.Form):
+    input = forms.MultipleChoiceField(error_messages={'required': 'Please select input.'}, widget = forms.CheckboxSelectMultiple(), choices=[], required=True)
+    input.widget.attrs.update({'class' : "input"})
+    output = forms.ChoiceField(widget = forms.RadioSelect(), choices=[], required=False)
+    class Meta:
+        exclude = ('output',)
+
 class NoPmmlForm(forms.Form):
     pred_feature = forms.ChoiceField(widget = forms.Select(), choices=[])
 

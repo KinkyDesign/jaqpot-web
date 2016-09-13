@@ -15,7 +15,7 @@ from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_d
     create_dataset2_with_title, create_and_clean_dataset2_with_title
 from jaqpot_ui.get_dataset import paginate_dataset, get_prediction_feature_of_dataset, get_prediction_feature_name_of_dataset, get_number_of_not_null_of_dataset
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalParamsForm, ExperimentalForm, UploadForm, \
-    InterlabForm, ValidationSplitForm, ReadAcrossTrainingForm
+    InterlabForm, ValidationSplitForm, ReadAcrossTrainingForm, InputFormExpX
 import requests
 import json
 import datetime
@@ -3244,12 +3244,12 @@ def experimental_params(request):
         prediction_feature = get_prediction_feature_of_dataset(dataset, token)
         form = UploadForm()
         tform = ExperimentalForm()
-        inputform = InputForm()
         #nform = NoPmmlForm()
         pmmlform = SelectPmmlForm()
         headers = {'Accept': 'application/json', 'subjectid': token}
         print prediction_feature
         if prediction_feature == "":
+            inputform = InputFormExpX()
             request.session['alg'] = "ocpu-expdesign2-x"
             try:
                 res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign2-x', headers=headers)
@@ -3258,6 +3258,7 @@ def experimental_params(request):
             if res.status_code >= 400:
                 return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         else:
+            inputform = InputForm()
             request.session['alg'] = "ocpu-expdesign2-xy"
             try:
                 res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign2-xy', headers=headers)
@@ -3304,7 +3305,6 @@ def experimental_params(request):
         print request.POST
 
         tform = ExperimentalForm(request.POST)
-        inputform = InputForm(request.POST)
         form = UploadForm(request.POST, request.FILES)
         #nform = NoPmmlForm(request.POST)
         pmmlform = SelectPmmlForm(request.POST)
@@ -3312,6 +3312,10 @@ def experimental_params(request):
         prediction_feature = get_prediction_feature_of_dataset(dataset, token)
         algorithms = request.session.get('alg', '')
         print algorithms
+        if algorithms == "ocpu-expdesign2-x":
+            inputform = InputFormExpX(request.POST)
+        else:
+            inputform = InputForm(request.POST)
         print prediction_feature
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
