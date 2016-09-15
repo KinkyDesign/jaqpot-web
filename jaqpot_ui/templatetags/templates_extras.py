@@ -117,5 +117,5 @@ def getvalue(d,k):
         n=n+1
 
 @register.filter
-def feat(d):
-    return d.split('feature/')[1]
+def splitname(d):
+    return d.split('_')[1]

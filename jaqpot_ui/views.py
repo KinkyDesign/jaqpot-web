@@ -6,6 +6,7 @@ import urllib
 import urllib2
 import urlparse
 
+from sortedcontainers import SortedList
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
@@ -3937,14 +3938,17 @@ def factorial_dataset(request):
 
             prediction_feature = get_prediction_feature_of_dataset(dataset, token)
             total = get_number_of_not_null_of_dataset(dataset, token, prediction_feature)
+            new=[]
+            for k in sorted(data_detail['features']):
+                new.append(k)
             if total < 4:
                 error="You should change the prediction feature of 4 compounds at least."
-                return render(request, "factorial.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':dataset, 'error':error })
+                return render(request, "factorial.html", {'token': token, 'username': username,'new':new, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':dataset, 'error':error })
 
-            return render(request, "factorial.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':dataset })
+            return render(request, "factorial.html", {'token': token, 'username': username,'new':new, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':dataset })
 
 
-#Facrorial Validation
+#Factorial Validation
 @csrf_exempt
 def factorial_validation(request):
     token = request.session.get('token', '')
@@ -3979,25 +3983,25 @@ def factorial_validation(request):
             print type
             if type == "categorical":
                 for i in range(2, int(len(datatable['tabledata'][str(row)]))):
-                    if (datatable['tabledata'][str(row)][i])!="None":
+                    if (datatable['tabledata'][str(row)][i])!="None" and (datatable['tabledata'][str(row)][i])!= "":
                         try:
                             str(datatable['tabledata'][str(row)][i])
                         except:
                             error="Wrong input"
                     else:
                         for j in range(i+1,int(len(datatable['tabledata'][str(row)]))):
-                            if (datatable['tabledata'][str(row)][j])!="None":
+                            if (datatable['tabledata'][str(row)][j])!="None" and (datatable['tabledata'][str(row)][j])!= "":
                                 error="Wrong"
             elif type == "numerical":
                 for i in range(2, int(len(datatable['tabledata'][str(row)]))):
-                    if (datatable['tabledata'][str(row)][i])!="None":
+                    if (datatable['tabledata'][str(row)][i])!="None" and (datatable['tabledata'][str(row)][i])!= "":
                         try:
                             int(datatable['tabledata'][str(row)][i])
                         except:
                             error="Wrong input"
                     else:
                         for j in range(i+1,int(len(datatable['tabledata'][str(row)]))):
-                            if (datatable['tabledata'][str(row)][j])!="None":
+                            if (datatable['tabledata'][str(row)][j])!="None" and (datatable['tabledata'][str(row)][j])!= "":
                                 error="Wrong"
         error= json.dumps(error)
         print error
@@ -4043,7 +4047,7 @@ def exp_design(request):
         #import pdb;pdb.set_trace();
         #Create levels and varNames params from datatable json
         varNames=[]
-        levels={}
+        levels=OrderedDict()
         factors = []
         for row in range(0, int(length)):
             #Find type of row
@@ -4071,7 +4075,7 @@ def exp_design(request):
             levels.update({datatable['tabledata'][str(row)][0]: l_val})
         if factors ==[]:
             factors.append(0)
-        print json.dumps(levels)
+        #print json.dumps(levels)
         print json.dumps(varNames)
         tform=DatasetForm(request.POST)
         title = tform['title'].value()
@@ -4354,6 +4358,10 @@ def exp_design(request):
         #body = { 'scaling': scaling, 'doa': doa, 'transformations':transformations, 'prediction_feature': 'https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Net+cell+association/8058CA554E48268ECBA8C98A55356854F413673B/3ed642f9-1b42-387a-9966-dea5b91e5f8a', 'parameters':json.dumps(params), 'visible': False}
         #body
         print model_detail
+        new=[]
+        for k in sorted(data_detail['features']):
+            new.append(k)
+
         #Delete model
         '''headers = {'Accept': 'application/json', "subjectid": token}
         try:
@@ -4362,7 +4370,7 @@ def exp_design(request):
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})'''
-        return render(request, "factorial.html", {'token': token, 'username': username, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':exp_dataset })
+        return render(request, "factorial.html", {'token': token, 'username': username,'new':new, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':exp_dataset })
 
 
 #Interlab testing select substance owners

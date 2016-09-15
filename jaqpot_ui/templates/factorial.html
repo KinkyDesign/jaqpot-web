@@ -38,14 +38,25 @@
                        <th style="background-color: #cf2323;" class="column">
                             <p>Prediction feature</p>
                        </th>
-                     {% for k,v in data_detail.dataEntry.0.values.items %}
+                     <!-- {% for k,v in data_detail.dataEntry.0.values.items %}
                             {% if k != prediction and k != predicted.0 %}
-                                <th style="background-color: #cf2323;" class="column">
-                                    <p>{{k|feat}}</p>
-                                </th>
+                                {% for n in new %}
+                                    {% if n.uri == k%}
+                                        <th style="background-color: #cf2323;" class="column">
+                                            <p>{{n.name|splitname}}</p>
+                                        </th>
+                                    {% endif %}
+                                {% endfor %}
                             {% endif %}
 
-                     {% endfor%}
+                     {% endfor%} -->
+                     {% for n in new %}
+                        {% if n.uri != prediction and n.uri != predicted.0 %}
+                            <th style="background-color: #cf2323;" class="column">
+                                <p>{{n.name|splitname}}</p>
+                            </th>
+                        {% endif %}
+                     {% endfor %}
                  </tr>
              </thead>
              <tbody>
@@ -63,13 +74,15 @@
                             {% endif %}
 
                         {% endfor%}
-                        {% for k,v in key.values.items %}
-                            {% if k != prediction and k != predicted.0 %}
-                                <td>{{v}}</td>
-                            {% endif %}
-
+                        {% for n in new %}
+                            {% for k,v in key.values.items %}
+                                {% if k != prediction and k != predicted.0 %}
+                                    {% if n.uri == k %}
+                                        <td>{{v}}</td>
+                                    {%endif%}
+                                {% endif %}
+                            {%endfor%}
                         {% endfor%}
-
 
                     </tr>
              {% endfor %}
