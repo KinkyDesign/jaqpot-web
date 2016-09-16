@@ -261,6 +261,7 @@ def taskdetail(request):
             error = "An error occurred while processing your request.Please try again."
             return render(request, "error.html", {'token': token, 'username': username, 'name': name, 'error': error})'''
         while (status != "COMPLETED"):
+
             if(status == "ERROR"):
                 error = "An error occurred while processing your request.Please try again."
                 return render(request, "error.html", {'token': token, 'username': username, 'name': name, 'error': error})
@@ -281,15 +282,21 @@ def taskdetail(request):
         except Exception as e:
              return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         status = json.loads(res.text)['status']
-        print status
-        while (status != "COMPLETED"):
-            try:
-                res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
-            except Exception as e:
-                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-            status = json.loads(res.text)['status']
-            print status
+        if(status == "ERROR"):
+            error = "An error occurred while processing your request.Please try again."
             return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
+        while (status != "COMPLETED"):
+            if(status == "ERROR"):
+                error = "An error occurred while processing your request.Please try again."
+                return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
+            else:
+                try:
+                    res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                status = json.loads(res.text)['status']
+                print status
+                return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
         return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
 
 #stop running task
