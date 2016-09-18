@@ -82,13 +82,13 @@
                        <th style="background-color: #cf2323;" class="column">
                             <p>Prediction feature</p>
                        </th>
-                     {% for k,v in data_detail.dataEntry.0.values.items %}
-                            {% if k != prediction and k != predicted.0 %}
-                                <th style="background-color: #cf2323;" class="column">
-                                    <p>{{k}}</p>
-                                </th>
-                            {% endif %}
-                     {% endfor%}
+                     {% for n in new %}
+                        {% if n.uri != prediction and n.uri != predicted.0 %}
+                            <th style="background-color: #cf2323;" class="column">
+                                <p>{{n.name}}</p>
+                            </th>
+                        {% endif %}
+                     {% endfor %}
 
                  </tr>
              </thead>
@@ -106,12 +106,16 @@
                                 <td>{{v}}</td>
                             {% endif %}
                         {% endfor%}
+                         {% for n in new %}
+                            {% for k,v in key.values.items %}
+                                {% if k != prediction and k != predicted.0 %}
+                                    {% if n.uri == k %}
+                                        <td>{{v}}</td>
+                                    {%endif%}
+                                {% endif %}
+                            {%endfor%}
+                        {% endfor%}
 
-                        {% for k,v in key.values.items %}
-                            {% if k != prediction and k != predicted.0 %}
-                                <td>{{v}}</td>
-                            {% endif %}
-                        {%endfor%}
 
                     </tr>
              {% endfor %}
