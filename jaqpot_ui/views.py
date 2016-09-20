@@ -1021,7 +1021,7 @@ def model_detail(request):
     else:
         return redirect('/login')
     #get task details in rdf format
-    headers = {'Accept': 'application/json', "subjectid": token}
+    headers = {'Accept': 'application/json', 'subjectid': token}
     try:
         res = requests.get(SERVER_URL+'/model/'+name, headers=headers)
     except Exception as e:
@@ -1042,14 +1042,15 @@ def model_detail(request):
         alg_details = ""
     try:
         res = requests.get(SERVER_URL+'/model/'+name+'/required', headers=headers)
+        required= json.loads(res.text)
+        required_feature = []
+        for r in required:
+            required_feature.append({'feature': r['uri']})
     except Exception as e:
-                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+        required_feature=""
     if res.status_code >= 400:
-        return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-    required= json.loads(res.text)
-    required_feature = []
-    for r in required:
-        required_feature.append({'feature': r['uri']})
+        #return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        required_feature=""
     if request.method == 'GET':
         return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name, 'alg': alg_details, 'required':required_feature, 'algorithm':algorithm})
 
