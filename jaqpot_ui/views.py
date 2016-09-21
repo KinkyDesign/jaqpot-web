@@ -3570,7 +3570,7 @@ def experimental_params(request):
 
         return render(request, "exp_dataset_detail.html", {'token': token, 'username': username,'new':new, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': json.loads(params) })
 
-
+@csrf_exempt
 def exp_submit(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -3584,10 +3584,10 @@ def exp_submit(request):
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     else:
         return redirect('/login')
-    if request.is_ajax():
+    if request.method == "POST":
         #queryData = request.GET.get('queryData')
-        data = request.GET.get('data')
-        dataset = request.GET.get('dataset_name')
+        data = request.POST.get('data')
+        dataset = request.POST.get('dataset_name')
         #threshold = request.GET.get('threshold')
         #print threshold
         print data
@@ -4591,7 +4591,7 @@ def clean_dataset(request):
         dataset = request.GET.get('dataset')
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
-            res = requests.get(SERVER_URL+'/dataset/ayDPMNB3JcOJAm', headers=headers)
+            res = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:

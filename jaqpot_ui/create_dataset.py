@@ -309,7 +309,11 @@ def create_and_clean_dataset(data, prediction, suggested):
     data6["descriptors"] = data['descriptors']
     data9["totalColumns"] = data['totalColumns']
     data10["totalRows"] = data['totalRows']
-    data11["features"] = data['features']
+    new_f = []
+    for f in data['features']:
+        if (f['uri']!= suggested and f['uri']!= prediction):
+                new_f.append(f)
+    data11["features"] = new_f
 
     data7.update(data2)
     data7.update(data3)
