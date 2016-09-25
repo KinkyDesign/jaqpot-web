@@ -744,7 +744,9 @@ def change_params(request):
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+        print res.text
         al = json.loads(res.text)
+        print al
         try:
             res1 = requests.get(SERVER_URL+'/pmml/?start=0&max=1000', headers=headers)
         except Exception as e:
@@ -3933,9 +3935,11 @@ def factorial_dataset(request):
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if request.method == 'GET':
+            #Get dataset from request
             dataset = request.GET.get('dataset')
             print dataset
             headers = {'Accept': 'application/json', 'subjectid': token}
+            #Get dataset json
             try:
                 res1 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
             except Exception as e:
@@ -3943,7 +3947,9 @@ def factorial_dataset(request):
             if res1.status_code >= 400:
                 return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
             data_detail = json.loads(res1.text)
+            #Get model that has created the dataset
             model = json.loads(res1.text)['byModel']
+            #Get model details json
             try:
                 res = requests.get(SERVER_URL+'/model/'+model, headers=headers)
             except Exception as e:
@@ -3952,7 +3958,7 @@ def factorial_dataset(request):
                 return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             model_detail = json.loads(res.text)
             predictedFeatures = model_detail['predictedFeatures']
-
+            #Get prediction feature of dataset
             prediction_feature = get_prediction_feature_of_dataset(dataset, token)
             total = get_number_of_not_null_of_dataset(dataset, token, prediction_feature)
             new=[]
@@ -4054,14 +4060,12 @@ def exp_design(request):
     if request.method == 'POST':
 
         parameters = request.POST.getlist('parameters')
-        print parameters
-        print request.POST
         datatable=request.POST.get('json')
-        print datatable
+
         datatable=json.loads(datatable)
         length = datatable['tabledata']['length']
         nVars=[int(length)]
-        #import pdb;pdb.set_trace();
+
         #Create levels and varNames params from datatable json
         varNames=[]
         levels=OrderedDict()

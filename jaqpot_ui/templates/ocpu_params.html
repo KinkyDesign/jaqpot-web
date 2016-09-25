@@ -264,6 +264,7 @@
 
 
 
+
          "fnDrawCallback": function( oSettings )
          {
             $('.dataTables_scrollBody table thead tr').css({ 'height' : '0px' });
@@ -315,7 +316,7 @@
             /* Update the data array and return the value */
             aData[ aPos[2] ] = sValue;
             return sValue;
-        }, { "onblur": 'submit' } ); /* Submit the form when bluring a field */
+        }, { "onblur": 'submit', "placeholder":"None"} ); /* Submit the form when bluring a field */
         //counter++;
 
         /* On DataTable cell select change */
@@ -356,7 +357,7 @@
 		/* Update the data array and return the value */
 		aData[ aPos[2] ] = sValue;
 		return sValue;
-	}, { "onblur": 'submit' } ); /* Submit the form when bluring a field */
+	}, { "onblur": 'submit', "placeholder":"None",} ); /* Submit the form when bluring a field */
 
 
 
