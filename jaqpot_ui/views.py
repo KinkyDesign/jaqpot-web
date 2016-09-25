@@ -3988,9 +3988,11 @@ def factorial_validation(request):
         datatable = request.POST.get('data')
         datatable=json.loads(datatable)
         print datatable
-        length = datatable['tabledata']['length']
-        print length
         error=""
+        length = datatable['tabledata']['length']
+        if length < 2:
+            error="At least 2 variables are needed."
+        print length
         for row in range(0, int(length)):
             tp=datatable['tabledata'][str(row)][1]
             print tp
@@ -4141,12 +4143,36 @@ def exp_design(request):
         try:
             res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
         except Exception as e:
+            #Delete empty dataset
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            try:
+                res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+            except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res1.status_code >= 400:
+             #Delete empty dataset
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            try:
+                res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+            except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         status = json.loads(res1.text)['status']
         while (status != "COMPLETED"):
             if(status == "ERROR"):
+                #Delete empty dataset
+                headers = {'Accept': 'application/json', 'subjectid': token}
+                try:
+                    res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+                except Exception as e:
+                            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                 error = "An error occurred while processing your request.Please try again."
                 return render(request, "ocpu_params.html", {'token': token, 'username': username, 'error':error, 'al':al })
             else:
@@ -4167,8 +4193,24 @@ def exp_design(request):
         try:
             res2 = requests.post(SERVER_URL+'/model/'+model, headers=headers, data=body)
         except Exception as e:
+                #Delete empty dataset
+                headers = {'Accept': 'application/json', 'subjectid': token}
+                try:
+                    res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+                except Exception as e:
+                            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res2.status_code >= 400:
+            #Delete empty dataset
+            headers = {'Accept': 'application/json', 'subjectid': token}
+            try:
+                res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+            except Exception as e:
+                        return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            if res.status_code >= 400:
+                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res2.text)})
         task_id = json.loads(res2.text)['_id']
         try:
@@ -4181,6 +4223,14 @@ def exp_design(request):
 
         while (status != "COMPLETED"):
             if(status == "ERROR"):
+                #Delete empty dataset
+                headers = {'Accept': 'application/json', 'subjectid': token}
+                try:
+                    res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+                except Exception as e:
+                            return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                if res.status_code >= 400:
+                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                 error = "An error occurred while processing your request.Please try again."
                 return render(request, "ocpu_params.html", {'token': token, 'username': username,'error':error, 'al':al })
             else:
