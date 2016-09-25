@@ -4014,6 +4014,8 @@ def factorial_validation(request):
                         except:
                             error="Wrong input"
                     else:
+                        if i<4:
+                            error = "At least 2 levels are needed."
                         for j in range(i+1,int(len(datatable['tabledata'][str(row)]))):
                             if (datatable['tabledata'][str(row)][j])!="None" and (datatable['tabledata'][str(row)][j])!= "":
                                 error="Wrong"
@@ -4025,6 +4027,8 @@ def factorial_validation(request):
                         except:
                             error="Wrong input"
                     else:
+                        if i<4:
+                            error = "At least 2 levels are needed."
                         for j in range(i+1,int(len(datatable['tabledata'][str(row)]))):
                             if (datatable['tabledata'][str(row)][j])!="None" and (datatable['tabledata'][str(row)][j])!= "":
                                 error="Wrong"
