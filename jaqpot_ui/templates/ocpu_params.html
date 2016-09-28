@@ -316,8 +316,13 @@
             /* Update the data array and return the value */
             aData[ aPos[2] ] = sValue;
             return sValue;
-        }, { "onblur": 'submit', "placeholder":"None"} ); /* Submit the form when bluring a field */
-        //counter++;
+        }, { "placeholder":"None",
+             "type"      : 'textarea',
+             "cancel"    : 'Cancel',
+             "submit"    : 'OK',
+             "indicator" : '<img src="img/indicator.gif">'
+            } ); /* Submit the form when clicking ok */
+            //counter++;
 
         /* On DataTable cell select change */
         $('#table tbody').on( 'change', 'td.option select', function () {
@@ -357,7 +362,12 @@
 		/* Update the data array and return the value */
 		aData[ aPos[2] ] = sValue;
 		return sValue;
-	}, { "onblur": 'submit', "placeholder":"None",} ); /* Submit the form when bluring a field */
+	}, {  "placeholder":"None",
+	     "type"      : 'textarea',
+         "cancel"    : 'Cancel',
+         "submit"    : 'OK',
+         "indicator" : '<img src="img/indicator.gif">'
+         } ); /* Submit the form when click ok */
 
 
 
