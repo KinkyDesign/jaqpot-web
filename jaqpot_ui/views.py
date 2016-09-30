@@ -257,14 +257,23 @@ def taskdetail(request):
         data = json.dumps(data)
         status = json.loads(res.text)['status']
         print status
-        '''if(status == "ERROR"):
-            error = "An error occurred while processing your request.Please try again."
-            return render(request, "error.html", {'token': token, 'username': username, 'name': name, 'error': error})'''
+        counter=0
         while (status != "COMPLETED"):
-
+            counter=counter+1
             if(status == "ERROR"):
                 error = "An error occurred while processing your request.Please try again."
                 return render(request, "error.html", {'token': token, 'username': username, 'name': name, 'error': error})
+            if(status == "CANCELLED"):
+                return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
+            if(status == "REJECTED"):
+                return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
+            if(status == "QUEUED"):
+                return HttpResponse(data)
+            if(status == "RUNNING"):
+                return HttpResponse(data)
+            if(status == "QUEUED" and counter >100):
+                print counter
+                return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
         return HttpResponse(data)
 
     if request.method == 'GET':
@@ -288,6 +297,12 @@ def taskdetail(request):
         while (status != "COMPLETED"):
             if(status == "ERROR"):
                 error = "An error occurred while processing your request.Please try again."
+                return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
+            elif(status == "CANCELLED"):
+                return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
+            elif(status == "REJECTED"):
+                return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
+            elif(status == "QUEUED"):
                 return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
             else:
                 try:
@@ -1547,6 +1562,7 @@ def dataset_detail(request):
                                 properties[key['compound']['URI']].append({"prop": new_a[i], "value": value[new_a[i]]})
                             else:
                                 properties[key['compound']['URI']].append({"prop":  new_a[i], "value": "NULL"})
+
 
             return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail':data_detail, 'properties': properties, 'a': a, 'new': new, 'page':page, 'last':last})
 

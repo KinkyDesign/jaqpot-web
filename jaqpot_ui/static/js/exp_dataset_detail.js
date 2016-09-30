@@ -61,7 +61,7 @@ $('[data-toggle="tool"]').tooltip({
   {
     oTable.fnAdjustColumnSizing();
   }, 10 );*/
- $('#dataset tbody td').editable( function( sValue ) {
+ $('#dataset tbody td.edit').editable( function( sValue ) {
 		/* Get the position of the current data from the node */
 		 var oTable = $('#dataset').dataTable()
 		var aPos = oTable.fnGetPosition( this );

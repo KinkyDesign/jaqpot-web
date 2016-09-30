@@ -58,7 +58,7 @@ $('[data-toggle="tool"]').tooltip({
 
 
 
- $('#dataset tbody td').editable( function( sValue ) {
+ $('#dataset tbody td.edit').editable( function( sValue ) {
 		/* Get the position of the current data from the node */
 		 var oTable = $('#dataset').dataTable()
 		var aPos = oTable.fnGetPosition( this );
@@ -69,4 +69,9 @@ $('[data-toggle="tool"]').tooltip({
 		/* Update the data array and return the value */
 		aData[ aPos[2] ] = sValue;
 		return sValue;
+		/* On DataTable cell select change */
+
 	}, { "onblur": 'submit' } ); /* Submit the form when bluring a field */
+
+
+
