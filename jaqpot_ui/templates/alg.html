@@ -366,10 +366,36 @@
         $("#none").hide();
      }
 
+    {% if exp %}
+
     $( "input[name='output']" ).on(
         {
           'change' : function( )
+            {
+                $.each( $( "input[name='output']" ),
+                function( )
+                {
+                    var ObjectId, ObjectValue;
+
+                     if( $(this).is(':checked') )
                      {
+                        /*Checked radio button OBJECT */
+                        ObjectId = $(this).attr( 'id' );     /* Id of above Jquery object */
+                        ObjectValue = $(this).attr( 'value' );     /* Value of above Jquery object */
+                        $("input[class='input'][ value= '"+ObjectValue+"' ]" ).prop("checked", false);
+                     }
+
+                }
+                );
+                }
+            }
+         );
+    {% else %}
+
+        $( "input[name='output']" ).on(
+            {
+              'change' : function( )
+              {
                        $.each( $( "input[name='output']" ),
                                function( )
                                {
@@ -378,7 +404,8 @@
                                  if( $(this).is(':checked') )
                                  {
                                    /*Checked radio button OBJECT */
-                                   ObjectId    = $(this).attr( 'id' );     /* Id of above Jquery object */
+                                   ObjectId = $(this).attr( 'id' );     /* Id of above Jquery object */
+                                   ObjectValue = $(this).attr( 'value' );     /* Value of above Jquery object */
                                    //get number of id
                                    num = ObjectId.split('output_')[1]
                                    if(  $("#id_input_"+num).is(':checked') ){
@@ -389,8 +416,9 @@
                                }
                              );
                      }
-        }
-     );
+            }
+         );
+    {% endif %}
 
 
 
