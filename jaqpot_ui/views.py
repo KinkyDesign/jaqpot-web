@@ -4006,8 +4006,8 @@ def factorial_validation(request):
         print datatable
         error=""
         length = datatable['tabledata']['length']
-        if length < 2:
-            error="At least 2 variables are needed."
+        if length < 4:
+            error="At least 4 variables are needed."
         print length
         for row in range(0, int(length)):
             tp=datatable['tabledata'][str(row)][1]
