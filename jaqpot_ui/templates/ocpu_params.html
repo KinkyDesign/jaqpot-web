@@ -147,12 +147,7 @@
                             {% for var in p.value%}
                                 <tr>
                                     <td class="edit">{{var.0}}</td>
-
-                                    {% if var.0 == "c"%}
-                                        <td class="option"><select class="form-control"><option value="numerical">numerical</option><option value="categorical" selected="selected" >categorical</option></select></td>
-                                    {% else %}
-                                        <td class="option"><select class="form-control"><option value="numerical">numerical</option><option value="categorical">categorical</option></select></td>
-                                    {% endif %}
+                                    <td class="option"><select class="form-control"><option value="numerical">numerical</option><option value="categorical">categorical</option></select></td>
                                     {% for par in al.parameters%}
                                     {% if par|id == "levels" %}
                                         {% for tim in par.value|times %}
