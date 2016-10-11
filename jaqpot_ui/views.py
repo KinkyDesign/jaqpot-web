@@ -74,7 +74,7 @@ def login(request):
                     request.session['username'] = username
 
                     next = request.POST.get('next', '/')
-                    return redirect(next)
+                    return redirect(next.split("'")[1])
 
                 elif r.status_code == 401:
                     error = "Wrong username or password"
