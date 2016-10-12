@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% load templates_extras %}
+
+{% block content %}
+
+<div class="div-table" style="width:100%; min-height:650px; ">
+    <div id="dialog-confirm"></div>
+    <div>
+        <div style= "float:left;"></div>
+        <div style="float:right;">
+            <a href="/d_delete?id={{name}}" class="btn bt-red" data-toggle="tool" title="Delete Dataset" style="margin: 3px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
+        </div>
+    </div>
+
+    <div>
+        <div>
+            <h1>Dataset: <span  style="font-size: 20px;">{{data_detail.meta.titles.0}}</span> <span style="font-size: 12px;">#{{dataset_name}}</span> </h1>
+        </div>
+        {% if error %}
+            <div class="alert alert-danger" role="alert" style="width: 250px;padding: 5px;margin-top:10px;">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span>{{error}}</span>
+            </div>
+        {% endif %}
+
+
+    <div id="details">
+
+         <table id="dataset" class="div-form-table display" >
+             <thead>
+                 <tr>
+
+                     <th style="background-color: #cf2323; min-width: 300px;">Compounds</th>
+                       <th style="background-color: #cf2323;" class="column">
+                            <p>{{predicted.0}}</p>
+                       </th>
+                       <th style="background-color: #cf2323;" class="column">
+                            <p>Prediction feature</p>
+                       </th>
+                     <!-- {% for k,v in data_detail.dataEntry.0.values.items %}
+                            {% if k != prediction and k != predicted.0 %}
+                                {% for n in new %}
+                                    {% if n.uri == k%}
+                                        <th style="background-color: #cf2323;" class="column">
+                                            <p>{{n.name|splitname}}</p>
+                                        </th>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+
+                     {% endfor%} -->
+                     {% for n in new %}
+                        {% if n.uri != prediction and n.uri != predicted.0 %}
+                            <th style="background-color: #cf2323;" class="column">
+                                <p>{{n.name|splitname}}</p>
+                            </th>
+                        {% endif %}
+                     {% endfor %}
+                 </tr>
+             </thead>
+             <tbody>
+             {% for key in data_detail.dataEntry%}
+                    <tr>
+                        <td>{{key.compound.name}}</td>
+                        {% for k,v in key.values.items %}
+                            {% if k == predicted.0%}
+                                <td>{{v}}</td>
+                            {% endif %}
+                        {% endfor %}
+                        {% for k,v in key.values.items %}
+                            {% if k == prediction %}
+                                <td class="edit">{{v}}</td>
+                            {% endif %}
+
+                        {% endfor%}
+                        {% for n in new %}
+                            {% for k,v in key.values.items %}
+                                {% if k != prediction and k != predicted.0 %}
+                                    {% if n.uri == k %}
+                                        <td>{{v}}</td>
+                                    {%endif%}
+                                {% endif %}
+                            {%endfor%}
+                        {% endfor%}
+
+                    </tr>
+             {% endfor %}
+
+             </tbody>
+         </table>
+        <br>
+
+    </div>
+    <input type="submit" id="save" value="Save Dataset" class="btn bt-red" style="width: 20%;">
+     <div id="loading" style="display: none"><!-- Place at bottom of page -->
+            <img id="loading-image" src="http://i.stack.imgur.com/FhHRx.gif" alt="Loading..." />
+        </div>
+        </div>
+
+</div>
+
+<script>
+     /* $('#exp_submit').bind('click', function(e)
+        {
+            $("#loading").show();
+            }); */
+
+
+    var DATASET_NAME = '{{dataset_name}}';
+
+
+    $("#save").on("click", function (){
+    var data =  $('#dataset').DataTable().data()
+    data = JSON.stringify(data)
+    $.ajax({
+                type: "POST",
+                url: "/fact_submit",
+                dataType: "json",
+                //contentType: 'application/json;',
+                data: { 'data': data, 'dataset_name': JSON.stringify(DATASET_NAME) },
+                //data: {queryData : JSON.stringify({'data': data, 'dataset_name': DATASET_NAME})},
+                success: function(data){
+                    alert(data)
+                    window.location = '/factorial_dataset?dataset=' + data;
+                },
+                error: function(){
+                    console.log("error");
+                }
+            });
+
+    });
+</script>
+<script src="/static/js/factorial.js"></script>
+
+
+
+{% endblock %}

@@ -29,7 +29,7 @@
             {% if k == "r.squared" %}
                     <div>
                         <label class="align">Rsquared:</label>
-                        <input type="text" style="margin:5px;width:40%;" readonly="readonly" value="{{v.0}}">
+                        <input type="text" id="rsquare" style="margin:5px;width:40%;" readonly="readonly" value="{{v.0}}">
                     </div>
                     <span style="font-size: 10px;margin-left: 10%;"><b>Help note:</b>Rsquared greater or equal to Rsquared threshold.</span>
             {% endif %}
@@ -54,10 +54,12 @@
             {% endfor %}
             {% for k,v in model.additionalInfo.items %}
             {% if k == "verbal.notes" %}
-                    <p><b>Notes:</b></p>
-                    <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;width:50%;">{% for note in v %}
+
+                    <p><b>Notes:</b>
+                    <i class="fa fa-info-circle fa-2x" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="{% for note in v %}{{note}}{% endfor %}" style="left: 130px;float: left;position: relative;"></i></p>
+                    <!-- <textarea class="form-control" rows="3" readonly="readonly" style="margin:5px;width:50%;">{% for note in v %}
                         {{note}}{% endfor %}
-                         </textarea>
+                         </textarea>  -->
             {% endif %}
             {% endfor %}
         </div>
@@ -80,6 +82,14 @@
                        <th style="background-color: #cf2323;" class="column">
                             <p>Prediction feature</p>
                        </th>
+                     {% for n in new %}
+                        {% if n.uri != prediction and n.uri != predicted.0 %}
+                            <th style="background-color: #cf2323;" class="column">
+                                <p>{{n.name}}</p>
+                            </th>
+                        {% endif %}
+                     {% endfor %}
+
                  </tr>
              </thead>
              <tbody>
@@ -93,10 +103,19 @@
                         {% endfor %}
                         {% for k,v in key.values.items %}
                             {% if k == prediction %}
-                                <td>{{v}}</td>
+                                <td class="edit">{{v}}</td>
                             {% endif %}
-
                         {% endfor%}
+                         {% for n in new %}
+                            {% for k,v in key.values.items %}
+                                {% if k != prediction and k != predicted.0 %}
+                                    {% if n.uri == k %}
+                                        <td>{{v}}</td>
+                                    {%endif%}
+                                {% endif %}
+                            {%endfor%}
+                        {% endfor%}
+
 
                     </tr>
              {% endfor %}
@@ -106,7 +125,10 @@
         <br>
 
     </div>
-    <input type="submit" id="exp" value="Experimental Design" class="btn bt-red" style="width: 20%;">
+    <input type="submit" id="exp" value="Save Dataset" class="btn bt-red" style="width: 20%;">
+     <div id="loading" style="display: none"><!-- Place at bottom of page -->
+            <img id="loading-image" src="http://i.stack.imgur.com/FhHRx.gif" alt="Loading..." />
+        </div>
     <!-- <div id="dialog-confirm" title="Empty the recycle bin?">
       <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
     </div> -->
@@ -136,6 +158,11 @@
 </div>
 
 <script>
+     /* $('#exp_submit').bind('click', function(e)
+        {
+            $("#loading").show();
+            }); */
+
     var DATASET_NAME = '{{dataset_name}}';
     var THRESHOLD = '{{params|get_key:'r2.threshold'}}';
     var SQUARED = '{{model.additionalInfo|get_key:'r.squared'}}';

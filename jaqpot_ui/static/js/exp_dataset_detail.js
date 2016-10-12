@@ -51,16 +51,17 @@ $(function () {
 
 });
 
-//display tooltip right
+//display tooltip left
 $('[data-toggle="tool"]').tooltip({
     'placement': 'left'
 });
+
 
 /* setTimeout(function ()
   {
     oTable.fnAdjustColumnSizing();
   }, 10 );*/
- $('#dataset tbody td').editable( function( sValue ) {
+ $('#dataset tbody td.edit').editable( function( sValue ) {
 		/* Get the position of the current data from the node */
 		 var oTable = $('#dataset').dataTable()
 		var aPos = oTable.fnGetPosition( this );
@@ -75,6 +76,7 @@ $('[data-toggle="tool"]').tooltip({
 
  $("#exp").on("click", function (){
     var data =  $('#dataset').DataTable().data()
+    //var data = $('#dataset').DataTable().column(2).data()
     data = JSON.stringify(data)
     //if r.squared >= r2.threshold
     if (SQUARED >= THRESHOLD){
@@ -89,10 +91,10 @@ $('[data-toggle="tool"]').tooltip({
          $('#btnNo').click(function() {
            //Continue with experimental design
             $.ajax({
-                type: "get",
+                type: "post",
                 url: "/exp_submit",
                 dataType: "json",
-                contentType: 'application/json;',
+                //contentType: 'application/json;',
                 data: { 'data': data, 'dataset_name': JSON.stringify(DATASET_NAME) },
                 //data: {queryData : JSON.stringify({'data': data, 'dataset_name': DATASET_NAME})},
                 success: function(data){
@@ -131,10 +133,10 @@ $('[data-toggle="tool"]').tooltip({
           }
      else{
      $.ajax({
-                type: "get",
+                type: "post",
                 url: "/exp_submit",
                 dataType: "json",
-                contentType: 'application/json;',
+                //contentType: 'application/json;',
                 data: { 'data': data, 'dataset_name': JSON.stringify(DATASET_NAME) },
                 //data: {queryData : JSON.stringify({'data': data, 'dataset_name': DATASET_NAME})},
                 success: function(data){

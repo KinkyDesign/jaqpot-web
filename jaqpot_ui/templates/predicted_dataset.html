@@ -20,19 +20,19 @@
                         </th>
                          {% endif %}
                      {% endfor %}
-                      <!-- <th style="background-color: #cf2323;">Report</th>  -->
+                       <th style="background-color: #cf2323;">Report</th>
                  </tr>
              </thead>
              <tbody>
              {% for key, value in properties.items %}
                     <tr>
-                        <td>{{value.1.name}}</td>
+                        <td><a href="{{value.0.compound}}">{{value.1.name}}</a></td>
                         {% for v in value %}
                             {% if v.prop%}
                                 <td>{{v.value}}</td>
                             {% endif %}
                         {% endfor %}
-                        <!--<td><a href="/qrf_report?uri={{key}}&dataset={{name}}" class="btn bt-red">QPRF Report</a></td> -->
+                        <td><a href="/qrf_report?uri={{key}}&dataset={{name}}" class="btn bt-red">QPRF Report</a></td>
 
                     </tr>
              {% endfor %}

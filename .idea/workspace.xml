@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3198a210-b7c6-4410-b845-6dedaa48ee46" name="Default" comment="">
+    <list default="true" id="3198a210-b7c6-4410-b845-6dedaa48ee46" name="Default" comment="Fix bug in params. Change table in factorial design. Close issue 90, 92.">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/db.sqlite3" afterPath="$PROJECT_DIR$/db.sqlite3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/static/img/enm_logo.png" afterPath="$PROJECT_DIR$/jaqpot_ui/static/img/enm_logo.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/templates/util/menu.html" afterPath="$PROJECT_DIR$/jaqpot_ui/templates/util/menu.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/templates/ocpu_params.html" afterPath="$PROJECT_DIR$/jaqpot_ui/templates/ocpu_params.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/templatetags/templates_extras.py" afterPath="$PROJECT_DIR$/jaqpot_ui/templatetags/templates_extras.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/urls.py" afterPath="$PROJECT_DIR$/jaqpot_ui/urls.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/jaqpot_ui/views.py" afterPath="$PROJECT_DIR$/jaqpot_ui/views.py" />
     </list>
     <ignored path="jaqpot_ui.iws" />
@@ -19,7 +20,7 @@
   </component>
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CreatePatchCommitExecutor">
-    <option name="PATCH_PATH" value="" />
+    <option name="PATCH_PATH" value="C:\Users\evangelie\Desktop\Projects\JaqpotQuattroUI" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
@@ -27,34 +28,49 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/jaqpot_ui/views.py">
+      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jaqpot_ui/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5490716">
-              <caret line="497" column="33" selection-start-line="497" selection-start-column="33" selection-end-line="497" selection-end-column="33" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="81" column="79" selection-start-line="81" selection-start-column="79" selection-end-line="81" selection-end-column="79" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="interlab_dataset.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/interlab_dataset.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-11.5">
+              <caret line="101" column="28" selection-start-line="101" selection-start-column="28" selection-end-line="101" selection-end-column="28" />
               <folding>
-                <element signature="e#0#13#0" expanded="true" />
+                <element signature="n#style#0;n#a#0;n#li#0;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#a#0;n#li#0;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#1;n#a#0;n#li#0;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#2;n#a#0;n#li#0;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#1;n#p#0;n#div#2;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#1;n#a#0;n#div#2;n#div#0;n#div#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="report.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/report.html">
+      <file leaf-file-name="ocpu_params.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/ocpu_params.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="41" column="75" selection-start-line="41" selection-start-column="75" selection-end-line="41" selection-end-column="75" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="get_params.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jaqpot_ui/get_params.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-              <folding />
+            <state vertical-scroll-proportion="-3.709091">
+              <caret line="267" column="13" selection-start-line="267" selection-start-column="13" selection-end-line="267" selection-end-column="13" />
+              <folding>
+                <element signature="n#style#0;n#div#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#th#0;n#tr#0;n#thead#0;n#table#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#th#1;n#tr#0;n#thead#0;n#table#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#th#2;n#tr#0;n#thead#0;n#table#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#3;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#4;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#5;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#6;n#div#0;n#form#0;n#!!top" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -62,8 +78,30 @@
       <file leaf-file-name="templates_extras.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templatetags/templates_extras.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="45" column="0" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
+            <state vertical-scroll-proportion="-6.0689654">
+              <caret line="99" column="19" selection-start-line="99" selection-start-column="19" selection-end-line="99" selection-end-column="19" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/jaqpot_ui/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.58787876">
+              <caret line="3678" column="62" selection-start-line="3678" selection-start-column="62" selection-end-line="3678" selection-end-column="62" />
+              <folding>
+                <element signature="e#0#13#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="exp_dataset_detail.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jaqpot_ui/static/js/exp_dataset_detail.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.5862069">
+              <caret line="127" column="15" selection-start-line="127" selection-start-column="15" selection-end-line="127" selection-end-column="15" />
               <folding />
             </state>
           </provider>
@@ -72,40 +110,8 @@
       <file leaf-file-name="exp_dataset_detail.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset_detail.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="19" column="12" selection-start-line="19" selection-start-column="12" selection-end-line="19" selection-end-column="12" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="base.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/base.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="59" column="66" selection-start-line="59" selection-start-column="66" selection-end-line="59" selection-end-column="66" />
-              <folding>
-                <element signature="n#style#0;n#img#0;n#a#0;n#div#0;n#div#0;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="source.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/source.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.8846154">
-              <caret line="9" column="128" selection-start-line="9" selection-start-column="78" selection-end-line="9" selection-end-column="131" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="exp_dataset_detail.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jaqpot_ui/static/js/exp_dataset_detail.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="82" column="43" selection-start-line="82" selection-start-column="43" selection-end-line="82" selection-end-column="43" />
+            <state vertical-scroll-proportion="-6.5384617">
+              <caret line="95" column="49" selection-start-line="95" selection-start-column="39" selection-end-line="95" selection-end-column="49" />
               <folding />
             </state>
           </provider>
@@ -113,71 +119,78 @@
       </file>
     </leaf>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/addbibtex.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/bibdetail.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/conformer.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/contact_form.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/explore.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/feature_details.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/new_task.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/task.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/descriptors.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/server_settings.py" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/features.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/properties.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/search_indexes.py" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/search_indexes.py" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/settings.py" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/user_details.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/train_model.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/error.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/select_substance.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/mainPage.html" />
-        <option value="$PROJECT_DIR$/requirements.txt" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/static/js/search.js" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/static/css/style.css" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/predict.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/get_dataset.py" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/predicted_dataset.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/model_detail.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/taskdetail.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/dataset_detail.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/interlab_params.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/validate_split.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/static/js/deselect_input.js" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/validate.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/algorithm.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/substance.html" />
-        <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset_validate.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/dataset.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/predict_model.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/model.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/urls.py" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/forms.py" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/get_params.py" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/alg.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/create_dataset.py" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/static/exp_dataset_detail.js" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templatetags/templates_extras.py" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset_detail.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/static/js/exp_dataset_detail.js" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/source.html" />
-        <option value="$PROJECT_DIR$/jaqpot_ui/templates/report.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/error_handle.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/train_model.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/qrf_report.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/error_handling.py" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/base.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/settings.py" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/account/login.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/model_detail.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/static/css/style.css" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/documentation.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/algorithm_detail.html" />
+        <option value="$PROJECT_DIR$/../../mongo_data_mining/data_mining/settings.py" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/read.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/get_dataset.py" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/bibdetail.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/report.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/templates/util/menu.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/mainPage.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/forms.py" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/error.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/taskdetail.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/predicted_dataset.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/dataset_detail.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset_validate.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset_ext_valid.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/ext_validation.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/read_across_predict.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/predict.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/predict_model.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/read_across_predict_model.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/read_across_dataset.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset_detail.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/read_across_train.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/model.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/dataset.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/reports.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/alg.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/get_params.py" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/interlab_dataset.html" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templatetags/templates_extras.py" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/urls.py" />
+        <option value="$PROJECT_DIR$/jaqpot_ui/templates/ocpu_params.html" />
         <option value="$PROJECT_DIR$/jaqpot_ui/views.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1382" />
-    <option name="height" value="744" />
+    <option name="y" value="1" />
+    <option name="width" value="1366" />
+    <option name="height" value="726" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -308,6 +321,28 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="templates" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="account" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="JaqpotQuattroUI" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="JaqpotQuattroUI" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jaqpot_ui" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="static" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -364,7 +399,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="DefaultHtmlFileTemplate" value="Html5" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="options.lastSelected" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="options.splitter.details.proportions" value="0.2" />
@@ -373,17 +408,17 @@
     <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\evangelie\Desktop\Projects\JaqpotQuattroUI\jaqpot_ui\static" />
+      <recent name="C:\Users\evangelie\Desktop\Projects\JaqpotQuattroUI\jaqpot_ui\static\img" />
+      <recent name="$PROJECT_DIR$/jaqpot_ui/static/img" />
+      <recent name="$PROJECT_DIR$/jaqpot_ui/templates" />
+      <recent name="$PROJECT_DIR$/jaqpot_ui/templates/accounts" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\evangelie\Desktop\Projects\JaqpotQuattroUI\jaqpot_ui\static\img" />
       <recent name="C:\Users\evangelie\Desktop\Projects\JaqpotQuattroUI\jaqpot_ui\static\js" />
       <recent name="$PROJECT_DIR$/jaqpot_ui/templates" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/jaqpot_ui/static/img" />
-      <recent name="$PROJECT_DIR$/jaqpot_ui/templates" />
-      <recent name="$PROJECT_DIR$/jaqpot_ui/templates/accounts" />
-      <recent name="$PROJECT_DIR$/jaqpot_ui/templates/account" />
-      <recent name="$PROJECT_DIR$/jaqpot_ui/static/accounts" />
     </key>
   </component>
   <component name="RunManager" selected="Python.Deploy">
@@ -572,112 +607,359 @@
       <option name="number" value="Default" />
       <updated>1421939727134</updated>
     </task>
-    <task id="LOCAL-00001" summary="Ignore database">
-      <created>1453054864321</created>
-      <option name="number" value="00001" />
+    <task id="LOCAL-00028" summary="Add transformations to cross validation. Fix bugs exp design with input.">
+      <created>1458135503655</created>
+      <option name="number" value="00028" />
       <option name="project" value="LOCAL" />
-      <updated>1453054864321</updated>
+      <updated>1458135503655</updated>
     </task>
-    <task id="LOCAL-00002" summary="Add proposed models and datasets. Changes in experimental design.">
-      <created>1453736827661</created>
-      <option name="number" value="00002" />
+    <task id="LOCAL-00029" summary="Change Server Url.">
+      <created>1458152985522</created>
+      <option name="number" value="00029" />
       <option name="project" value="LOCAL" />
-      <updated>1453736827661</updated>
+      <updated>1458152985522</updated>
     </task>
-    <task id="LOCAL-00003" summary="Fix bugs in parameters.  Changes in experimental design.">
-      <created>1453891153056</created>
-      <option name="number" value="00003" />
+    <task id="LOCAL-00030" summary="Change Server url">
+      <created>1458153092650</created>
+      <option name="number" value="00030" />
       <option name="project" value="LOCAL" />
-      <updated>1453891153056</updated>
+      <updated>1458153092650</updated>
     </task>
-    <task id="LOCAL-00004" summary="Fix bugs in parameters.  Changes in experimental design.">
-      <created>1453891192025</created>
-      <option name="number" value="00004" />
+    <task id="LOCAL-00031" summary="Fix github bugs.">
+      <created>1459093535677</created>
+      <option name="number" value="00031" />
       <option name="project" value="LOCAL" />
-      <updated>1453891192025</updated>
+      <updated>1459093535677</updated>
     </task>
-    <task id="LOCAL-00005" summary="Fix bugs in parameters.">
-      <created>1453905586121</created>
-      <option name="number" value="00005" />
+    <task id="LOCAL-00032" summary="Change model detail interface.">
+      <created>1459274952436</created>
+      <option name="number" value="00032" />
       <option name="project" value="LOCAL" />
-      <updated>1453905586121</updated>
+      <updated>1459274952436</updated>
     </task>
-    <task id="LOCAL-00006" summary="Fix bugs in parameters.">
-      <created>1453915041974</created>
-      <option name="number" value="00006" />
+    <task id="LOCAL-00033" summary="Change interlab testing. Change template. Add scroll bar to the proposed dataset.">
+      <created>1459366841829</created>
+      <option name="number" value="00033" />
       <option name="project" value="LOCAL" />
-      <updated>1453915041974</updated>
+      <updated>1459366841829</updated>
     </task>
-    <task id="LOCAL-00007" summary="Fix bugs in experimental design with input.">
-      <created>1454266699809</created>
-      <option name="number" value="00007" />
+    <task id="LOCAL-00034" summary="Fix bugs.">
+      <created>1460326034725</created>
+      <option name="number" value="00034" />
       <option name="project" value="LOCAL" />
-      <updated>1454266699809</updated>
+      <updated>1460326034725</updated>
     </task>
-    <task id="LOCAL-00008" summary="Fix bug in experimental design without input.">
-      <created>1454332024217</created>
-      <option name="number" value="00008" />
+    <task id="LOCAL-00035" summary="Add title and description to report template.">
+      <created>1460326617148</created>
+      <option name="number" value="00035" />
       <option name="project" value="LOCAL" />
-      <updated>1454332024217</updated>
+      <updated>1460326617148</updated>
     </task>
-    <task id="LOCAL-00009" summary="Fix bug in validation parameters.">
-      <created>1454404023302</created>
-      <option name="number" value="00009" />
+    <task id="LOCAL-00036" summary="Fix bug on predict. Display all the example datasets. Fix interlab testing. Fix bug on reports.">
+      <created>1460402222790</created>
+      <option name="number" value="00036" />
       <option name="project" value="LOCAL" />
-      <updated>1454404023302</updated>
+      <updated>1460402222790</updated>
     </task>
-    <task id="LOCAL-00010" summary="Add images in validation. Check threshold in experimental design. Changes in experimental design for dataset without null.">
-      <created>1454490707580</created>
-      <option name="number" value="00010" />
+    <task id="LOCAL-00037" summary="Change predict template.">
+      <created>1460404958109</created>
+      <option name="number" value="00037" />
       <option name="project" value="LOCAL" />
-      <updated>1454490707580</updated>
+      <updated>1460404958109</updated>
     </task>
-    <task id="LOCAL-00011" summary="Change logo.">
-      <created>1454494955272</created>
-      <option name="number" value="00011" />
+    <task id="LOCAL-00038" summary="Change main page and fix issues.">
+      <created>1461005452381</created>
+      <option name="number" value="00038" />
       <option name="project" value="LOCAL" />
-      <updated>1454494955272</updated>
+      <updated>1461005452382</updated>
     </task>
-    <task id="LOCAL-00012" summary="Add enanomapper logo. Add issue tracker.">
-      <created>1454497250040</created>
-      <option name="number" value="00012" />
+    <task id="LOCAL-00039" summary="Change main page. Fix issue #7.">
+      <created>1461132549827</created>
+      <option name="number" value="00039" />
       <option name="project" value="LOCAL" />
-      <updated>1454497250040</updated>
+      <updated>1461132549828</updated>
     </task>
-    <task id="LOCAL-00013" summary="Change img size in validation report. Add enm logo. Change issue tracker.">
-      <created>1454503661565</created>
-      <option name="number" value="00013" />
+    <task id="LOCAL-00040" summary="Change mainpage.">
+      <created>1461137445269</created>
+      <option name="number" value="00040" />
       <option name="project" value="LOCAL" />
-      <updated>1454503661565</updated>
+      <updated>1461137445269</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00041" summary="Change main page.">
+      <created>1461138045505</created>
+      <option name="number" value="00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1461138045505</updated>
+    </task>
+    <task id="LOCAL-00042" summary="Change mainpage.">
+      <created>1461139452328</created>
+      <option name="number" value="00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1461139452328</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Responsive main page.">
+      <created>1461141232474</created>
+      <option name="number" value="00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1461141232474</updated>
+    </task>
+    <task id="LOCAL-00044" summary="Fix issues. Add images in main page.">
+      <created>1462744890184</created>
+      <option name="number" value="00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1462744890184</updated>
+    </task>
+    <task id="LOCAL-00045" summary="Make main page responsive. Fix bugs.">
+      <created>1463059418493</created>
+      <option name="number" value="00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1463059418493</updated>
+    </task>
+    <task id="LOCAL-00046" summary="Fix bug.">
+      <created>1463061087479</created>
+      <option name="number" value="00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1463061087479</updated>
+    </task>
+    <task id="LOCAL-00047" summary="Close issues #35, #39, #40.">
+      <created>1463074087758</created>
+      <option name="number" value="00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1463074087758</updated>
+    </task>
+    <task id="LOCAL-00048" summary="Close issue #18 and #30.">
+      <created>1463428967489</created>
+      <option name="number" value="00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1463428967489</updated>
+    </task>
+    <task id="LOCAL-00049" summary="Fix bug in dataset detail.">
+      <created>1463429363923</created>
+      <option name="number" value="00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1463429363923</updated>
+    </task>
+    <task id="LOCAL-00050" summary="Fix bug in split and cross validation Issue #42. Algorithm ids replaced with titles Issue #32.">
+      <created>1463553988106</created>
+      <option name="number" value="00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1463553988112</updated>
+    </task>
+    <task id="LOCAL-00051" summary="Fix bug in error handling. Close issue #20, #43, #44.">
+      <created>1463675269426</created>
+      <option name="number" value="00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1463675269427</updated>
+    </task>
+    <task id="LOCAL-00052" summary="Add qprf report. Ordered dictionary.">
+      <created>1464125448842</created>
+      <option name="number" value="00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1464125448842</updated>
+    </task>
+    <task id="LOCAL-00053" summary="Add qrf_report.html.">
+      <created>1464125644215</created>
+      <option name="number" value="00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1464125644215</updated>
+    </task>
+    <task id="LOCAL-00054" summary="Fix issue #46.">
+      <created>1464376077337</created>
+      <option name="number" value="00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1464376077339</updated>
+    </task>
+    <task id="LOCAL-00055" summary="Rename QPRF button.">
+      <created>1464376241852</created>
+      <option name="number" value="00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1464376241852</updated>
+    </task>
+    <task id="LOCAL-00056" summary="Fix error handling( #47, #60). Fix #51, #52.">
+      <created>1464812099718</created>
+      <option name="number" value="00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1464812099719</updated>
+    </task>
+    <task id="LOCAL-00057" summary="Make experimetal design, interlab testing and read across visible.">
+      <created>1464897661979</created>
+      <option name="number" value="00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1464897661979</updated>
+    </task>
+    <task id="LOCAL-00058" summary="Add download report buttom. Change delete icons. Fix #50 #51">
+      <created>1465514745740</created>
+      <option name="number" value="00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1465514745742</updated>
+    </task>
+    <task id="LOCAL-00059" summary="Display model on report. Replace no data with factorial design. Add ordered dict in factorial design. Clickable compoun in the predict service (#66). Fix #72.">
+      <created>1466465131632</created>
+      <option name="number" value="00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1466465131633</updated>
+    </task>
+    <task id="LOCAL-00060" summary="Change main page images (#56). Sort dataset by name, title,description,date (#63). Add read across training. Fix #58.">
+      <created>1466981688921</created>
+      <option name="number" value="00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1466981688921</updated>
+    </task>
+    <task id="LOCAL-00061" summary="Copy dataset uri to clipboard. Edit report.">
+      <created>1467238513813</created>
+      <option name="number" value="00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1467238513815</updated>
+    </task>
+    <task id="LOCAL-00062" summary="Remove import.">
+      <created>1467275276252</created>
+      <option name="number" value="00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1467275276252</updated>
+    </task>
+    <task id="LOCAL-00063" summary="Read Across predict. Fix read across training. QRF reports edit tables.">
+      <created>1467839625095</created>
+      <option name="number" value="00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1467839625097</updated>
+    </task>
+    <task id="LOCAL-00064" summary="Clickable compounds (#66). Fix factorial design. Change experimental design titles.">
+      <created>1468191658006</created>
+      <option name="number" value="00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1468191658006</updated>
+    </task>
+    <task id="LOCAL-00065" summary="Fix bug read across train.">
+      <created>1468193961121</created>
+      <option name="number" value="00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1468193961121</updated>
+    </task>
+    <task id="LOCAL-00066" summary="Align delete button. Fix bug read across train.">
+      <created>1468389907749</created>
+      <option name="number" value="00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1468389907752</updated>
+    </task>
+    <task id="LOCAL-00067" summary="Align delete button. Close #66. Add cancel button for queued tasks.">
+      <created>1468442787747</created>
+      <option name="number" value="00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1468442787748</updated>
+    </task>
+    <task id="LOCAL-00068" summary="Add print">
+      <created>1468516296523</created>
+      <option name="number" value="00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1468516296524</updated>
+    </task>
+    <task id="LOCAL-00069" summary="Add print">
+      <created>1468516483206</created>
+      <option name="number" value="00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1468516483206</updated>
+    </task>
+    <task id="LOCAL-00070" summary="Add timetags to all services and resources. Align delete button. Fix bug in read across. Display alla datasets to interlab. Add title and description to factorial. Changes in factorial table.">
+      <created>1469051753125</created>
+      <option name="number" value="00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1469051753125</updated>
+    </task>
+    <task id="LOCAL-00071" summary="Fix bug read across. Dataset alignment.">
+      <created>1469115545861</created>
+      <option name="number" value="00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1469115545862</updated>
+    </task>
+    <task id="LOCAL-00072" summary="Fix bug read across.">
+      <created>1469121434132</created>
+      <option name="number" value="00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1469121434133</updated>
+    </task>
+    <task id="LOCAL-00073" summary="Fix bug read across. Align delete buttons. Delete model in experimementas design. Changes factorial. Change get_params.">
+      <created>1469620461471</created>
+      <option name="number" value="00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1469620461473</updated>
+    </task>
+    <task id="LOCAL-00074" summary="Fix bug in params. Change table in factorial design.">
+      <created>1469653946693</created>
+      <option name="number" value="00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1469653946693</updated>
+    </task>
+    <task id="LOCAL-00075" summary="Fix bug in params. Change table in factorial design. Close issue 90, 92.">
+      <created>1469948001211</created>
+      <option name="number" value="00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1469948001211</updated>
+    </task>
+    <task id="LOCAL-00076" summary="Change algorithm in experimental design.">
+      <created>1469948789687</created>
+      <option name="number" value="00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1469948789687</updated>
+    </task>
+    <option name="localTasksCounter" value="77" />
     <servers />
   </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <frame x="0" y="1" width="1366" height="726" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20131771" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3628049" sideWeight="0.50080085" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32884902" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329653" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.36119872" sideWeight="0.49919915" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19879518" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3288364" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3608769" sideWeight="0.50377077" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3288364" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329653" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34738618" sideWeight="0.49622926" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39910313" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33280757" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33167496" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
+    <layout-to-restore>
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3288364" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3608769" sideWeight="0.50377077" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3288364" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329653" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34738618" sideWeight="0.49622926" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19864559" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33167496" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39910313" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+    </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
@@ -691,128 +973,103 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Ignore database" />
-    <MESSAGE value="Add proposed models and datasets. Changes in experimental design." />
-    <MESSAGE value="Fix bugs in parameters.  Changes in experimental design." />
-    <MESSAGE value="Fix bugs in parameters." />
-    <MESSAGE value="Fix bugs in experimental design with input." />
-    <MESSAGE value="Fix bug in experimental design without input." />
-    <MESSAGE value="Fix bug in validation parameters." />
-    <MESSAGE value="Add images in validation. Check threshold in experimental design. Changes in experimental design for dataset without null." />
-    <MESSAGE value="Change logo." />
-    <MESSAGE value="Add enanomapper logo. Add issue tracker." />
-    <MESSAGE value="Change img size in validation report. Add enm logo. Change issue tracker." />
-    <option name="LAST_COMMIT_MESSAGE" value="Change img size in validation report. Add enm logo. Change issue tracker." />
+    <MESSAGE value="Fix bug in error handling. Close issue #20, #43, #44." />
+    <MESSAGE value="Add qprf report. Ordered dictionary." />
+    <MESSAGE value="Add qrf_report.html." />
+    <MESSAGE value="Fix issue #46." />
+    <MESSAGE value="Rename QPRF button." />
+    <MESSAGE value="Fix error handling( #47, #60). Fix #51, #52." />
+    <MESSAGE value="Make experimetal design, interlab testing and read across visible." />
+    <MESSAGE value="Add download report buttom. Change delete icons. Fix #50 #51" />
+    <MESSAGE value="Display model on report. Replace no data with factorial design. Add ordered dict in factorial design. Clickable compoun in the predict service (#66). Fix #72." />
+    <MESSAGE value="Change main page images (#56). Sort dataset by name, title,description,date (#63). Add read across training. Fix #58." />
+    <MESSAGE value="Copy dataset uri to clipboard. Edit report." />
+    <MESSAGE value="Remove import." />
+    <MESSAGE value="Read Across predict. Fix read across training. QRF reports edit tables." />
+    <MESSAGE value="Clickable compounds (#66). Fix factorial design. Change experimental design titles." />
+    <MESSAGE value="Fix bug read across train." />
+    <MESSAGE value="Align delete button. Fix bug read across train." />
+    <MESSAGE value="Align delete button. Close #66. Add cancel button for queued tasks." />
+    <MESSAGE value="Add print" />
+    <MESSAGE value="Add timetags to all services and resources. Align delete button. Fix bug in read across. Display alla datasets to interlab. Add title and description to factorial. Changes in factorial table." />
+    <MESSAGE value="Fix bug read across. Dataset alignment." />
+    <MESSAGE value="Fix bug read across." />
+    <MESSAGE value="Fix bug read across. Align delete buttons. Delete model in experimementas design. Changes factorial. Change get_params." />
+    <MESSAGE value="Fix bug in params. Change table in factorial design." />
+    <MESSAGE value="Fix bug in params. Change table in factorial design. Close issue 90, 92." />
+    <MESSAGE value="Change algorithm in experimental design." />
+    <option name="LAST_COMMIT_MESSAGE" value="Change algorithm in experimental design." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="1" />
+      <option name="time" value="4" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/manage.py">
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/account/login.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="2.8951747">
-          <caret line="118" column="54" selection-start-line="118" selection-start-column="14" selection-end-line="118" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/addbibtex.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="14" column="23" selection-start-line="14" selection-start-column="23" selection-end-line="14" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/mainPage.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="90" column="31" selection-start-line="90" selection-start-column="31" selection-end-line="90" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/train_model.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="5" column="7" selection-start-line="5" selection-start-column="4" selection-end-line="6" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/static/js/search.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/static/dist/zeroclipboard/ZeroClipboard.min.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.20512821">
-          <caret line="8" column="6" selection-start-line="8" selection-start-column="4" selection-end-line="8" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/static/dist/handsontable.full.min.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/server_settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.67558527">
-          <caret line="117" column="25" selection-start-line="117" selection-start-column="25" selection-end-line="117" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/static/js/site.min.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/static/dist/handsontable.full.min.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.17948718">
-          <caret line="7" column="27" selection-start-line="7" selection-start-column="27" selection-end-line="7" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/newfile.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mopac.pdb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="67" selection-start-line="0" selection-start-column="67" selection-end-line="0" selection-end-column="67" />
+        <state vertical-scroll-proportion="-1.6037736">
+          <caret line="5" column="27" selection-start-line="5" selection-start-column="27" selection-end-line="5" selection-end-column="27" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/static/css/style.css">
       <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.48358208">
+          <caret line="328" column="13" selection-start-line="328" selection-start-column="13" selection-end-line="328" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/conformer.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.6153846">
+          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/documentation.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.9230769">
+          <caret line="6" column="20" selection-start-line="6" selection-start-column="20" selection-end-line="6" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/qrf_report.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-38.46154">
+          <caret line="68" column="31" selection-start-line="68" selection-start-column="31" selection-end-line="68" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/properties.html">
+      <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="446" column="14" selection-start-line="446" selection-start-column="14" selection-end-line="446" selection-end-column="14" />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/algorithm_detail.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="6" column="175" selection-start-line="6" selection-start-column="175" selection-end-line="6" selection-end-column="175" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.8846154">
+          <caret line="34" column="22" selection-start-line="34" selection-start-column="22" selection-end-line="34" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../mongo_data_mining/data_mining/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#322#331#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -823,209 +1080,165 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/task.html">
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/bibdetail.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="60" column="26" selection-start-line="60" selection-start-column="26" selection-end-line="60" selection-end-column="26" />
+          <caret line="139" column="96" selection-start-line="139" selection-start-column="96" selection-end-line="139" selection-end-column="96" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/error.html">
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/util/menu.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="5" column="30" selection-start-line="5" selection-start-column="30" selection-end-line="5" selection-end-column="30" />
+        <state vertical-scroll-proportion="-1.7818182">
+          <caret line="37" column="61" selection-start-line="37" selection-start-column="56" selection-end-line="37" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/mainPage.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.9230769">
+          <caret line="146" column="99" selection-start-line="146" selection-start-column="99" selection-end-line="146" selection-end-column="99" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/model_detail.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="162" column="21" selection-start-line="162" selection-start-column="21" selection-end-line="162" selection-end-column="21" />
+        <state vertical-scroll-proportion="-4.576923">
+          <caret line="7" column="9" selection-start-line="5" selection-start-column="3" selection-end-line="9" selection-end-column="10" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/predicted_dataset.html">
+    <entry file="file://$PROJECT_DIR$/../../calculate.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.0">
+        <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/dataset_detail.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.16260162">
-          <caret line="47" column="10" selection-start-line="47" selection-start-column="10" selection-end-line="47" selection-end-column="10" />
+        <state vertical-scroll-proportion="-7.923077">
+          <caret line="77" column="44" selection-start-line="77" selection-start-column="44" selection-end-line="77" selection-end-column="44" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/predict.html">
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/taskdetail.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.3090909">
+          <caret line="303" column="39" selection-start-line="303" selection-start-column="39" selection-end-line="303" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.048433047">
+          <caret line="122" column="45" selection-start-line="122" selection-start-column="45" selection-end-line="122" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/train_model.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="41" column="0" selection-start-line="15" selection-start-column="3" selection-end-line="55" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/substance.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="21" column="38" selection-start-line="21" selection-start-column="38" selection-end-line="21" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/select_substance.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="30" column="5" selection-start-line="30" selection-start-column="5" selection-end-line="30" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/search_indexes.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.16831683">
-          <caret line="7" column="62" selection-start-line="7" selection-start-column="62" selection-end-line="7" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/get_dataset.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="86" column="0" selection-start-line="86" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="25" column="29" selection-start-line="25" selection-start-column="29" selection-end-line="25" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="22" column="25" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="25" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset_validate.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="23" column="29" selection-start-line="23" selection-start-column="29" selection-end-line="23" selection-end-column="29" />
+        <state vertical-scroll-proportion="-8.5">
+          <caret line="27" column="287" selection-start-line="27" selection-start-column="287" selection-end-line="27" selection-end-column="287" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/validate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6276923">
+          <caret line="107" column="21" selection-start-line="107" selection-start-column="21" selection-end-line="107" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/validate_split.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.05230769">
+          <caret line="76" column="0" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/predicted_dataset.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.8953846">
+          <caret line="43" column="17" selection-start-line="43" selection-start-column="17" selection-end-line="43" selection-end-column="17" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/predict_model.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state vertical-scroll-proportion="-7.8461537">
+          <caret line="25" column="207" selection-start-line="25" selection-start-column="207" selection-end-line="25" selection-end-column="207" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/model.html">
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/read_across_predict_model.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="24" column="22" selection-start-line="24" selection-start-column="22" selection-end-line="24" selection-end-column="22" />
+        <state vertical-scroll-proportion="0.6126126">
+          <caret line="25" column="207" selection-start-line="25" selection-start-column="207" selection-end-line="25" selection-end-column="207" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/urls.py">
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/predict.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="64" column="37" selection-start-line="64" selection-start-column="30" selection-end-line="64" selection-end-column="38" />
+        <state vertical-scroll-proportion="0.3873874">
+          <caret line="28" column="19" selection-start-line="28" selection-start-column="19" selection-end-line="28" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/ext_validation.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2102102">
+          <caret line="16" column="317" selection-start-line="16" selection-start-column="250" selection-end-line="16" selection-end-column="318" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset_ext_valid.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.26126125">
+          <caret line="17" column="201" selection-start-line="17" selection-start-column="201" selection-end-line="17" selection-end-column="201" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/read_across_predict.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.8168168">
+          <caret line="33" column="216" selection-start-line="33" selection-start-column="216" selection-end-line="33" selection-end-column="216" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/choose_dataset.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2102102">
+          <caret line="16" column="309" selection-start-line="16" selection-start-column="243" selection-end-line="16" selection-end-column="310" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/interlab_substance.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.5">
+          <caret line="22" column="24" selection-start-line="22" selection-start-column="24" selection-end-line="22" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/read_across_dataset.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.884615">
+          <caret line="24" column="311" selection-start-line="24" selection-start-column="244" selection-end-line="24" selection-end-column="311" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/forms.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="85" column="53" selection-start-line="85" selection-start-column="53" selection-end-line="85" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/dataset.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="20" column="39" selection-start-line="20" selection-start-column="39" selection-end-line="20" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/create_dataset.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="130" column="30" selection-start-line="130" selection-start-column="30" selection-end-line="130" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/static/editor.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="43" column="0" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/static/editorws.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="7" column="42" selection-start-line="7" selection-start-column="42" selection-end-line="7" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/alg.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="2" column="24" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/get_params.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/taskdetail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.769231">
-          <caret line="449" column="29" selection-start-line="449" selection-start-column="29" selection-end-line="449" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templatetags/templates_extras.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="45" column="0" selection-start-line="45" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset_detail.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="19" column="12" selection-start-line="19" selection-start-column="12" selection-end-line="19" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/static/js/exp_dataset_detail.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="82" column="43" selection-start-line="82" selection-start-column="43" selection-end-line="82" selection-end-column="43" />
+          <caret line="69" column="16" selection-start-line="69" selection-start-column="6" selection-end-line="69" selection-end-column="18" />
           <folding />
         </state>
       </provider>
@@ -1033,50 +1246,193 @@
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/report.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="41" column="75" selection-start-line="41" selection-start-column="75" selection-end-line="41" selection-end-column="75" />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/base.html">
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/model.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.884615">
+          <caret line="22" column="663" selection-start-line="22" selection-start-column="663" selection-end-line="22" selection-end-column="663" />
+          <folding>
+            <element signature="n#style#0;n#p#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#a#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#span#2;n#a#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#span#3;n#a#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#button#0;n#span#3;n#a#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#i#0;n#button#0;n#span#3;n#a#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/reports.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.1923075">
+          <caret line="11" column="107" selection-start-line="11" selection-start-column="107" selection-end-line="11" selection-end-column="107" />
+          <folding>
+            <element signature="n#style#0;n#span#1;n#p#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#a#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#span#0;n#a#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#span#1;n#a#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#span#2;n#a#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#span#3;n#a#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#button#0;n#span#3;n#a#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#i#0;n#button#0;n#span#3;n#a#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/read_across_train.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.9230769">
+          <caret line="68" column="22" selection-start-line="68" selection-start-column="22" selection-end-line="68" selection-end-column="22" />
+          <folding>
+            <element signature="n#style#0;n#input#0;n#h5#0;n#div#5;n#div#0;n#form#0;n#!!top" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/dataset.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.461538">
+          <caret line="99" column="15" selection-start-line="98" selection-start-column="4" selection-end-line="99" selection-end-column="23" />
+          <folding>
+            <element signature="n#style#0;n#a#0;n#li#0;n#ul#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#a#0;n#li#0;n#ul#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#1;n#a#0;n#li#0;n#ul#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#2;n#a#0;n#li#0;n#ul#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#p#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#a#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#a#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#1;n#a#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#2;n#a#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#3;n#a#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#button#0;n#span#3;n#a#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#i#0;n#button#0;n#span#3;n#a#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.65384614">
+          <caret line="66" column="35" selection-start-line="66" selection-start-column="35" selection-end-line="66" selection-end-column="35" />
+          <folding>
+            <element signature="n#style#0;n#span#1;n#p#0;n#div#2;n#div#0;n#div#0;n#!!top" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/JaqpotVE/Lib/site-packages/endless_pagination/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.14206128">
+          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templatetags/templates_extras.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.0689654">
+          <caret line="99" column="19" selection-start-line="99" selection-start-column="19" selection-end-line="99" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/interlab_dataset.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.5">
+          <caret line="101" column="28" selection-start-line="101" selection-start-column="28" selection-end-line="101" selection-end-column="28" />
+          <folding>
+            <element signature="n#style#0;n#a#0;n#li#0;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#a#0;n#li#0;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#1;n#a#0;n#li#0;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#2;n#a#0;n#li#0;n#ul#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#1;n#p#0;n#div#2;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#1;n#a#0;n#div#2;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/error.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.45945945">
+          <caret line="10" column="30" selection-start-line="10" selection-start-column="30" selection-end-line="10" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/alg.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.1923075">
+          <caret line="11" column="14" selection-start-line="10" selection-start-column="8" selection-end-line="13" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="59" column="66" selection-start-line="59" selection-start-column="66" selection-end-line="59" selection-end-column="66" />
+          <caret line="81" column="79" selection-start-line="81" selection-start-column="79" selection-end-line="81" selection-end-column="79" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/get_dataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7103064">
+          <caret line="65" column="0" selection-start-line="65" selection-start-column="0" selection-end-line="65" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/get_params.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.04735376">
+          <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/ocpu_params.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.709091">
+          <caret line="267" column="13" selection-start-line="267" selection-start-column="13" selection-end-line="267" selection-end-column="13" />
           <folding>
-            <element signature="n#style#0;n#img#0;n#a#0;n#div#0;n#div#0;n#div#0;n#div#1;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#th#0;n#tr#0;n#thead#0;n#table#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#th#1;n#tr#0;n#thead#0;n#table#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#th#2;n#tr#0;n#thead#0;n#table#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#3;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#4;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#5;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#6;n#div#0;n#form#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/static/img/enm_logo.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/util/menu.html">
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/exp_dataset_detail.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.37037036">
-          <caret line="97" column="150" selection-start-line="97" selection-start-column="150" selection-end-line="97" selection-end-column="150" />
-          <folding>
-            <element signature="n#style#0;n#img#0;n#a#0;n#div#0;n#div#0;n#nav#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#a#0;n#div#1;n#div#0;n#nav#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#img#0;n#a#4;n#div#1;n#div#0;n#nav#0;n#!!top" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="-6.5384617">
+          <caret line="95" column="49" selection-start-line="95" selection-start-column="39" selection-end-line="95" selection-end-column="49" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jaqpot_ui/templates/source.html">
+    <entry file="file://$PROJECT_DIR$/jaqpot_ui/static/js/exp_dataset_detail.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.8846154">
-          <caret line="9" column="128" selection-start-line="9" selection-start-column="78" selection-end-line="9" selection-end-column="131" />
+        <state vertical-scroll-proportion="-0.5862069">
+          <caret line="127" column="15" selection-start-line="127" selection-start-column="15" selection-end-line="127" selection-end-column="15" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/jaqpot_ui/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5490716">
-          <caret line="497" column="33" selection-start-line="497" selection-start-column="33" selection-end-line="497" selection-end-column="33" />
+        <state vertical-scroll-proportion="0.58787876">
+          <caret line="3678" column="62" selection-start-line="3678" selection-start-column="62" selection-end-line="3678" selection-end-column="62" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>

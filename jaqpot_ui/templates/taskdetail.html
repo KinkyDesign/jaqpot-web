@@ -4,135 +4,138 @@
 
 {% block content %}
 <div class="div-table" style="width:100%;">
+    {% if output.status == "QUEUED" %}
+         <div style="float:right;overflow:hidden; white-space:nowrap; text-overflow:ellipsis; width:3%;">
+             <a href="/stoptask?id={{name}}" class="btn btn-danger" style="margin:3px;" data-toggle="tooltip" title="Stop task"><i class="fa fa-ban fa-lg"></i></a>
+         </div>
+    {% endif %}
     <h1>Task: <span  style="font-size: 20px;">{{output.meta.titles.0}}</span> <span style="font-size: 12px;">#{{name}}</span> </h1>
     {% if  output.status == "RUNNING"%}
-    <h3>Running task</h3>
-    <div id="container" style=" width: 75%; float:right; right:80%; min-width: 310px; height: 150px; /*max-width: 500px;*/ margin: 0 auto"></div>
-    <!--<div>
-        <label class="align">ID:</label>
-        <input type="text" id="id1" readonly="readonly" style="margin:5px" >
-    </div> -->
+        <h3>Running task</h3>
+        <div id="container" style=" width: 75%; float:right; right:80%; min-width: 310px; height: 150px; /*max-width: 500px;*/ margin: 0 auto"></div>
 
-    {% if output.createdBy %}
-    <div>
-        <label class="align">Creator:</label>
-        <input type="text" readonly="readonly" style="margin:5px" value="{{output.createdBy}}">
-    </div>
-    {% endif %}
-    {% if output.status %}
-    <div>
-        <label class="align">Status:</label>
-        <input type="text" readonly="readonly" style="margin:5px" value="{{output.status}}">
-    </div>
-    {% endif %}
-    {% if output.type %}
-    <div>
-        <label class="align">Type:</label>
-        <input type="text" readonly="readonly" style="margin:5px" value="{{output.type}}">
-    </div>
-    {% endif %}
+        {% if output.createdBy %}
+            <div>
+                <label class="align">Creator:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.createdBy}}">
+            </div>
+        {% endif %}
 
-    {% if output.meta.date %}
-    <div>
-        <label class="align">Date:</label>
-        <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.date}}">
-    </div>
-    {% endif %}
+        {% if output.status %}
+            <div>
+                <label class="align">Status:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.status}}">
+            </div>
+        {% endif %}
 
-    <div>
-        <label class="align">Result:</label>
-        <input type="button" style="margin:5px" class="btn btn-danger" disabled value="See result">
-    </div>
-     {% if output.meta.descriptions %}
-    <p><b>Description:</b></p>
-        <textarea class="form-control" readonly="readonly" style="margin:5px; width:50%;" rows="2">{% for c in output.meta.descriptions %}
-            {{c}}{% endfor %}
-        </textarea>
-    {% endif %}
+        {% if output.type %}
+            <div>
+                <label class="align">Type:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.type}}">
+            </div>
+        {% endif %}
+
+        {% if output.meta.date %}
+            <div>
+                <label class="align">Date:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.date}}">
+            </div>
+        {% endif %}
+
+        <div>
+            <label class="align">Result:</label>
+            <input type="button" style="margin:5px" class="btn btn-danger" disabled value="See result">
+        </div>
+         {% if output.meta.descriptions %}
+            <p><b>Description:</b></p>
+                <textarea class="form-control" readonly="readonly" style="margin:5px; width:50%;" rows="2">{% for c in output.meta.descriptions %}
+                    {{c}}{% endfor %}
+                </textarea>
+         {% endif %}
 
         <a class="advanced btn btn-danger" data-toggle="tooltip" title="Advanced info"><i class="glyphicon glyphicon-plus-sign"></i></a>
         <br>
         <div id='advancedOptions1' >
             <!-- Advanced info -->
             {% if output.duration %}
-            <div><label class="align">ETA:</label>
-                    <input type="text" id="eta" readonly="readonly" style="margin:5px" value="{{output.duration}}">
-            </div>
+                <div><label class="align">ETA:</label>
+                        <input type="text" id="eta" readonly="readonly" style="margin:5px" value="{{output.duration}}">
+                </div>
             {% endif %}
             {% if output.httpStatus %}
-            <div>
-                <label class="align">Http Status:</label>
-                <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
-            </div>
+                <div>
+                    <label class="align">Http Status:</label>
+                    <input type="text" readonly="readonly" style="margin:5px" value="{{output.httpStatus}}">
+                </div>
             {% endif %}
 
             {% if output.resultUri %}
-            <div>
-                <label class="align">URI:</label>
-                <input type="text" readonly="readonly" style="margin:5px" value="{{output.resultUri}}">
-            </div>
+                <div>
+                    <label class="align">URI:</label>
+                    <input type="text" readonly="readonly" style="margin:5px" value="{{output.resultUri}}">
+                </div>
             {% endif %}
             {% if output.result %}
-            <div>
-                <label class="align">Result:</label>
-                <input type="text" readonly="readonly" style="margin:5px" value="{{output.result}}">
-            </div>
+                <div>
+                    <label class="align">Result:</label>
+                    <input type="text" readonly="readonly" style="margin:5px" value="{{output.result}}">
+                </div>
             {% endif %}
             {% if output.meta.hasSources %}
-            <div>
-                <label class="align">Sources:</label>
-                <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.hasSources.0}}">
-            </div>
+                <div>
+                    <label class="align">Sources:</label>
+                    <input type="text" readonly="readonly" style="margin:5px" value="{{output.meta.hasSources.0}}">
+                </div>
             {% endif %}
-             {% if output.meta.comments %}
-            <p><b>Comment:</b></p>
-                <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
-                    {{c}}{% endfor %}
-                </textarea>
+            {% if output.meta.comments %}
+                <p><b>Comment:</b></p>
+                    <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
+                        {{c}}{% endfor %}
+                    </textarea>
             {% endif %}
 
         </div>
 
         <br>
         <a href="/stoptask?id={{name}}" class="btn btn-danger" data-toggle="tooltip" title="Stop task"><i class="glyphicon glyphicon-remove-sign"></i></a>
-
-    {%elif output.status == "CANCELLED" %}
+    {% endif %}
+    {% if output.status == "CANCELLED" %}
         <h3>This task has failed </h3>
         {% if output.actor %}
-        <div>
-            <label class="align">Actor:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.actor}}" >
-        </div>
+            <div>
+                <label class="align">Actor:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.actor}}" >
+            </div>
         {% endif %}
         {% if output.errorReport.message %}
-        <div >
-            <label class="align">Message:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.message}}">
-        </div>
+            <div >
+                <label class="align">Message:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.message}}">
+            </div>
         {% endif %}
         {% if output.status %}
-        <div >
-            <label class="align">Status:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.status}}">
-        </div>
+            <div >
+                <label class="align">Status:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.status}}">
+            </div>
         {% endif %}
         {% if output.type %}
-        <div >
-            <label class="align">Type:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.type}}">
-        </div>
+            <div >
+                <label class="align">Type:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.type}}">
+            </div>
         {% endif %}
         {% if output.errorReport.code %}
-        <div>
-            <label class="align">Code:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.code}}">
-        </div>
+            <div>
+                <label class="align">Code:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.code}}">
+            </div>
         {% endif %}
         {% if output.errorReport.details %}
-        <div>
-            <label class="align">Details:</label>
-            <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.details}}">
-        </div>
+            <div>
+                <label class="align">Details:</label>
+                <input type="text" readonly="readonly" style="margin:5px" value="{{output.errorReport.details}}">
+            </div>
         {% endif %}
         <a class="advanced btn btn-danger" data-toggle="tooltip" title="Advanced info"><i class="glyphicon glyphicon-plus-sign"></i></a>
         <br>
@@ -159,8 +162,9 @@
 
         </div>
         <br>
-        <a href="/" class="btn btn-danger" title="Report it">Report it</a>
-    {%elif output.status == "ERROR" %}
+        <a href="https://github.com/KinkyDesign/JaqpotQuattroUI/issues" class="btn btn-danger" title="Report it">Report it</a>
+    {% endif %}
+    {% if output.status == "ERROR" %}
         <h3>Error </h3>
         {% if output.createdBy %}
         <div >
@@ -253,9 +257,9 @@
 
         </div>
         <br>
-        <a href="/" class="btn btn-danger" title="Report it">Report it</a>
-    {%elif output.status == "QUEUED" %}
-
+        <a href="https://github.com/KinkyDesign/JaqpotQuattroUI/issues" class="btn btn-danger" title="Report it">Report it</a>
+    {% endif %}
+    {% if output.status == "QUEUED" %}
         {% if output.createdBy %}
         <div>
             <label class="align">Creator:</label>
@@ -323,10 +327,12 @@
             <textarea class="form-control" readonly="readonly" style="margin:5px" rows="5">{% for c in output.meta.comments %}
                 {{c}}{%endfor%}
             </textarea>
+
             {% endif %}
 
         </div>
-    {%elif output.status == "REJECTED" %}
+    {% endif %}
+    {% if output.status == "REJECTED" %}
         {% if output.createdBy %}
         <div>
             <label class="align">Creator:</label>
@@ -417,7 +423,8 @@
             {% endif %}
 
         </div>
-    {% elif output.status == "COMPLETED" %}
+    {% endif %}
+    {% if output.status == "COMPLETED" %}
         {% if output.createdBy %}
         <div>
             <label class="align">Creator:</label>
@@ -600,6 +607,7 @@ timerId = setInterval(function(){
                 }
             },
             error: function(){
+                location.reload();
                 console.log("error");
             }
         });

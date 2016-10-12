@@ -9,11 +9,11 @@
 
              {% paginate 20 report %}
              <div class="list-group">
-                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:95%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:40%; position:absolute;">Description</span> <span style="float: left; left:80%; position:absolute;">Date</span></p>
                  {% for r in report %}
 
-                    <a href="/report?name={{r.id}}" class="list-group-item" style="width:95%;float:left;">{{r.id}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{{r.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{r.meta.descriptions.0}}</span> </a>
-                    <button class="btn bt-red" data-toggle="tool" title="Delete Report" style="margin: 4px;" onclick="deleteReport('{{r.id}}')"><i class="glyphicon glyphicon-remove-sign"></i></button>
+                    <a href="/report?name={{r.id}}" class="list-group-item" style="width:100%;float:left;">{{r.id}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{{r.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:40%;">{{r.meta.descriptions.0}}</span> <span class="overflow-span" style="float: left; left:80%; position:absolute;width:15%;">{{r.meta.date}}</span>
+                    <span class="overflow-span" style="float: left; left:95%; position:absolute;width:5%;margin:-5px;margin-left:0px;"><button class="btn bt-red btn-report-remove" data-name="{{ r.id }}" data-toggle="tool" title="Delete Report" style="padding:4px 8px;"><i class="fa fa-trash-o" style="font-size:1.45em;"></i></button></span></a>
                  {% endfor %}
              </div>
 
@@ -72,12 +72,17 @@ $('[data-toggle="tool"]').tooltip({
     'placement': 'top'
 });
 
-function deleteReport(name) {
-            if (confirm("Are you sure?")) {
-                // your deletion code
-                window.location="/report_delete?id="+name
-            }
-            return false;
-}
+$('.btn-report-remove').click(function(e) {
+
+    var name = $(this).data('name')
+    if (confirm("Are you sure?")) {
+         // your deletion code
+         window.location="/report_delete?id="+name
+    }
+    return false;
+
+    e.preventDefault()
+    e.stopPropagation()
+})
 </script>
 {% endblock %}

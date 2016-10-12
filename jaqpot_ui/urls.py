@@ -74,7 +74,14 @@ urlpatterns = patterns('',
                        url(r'^interlab_params', views.interlab_params),
                        url(r'^clean_dataset', views.clean_dataset),
                        url(r'^qrf_report', views.qrf_report),
-
+                       url(r'^download_report', views.report_download),
+                       url(r'^read_across_dataset', views.read_across_dataset),
+                       url(r'^read_across_train', views.read_across_train),
+                       url(r'^read_across_predict_model', views.read_across_predict_model),
+                       url(r'^read_across_predict', views.read_across_predict),
+                       url(r'^factorial_validation', views.factorial_validation),
+                       url(r'^factorial_dataset', views.factorial_dataset),
+                       url(r'^fact_submit', views.fact_submit),
 
 
                        # captcha

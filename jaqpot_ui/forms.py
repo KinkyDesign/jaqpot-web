@@ -52,6 +52,14 @@ class InputForm(forms.Form):
     input = forms.MultipleChoiceField(error_messages={'required': 'Please select input.'}, widget = forms.CheckboxSelectMultiple(), choices=[], required=True)
     input.widget.attrs.update({'class' : "input"})
     output = forms.ChoiceField(error_messages={'required': 'Please select output.'}, widget = forms.RadioSelect(), choices=[], required= True)
+
+class InputFormExpX(forms.Form):
+    input = forms.MultipleChoiceField(error_messages={'required': 'Please select input.'}, widget = forms.CheckboxSelectMultiple(), choices=[], required=True)
+    input.widget.attrs.update({'class' : "input"})
+    output = forms.ChoiceField(widget = forms.RadioSelect(), choices=[], required=False)
+    class Meta:
+        exclude = ('output',)
+
 class NoPmmlForm(forms.Form):
     pred_feature = forms.ChoiceField(widget = forms.Select(), choices=[])
 
@@ -103,3 +111,9 @@ class UploadForm(forms.Form):
 class InterlabForm(forms.Form):
      modelname = forms.CharField(required=True, error_messages={'required': 'Please enter modelname.'},  widget=forms.TextInput(attrs={'style': "margin:5px;"}))
      description = forms.CharField(required=True, error_messages={'required': 'Please enter description.'},  widget=forms.Textarea(attrs={'cols': 40, 'rows': 4, 'style': "margin:5px;"}))
+
+class ReadAcrossTrainingForm(forms.Form):
+    modelname = forms.CharField(max_length=50, required= True)
+    description = forms.CharField(widget=forms.Textarea, required= True)
+    description.widget.attrs.update({'style' : "border-radius: 4px;"})
+    variables = forms.ChoiceField(error_messages={'required': 'Please select variables.'}, widget = forms.RadioSelect(), choices=[( 'input', 'Select Input variable(s) and endpoint' ), ('pm', 'Select PMML'), ('file', 'Upload PMML file'), ('none', 'Select endpoint only (all other variables will be used as input variables)')])

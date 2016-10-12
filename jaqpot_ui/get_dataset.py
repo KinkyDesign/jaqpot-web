@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from django.shortcuts import render, redirect
 
 __author__ = 'evangelie'
@@ -25,7 +27,7 @@ def paginate_dataset(request, name, token, username, page):
         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
     if r.status_code >= 400:
         return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(r.text)})
-    data=json.loads(r.text)
+    data=json.loads(r.text, object_pairs_hook=OrderedDict)
     if str(r) != "<Response [200]>":
         #redirect to error page
         return render(request, "error.html", {'token': token, 'username': username,'error':data})
@@ -64,7 +66,7 @@ def paginate_dataset(request, name, token, username, page):
                 else:
                     res = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax='+str(totalRows)+'&colStart=0&colMax='+str(totalColumns), headers=headers)
 
-            data_detail=json.loads(res.text)
+            data_detail=json.loads(res.text, object_pairs_hook=OrderedDict)
             return data_detail, last, page
 
 
@@ -99,9 +101,9 @@ def get_number_of_not_null_of_dataset(dataset, token, prediction_feature):
     data=json.loads(r.text)
     total = 0
     for d in data['dataEntry']:
-        values =  d['values']
+        values = d['values']
         for k,v in values.items():
-            if k  == prediction_feature:
+            if k == prediction_feature:
                 if v != None:
                     total = total+1
     return total

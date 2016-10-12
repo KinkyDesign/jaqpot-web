@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load templates_extras %}
+
 {% block content %}
 
 <div class="div-table" style="width:100%;">
@@ -9,21 +11,24 @@
              <h3>Example datasets:</h3>
              <div class="list-group" style="height: 300px;overflow: scroll;">
 
-                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%">Name <a id="sort_name"> <i class="fa fa-sort" aria-hidden="true"></i></a><span style="float: left; left:20%; position:absolute;">Title <a id="sort_title"> <i class="fa fa-sort" aria-hidden="true"></i></a></span> <span style="float: left; left:40%; position:absolute;">Description <a id="sort_description"> <i class="fa fa-sort" aria-hidden="true"></i></a></span> <span style="float: left; left:80%; position:absolute;">Date <a id="sort_date"> <i class="fa fa-sort" aria-hidden="true"></i></a></span> </p>
+                 <ul id="list" style="list-style: none; padding:0; margin:0">
                  {% for p in proposed %}
 
-                    <a href="/data_detail?name={{p.name}}" class="list-group-item" style="width:100%;">{{p.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{% for title in p.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </a>
-
+                    <li>
+                        <a href="/data_detail?name={{p.name}}" class="list-group-item" style="width:100%;">{{p.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{% for title in p.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:40%;">{%for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> <span class="overflow-span" style="float: left; left:80%; position:absolute;width:20%;">{{p.meta.date}}</span> </a>
+                    </li>
                  {% endfor %}
+                 </ul>
              </div>
              {% paginate 20 dataset %}
+             <h3>All Datasets:</h3>
              <div class="list-group">
-                 <h3>All Datasets:</h3>
-                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:95%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+                 <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:40%; position:absolute;">Description</span>  <span style="float: left; left:80%; position:absolute;">Date</span></p>
                  {% for d in dataset %}
 
-                    <a href="/data_detail?name={{d.name}}" class="list-group-item" style="width:95%;float:left;">{{d.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{% for title in d.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{%for desc in d.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> </a>
-                    <button class="btn bt-red" data-toggle="tool" title="Delete Dataset" style="margin: 4px;" onclick="deleteDataset('{{d.name}}')"><i class="glyphicon glyphicon-remove-sign"></i></button>
+                    <a href="/data_detail?name={{d.name}}" class="list-group-item" style="width:100%;float:left;">{{d.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%;">{% for title in d.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:40%;">{%for desc in d.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span> <span class="overflow-span" style="float: left; left:80%; position:absolute;width:15%;">{{d.meta.date}}</span><span class="overflow-span" style="float: left; left:95%; position:absolute;width:5%;margin:-5px;margin-left:0px;"> <button class="btn bt-red btn-dataset-remove" data-name="{{ d.name }}" data-toggle="tool" title="Delete Dataset" style="padding:4px 8px;"><i class="fa fa-trash-o" style="font-size:1.45em"></i></button></span></a>
+
                  {% endfor %}
              </div>
 
@@ -82,12 +87,74 @@ $('[data-toggle="tool"]').tooltip({
     'placement': 'top'
 });
 
-function deleteDataset(name) {
-            if (confirm("Are you sure?")) {
-                // your deletion code
-                window.location="/d_delete?id="+name
-            }
-            return false;
+$('.btn-dataset-remove').click(function(e) {
+
+    var name = $(this).data('name')
+    if (confirm("Are you sure?")) {
+         // your deletion code
+         window.location="/d_delete?id="+name
+    }
+    return false;
+
+    e.preventDefault()
+    e.stopPropagation()
+})
+function sortByKey(array, key, order) {
+     var arr = [];
+     var parsed = "{{ proposed | safe }}";
+    {% for i in proposed %}
+        arr.push({ "name" : "{{i.name}}", "title" :"{{i.meta.titles.0}}", "description" :  {% if i.meta.descriptions.0 %} "{{i.meta.descriptions.0}}" {%else %} " "{%endif%}, "date" :  {% if i.meta.date %} "{{i.meta.date}}" {%else %} " "{%endif%}  })
+    {% endfor %}
+    return arr.sort(function(a, b) {
+         var x = a[key]; var y = b[key];
+         return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+
+        });
 }
+
+
+//onclick sort date
+$("#sort_date").click(function(){
+
+    var res = sortByKey("{{ proposed | safe }}", "date")
+    $("#list").empty();
+
+    for (var i = 0; i < res.length; i++) {
+        $("#list").append("<li> <a href='/data_detail?name='+res[i].name class='list-group-item' style='width:100%;'>"+res[i].name+"<span class='overflow-span' style='float: left; left:20%; position:absolute;width:20%;'>"+res[i].title+"</span> <span class='overflow-span' style='float: left; left:40%; position:absolute;width:40%;'>"+res[i].description+"</span> <span class='overflow-span' style='float: left; left:80%; position:absolute;width:20%;'>"+res[i].date+"</span> </a></li>");
+    }
+ });
+
+//onclick sort name
+$("#sort_name").click(function(){
+
+    var res = sortByKey("{{ proposed | safe }}", "name")
+    $("#list").empty();
+
+    for (var i = 0; i < res.length; i++) {
+        $("#list").append("<li> <a href='/data_detail?name='+res[i].name class='list-group-item' style='width:100%;'>"+res[i].name+"<span class='overflow-span' style='float: left; left:20%; position:absolute;width:20%;'>"+res[i].title+"</span> <span class='overflow-span' style='float: left; left:40%; position:absolute;width:40%;'>"+res[i].description+"</span> <span class='overflow-span' style='float: left; left:80%; position:absolute;width:20%;'>"+res[i].date+"</span> </a></li>");
+    }
+ });
+
+ //onclick sort title
+$("#sort_title").click(function(){
+
+    var res = sortByKey("{{ proposed | safe }}", "title")
+    $("#list").empty();
+
+    for (var i = 0; i < res.length; i++) {
+        $("#list").append("<li> <a href='/data_detail?name='+res[i].name class='list-group-item' style='width:100%;'>"+res[i].name+"<span class='overflow-span' style='float: left; left:20%; position:absolute;width:20%;'>"+res[i].title+"</span> <span class='overflow-span' style='float: left; left:40%; position:absolute;width:40%;'>"+res[i].description+"</span> <span class='overflow-span' style='float: left; left:80%; position:absolute;width:20%;'>"+res[i].date+"</span> </a></li>");
+    }
+ });
+
+//onclick sort description
+$("#sort_description").click(function(){
+
+    var res = sortByKey("{{ proposed | safe }}", "description")
+    $("#list").empty();
+
+    for (var i = 0; i < res.length; i++) {
+        $("#list").append("<li> <a href='/data_detail?name='+res[i].name class='list-group-item' style='width:100%;'>"+res[i].name+"<span class='overflow-span' style='float: left; left:20%; position:absolute;width:20%;'>"+res[i].title+"</span> <span class='overflow-span' style='float: left; left:40%; position:absolute;width:40%;'>"+res[i].description+"</span> <span class='overflow-span' style='float: left; left:80%; position:absolute;width:20%;'>"+res[i].date+"</span> </a></li>");
+    }
+ });
 </script>
 {% endblock %}

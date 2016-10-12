@@ -9,21 +9,19 @@
              {% if proposed %}
              <h3>Example models:</h3>
              <div class="list-group">
-                     <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+                     <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:40%; position:absolute;">Description</span> <span style="float: left; left:80%; position:absolute;">Date</span></p>
                      {% for p in proposed %}
-                             <a href="/m_detail?name={{p.name}}" class="list-group-item" style="width:100%;">{{p.name}} <span style="float: left; left:20%; position:absolute;overflow: hidden; white-space: nowrap;width:30%;text-overflow: ellipsis;">{% for title in p.meta.titles %}{{title}} {% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%} {% endfor %}</span> <span style="float: left; left:50%; position:absolute; overflow: hidden; white-space: nowrap;width: 50%;text-overflow: ellipsis;">{% for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor %}</span> </a>
+                             <a href="/m_detail?name={{p.name}}" class="list-group-item" style="width:100%;">{{p.name}} <span style="float: left; left:20%; position:absolute;overflow: hidden; white-space: nowrap;width:20%;text-overflow: ellipsis;">{% for title in p.meta.titles %}{{title}} {% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%} {% endfor %}</span> <span style="float: left; left:40%; position:absolute; overflow: hidden; white-space: nowrap;width: 40%;text-overflow: ellipsis;">{% for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor %}</span> <span class="overflow-span" style="float: left; left:80%; position:absolute;width:20%;">{{p.meta.date}}</span></a>
                     {% endfor %}
                  </div>
              {% endif %}
              {% paginate 20 models %}
                  <div class="list-group">
-                     <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:95%;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </p>
+                     <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:40%; position:absolute;">Description</span>  <span style="float: left; left:80%; position:absolute;">Date</span></p>
+
                      {% for m in models %}
-                             <a href="/m_detail?name={{m.name}}" class="list-group-item" style="width:95%;float:left;">{{m.name}} <span style="float: left; left:20%; position:absolute;">{% for title in m.meta.titles %}{{title}} {% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%} {% endfor %}</span> <span style="float: left; left:50%; position:absolute;">{% for desc in m.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor %}</span> </a>
-                             <a href="/m_delete?id={{m.name}}" class="btn bt-red" data-toggle="tool" title="Delete Model" style="margin: 4px;"><i class="glyphicon glyphicon-remove-sign"></i></a>
-                     <!--<li>
-                            <a href="/m_detail?name={{m.name}}">{{m.name}}</a>
-                         </li> -->
+                             <a href="/m_detail?name={{m.name}}" class="list-group-item" style="width:100%;float:left;">{{m.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute;width:20%">{% for title in m.meta.titles %}{{title}} {% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%} {% endfor %}</span> <span style="float: left; left:40%; position:absolute;width:40%;">{% for desc in m.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor %}</span> <span class="overflow-span" style="float: left; left:80%; position:absolute;width:15%;">{{m.meta.date}}</span> <span class="overflow-span" style="float: left; left:95%; position:absolute;width:5%;margin:-5px;margin-left:0px;"><button class="btn bt-red btn-model-remove" data-name="{{ m.name }}" data-toggle="tool" title="Delete Model" style="padding:4px 8px;"><i class="fa fa-trash-o" style="font-size:1.45em"></i></button></span> </a>
+
                     {% endfor %}
                  </div>
 
@@ -61,6 +59,19 @@
 </div>
 
 <script>
+$('.btn-model-remove').click(function(e) {
+
+    var name = $(this).data('name')
+    if (confirm("Are you sure?")) {
+         // your deletion code
+         window.location="/m_delete?id="+name
+    }
+    return false;
+
+    e.preventDefault()
+    e.stopPropagation()
+})
+
 //display tooltip right
 $('[data-toggle="tool"]').tooltip({
     'placement': 'top'

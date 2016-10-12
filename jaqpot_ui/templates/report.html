@@ -3,52 +3,88 @@
 {% load templates_extras %}
 
 {% block content %}
-<div class="div-table" style="width:100%;">
+<div class="div-table" style="width:100%;display:inline-block;">
+    <div style="float:right;overflow:hidden; white-space:nowrap; text-overflow:ellipsis; width:12%;">
+          <a href="/download_report?name={{name}}" class="btn btn-danger btn-lg" data-toggle="tooltip" title="Download pdf" style="margin: 5px;"><i class="fa fa-file-pdf-o"></i> Download</a>
+
+      </div>
     <h1>Report: <span style="font-size: 20px;">#{{name}}</span> </h1>
     {% if report.meta.titles %}
         <div>
             <label class="align">Title:</label>
             <input type="text" readonly="readonly" id="in-title" style="margin:5px" value="{{report.meta.titles.0}}">
-            <!--<button type="button" id="btn-title" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+            <button type="button" id="btn-title" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
             <button type="button" id="btn-title-save" class="btn btn-success" style="display:none">Save</button>
-            <button type="button" id="btn-title-cancel" class="btn btn-danger" style="display:none">Cancel</button> -->
+            <button type="button" id="btn-title-cancel" class="btn btn-danger" style="display:none">Cancel</button>
         </div>
     {% endif %}
+    {% if report.meta.hasSources %}
+        {% for r in report.meta.hasSources  %}
+            {% if 'dataset' in r %}
+                <div>
+                    <label class="align">Dataset:</label>
+                    <input type="text" readonly="readonly" id="in-dataset" style="margin:5px" value="{{ r|split:'dataset/' }}">
+                    <button type="button" id="btn-dataset" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+                    <button type="button" id="btn-dataset-save" class="btn btn-success" style="display:none">Save</button>
+                    <button type="button" id="btn-dataset-cancel" class="btn btn-danger" style="display:none">Cancel</button>
+                </div>
+            {% endif %}
+            {% if 'model' in r %}
+                <div>
+                    <label class="align">Model:</label>
+                    <input type="text" readonly="readonly" id="in-model" style="margin:5px" value="{{ r|split:'model/' }}">
+                    <button type="button" id="btn-model" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+                    <button type="button" id="btn-model-save" class="btn btn-success" style="display:none">Save</button>
+                    <button type="button" id="btn-model-cancel" class="btn btn-danger" style="display:none">Cancel</button>
+                </div>
+            {% endif %}
+            {% if 'algorithm' in r %}
+                <div>
+                    <label class="align">Algorithm:</label>
+                    <input type="text" readonly="readonly" id="in-algorithm" style="margin:5px" value="{{ r|split:'algorithm/' }}">
+                    <button type="button" id="btn-algorithm" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+                    <button type="button" id="btn-algorithm-save" class="btn btn-success" style="display:none">Save</button>
+                    <button type="button" id="btn-algorithm-cancel" class="btn btn-danger" style="display:none">Cancel</button>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
      {% if report.meta.descriptions %}
         <div>
         <label class="align">Description:</label>
          <textarea class="form-control" rows="3" id="in-desc" readonly="readonly" style="margin:5px;width:25%;">{{report.meta.descriptions.0}}</textarea>
-           <!-- <button type="button" id="btn-desc" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+            <button type="button" id="btn-desc" data-toggle="tooltip" title="Edit Description" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
             <button type="button" id="btn-desc-save" class="btn btn-success" style="display:none">Save</button>
-            <button type="button" id="btn-desc-cancel" class="btn btn-danger" style="display:none">Cancel</button>  -->
+            <button type="button" id="btn-desc-cancel" class="btn btn-danger" style="display:none">Cancel</button>
     </div>
      {% endif %}
     {% if report.singleCalculations %}
         {% for key, value in report.singleCalculations.items  %}
             <div>
                 <label class="align">{{key}}:</label>
-                <input type="text" id="in-{{key}}" readonly="readonly" style="margin:5px" value="{{value}}">
-                <!-- <button type="button" id="btn-{{key}}" data-toggle="tooltip" title="Edit {{key}}" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
-                <button type="button" id="btn-{{key}}-save" class="btn btn-success" style="display:none">Save</button>
-                <button type="button" id="btn-{{key}}-cancel" class="btn btn-danger" style="display:none">Cancel</button> -->
+                <input type="text" id="in-{{key|replace}}" readonly="readonly" style="margin:5px" value="{{value}}">
+                <button type="button" id="btn-{{key|replace}}" data-toggle="tooltip" title="Edit {{key}}" class="btn btn-success"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
+                <button type="button" id="btn-{{key|replace}}-save" class="btn btn-success" style="display:none">Save</button>
+                <button type="button" id="btn-{{key|replace}}-cancel" class="btn btn-danger" style="display:none">Cancel</button>
             </div>
         {% endfor%}
     {% endif %}
     {% if report.arrayCalculations %}
         {% for k,v in report.arrayCalculations.items  %}
             <h4>{{k}}</h4>
-            <table>
+            <table id="{{k|replace}}" class="div-form-table display" >
                 <tr>
                     <th> </th>
                     {% for col in v.colNames%}
                     <th>{{col}}</th>
                     {% endfor %}
                 </tr>
-                {% for k,val in v.values.items%}
+                {% for key,val in v.values.items%}
                 <tr>
-                    <td>{{k}}</td>
+                    <td>{% autoescape off %}{{key}} {% endautoescape %}</td>
                     {%for d in val%}
-                    <td>{{d}}</td>
+                    <td id="{{key|replaceid}}_{{forloop.counter}}" contenteditable='true' onclick="edit_table('/arrayCalculations/{{k|replace}}/values/{{key}}/{{forloop.counter|sub}}','{{d}}',$( '#{{key|replaceid}}_{{forloop.counter}}' ) )">{{d}}</td>
                     {% endfor %}
                 </tr>
                 {% endfor %}
@@ -69,19 +105,44 @@
 
 <script>
 
-/*edit( $( '#btn-desc' ), $( '#in-desc' ), $( '#btn-desc-save' ),  $( '#btn-desc-cancel' ), '/desc', "Description", "{{report.meta.descriptions.0}}" );
+edit( $( '#btn-desc' ), $( '#in-desc' ), $( '#btn-desc-save' ),  $( '#btn-desc-cancel' ), '/meta/descriptions/1', "Description", "{{report.meta.descriptions.0}}" , "add");
 
-edit( $( '#btn-title' ), $( '#in-title' ), $( '#btn-title-save' ),  $( '#btn-title-cancel' ), '/title', "Title", "{{report.meta.titles.0}}" );
+edit( $( '#btn-title' ), $( '#in-title' ), $( '#btn-title-save' ),  $( '#btn-title-cancel' ), '/meta/titles/1', "Title", "{{report.meta.titles.0}}", "add" );
 
 //Edit author field
 {% for k, v in report.singleCalculations.items  %}
-edit( $( '#btn-{{k}}' ), $( '#in-{{k}}' ), $( '#btn-{{k}}-save' ),  $( '#btn-{{k}}-cancel' ), '/{{k}}', "{{k}}", "{{v}}" );
-{% endfor %}  */
+edit( $( '#btn-{{k|replace}}' ), $( '#in-{{k|replace}}' ), $( '#btn-{{k|replace}}-save' ),  $( '#btn-{{k|replace}}-cancel' ), '/singleCalculations/{{k|replace}}', "{{k}}", "{{v}}", "replace" );
+{% endfor %}
 
+//Edit array
+function edit_table(path,value, id_field){
+    clearTimeout($.data(this, 'timer'));
+    var wait = setTimeout(saveData(path, value, id_field ), 30000); // delay after user types
+    $(this).data('timer', wait);
 
+}
+function saveData(path,value,id_field){
+setTimeout(function(){ $.ajax({
+            type: "get",
+            url: "/report",
+            dataType: "json",
+            contentType: 'application/json;',
+            data: { 'op': 'replace', 'path': path, 'value': encodeURIComponent(id_field.text()) , 'id': '{{name}}'},
+            success: function(data){
+                var json = JSON.stringify(data);
+                var json = JSON.parse(json);
+                 //id_field.val(json[field])
+            },
+            error: function(){
+                alert("error");
+            }
+        });
+        }
+        ,5000);
+        }
 
 //edit function is called when user push edit buttom and send via ajax the new value of field
-function edit(btn, id_field, save, cancel, path , field, previous_value) {
+function edit(btn, id_field, save, cancel, path , field, previous_value,op) {
 
     btn.click(function() {
     id_field.removeAttr("readonly");
@@ -106,21 +167,21 @@ function edit(btn, id_field, save, cancel, path , field, previous_value) {
     btn.show();
     id_field.attr("readonly","readonly");
     //send via ajax new values
-    /*$.ajax({
+    $.ajax({
             type: "get",
-            url: "/report_patch",
+            url: "/report",
             dataType: "json",
             contentType: 'application/json;',
-            data: { 'op': 'add', 'path': path, 'value': id_field.val() , 'id': '{{id}}', },
+            data: { 'op': op, 'path': path, 'value': id_field.val() , 'id': '{{name}}', },
             success: function(data){
                 var json = JSON.stringify(data);
                 var json = JSON.parse(json);
-                 id_field.val(json[field])
+                 //id_field.val(json[field])
             },
             error: function(){
                 alert("error");
             }
-        });  */
+        });
 
 });
 
