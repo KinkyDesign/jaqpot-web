@@ -2763,11 +2763,52 @@ def experimental_params(request):
         dataset = request.GET.get('dataset')
         request.session['data'] = dataset
         prediction_feature = get_prediction_feature_of_dataset(dataset, token)
+        headers = {'Accept': 'application/json', 'subjectid': token}
+        try:
+            res1 = requests.get(SERVER_URL + '/dataset/' + dataset, headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
+        if res1.status_code >= 400:
+            return render(request, "error.html", {'token': token, 'username': username, 'error': json.loads(res1.text)})
+        data_detail = json.loads(res1.text)
+        try:
+            model = json.loads(res1.text)['byModel']
+            print model
+            # model = 'A0fU5rK7B64r'
+            try:
+                res = requests.get(SERVER_URL + '/model/' + model, headers=headers)
+            except Exception as e:
+                return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
+            if res.status_code >= 400:
+                return render(request, "error.html",
+                              {'token': token, 'username': username, 'error': json.loads(res.text)})
+            algorithms = json.loads(res.text)['algorithm']['_id']
+            if "expdesign" in algorithms:
+
+                model_detail = json.loads(res.text)
+                predictedFeatures = model_detail['predictedFeatures']
+                params = json.loads(res.text)['parameters']
+                new = []
+                for k in sorted(data_detail['features']):
+                    new.append(k)
+                '''if algorithms == "ocpu-expdesign2-x":
+                    algorithms = "ocpu-expdesign2-xy"
+                    par = {}
+                    for k,v in params.items():
+                        if k != "newY":
+                            par.update({k:v})
+                    params = par'''
+
+                return render(request, "exp_dataset_detail.html",
+                              {'token': token, 'username': username, 'new': new, 'data_detail': data_detail,
+                               'predicted': predictedFeatures, 'prediction': prediction_feature, 'model': model_detail,
+                               'dataset_name': dataset, 'params': params})
+        except Exception as e:
+            print(e)
         form = UploadForm()
         tform = ExperimentalForm()
         #nform = NoPmmlForm()
         pmmlform = SelectPmmlForm()
-        headers = {'Accept': 'application/json', 'subjectid': token}
         print prediction_feature
         if prediction_feature == "":
             inputform = InputFormExpX()

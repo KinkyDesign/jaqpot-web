@@ -28,10 +28,10 @@
             {% for k,v in model.additionalInfo.items %}
             {% if k == "r.squared" %}
                     <div>
-                        <label class="align">Rsquared:</label>
+                        <label class="align">R<sup>2</sup>:</label>
                         <input type="text" id="rsquare" style="margin:5px;width:40%;" readonly="readonly" value="{{v.0}}">
                     </div>
-                    <span style="font-size: 10px;margin-left: 10%;"><b>Help note:</b>Rsquared greater or equal to Rsquared threshold.</span>
+                    <span style="font-size: 10px;margin-left: 10%;"><b>Help note:</b>R<sup>2</sup> greater or equal to R<sup>2</sup> threshold.</span>
             {% endif %}
             {% endfor %}
             {% for k,v in model.additionalInfo.items %}
