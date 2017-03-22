@@ -1508,28 +1508,31 @@ def predict_model(request):
         if request.is_ajax():
             img_descriptors = request.POST.getlist('img_desc[]')
             mopac_descriptors = request.POST.getlist('mopac_desc[]')
-            print mopac_descriptors
-            print request.POST
             if 'excel_data' in request.POST:
-                data = request.POST.get('excel_data')
-                data = json.loads(data)
-                n_data=[]
-                n_d={}
-                n_d1={}
-                for d in data:
-                    for key, value in d.items():
-                        new_val = value.replace(',', '.')
-                        n_d1[''+key+'']=new_val
-                        n_d.update(n_d1)
-                n_data.append(n_d)
-                print n_data
-                data = n_data
-                #data = json.loads(data)
-                #data.replace(',','.')'''
-                print data
-                #Get data from excel and create dataset to the appropriate format
-                new_data = create_dataset(data,username,required_res, img_descriptors, mopac_descriptors)
-                json_data = json.dumps(new_data)
+                if img_descriptors:
+                    data = request.POST.get('img_desc[]')
+                    data = json.loads(data)
+                    new_data = create_dataset(data, username, required_res, img_descriptors, mopac_descriptors)
+                    json_data = json.dumps(new_data)
+                else:
+                    data = request.POST.get('excel_data')
+                    print data
+                    data = json.loads(data)
+                    n_data=[]
+                    n_d={}
+                    n_d1={}
+                    for d in data:
+                        for key, value in d.items():
+                            new_val = value.replace(',', '.')
+                            n_d1[''+key+'']=new_val
+                            n_d.update(n_d1)
+                    n_data.append(n_d)
+                    print n_data
+                    data = n_data
+                    print data
+                    #Get data from excel and create dataset to the appropriate format
+                    new_data = create_dataset(data,username,required_res, img_descriptors, mopac_descriptors)
+                    json_data = json.dumps(new_data)
                 headers1 = {'Content-type': 'application/json', 'subjectid': token}
                 try:
                     res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
@@ -1586,10 +1589,10 @@ def predict_model(request):
                 print response
                 id = response['_id']
                 return redirect('/t_detail?name='+id+'&model='+selected_model)
-
+@csrf_exempt
 def calculate_image_descriptors(request):
     #get data uri od upload image
-    data_uri = request.GET.get('data_uri')
+    data_uri = request.POST.get('data_uri')
     print data_uri
     #send request to data uri
     body = {'image': data_uri, }
@@ -4848,7 +4851,6 @@ def read_across_predict_model(request):
         if request.is_ajax():
             img_descriptors = request.POST.getlist('img_desc[]')
             mopac_descriptors = request.POST.getlist('mopac_desc[]')
-            print mopac_descriptors
             print request.POST
             if 'excel_data' in request.POST:
                 data = request.POST.get('excel_data')
@@ -4870,6 +4872,8 @@ def read_across_predict_model(request):
                 #Get data from excel and create dataset to the appropriate format
                 new_data = create_dataset(data,username,required_res, img_descriptors, mopac_descriptors)
                 json_data = json.dumps(new_data)
+                print("----------")
+                print new_data
                 headers1 = {'Content-type': 'application/json', 'subjectid': token}
                 try:
                     res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)

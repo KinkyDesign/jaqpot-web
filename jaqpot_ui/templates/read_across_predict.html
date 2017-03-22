@@ -224,7 +224,7 @@
                     for (i = 1; i < pr.length; i++) {
                         $('#filename'+i).val(pr[i]);
                         }
-                    });
+                    //});
                 {% endif %}
                 {% if mopac %}
                     for (i = 1; i < mopac_path.length; i++) {
@@ -285,7 +285,7 @@ function readURL(input, i) {
                 //send data uri via ajax
                 $.ajax({
                     url: '/calculate_image_descriptors',
-                    type: 'GET',
+                    type: 'POST',
                     data: {
                         data_uri: e.target.result,
                     },
