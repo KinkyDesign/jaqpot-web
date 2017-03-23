@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% csrf_token %}
 {% block content %}
 <form name="form" id="form" method="post">{% csrf_token %}
 <div class="div-table" style="width:100%; display: inline-block;">
@@ -186,7 +187,7 @@ $('.checkbox1').on('click', function(){
 
  $("#select_sub").click(function(event) {
     $.ajax({
-        type: 'GET',
+        type: 'post',
         url: '/get_substance/',
         data: { data: selected_items },
         success: function() {

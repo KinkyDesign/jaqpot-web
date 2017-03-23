@@ -9,23 +9,41 @@ def create_dataset( data, username, required_res, img_descriptors, mopac_descrip
 
    #replace name with uri
     new_data=[]
-
-    for d in data:
-        n_d={}
-        n_d1={}
-        for key, value in d.items():
+    if img_descriptors:
+        print("hhfgv")
+        n_d = {}
+        n_d1 = {}
+        for key, value in data.items():
             for r in required_res:
                 if r['name'] == key:
-                    n=r['uri']
+                    n = r['uri']
                     try:
-                        n_d1[''+n+'']=int(value)
+                        n_d1['' + n + ''] = int(value)
                     except:
                         try:
-                            n_d1[''+n+'']=float(value)
+                            n_d1['' + n + ''] = float(value)
                         except:
-                            n_d1[''+n+'']=value
+                            n_d1['' + n + ''] = value
                     n_d.update(n_d1)
         new_data.append(n_d)
+        print new_data
+    else:
+        for d in data:
+            n_d={}
+            n_d1={}
+            for key, value in d.items():
+                for r in required_res:
+                    if r['name'] == key:
+                        n=r['uri']
+                        try:
+                            n_d1[''+n+'']=int(value)
+                        except:
+                            try:
+                                n_d1[''+n+'']=float(value)
+                            except:
+                                n_d1[''+n+'']=value
+                        n_d.update(n_d1)
+            new_data.append(n_d)
 
     data1 = {}
     data2 = {}
@@ -47,32 +65,54 @@ def create_dataset( data, username, required_res, img_descriptors, mopac_descrip
     data2['meta'] = data1
 
     counter=1
-    for d in new_data:
-        if img_descriptors:
-            if img_descriptors[counter-1]:
-                img_descriptors[counter-1] = reformat_key(json.loads(img_descriptors[counter-1]))
-                d.update(img_descriptors[counter-1])
-        if mopac_descriptors:
-            if mopac_descriptors[counter-1]:
-                mopac_descriptors[counter-1] = reformat(json.loads(mopac_descriptors[counter-1]))
-                d.update(mopac_descriptors[counter-1])
-        data3["values"] = d
-        data4["name"] = 'compound'+str(counter)
-        data4["URI"] = 'compound'+str(counter)
-        data3["compound"] = data4
-        data5.append(data3)
-        totalColumns= len(d)
-        counter = counter+1
-        data3 = {}
-        data4 = {}
+    if img_descriptors:
+        for d in new_data:
+            print d
+            data3["values"] = d
+            data4["name"] = 'compound1'
+            data4["URI"] = 'compound1'
+            data3["compound"] = data4
+            data5.append(data3)
+            totalColumns = len(d)
+            data3 = {}
+            data4 = {}
+
+            data8["dataEntry"] = data5
+
+            data6["descriptors"] = ["EXPERIMENTAL"]
+            data9["totalColumns"] = totalColumns
+            data10["totalRows"] = 1
+            data11["features"] = required_res
+            print required_res
+
+    else:
+        for d in new_data:
+            print d
+            '''if img_descriptors:
+                if img_descriptors[counter-1]:
+                    img_descriptors[counter-1] = reformat_key(json.loads(img_descriptors[counter-1]))
+                    d.update(img_descriptors[counter-1])'''
+            if mopac_descriptors:
+                if mopac_descriptors[counter-1]:
+                    mopac_descriptors[counter-1] = reformat(json.loads(mopac_descriptors[counter-1]))
+                    d.update(mopac_descriptors[counter-1])
+            data3["values"] = d
+            data4["name"] = 'compound'+str(counter)
+            data4["URI"] = 'compound'+str(counter)
+            data3["compound"] = data4
+            data5.append(data3)
+            totalColumns= len(d)
+            counter = counter+1
+            data3 = {}
+            data4 = {}
 
 
-    data8["dataEntry"]= data5
+        data8["dataEntry"]= data5
 
-    data6["descriptors"] = [ "EXPERIMENTAL" ]
-    data9["totalColumns"] = totalColumns
-    data10["totalRows"] = len(new_data)
-    data11["features"] = required_res
+        data6["descriptors"] = [ "EXPERIMENTAL" ]
+        data9["totalColumns"] = totalColumns
+        data10["totalRows"] = len(new_data)
+        data11["features"] = required_res
 
     data7.update(data2)
     data7.update(data8)
