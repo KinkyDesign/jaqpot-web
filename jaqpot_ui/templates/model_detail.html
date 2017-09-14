@@ -15,14 +15,14 @@
      {% if details.meta.titles %}
         <div>
         <label class="align">Title:</label>
-        <input type="text" style="margin:5px;width:50%;" value="{{details.meta.titles.0}}">
+        <input type="text" style="margin:5px;width:50%;" readonly="readonly" value="{{details.meta.titles.0}}">
     </div>
      {% endif %}
 
         {% if details.meta.doi %}
         <div>
             <label class="align">Doi:</label>
-            <input type="text" style="margin:5px;width:50%;" value="{{details.meta.doi.0}}">
+            <input type="text" style="margin:5px;width:50%;"   readonly="readonly" value="{{details.meta.doi.0}}">
         </div>
         {% endif %}
      {% if details.meta.descriptions %}

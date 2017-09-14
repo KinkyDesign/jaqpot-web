@@ -5,6 +5,7 @@ from urllib import urlencode
 import urllib
 import urllib2
 import urlparse
+from django.http import JsonResponse
 
 from sortedcontainers import SortedList
 from django.core.urlresolvers import reverse
@@ -143,6 +144,7 @@ def task(request):
         #get all tasks with status Completed
         try:
             res = requests.get(SERVER_URL+'/task?status=COMPLETED&start=0&max=10000', headers=headers)
+
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
@@ -954,6 +956,7 @@ def model_pmml(request):
 
     name = request.GET.get('name')
     headers = {'Accept': 'application/xml', "subjectid": token}
+
     try:
         res = requests.get(SERVER_URL+'/model/'+name+'/pmml', headers=headers)
     except Exception as e:
@@ -1540,7 +1543,7 @@ def predict_model(request):
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
                 if res.status_code >= 400:
-                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+                    return JsonResponse({'server_error': json.loads(res.text), "ERROR_REDIRECT": "1"})
                 dataset = res.text
                 print dataset
                 headers = {'Content-Type': 'application/x-www-form-urlencoded', 'subjectid': token,}
@@ -1552,7 +1555,7 @@ def predict_model(request):
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
                 if res.status_code >= 400:
-                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+                    return JsonResponse({'server_error': json.loads(res.text), "ERROR_REDIRECT": "1"})
                 response = json.loads(res.text)
                 print response
                 id = response['_id']
@@ -1626,6 +1629,16 @@ def calculate_mopac_descriptors(request):
     response = json.loads(res.text)
     print response
     return HttpResponse(json.dumps(response))
+
+@csrf_exempt
+@token_required
+def error(request):
+    token = request.session.get('token', '')
+    username = request.session.get('username', '')
+    server_error = request.POST.get('server_error')
+    server_error = json.loads(server_error)
+    return render(request, "error.html", {'token': token, 'username': username,'error':server_error})
+
 
 #Search
 @token_required
@@ -4876,13 +4889,13 @@ def read_across_predict_model(request):
                 print new_data
                 headers1 = {'Content-type': 'application/json', 'subjectid': token}
                 try:
-                    res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
-                    print res.text
+                    res15 = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
+                    print res15.text
                 except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-                if res.status_code >= 400:
-                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-                dataset = res.text
+                if res15.status_code >= 400:
+                    return render_to_response(request, "error.html", {'token': token, 'username': username,'error': json.loads(res15.text)})
+                dataset = res15.text
                 print dataset
                 headers = {'Content-Type': 'application/x-www-form-urlencoded', 'subjectid': token,}
                 body = {'dataset_uri': dataset, 'visible': True}
