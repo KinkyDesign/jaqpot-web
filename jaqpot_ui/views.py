@@ -1489,6 +1489,7 @@ def predict_model(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
         proposed_data = json.loads(res1.text)
         proposed = []
+
         for p in proposed_data:
             proposed.append({'name': p['_id'], 'meta': p['meta'] })
         #Display all datasets for selection
@@ -1766,7 +1767,7 @@ def all_substance(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         page1=str(int(page)-1)
         try:
-            res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page='+page1+'&pagesize=20', headers=headers)
+            res = requests.get('https://data.enanomapper.net/substanceowner?page='+page1+'&pagesize=20', headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
@@ -1777,7 +1778,7 @@ def all_substance(request):
         headers = {'Accept': 'application/json', 'subjectid': token}
         page=1
         try:
-            res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
+            res = requests.get('https://data.enanomapper.net/substanceowner', headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
@@ -1803,7 +1804,7 @@ def all_substance(request):
                     headers = {'Accept': 'application/json', 'subjectid': token}
                     page1=str(int(page)-1)
                     try:
-                        res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page='+page1+'&pagesize=20', headers=headers)
+                        res = requests.get('https://data.enanomapper.net/substanceowner?page='+page1+'&pagesize=20', headers=headers)
                     except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
                     if res.status_code >= 400:
@@ -1814,7 +1815,7 @@ def all_substance(request):
                     headers = {'Accept': 'application/json', 'subjectid': token}
                     page=1
                     try:
-                        res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
+                        res = requests.get('https://data.enanomapper.net/substanceowner', headers=headers)
                     except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
                     if res.status_code >= 400:
@@ -1824,7 +1825,7 @@ def all_substance(request):
                 error = "Please select substance owner."
                 return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'substance_owner': substance_owner, 'page': page, 'error':error})
             else:
-                substance_owner = 'https://apps.ideaconsult.net/enmtest/substanceowner/'+substance_owner
+                substance_owner = 'https://data.enanomapper.net/substanceowner/'+substance_owner
                 request.session['substanceowner']= substance_owner
                 headers = {'Accept': 'application/json', 'subjectid': token}
                 try:
@@ -1976,16 +1977,16 @@ def select_descriptors(request):
         substanceowner = request.session.get('substanceowner', '')
         selected_substances = request.session.get('selected_substances', '')
         selected_properties = request.session.get('selected_properties', '')
-        headers = {'content-type': 'application/json', 'subjectid': token}
-        body = json.dumps({'description': 'a bundle with protein corona data', 'substanceOwner': substanceowner, 'substances': selected_substances, 'properties': selected_properties})
-        try:
-            res = requests.post(url=SERVER_URL+'/enm/bundle', data=body, headers=headers)
-        except Exception as e:
-                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        if res.status_code >= 400:
-            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+       # headers = {'content-type': 'application/json', 'subjectid': token}
+       # body = json.dumps()
+       # try:
+       #     res = requests.post(url=SERVER_URL+'/enm/bundle', data=body, headers=headers)
+       # except Exception as e:
+       #         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+       # if res.status_code >= 400:
+       #     return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         headers = {'content-type': 'application/json', 'subjectid': token,}
-        body = json.dumps({'bundle':res.text, 'descriptors':select_descriptors, 'title': title, 'description':description})
+        body = json.dumps({'substanceOwner': substanceowner, 'substances': selected_substances, 'properties': selected_properties, 'descriptors':select_descriptors, 'title': title, 'description':description})
         try:
             res = requests.post(url=SERVER_URL+'/enm/dataset', headers=headers, data=body)
         except Exception as e:
