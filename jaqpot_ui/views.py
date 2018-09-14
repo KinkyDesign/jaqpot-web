@@ -1139,15 +1139,24 @@ def algorithm(request):
          #get all algorithms
          headers = {'Accept': 'application/json', 'subjectid': token}
          try:
-            res = requests.get(SERVER_URL+'/algorithm?start=0&max=10', headers=headers)
+             res = requests.get(SERVER_URL + '/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
          except Exception as e:
-                return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+             return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
          if res.status_code >= 400:
-            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-         algorithms = json.loads(res.text)
-         print algorithms
+             return render(request, "error.html", {'token': token, 'username': username, 'error': json.loads(res.text)})
+         classification_alg = json.loads(res.text)
+         headers = {'Accept': 'application/json', 'subjectid': token}
+         try:
+             res = requests.get(SERVER_URL + '/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
+         except Exception as e:
+             return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
+         if res.status_code >= 400:
+             return render(request, "error.html", {'token': token, 'username': username, 'error': json.loads(res.text)})
+         regression_alg = json.loads(res.text)
+         return render(request, "algorithm.html",
+                       {'token': token, 'username': username, 'classification_alg': classification_alg,
+                        'regression_alg': regression_alg, 'dataset': dataset})
 
-         return render(request, "algorithm.html", {'token': token, 'username': username, 'algorithms': algorithms})
 
 #Display details of each algorithm
 @token_required
@@ -2759,7 +2768,7 @@ def experimental(request):
         for d in data:
             dataset.append({'name': d['_id'], 'meta': d['meta']})
         try:
-            res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+            res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=100', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res1.status_code >= 400:
@@ -4168,7 +4177,7 @@ def interlab_select_substance(request):
         print dataset
         proposed=[]
         try:
-            res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=10', headers=headers)
+            res1 = requests.get(SERVER_URL+'/dataset/featured?start=0&max=100', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res1.status_code >= 400:
