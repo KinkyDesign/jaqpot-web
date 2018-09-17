@@ -4205,7 +4205,7 @@ def interlab_params(request):
             return render(request, "interlab_params.html", {'token': token, 'username': username, 'dataset':dataset, 'form':form})
         modelname = form['modelname'].value()
         description = form['description'].value()
-        dataset = "http://test.jaqpot.org:8080/jaqpot/services/dataset/interlab-dummy"
+        dataset = "http://jaqpot.org:8080/jaqpot/services/dataset/interlab-dummy"
         prediction = "https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
         headers = {'Accept': 'application/json', 'subjectid': token}
         body = {'title': modelname, 'descriptions': description, 'dataset_uri': dataset, 'prediction_feature':prediction}
