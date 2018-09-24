@@ -26,7 +26,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ["147.102.82.124", "jaqpot.org", "enanomapper.ntua.gr"]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
