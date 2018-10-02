@@ -1,40 +1,32 @@
-import base64
-import os
-from urllib import urlencode
 #from xlrd.xlsx import ET
-import urllib
+import datetime
+import json
+import sys
 import urllib2
-import urlparse
+from collections import OrderedDict
+#import logging ; logger = logging.getLogger(__name__)
+#logger.warn("method is "+method)
+import requests
+from django.core.mail import send_mail
+from django.http import HttpResponseRedirect, HttpResponse, FileResponse
 from django.http import JsonResponse
-
-from sortedcontainers import SortedList
-from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect, render_to_response
 from django.template import RequestContext
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.views.decorators.csrf import csrf_exempt
 from elasticsearch import Elasticsearch
+
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_dataset2, create_and_clean_dataset, \
     create_dataset2_with_title, create_and_clean_dataset2_with_title
 from jaqpot_ui.decorators import token_required
-from jaqpot_ui.get_dataset import paginate_dataset, get_prediction_feature_of_dataset, get_prediction_feature_name_of_dataset, get_number_of_not_null_of_dataset
-from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalParamsForm, ExperimentalForm, UploadForm, \
+from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, \
+    UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalForm, \
+    UploadForm, \
     InterlabForm, ValidationSplitForm, ReadAcrossTrainingForm, InputFormExpX
-import requests
-import json
-import datetime
-import subprocess
-from jaqpot_ui.get_params import get_params, get_params2, get_params3, get_params4, get_params_id
-from settings import EXT_AUTH_URL_LOGIN, EXT_AUTH_URL_LOGOUT, EMAIL_HOST_USER, SERVER_URL
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponseRedirect, HttpResponse, FileResponse
-from django.core.mail import send_mail
-from jaqpot_ui.templatetags import templates_extras
-import jsonpatch
-import xmltodict
-import elasticsearch
-import wget
-import collections
-from collections import OrderedDict
+from jaqpot_ui.get_dataset import paginate_dataset, get_prediction_feature_of_dataset, \
+    get_prediction_feature_name_of_dataset, get_number_of_not_null_of_dataset
+from jaqpot_ui.get_params import get_params, get_params3, get_params4
+from settings import EMAIL_HOST_USER, SERVER_URL
+
 
 # Home page
 def index(request):
@@ -2200,12 +2192,13 @@ def valid_params(request):
         return render(request, "validate.html", {'token': token, 'username': username, 'dataset':dataset, 'al': al, 'algorithms':algorithms,'features':features, 'vform':vform, 'uploadform':form, 'inputform':inputform, 'nform':nform, 'pmmlform':pmmlform})
     if request.method == 'POST':
         print("post")
+
         #get parameters of algorithm
-        params=[]
+        params={}
         print request.POST
-        parameters = request.POST.getlist('parameters')
-        for p in parameters:
-            params.append({'name': p, 'value': request.POST.get(''+p)})
+       # parameters = request.POST.getlist('parameters')
+       # for p in parameters:
+        #    params.append({'name': p, 'value': request.POST.get(''+p)})
         vform = ValidationForm(request.POST)
         inputform = InputForm(request.POST)
         form = UploadFileForm(request.POST, request.FILES)
@@ -2220,12 +2213,28 @@ def valid_params(request):
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+
         al = json.loads(res.text)
-        #params, al = get_params3(request, parameters, al)
-        params, al = get_params4(request, parameters, al)
-        #replace al parameters value with request.post
-        #al['parameters']= params
-        print json.dumps(params)
+        if request.POST.getlist('parameters'):
+            parameters = request.POST.getlist('parameters')
+            '''for p in parameters:
+                params.append({'name': p, 'value': request.POST.get(''+p)})
+                for a in al['parameters']:
+                    if (a['name'] == p):
+                        print p
+                        a['value']=request.POST.get(''+p)'''
+            for p in parameters:
+                # params.update({p: request.POST.get(''+p)})
+                for a in al['parameters']:
+                    if (a['name'] == p):
+                        print p
+                        a['value'] = request.POST.get('' + p)
+            print al['parameters']
+            for a in al['parameters']:
+                params.update({a['name']: a['value']})
+            params, al = get_params3(request, parameters, al)
+            print json.dumps(params)
+
         try:
             res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
         except Exception as e:
@@ -2325,6 +2334,7 @@ def valid_params(request):
 
         print prediction_feature
         print params
+
         if stratify != "random" and "normal":
             body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'transformations':transformations, 'seed':seed, 'scaling':scaling}
         else:
@@ -2346,7 +2356,9 @@ def valid_split(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
     method = request.session.get('method', '')
-    print method
+
+
+
     if request.method == 'GET':
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
@@ -2395,11 +2407,9 @@ def valid_split(request):
     if request.method == 'POST':
         print("post")
         #get parameters of algorithm
-        params=[]
+        params={}
         print request.POST
-        parameters = request.POST.getlist('parameters')
-        for p in parameters:
-            params.append({'name': p, 'value': request.POST.get(''+p)})
+
         vform = ValidationSplitForm(request.POST)
         inputform = InputForm(request.POST)
         form = UploadFileForm(request.POST, request.FILES)
@@ -2415,7 +2425,25 @@ def valid_split(request):
         if res.status_code >= 400:
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         al = json.loads(res.text)
-        params, al = get_params4(request, parameters, al)
+        if request.POST.getlist('parameters'):
+            parameters = request.POST.getlist('parameters')
+            '''for p in parameters:
+                params.append({'name': p, 'value': request.POST.get(''+p)})
+                for a in al['parameters']:
+                    if (a['name'] == p):
+                        print p
+                        a['value']=request.POST.get(''+p)'''
+            for p in parameters:
+                # params.update({p: request.POST.get(''+p)})
+                for a in al['parameters']:
+                    if (a['name'] == p):
+                        print p
+                        a['value'] = request.POST.get('' + p)
+            print al['parameters']
+            for a in al['parameters']:
+                params.update({a['name']: a['value']})
+            params, al = get_params3(request, parameters, al)
+            print json.dumps(params)
         try:
             res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
         except Exception as e:
@@ -2515,12 +2543,11 @@ def valid_split(request):
         print seed
 
         print prediction_feature
-        params = json.dumps(params)
         print params
         if stratify != "random" and "normal":
-            body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio}
+            body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio}
         else:
-            body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':params, 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio, 'stratify':stratify, 'seed':seed}
+            body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio, 'stratify':stratify, 'seed':seed}
         print body
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
