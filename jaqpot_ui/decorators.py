@@ -16,9 +16,9 @@ def token_required(view):
         try:
             headers = {
                 'Accept': 'application/json',
-                'subjectid': token
+                'Authorization': token
             }
-            r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
+            r = requests.post(SERVER_URL + '/aa/validate/accesstoken', headers=headers)
 
             if r.status_code != 200:
                 return redirect('/login/?next=%s' % request.get_full_path )

@@ -60,9 +60,10 @@ def login(request):
                 r = requests.post(SERVER_URL + '/aa/login', data={'username': username, 'password': password})
                 if r.status_code == 200:
                     response = json.loads(r.text)
-                    token = response['authToken']
+                    token = 'Bearer ' + str(response['authToken'])
 
                     # set session request
+                    #var  = 'Bearer '
                     request.session['token'] = token
                     request.session['username'] = username
 
@@ -85,22 +86,22 @@ def login(request):
 #User logout
 def logout(request):
     token = request.session.get('token', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
     if token:
         # send request to logout from auth server
-        try:
-            r = requests.post(SERVER_URL + '/aa/logout', headers=headers)
-            if r.status_code == 200:
+       # try:
+            #r = requests.post(SERVER_URL + '/aa/logout', headers=headers)
+            #if r.status_code == 200:
                 # remove from session
                 request.session['token'] = ''
                 request.session['username'] = ''
 
                 # send to home page
-                return redirect('/')
-            else:
+               # return redirect('/')
+            #else:
                 return redirect('/login')
-        except Exception as e:
-            return render(request, "error.html", {'server_error':e, })
+        #except Exception as e:
+         #   return render(request, "error.html", {'server_error':e, })
     else:
         return redirect('/')
 
@@ -115,8 +116,8 @@ def task(request):
     #go to tasks
     all_tasks = []
     #get all tasks with status Running
-    headers = {'Accept': 'text/uri-list', 'subjectid': token}
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'text/uri-list', 'Authorization': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
     try:
         res = requests.get(SERVER_URL+'/task?status=RUNNING&start=0&max=10000', headers=headers)
         if res.status_code >= 400:
@@ -220,7 +221,7 @@ def taskdetail(request):
         output = request.GET.getlist('output')[0]
         name = request.GET.getlist('name')[0]
         print(name)
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             #res = requests.get(SERVER_URL+'/task/ocGR1A5o47Jb', headers=headers)
             res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
@@ -259,7 +260,7 @@ def taskdetail(request):
 
     if request.method == 'GET':
         #get task details in rdf format
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/task/'+name, headers=headers)
         except Exception as e:
@@ -303,7 +304,7 @@ def stop_task(request):
     id = request.GET.get('id')
     if request.method == 'GET':
         #stop task
-        headers = {'content-type': 'text/uri-list', 'subjectid': token}
+        headers = {'content-type': 'text/uri-list', 'Authorization': token}
         try:
             res = requests.delete(SERVER_URL+'/task/'+id, headers=headers)
         except Exception as e:
@@ -322,15 +323,15 @@ def bibtex(request):
     if request.method == 'GET':
         final_output=[]
         #get all bibtex
-        headers = {'Accept': 'application/json', 'subjectid': token}
-        headers1 = {'Accept': 'text/uri-list', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
+        headers1 = {'Accept': 'text/uri-list', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/bibtex?bibtype=Entry&&&start=0&max=10000', headers=headers1)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         list_resp = res.text
         if res.status_code == 403:
-            error = "This request is forbidden (e.g., no authentication token is provided)"
+            error = "This request is forbidden (e.g., no Authorization token is provided)"
             return render(request, "bibtex.html",
                           {'token': token, 'username': username, 'name': name, 'error': error})
         if res.status_code == 401:
@@ -369,8 +370,8 @@ def bib_detail(request):
         value = request.GET.getlist('value')[0]
         body = json.dumps([{'op': op, 'path': path, 'value': value}])
         #body = jsonpatch.JsonPatch([{'op': op, 'path': path, 'value': value}])
-        headers = {"Content-Type":"application/json-patch+json",'subjectid': token }
-        #headers = {'Accept': 'application/json-patch+json', 'subjectid': token}
+        headers = {"Content-Type":"application/json-patch+json",'Authorization': token }
+        #headers = {'Accept': 'application/json-patch+json', 'Authorization': token}
         try:
             res = requests.patch(url=SERVER_URL+'/bibtex/'+id, data=body, headers=headers)
         except Exception as e:
@@ -382,7 +383,7 @@ def bib_detail(request):
 
     if request.method == 'GET':
         #send request
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/bibtex/'+id, headers=headers)
         except Exception as e:
@@ -403,7 +404,7 @@ def bib_delete(request):
 
     if request.method == 'GET':
         #delete bibtex
-        headers = {'content-type': 'text/uri-list', 'subjectid': token}
+        headers = {'content-type': 'text/uri-list', 'Authorization': token}
         try:
             res = requests.delete(SERVER_URL+'/bibtex/'+id, headers=headers)
         except Exception as e:
@@ -440,7 +441,7 @@ def add_bibtex(request):
         bibtex_entry = json.dumps(bibtex_entry)
 
         #send request with the new entry for saving
-        headers = {'Content-Type': 'application/json', 'subjectid': token}
+        headers = {'Content-Type': 'application/json', 'Authorization': token}
         try:
             res = requests.post(SERVER_URL+'/bibtex', data = bibtex_entry, headers=headers)
         except Exception as e:
@@ -466,7 +467,7 @@ def user(request):
     name = request.GET.get('name')
 
     if request.method == 'GET':
-        headers = {'content-type': 'application/json', 'subjectid': token}
+        headers = {'content-type': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/user/'+ username, headers=headers)
         except Exception as e:
@@ -496,7 +497,7 @@ def trainmodel(request):
 
     if request.method == 'GET':
         dataset=[]
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         #get total number of datasets
         try:
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
@@ -563,7 +564,7 @@ def choose_dataset(request):
 
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
         except Exception as e:
@@ -571,7 +572,7 @@ def choose_dataset(request):
         if res.status_code >= 400:
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         classification_alg=json.loads(res.text)
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
         except Exception as e:
@@ -583,7 +584,7 @@ def choose_dataset(request):
     if request.method == 'POST':
         algorithms=[]
         for alg in request.POST.getlist('radio'):
-            headers = {'Accept': 'application/json', 'subjectid': token}
+            headers = {'Accept': 'application/json', 'Authorization': token}
             try:
                 res = requests.get(SERVER_URL+'/algorithm/'+alg, headers=headers)
             except Exception as e:
@@ -597,7 +598,7 @@ def choose_dataset(request):
         print algorithms
         if algorithms == []:
 
-            headers = {'Accept': 'application/json', 'subjectid': token}
+            headers = {'Accept': 'application/json', 'Authorization': token}
             try:
                 res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
             except Exception as e:
@@ -605,7 +606,7 @@ def choose_dataset(request):
             if res.status_code >= 400:
                 return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
             classification_alg = json.loads(res.text)
-            headers = {'Accept': 'application/json', 'subjectid': token}
+            headers = {'Accept': 'application/json', 'Authorization': token}
             try:
                 res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
             except Exception as e:
@@ -634,7 +635,7 @@ def change_params(request):
         pmmlform = SelectPmmlForm()
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
@@ -687,7 +688,7 @@ def change_params(request):
         pmmlform = SelectPmmlForm(request.POST)
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
@@ -762,7 +763,7 @@ def change_params(request):
             feature_list = inputform['input'].value()
             if not inputform.is_valid():
                 return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
-            headers = {'Accept': 'application/json',  'subjectid': token}
+            headers = {'Accept': 'application/json',  'Authorization': token}
             feat=""
             for f in feature_list:
                 feat += str(f)+','
@@ -782,7 +783,7 @@ def change_params(request):
                 if 'file' in request.FILES:
                     pmml= request.FILES['file'].read()
                     print pmml
-                    headers = {'Content-Type': 'application/xml',  'subjectid': token }
+                    headers = {'Content-Type': 'application/xml',  'Authorization': token }
                     try:
                         res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
                     except Exception as e:
@@ -815,7 +816,7 @@ def change_params(request):
         title= tform['modelname'].value()
         description= tform['description'].value()
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': True}
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
         except Exception as e:
@@ -849,7 +850,7 @@ def model(request):
     if request.method == 'GET':
         models = []
         #get all models
-        headers = {'Accept': 'application/json', "subjectid": token}
+        headers = {'Accept': 'application/json', "Authorization": token}
         #get total number of models
         try:
             res = requests.get(SERVER_URL+'/model?start=0&max=1', headers=headers)
@@ -891,7 +892,7 @@ def model_detail(request):
     name = request.GET.get('name')
 
     #get task details in rdf format
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
     try:
         res = requests.get(SERVER_URL+'/model/'+name, headers=headers)
     except Exception as e:
@@ -931,7 +932,7 @@ def model_delete(request):
     username = request.session.get('username', '')
     id = request.GET.get('id')
     #delete model
-    headers = {'Accept': 'application/json', "subjectid": token}
+    headers = {'Accept': 'application/json', "Authorization": token}
     try:
         res = requests.delete(SERVER_URL+'/model/'+id, headers=headers)
     except Exception as e:
@@ -947,7 +948,7 @@ def model_pmml(request):
     username = request.session.get('username', '')
 
     name = request.GET.get('name')
-    headers = {'Accept': 'application/xml', "subjectid": token}
+    headers = {'Accept': 'application/xml', "Authorization": token}
 
     try:
         res = requests.get(SERVER_URL+'/model/'+name+'/pmml', headers=headers)
@@ -964,7 +965,7 @@ def model_pmml(request):
     else:
         #response = HttpResponse(res.text,  mimetype="application/json")
         print res.text
-        headers = {'Accept': 'application/json', "subjectid": token}
+        headers = {'Accept': 'application/json', "Authorization": token}
         try:
             res1 = requests.get(SERVER_URL+'/model/'+name, headers=headers)
         except Exception as e:
@@ -1006,7 +1007,7 @@ def features(request):
     last = request.GET.get('last')
 
     if request.method == 'GET':
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         if page:
             page1=int(page) * 20 - 20
             k=str(page1)
@@ -1042,7 +1043,7 @@ def features(request):
                 return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         features=[]
         if res.status_code == 403:
-            error = "This request is forbidden (e.g., no authentication token is provided)"
+            error = "This request is forbidden (e.g., no Authorization token is provided)"
             return render(request, "features.html", {'token': token, 'username': username, 'error': error})
 
         if res.status_code == 401:
@@ -1070,7 +1071,7 @@ def feature_details(request):
     name = request.GET.get('name')
 
     if request.method == 'GET':
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/feature/'+name, headers=headers)
         except Exception as e:
@@ -1111,7 +1112,7 @@ def feature_delete(request):
     id = request.GET.get('id')
     if request.method == 'GET':
         #delete bibtex
-        headers = {'content-type': 'text/uri-list', 'subjectid': token}
+        headers = {'content-type': 'text/uri-list', 'Authorization': token}
         try:
             res = requests.delete(SERVER_URL+'/feature/'+id, headers=headers)
         except Exception as e:
@@ -1129,7 +1130,7 @@ def algorithm(request):
     if request.method == 'GET':
          algorithms = []
          #get all algorithms
-         headers = {'Accept': 'application/json', 'subjectid': token}
+         headers = {'Accept': 'application/json', 'Authorization': token}
          try:
              res = requests.get(SERVER_URL + '/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
          except Exception as e:
@@ -1137,7 +1138,7 @@ def algorithm(request):
          if res.status_code >= 400:
              return render(request, "error.html", {'token': token, 'username': username, 'error': json.loads(res.text)})
          classification_alg = json.loads(res.text)
-         headers = {'Accept': 'application/json', 'subjectid': token}
+         headers = {'Accept': 'application/json', 'Authorization': token}
          try:
              res = requests.get(SERVER_URL + '/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
          except Exception as e:
@@ -1159,7 +1160,7 @@ def algorithm_detail(request):
 
     if request.method == 'GET':
         #get task details in rdf format
-        headers = {'content-type': 'text/uri-list', 'subjectid': token}
+        headers = {'content-type': 'text/uri-list', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/'+algorithm, headers=headers)
         except Exception as e:
@@ -1178,7 +1179,7 @@ def algorithm_delete(request):
     id = request.GET.get('id')
     if request.method == 'GET':
         #delete algorithm
-        headers = {'content-type': 'text/uri-list', 'subjectid': token}
+        headers = {'content-type': 'text/uri-list', 'Authorization': token}
         try:
             res = requests.delete(SERVER_URL+'/algorithm/'+id, headers=headers)
         except Exception as e:
@@ -1198,7 +1199,7 @@ def dataset(request):
     dataset=[]
     if request.method == 'GET':
         dataset=[]
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         #get total number of datasets
         try:
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
@@ -1314,7 +1315,7 @@ def dataset_delete(request):
     username = request.session.get('username', '')
     id = request.GET.get('id')
     #delete dataset
-    headers = {'Accept': 'application/json', "subjectid": token}
+    headers = {'Accept': 'application/json', "Authorization": token}
     try:
         res = requests.delete(SERVER_URL+'/dataset/'+id, headers=headers)
     except Exception as e:
@@ -1332,7 +1333,7 @@ def dispay_predicted_dataset(request):
     name = request.GET.get('name', '')
     page = request.GET.get('page', '')
     model = request.GET.get('model', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
     try:
         r = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=0&colStart=0&colMax=0', headers=headers)
     except Exception as e:
@@ -1341,7 +1342,7 @@ def dispay_predicted_dataset(request):
         return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(r.text)})
     data_detail, last, page = paginate_dataset(request, name, token, username, page)
     if data_detail and last and page:
-        headers = {'Accept': 'text/uri-list', "subjectid": token}
+        headers = {'Accept': 'text/uri-list', "Authorization": token}
         try:
             res = requests.get(SERVER_URL+'/model/'+model+'/predicted', headers=headers)
         except Exception as e:
@@ -1389,7 +1390,7 @@ def predict(request):
     if request.method == 'GET':
         m = []
         #get all models
-        headers = {'Accept': 'application/json', "subjectid": token}
+        headers = {'Accept': 'application/json', "Authorization": token}
         try:
             res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
         except Exception as e:
@@ -1432,7 +1433,7 @@ def predict_model(request):
         request.session['model'] = model
         dataset=[]
         #Get required feature of selected model
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             required_res = requests.get(SERVER_URL+'/model/'+model+'/required', headers=headers)
         except Exception as e:
@@ -1501,7 +1502,7 @@ def predict_model(request):
         #Get the method of prediction
         method = request.POST.get('radio_method')
         #Get the required model
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             required_res = requests.get(SERVER_URL+'/model/'+selected_model+'/required', headers=headers)
         except Exception as e:
@@ -1538,7 +1539,7 @@ def predict_model(request):
                     #Get data from excel and create dataset to the appropriate format
                     new_data = create_dataset(data,username,required_res, img_descriptors, mopac_descriptors)
                     json_data = json.dumps(new_data)
-                headers1 = {'Content-type': 'application/json', 'subjectid': token}
+                headers1 = {'Content-type': 'application/json', 'Authorization': token}
                 try:
                     res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
                     print res.text
@@ -1548,7 +1549,7 @@ def predict_model(request):
                     return JsonResponse({'server_error': json.loads(res.text), "ERROR_REDIRECT": "1"})
                 dataset = res.text
                 print dataset
-                headers = {'Content-Type': 'application/x-www-form-urlencoded', 'subjectid': token,}
+                headers = {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': token,}
                 body = {'dataset_uri': dataset, 'visible': True}
                 print body
                 print selected_model
@@ -1570,7 +1571,7 @@ def predict_model(request):
             if dataset == "" or dataset == None:
                 m = []
                 #get all models
-                headers = {'Accept': 'application/json', "subjectid": token}
+                headers = {'Accept': 'application/json', "Authorization": token}
                 try:
                     res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
                 except Exception as e:
@@ -1582,7 +1583,7 @@ def predict_model(request):
                         m.append({'name': mod['_id'], 'meta': mod['meta']})
                 return render(request, "predict.html", {'token': token, 'username': username,'selected_model': selected_model, 'page': page, 'last':last,'error':"You should select a dataset."})
             else:
-                headers = {'Content-Type': 'application/x-www-form-urlencoded', "subjectid": token}
+                headers = {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": token}
                 body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'visible': True}
                 try:
                     res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)
@@ -1619,7 +1620,7 @@ def calculate_mopac_descriptors(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
 
-    headers = {'subjectid': token}
+    headers = {'Authorization': token}
     mopac_file = request.GET.get('mopac_file')
     body = {'pdbfile': mopac_file ,}
     try:
@@ -1651,7 +1652,7 @@ def search(request):
     if request.method == 'GET':
         search = request.GET.get('search')
         models=[]
-        headers = {'Accept': 'text/uri-list', "subjectid": token}
+        headers = {'Accept': 'text/uri-list', "Authorization": token}
         try:
             res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
         except Exception as e:
@@ -1765,7 +1766,7 @@ def all_substance(request):
 
     page=request.GET.get('page')
     if page:
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         page1=str(int(page)-1)
         try:
             res = requests.get('https://data.enanomapper.net/substanceowner?page='+page1+'&pagesize=20', headers=headers)
@@ -1776,7 +1777,7 @@ def all_substance(request):
         substance_owner=json.loads(res.text)
         substance_owner = substance_owner['facet']
     else:
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         page=1
         try:
             res = requests.get('https://data.enanomapper.net/substanceowner', headers=headers)
@@ -1802,7 +1803,7 @@ def all_substance(request):
                 form = SubstanceownerForm(initial={'substanceowner': ''})
                 page=request.GET.get('page')
                 if page:
-                    headers = {'Accept': 'application/json', 'subjectid': token}
+                    headers = {'Accept': 'application/json', 'Authorization': token}
                     page1=str(int(page)-1)
                     try:
                         res = requests.get('https://data.enanomapper.net/substanceowner?page='+page1+'&pagesize=20', headers=headers)
@@ -1813,7 +1814,7 @@ def all_substance(request):
                     substance_owner=json.loads(res.text)
                     substance_owner = substance_owner['facet']
                 else:
-                    headers = {'Accept': 'application/json', 'subjectid': token}
+                    headers = {'Accept': 'application/json', 'Authorization': token}
                     page=1
                     try:
                         res = requests.get('https://data.enanomapper.net/substanceowner', headers=headers)
@@ -1828,7 +1829,7 @@ def all_substance(request):
             else:
                 substance_owner = 'https://data.enanomapper.net/substanceowner/'+substance_owner
                 request.session['substanceowner']= substance_owner
-                headers = {'Accept': 'application/json', 'subjectid': token}
+                headers = {'Accept': 'application/json', 'Authorization': token}
                 try:
                     res = requests.get(substance_owner+'/substance', headers=headers)
                 except Exception as e:
@@ -1844,7 +1845,7 @@ def all_substance(request):
                 substanceowner = form.cleaned_data['substanceowner']
                 print substanceowner
                 request.session['substanceowner']=substanceowner
-                headers = {'Accept': 'application/json', 'subjectid': token}
+                headers = {'Accept': 'application/json', 'Authorization': token}
                 try:
                     res = requests.get(substanceowner+'/substance', headers=headers)
                 except Exception as e:
@@ -1890,7 +1891,7 @@ def get_substance(request):
      if request.method == "POST" and request.is_ajax:
         data = request.POST.getlist('data[]')
         request.session['selected_substances'] = data
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res1 = requests.get(SERVER_URL+'/enm/property/categories', headers=headers)
         except Exception as e:
@@ -1950,7 +1951,7 @@ def select_descriptors(request):
 
     if request.method == 'GET':
         form=DatasetForm()
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res1 = requests.get(SERVER_URL+'/enm/descriptor/categories', headers=headers)
         except Exception as e:
@@ -1963,7 +1964,7 @@ def select_descriptors(request):
     if request.method == 'POST':
         form = DatasetForm(request.POST)
         if not form.is_valid():
-            headers = {'Accept': 'application/json', 'subjectid': token}
+            headers = {'Accept': 'application/json', 'Authorization': token}
             try:
                 res1 = requests.get(SERVER_URL+'/enm/descriptor/categories', headers=headers)
             except Exception as e:
@@ -1978,7 +1979,7 @@ def select_descriptors(request):
         substanceowner = request.session.get('substanceowner', '')
         selected_substances = request.session.get('selected_substances', '')
         selected_properties = request.session.get('selected_properties', '')
-       # headers = {'content-type': 'application/json', 'subjectid': token}
+       # headers = {'content-type': 'application/json', 'Authorization': token}
        # body = json.dumps()
        # try:
        #     res = requests.post(url=SERVER_URL+'/enm/bundle', data=body, headers=headers)
@@ -1986,7 +1987,7 @@ def select_descriptors(request):
        #         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
        # if res.status_code >= 400:
        #     return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-        headers = {'content-type': 'application/json', 'subjectid': token,}
+        headers = {'content-type': 'application/json', 'Authorization': token,}
         body = json.dumps({'substanceOwner': substanceowner, 'substances': selected_substances, 'properties': selected_properties, 'descriptors':select_descriptors, 'title': title, 'description':description})
         try:
             res = requests.post(url=SERVER_URL+'/enm/dataset', headers=headers, data=body)
@@ -2011,7 +2012,7 @@ def validate(request):
 
     if request.method == 'GET':
         dataset=[]
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         #get total number of datasets
         try:
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
@@ -2079,7 +2080,7 @@ def choose_dataset_validate(request):
     form = TrainForm(initial={})
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
         except Exception as e:
@@ -2087,7 +2088,7 @@ def choose_dataset_validate(request):
         if res.status_code >= 400:
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         classification_alg = json.loads(res.text)
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm?class=ot:Regression&start=0&max=100', headers=headers)
         except Exception as e:
@@ -2099,7 +2100,7 @@ def choose_dataset_validate(request):
     if request.method == 'POST':
         algorithms=[]
         for alg in request.POST.getlist('radio'):
-            headers = {'Accept': 'application/json', 'subjectid': token}
+            headers = {'Accept': 'application/json', 'Authorization': token}
             try:
                 res = requests.get(SERVER_URL+'/algorithm/'+alg, headers=headers)
             except Exception as e:
@@ -2112,7 +2113,7 @@ def choose_dataset_validate(request):
         print dataset
         print algorithms
         if algorithms == []:
-            headers = {'Accept': 'application/json', 'subjectid': token}
+            headers = {'Accept': 'application/json', 'Authorization': token}
             try:
                 res = requests.get(SERVER_URL+'/algorithm?class=ot:Classification&start=0&max=100', headers=headers)
             except Exception as e:
@@ -2151,7 +2152,7 @@ def valid_params(request):
         inputform = InputForm()
         nform = NoPmmlForm()
         pmmlform = SelectPmmlForm()
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
@@ -2206,7 +2207,7 @@ def valid_params(request):
         pmmlform = SelectPmmlForm(request.POST)
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
@@ -2283,7 +2284,7 @@ def valid_params(request):
             feature_list = inputform['input'].value()
             if not inputform.is_valid():
                 return render(request, "validate.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'vform':vform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
-            headers = {'Accept': 'application/json',  'subjectid': token}
+            headers = {'Accept': 'application/json',  'Authorization': token}
             feat=""
             for f in feature_list:
                 feat += str(f)+','
@@ -2303,7 +2304,7 @@ def valid_params(request):
                 if 'file' in request.FILES:
                     pmml= request.FILES['file'].read()
                     print pmml
-                    headers = {'Content-Type': 'application/xml',  'subjectid': token }
+                    headers = {'Content-Type': 'application/xml',  'Authorization': token }
                     try:
                         res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
                     except Exception as e:
@@ -2340,7 +2341,7 @@ def valid_params(request):
         else:
             body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'folds':folds, 'stratify': stratify, 'transformations':transformations, 'seed':seed, 'scaling':scaling}
         print body
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.post(SERVER_URL+'/validation/training_test_cross', headers=headers, data=body)
         except Exception as e:
@@ -2367,7 +2368,7 @@ def valid_split(request):
         inputform = InputForm()
         nform = NoPmmlForm()
         pmmlform = SelectPmmlForm()
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
@@ -2417,7 +2418,7 @@ def valid_split(request):
         pmmlform = SelectPmmlForm(request.POST)
         dataset = request.session.get('data', '')
         algorithms = request.session.get('alg', '')
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
@@ -2492,7 +2493,7 @@ def valid_split(request):
             feature_list = inputform['input'].value()
             if not inputform.is_valid():
                 return render(request, "validate_split.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'vform':vform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
-            headers = {'Accept': 'application/json',  'subjectid': token}
+            headers = {'Accept': 'application/json',  'Authorization': token}
             feat=""
             for f in feature_list:
                 feat += str(f)+','
@@ -2512,7 +2513,7 @@ def valid_split(request):
                 if 'file' in request.FILES:
                     pmml= request.FILES['file'].read()
                     print pmml
-                    headers = {'Content-Type': 'application/xml',  'subjectid': token }
+                    headers = {'Content-Type': 'application/xml',  'Authorization': token }
                     try:
                         res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
                     except Exception as e:
@@ -2549,7 +2550,7 @@ def valid_split(request):
         else:
             body = {'training_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'prediction_feature': prediction_feature, 'algorithm_params':json.dumps(params), 'algorithm_uri': SERVER_URL+'/algorithm/'+algorithms, 'transformations':transformations, 'scaling': scaling,'split_ratio':split_ratio, 'stratify':stratify, 'seed':seed}
         print body
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.post(SERVER_URL+'/validation/training_test_split', headers=headers, data=body)
         except Exception as e:
@@ -2573,7 +2574,7 @@ def external_validation(request):
 
     if request.method == 'GET':
         dataset=[]
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         #get total number of datasets
         try:
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
@@ -2641,7 +2642,7 @@ def ext_valid_model(request):
     if request.method == 'GET':
         m = []
         #get all models
-        headers = {'Accept': 'application/json', "subjectid": token}
+        headers = {'Accept': 'application/json', "Authorization": token}
         try:
             res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
         except Exception as e:
@@ -2677,7 +2678,7 @@ def get_model_ext_valid(request):
         dataset = request.GET.get('dataset')
         body = {'test_dataset_uri': SERVER_URL+'/dataset/'+dataset, 'model_uri': SERVER_URL+'/model/'+model,}
         print body
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.post(SERVER_URL+'/validation/test_set_validation', headers=headers, data=body)
         except Exception as e:
@@ -2714,8 +2715,8 @@ def report(request):
         body = json.dumps([{'op': op, 'path': path, 'value': value}])
         print body
         #body = jsonpatch.JsonPatch([{'op': op, 'path': path, 'value': value}])
-        headers = {"Content-Type":"application/json-patch+json",'subjectid': token }
-        #headers = {'Accept': 'application/json-patch+json', 'subjectid': token}
+        headers = {"Content-Type":"application/json-patch+json",'Authorization': token }
+        #headers = {'Accept': 'application/json-patch+json', 'Authorization': token}
         try:
             res = requests.patch(url=SERVER_URL+'/report/'+id, data=body, headers=headers)
             print res.status_code
@@ -2727,7 +2728,7 @@ def report(request):
         return HttpResponse(res.text)
     if request.method == 'GET':
         name = request.GET.get('name')
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/report/'+name, headers=headers)
         except Exception as e:
@@ -2751,7 +2752,7 @@ def experimental(request):
 
     if request.method == 'GET':
         dataset=[]
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         #get total number of datasets
         try:
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
@@ -2816,7 +2817,7 @@ def experimental_params(request):
         dataset = request.GET.get('dataset')
         request.session['data'] = dataset
         prediction_feature = get_prediction_feature_of_dataset(dataset, token)
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res1 = requests.get(SERVER_URL + '/dataset/' + dataset, headers=headers)
         except Exception as e:
@@ -2932,7 +2933,7 @@ def experimental_params(request):
         else:
             inputform = InputForm(request.POST)
         print prediction_feature
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
@@ -2993,7 +2994,7 @@ def experimental_params(request):
             feature_list = inputform['input'].value()
             if not inputform.is_valid():
                 return render(request, "alg.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'pmmlform':pmmlform, 'exp':True})
-            headers = {'Accept': 'application/json',  'subjectid': token}
+            headers = {'Accept': 'application/json',  'Authorization': token}
             feat=""
             for f in feature_list:
                 feat += str(f)+','
@@ -3013,7 +3014,7 @@ def experimental_params(request):
                 if 'file' in request.FILES:
                     pmml= request.FILES['file'].read()
                     print pmml
-                    headers = {'Content-Type': 'application/xml',  'subjectid': token }
+                    headers = {'Content-Type': 'application/xml',  'Authorization': token }
                     try:
                         res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
                     except Exception as e:
@@ -3049,8 +3050,8 @@ def experimental_params(request):
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':params, 'visible': False}
         print('----')
         print body
-        headers = {'Accept': 'application/json', 'subjectid': token}
-        #headers = { 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
+        #headers = { 'Authorization': token}
         try:
             res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
         except Exception as e:
@@ -3125,7 +3126,7 @@ def experimental_params(request):
             print(json.loads(res2.text))
             new_model = json.loads(res2.text)['result']
             print new_model
-            headers = {'Accept': 'application/json', "subjectid": token}
+            headers = {'Accept': 'application/json', "Authorization": token}
             try:
                 res = requests.delete(SERVER_URL+'/model/'+new_model.split('model/')[1], headers=headers)
             except Exception as e:
@@ -3166,7 +3167,7 @@ def experimental_params(request):
         #body
         print model_detail
         #Delete model
-        '''headers = {'Accept': 'application/json', "subjectid": token}
+        '''headers = {'Accept': 'application/json', "Authorization": token}
             try:
                 res = requests.delete(SERVER_URL+'/model/'+model.split('model/')[1], headers=headers)
             except Exception as e:
@@ -3181,7 +3182,7 @@ def experimental_params(request):
 def exp_submit(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
 
     if request.method == "POST":
         #queryData = request.GET.get('queryData')
@@ -3194,7 +3195,7 @@ def exp_submit(request):
         dataset = json.loads(dataset)
         #print queryData
         #dataset='ayDPMNB3JcOJAm'
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
         except Exception as e:
@@ -3231,7 +3232,7 @@ def exp_submit(request):
 
         #data=json.dumps(data1)
         print data
-        headers1 = {'content-type': 'application/json', 'subjectid':token}
+        headers1 = {'content-type': 'application/json', 'Authorization':token}
         #new_data = create_dataset(d_detail['dataEntry'],"guest","", "", "")
         rows= d_detail['totalRows']
         columns = d_detail['totalColumns']
@@ -3255,7 +3256,7 @@ def exp_submit(request):
         #json_data={"dataset": data, "threshold": threshold}
         #json_data = {'dataset': data}
         #Delete dataset
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         '''try:
             res = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
         except Exception as e:
@@ -3274,7 +3275,7 @@ def exp_submit(request):
         '''try:
             modelname = data_detail['byModel']
             print modelname
-            headers = {'Accept': 'application/json', "subjectid": token}
+            headers = {'Accept': 'application/json', "Authorization": token}
             try:
                 res = requests.delete(SERVER_URL + '/model/' + modelname, headers=headers)
             except Exception as e:
@@ -3290,12 +3291,12 @@ def exp_submit(request):
 def exp_iter(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
 
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
         print dataset
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res1 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
         except Exception as e:
@@ -3340,7 +3341,7 @@ def exp_iter(request):
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': "", 'doa': "", 'title': "", 'description':"", 'transformations':"", 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': False}
         print('----')
         print body
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         #import pdb;pdb.set_trace();
         try:
             res = requests.post(SERVER_URL+'/algorithm/'+algorithms, headers=headers, data=body)
@@ -3447,7 +3448,7 @@ def exp_iter(request):
         if prediction_feature=="":
             prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
         #Delete dataset
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
         except Exception as e:
@@ -3457,7 +3458,7 @@ def exp_iter(request):
         '''try:
             modelname = data_detail['byModel']
             print modelname
-            headers = {'Accept': 'application/json', "subjectid": token}
+            headers = {'Accept': 'application/json', "Authorization": token}
             try:
                 res = requests.delete(SERVER_URL + '/model/' + modelname, headers=headers)
             except Exception as e:
@@ -3474,7 +3475,7 @@ def exp_iter(request):
 def fact_submit(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
 
     if request.method == 'POST':
         #queryData = request.GET.get('queryData')
@@ -3487,7 +3488,7 @@ def fact_submit(request):
         dataset = json.loads(dataset)
         #print queryData
         #dataset='ayDPMNB3JcOJAm'
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
         except Exception as e:
@@ -3522,7 +3523,7 @@ def fact_submit(request):
 
         #data=json.dumps(data1)
         print data
-        headers1 = {'content-type': 'application/json', 'subjectid':token}
+        headers1 = {'content-type': 'application/json', 'Authorization':token}
         rows= d_detail['totalRows']
         columns = d_detail['totalColumns']
         print d_detail
@@ -3547,7 +3548,7 @@ def fact_submit(request):
         data = res.text.split('/dataset/')[1]
         print data
         #Delete previous dataset
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
         except Exception as e:
@@ -3556,7 +3557,7 @@ def fact_submit(request):
         try:
             modelname = d_detail['byModel']
             print modelname
-            headers = {'Accept': 'application/json', "subjectid": token}
+            headers = {'Accept': 'application/json', "Authorization": token}
             try:
                 res = requests.delete(SERVER_URL + '/model/' + modelname, headers=headers)
             except Exception as e:
@@ -3573,13 +3574,13 @@ def fact_submit(request):
 def factorial_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
 
     if request.method == 'GET':
         #Get dataset from request
         dataset = request.GET.get('dataset')
         print dataset
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         #Get dataset json
         try:
             res1 = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
@@ -3618,7 +3619,7 @@ def factorial_dataset(request):
 def factorial_validation(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
     if request.is_ajax():
         datatable = request.POST.get('data')
         datatable=json.loads(datatable)
@@ -3676,11 +3677,11 @@ def factorial_validation(request):
 def exp_design(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
 
     if request.method == 'GET':
         tform=DatasetForm()
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign2-noxy', headers=headers)
         except Exception as e:
@@ -3737,7 +3738,7 @@ def exp_design(request):
         title = tform['title'].value()
         description = tform['description'].value()
         nTrials= request.POST.get('Number of trials')
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/ocpu-expdesign2-noxy', headers=headers)
         except Exception as e:
@@ -3762,7 +3763,7 @@ def exp_design(request):
         prediction_feature="https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
 
         body = {'dataset_uri':dataset_uri, 'parameters':json.dumps(params), 'title':'', 'description':'', 'prediction_feature':prediction_feature }
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         print body
         try:
             res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign2-noxy', headers=headers, data=body)
@@ -3777,7 +3778,7 @@ def exp_design(request):
             res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
         except Exception as e:
             #Delete empty dataset
-            headers = {'Accept': 'application/json', 'subjectid': token}
+            headers = {'Accept': 'application/json', 'Authorization': token}
             try:
                 res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
             except Exception as e:
@@ -3787,7 +3788,7 @@ def exp_design(request):
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res1.status_code >= 400:
              #Delete empty dataset
-            headers = {'Accept': 'application/json', 'subjectid': token}
+            headers = {'Accept': 'application/json', 'Authorization': token}
             try:
                 res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
             except Exception as e:
@@ -3799,7 +3800,7 @@ def exp_design(request):
         while (status != "COMPLETED"):
             if(status == "ERROR"):
                 #Delete empty dataset
-                headers = {'Accept': 'application/json', 'subjectid': token}
+                headers = {'Accept': 'application/json', 'Authorization': token}
                 try:
                     res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
                 except Exception as e:
@@ -3827,7 +3828,7 @@ def exp_design(request):
             res2 = requests.post(SERVER_URL+'/model/'+model, headers=headers, data=body)
         except Exception as e:
                 #Delete empty dataset
-                headers = {'Accept': 'application/json', 'subjectid': token}
+                headers = {'Accept': 'application/json', 'Authorization': token}
                 try:
                     res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
                 except Exception as e:
@@ -3837,7 +3838,7 @@ def exp_design(request):
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res2.status_code >= 400:
             #Delete empty dataset
-            headers = {'Accept': 'application/json', 'subjectid': token}
+            headers = {'Accept': 'application/json', 'Authorization': token}
             try:
                 res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
             except Exception as e:
@@ -3857,7 +3858,7 @@ def exp_design(request):
         while (status != "COMPLETED"):
             if(status == "ERROR"):
                 #Delete empty dataset
-                headers = {'Accept': 'application/json', 'subjectid': token}
+                headers = {'Accept': 'application/json', 'Authorization': token}
                 try:
                     res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
                 except Exception as e:
@@ -3879,7 +3880,7 @@ def exp_design(request):
         new_dataset = new_dataset.split('dataset/')[1]
         print(new_dataset)
         #Delete empty dataset
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
         except Exception as e:
@@ -3902,8 +3903,8 @@ def exp_design(request):
         body = {'dataset_uri': SERVER_URL+'/dataset/'+new_dataset, 'scaling': '', 'doa': '', 'title': 'new', 'description':'new', 'transformations':'', 'prediction_feature': prediction_feature, 'parameters':params, 'visible': False}
         print('----')
         print body
-        headers = {'Accept': 'application/json', 'subjectid': token}
-        #headers = { 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
+        #headers = { 'Authorization': token}
         try:
             res = requests.post(SERVER_URL+'/algorithm/ocpu-expdesign2-x', headers=headers, data=body)
         except Exception as e:
@@ -3935,7 +3936,7 @@ def exp_design(request):
                     return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
                 status = json.loads(res1.text)['status']
         #Delete model
-        headers = {'Accept': 'application/json', "subjectid": token}
+        headers = {'Accept': 'application/json', "Authorization": token}
         try:
             res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/model/'+model, headers=headers)
         except Exception as e:
@@ -3984,7 +3985,7 @@ def exp_design(request):
         exp_dataset = exp_dataset.split('dataset/')[1]
         print exp_dataset
         #Delete previous dataset (new_dataset)
-        '''headers = {'Accept': 'application/json', 'subjectid': token}
+        '''headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+new_dataset, headers=headers)
         except Exception as e:
@@ -4012,7 +4013,7 @@ def exp_design(request):
         json_data = json.dumps(json_data)
         json_data = json.loads(json_data)
         print json_data
-        headers1 = {'Content-type': 'application/json', 'subjectid': token}
+        headers1 = {'Content-type': 'application/json', 'Authorization': token}
         try:
             res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data, timeout=30)
         except Exception as e:
@@ -4023,13 +4024,13 @@ def exp_design(request):
         data = res.text.split('/dataset/')[1]
         print data
         #Delete previous dataset
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+new_dataset, headers=headers)
         except Exception as e:
             print('error')
          #Delete previous dataset (exp_dataset)
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+exp_dataset, headers=headers)
         except Exception as e:
@@ -4067,7 +4068,7 @@ def exp_design(request):
             new.append(k)
 
         #Delete model
-        '''headers = {'Accept': 'application/json', "subjectid": token}
+        '''headers = {'Accept': 'application/json', "Authorization": token}
         try:
             res = requests.delete(SERVER_URL+'/model/'+model.split('model/')[1], headers=headers)
         except Exception as e:
@@ -4081,7 +4082,7 @@ def exp_design(request):
 '''def interlab_select_substance(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
     if token:
         r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
         if r.status_code != 200:
@@ -4089,13 +4090,13 @@ def exp_design(request):
         else:
             page=request.GET.get('page')
             if page:
-                headers = {'Accept': 'application/json', 'subjectid': token}
+                headers = {'Accept': 'application/json', 'Authorization': token}
                 page1=str(int(page)-1)
                 res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page='+page1+'&pagesize=20', headers=headers)
                 substance_owner=json.loads(res.text)
                 substance_owner = substance_owner['facet']
             else:
-                headers = {'Accept': 'application/json', 'subjectid': token}
+                headers = {'Accept': 'application/json', 'Authorization': token}
                 page=1
                 res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
                 substance_owner=json.loads(res.text)
@@ -4115,13 +4116,13 @@ def exp_design(request):
             form = SubstanceownerForm(initial={'substanceowner': ''})
             page=request.GET.get('page')
             if page:
-                headers = {'Accept': 'application/json', 'subjectid': token}
+                headers = {'Accept': 'application/json', 'Authorization': token}
                 page1=str(int(page)-1)
                 res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page='+page1+'&pagesize=20', headers=headers)
                 substance_owner=json.loads(res.text)
                 substance_owner = substance_owner['facet']
             else:
-                headers = {'Accept': 'application/json', 'subjectid': token}
+                headers = {'Accept': 'application/json', 'Authorization': token}
                 page=1
                 res = requests.get('https://apps.ideaconsult.net:443/enmtest/substanceowner?page=0&pagesize=20', headers=headers)
                 substance_owner=json.loads(res.text)
@@ -4131,7 +4132,7 @@ def exp_design(request):
         else:
             substance_owner = 'https://apps.ideaconsult.net/enmtest/substanceowner/'+substance_owner
             request.session['substanceowner']= substance_owner
-            headers = {'Accept': 'application/json', 'subjectid': token}
+            headers = {'Accept': 'application/json', 'Authorization': token}
             res = requests.get(substance_owner+'/substance', headers=headers)
             substances=json.loads(res.text)
             request.session['substances'] = substances
@@ -4144,11 +4145,11 @@ def interlab_select_substance(request):
     username = request.session.get('username', '')
     page = request.GET.get('page')
     last = request.GET.get('last')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
 
     if request.method == 'GET':
         dataset=[]
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         #get total number of datasets
         try:
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
@@ -4218,7 +4219,7 @@ def interlab_select_substance(request):
 def interlab_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
 
     if request.method == 'GET':
         dataset=request.GET.get('dataset')
@@ -4234,7 +4235,7 @@ def interlab_params(request):
         description = form['description'].value()
         dataset = "http://jaqpot.org:8080/jaqpot/services/dataset/interlab-dummy"
         prediction = "https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         body = {'title': modelname, 'descriptions': description, 'dataset_uri': dataset, 'prediction_feature':prediction}
         print body
         try:
@@ -4251,11 +4252,11 @@ def interlab_params(request):
 def clean_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
 
     if request.method == 'GET':
         dataset = request.GET.get('dataset')
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
         except Exception as e:
@@ -4271,7 +4272,7 @@ def clean_dataset(request):
         new_data = create_and_clean_dataset(data, prediction_feature, suggested)
         json_data = json.dumps(new_data)
         print json_data
-        headers1 = {'Content-type': 'application/json', 'subjectid': token}
+        headers1 = {'Content-type': 'application/json', 'Authorization': token}
         try:
             res = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
         except Exception as e:
@@ -4287,13 +4288,13 @@ def clean_dataset(request):
 def report_list(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
 
     page = request.GET.get('page')
     last = request.GET.get('last')
     if request.method == 'GET':
         report=[]
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         #get total number of datasets
         try:
             res = requests.get(SERVER_URL+'/report?start=0&max=20', headers=headers)
@@ -4347,7 +4348,7 @@ def report_list(request):
         request.session.get('token', '')
         #validate token
         #if token is not valid redirect to login page
-        r = requests.post(SERVER_URL + '/aa/validate', headers={'subjectid': token})
+        r = requests.post(SERVER_URL + '/aa/validate', headers={'Authorization': token})
         if r.status_code != 200:
             return redirect('/login')
     else:
@@ -4402,11 +4403,11 @@ def report_list(request):
 def report_delete(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
 
     id = request.GET.get('id')
     #delete report
-    headers = {'Accept': 'application/json', "subjectid": token}
+    headers = {'Accept': 'application/json', "Authorization": token}
     try:
         res = requests.delete(SERVER_URL+'/report/'+id, headers=headers)
     except Exception as e:
@@ -4422,13 +4423,13 @@ def report_delete(request):
 def qrf_report(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
 
     uri = request.GET.get('uri')
     dataset = request.GET.get('dataset')
     print uri
     print dataset
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
     body={'substance_uri':uri}
     try:
         res = requests.post(SERVER_URL+'/dataset/'+dataset+'/qprf', headers=headers, data=body)
@@ -4438,7 +4439,7 @@ def qrf_report(request):
         return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
     response = json.loads(res.text)
     name=response['_id']
-    headers = {'Accept': 'application/json', 'subjectid': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
     try:
         res = requests.get(SERVER_URL+'/report/'+name, headers=headers)
     except Exception as e:
@@ -4458,7 +4459,7 @@ def report_download(request):
     username = request.session.get('username', '')
 
     name = request.GET.get('name')
-    headers = {'Accept': 'application/json', "subjectid": token}
+    headers = {'Accept': 'application/json', "Authorization": token}
     try:
         res = urllib2.Request(SERVER_URL+'/report/'+name+'/pdf', headers=headers)
         pdf = urllib2.urlopen(res)
@@ -4505,7 +4506,7 @@ def read_across_dataset(request):
 
     if request.method == 'GET':
         dataset=[]
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         #get total number of datasets
         try:
             res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
@@ -4578,7 +4579,7 @@ def read_across_train(request):
         dataset = request.GET.get('dataset')
 
         algorithms= "python-readacross"
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
@@ -4598,7 +4599,7 @@ def read_across_train(request):
         else:
             pmmlform.fields['pmml'].choices = [("",'No pmml')]
         try:
-            headers = {'Accept': 'application/json', 'subjectid': token}
+            headers = {'Accept': 'application/json', 'Authorization': token}
             res2 = requests.get(SERVER_URL+'/dataset/'+dataset+'?rowStart=0&rowMax=1&colStart=0&colMax=2', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
@@ -4636,7 +4637,7 @@ def read_across_train(request):
         dataset = request.GET.get('dataset')
         print dataset
         algorithms= "python-readacross"
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.get(SERVER_URL+'/algorithm/'+algorithms, headers=headers)
         except Exception as e:
@@ -4711,7 +4712,7 @@ def read_across_train(request):
             feature_list = inputform['input'].value()
             if not inputform.is_valid():
                 return render(request, "read_across_train.html", {'token': token, 'username': username, 'dataset':dataset, 'algorithms':algorithms, 'tform':tform, 'uploadform':form,'inputform': inputform, 'al':al, 'nform': nform, 'pmmlform':pmmlform})
-            headers = {'Accept': 'application/json',  'subjectid': token}
+            headers = {'Accept': 'application/json',  'Authorization': token}
             feat=""
             for f in feature_list:
                 feat += str(f)+','
@@ -4731,7 +4732,7 @@ def read_across_train(request):
                 if 'file' in request.FILES:
                     pmml= request.FILES['file'].read()
                     print pmml
-                    headers = {'Content-Type': 'application/xml',  'subjectid': token }
+                    headers = {'Content-Type': 'application/xml',  'Authorization': token }
                     try:
                         res = requests.post(SERVER_URL+'/pmml', headers=headers, data=pmml)
                     except Exception as e:
@@ -4757,7 +4758,7 @@ def read_across_train(request):
         description= tform['description'].value()
         body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'scaling': scaling, 'doa': doa, 'title': title, 'description':description, 'transformations':transformations, 'prediction_feature': prediction_feature, 'parameters':json.dumps(params), 'visible': True}
         print body
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             res = requests.post(SERVER_URL+'/algorithm/python-readacross', headers=headers, data=body)
         except Exception as e:
@@ -4779,7 +4780,7 @@ def read_across_predict(request):
     if request.method == 'GET':
         m = []
         #get all models
-        headers = {'Accept': 'application/json', "subjectid": token}
+        headers = {'Accept': 'application/json', "Authorization": token}
         try:
             res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
         except Exception as e:
@@ -4821,7 +4822,7 @@ def read_across_predict_model(request):
         request.session['model'] = model
         dataset=[]
         #Get required feature of selected model
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             required_res = requests.get(SERVER_URL+'/model/'+model+'/required', headers=headers)
         except Exception as e:
@@ -4889,7 +4890,7 @@ def read_across_predict_model(request):
         #Get the method of prediction
         method = request.POST.get('radio_method')
         #Get the required model
-        headers = {'Accept': 'application/json', 'subjectid': token}
+        headers = {'Accept': 'application/json', 'Authorization': token}
         try:
             required_res = requests.get(SERVER_URL+'/model/'+selected_model+'/required', headers=headers)
         except Exception as e:
@@ -4924,7 +4925,7 @@ def read_across_predict_model(request):
                 json_data = json.dumps(new_data)
                 print("----------")
                 print new_data
-                headers1 = {'Content-type': 'application/json', 'subjectid': token}
+                headers1 = {'Content-type': 'application/json', 'Authorization': token}
                 try:
                     res15 = requests.post(SERVER_URL+'/dataset', headers=headers1, data=json_data)
                     print res15.text
@@ -4934,7 +4935,7 @@ def read_across_predict_model(request):
                     return render_to_response(request, "error.html", {'token': token, 'username': username,'error': json.loads(res15.text)})
                 dataset = res15.text
                 print dataset
-                headers = {'Content-Type': 'application/x-www-form-urlencoded', 'subjectid': token,}
+                headers = {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': token,}
                 body = {'dataset_uri': dataset, 'visible': True}
                 print body
                 print selected_model
@@ -4956,7 +4957,7 @@ def read_across_predict_model(request):
             if dataset == "" or dataset == None:
                 m = []
                 #get all models
-                headers = {'Accept': 'application/json', "subjectid": token}
+                headers = {'Accept': 'application/json', "Authorization": token}
                 try:
                     res = requests.get(SERVER_URL+'/model?start=0&max=10000', headers=headers)
                 except Exception as e:
@@ -4968,7 +4969,7 @@ def read_across_predict_model(request):
                         m.append({'name': mod['_id'], 'meta': mod['meta']})
                 return render(request, "read_across_predict.html", {'token': token, 'username': username,'selected_model': selected_model, 'page': page, 'last':last,'error':"You should select a dataset."})
             else:
-                headers = {'Content-Type': 'application/x-www-form-urlencoded', "subjectid": token}
+                headers = {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": token}
                 body = {'dataset_uri': SERVER_URL+'/dataset/'+dataset, 'visible': True}
                 try:
                     res = requests.post(SERVER_URL+'/model/'+selected_model, headers=headers, data=body)

@@ -116,7 +116,7 @@ EXT_AUTH_URL_LOGIN = 'https://opensso.in-silico.ch:443/auth/authenticate?uri=ser
 EXT_AUTH_URL_LOGOUT = 'http://opensso.in-silico.ch/opensso/identity/logout'
 
 #URL_1 = 'http://enanomapper.ntua.gr:8880/jaqpot/services'
-SERVER_URL = os.getenv('JAQPOT_BASE_SERVICE', 'http://localhost.org:8080/jaqpot/services')
+SERVER_URL = os.getenv('JAQPOT_BASE_SERVICE', 'http://localhost:8080/jaqpot/services')
 
 
 TEMPLATE_CONTEXT_PROCESSORS += (
@@ -152,6 +152,30 @@ HAYSTACK_CONNECTIONS = {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
         'URL': 'http://127.0.0.1:9200/',
         'INDEX_NAME': 'haystack',
+    },
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console':{
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+    },
+    'loggers': {
+        'django.request':{
+            'handlers': ['console'],
+            'propagate': False,
+            'level': 'DEBUG',
+        },
     },
 }
 
