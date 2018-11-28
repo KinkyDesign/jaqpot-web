@@ -56,15 +56,15 @@ def login(request):
             password = form['password'].value()
 
             # send request to external authenticator
-
             try:
                 r = requests.post(SERVER_URL + '/aa/login', data={'username': username, 'password': password})
                 if r.status_code == 200:
                     response = json.loads(r.text)
-                    token = response['authToken']
+                    token = 'Bearer ' + str(response['authToken'])
 
                     # set session request
-                    request.session['token'] =  token
+                    #var  = 'Bearer '
+                    request.session['token'] = token
                     request.session['username'] = username
 
                     next = request.POST.get('next', '/')
@@ -89,19 +89,19 @@ def logout(request):
     headers = {'Accept': 'application/json', 'Authorization': token}
     if token:
         # send request to logout from auth server
-        try:
-            r = requests.post(SERVER_URL + '/aa/logout', headers=headers)
-            if r.status_code == 200:
+       # try:
+            #r = requests.post(SERVER_URL + '/aa/logout', headers=headers)
+            #if r.status_code == 200:
                 # remove from session
                 request.session['token'] = ''
                 request.session['username'] = ''
 
                 # send to home page
-                return redirect('/')
-            else:
+               # return redirect('/')
+            #else:
                 return redirect('/login')
-        except Exception as e:
-            return render(request, "error.html", {'server_error':e, })
+        #except Exception as e:
+         #   return render(request, "error.html", {'server_error':e, })
     else:
         return redirect('/')
 
@@ -331,7 +331,7 @@ def bibtex(request):
             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         list_resp = res.text
         if res.status_code == 403:
-            error = "This request is forbidden (e.g., no authentication token is provided)"
+            error = "This request is forbidden (e.g., no Authorization token is provided)"
             return render(request, "bibtex.html",
                           {'token': token, 'username': username, 'name': name, 'error': error})
         if res.status_code == 401:
@@ -1043,7 +1043,7 @@ def features(request):
                 return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         features=[]
         if res.status_code == 403:
-            error = "This request is forbidden (e.g., no authentication token is provided)"
+            error = "This request is forbidden (e.g., no Authorization token is provided)"
             return render(request, "features.html", {'token': token, 'username': username, 'error': error})
 
         if res.status_code == 401:

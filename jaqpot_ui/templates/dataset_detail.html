@@ -21,7 +21,7 @@
         <a id="info" class="btn bt-red" data-toggle="tool-top" title="Dataset info" style="float:left; clear:left"><i class="glyphicon glyphicon-plus-sign"></i></a>
         <button class="btn bt-red" onclick="copyToClipboard('#p2')" style="float:left;margin-left:5px;"><i class="fa fa-clipboard" aria-hidden="true"></i></button>
         <div id="data_details" style="float:left;clear:left;display:none;">
-            <p id="p2" style="display:none;"> http://localhost:8080/jaqpot/services/dataset/{{name}}?Authorization={{token}}</p>
+            <p id="p2" style="display:none;"> http://test.jaqpot.org:8080/jaqpot/services/dataset/{{name}}?Authentication={{token}}</p>
 
           {% if data_detail.meta.doi %}
             <div>

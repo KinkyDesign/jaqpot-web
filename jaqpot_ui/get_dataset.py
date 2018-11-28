@@ -20,7 +20,7 @@ def paginate_dataset(request, name, token, username, page):
 
     This function returns the compounds of the selected dataset paginated
     '''
-    headers = {'Accept': 'application/json', 'Authorization': token}
+    headers = {'Accept': 'application/json', 'Authentication': token}
     try:
         r = requests.get(SERVER_URL+'/dataset/'+name+'?rowStart=0&rowMax=0&colStart=0&colMax=0', headers=headers)
     except Exception as e:
@@ -40,7 +40,7 @@ def paginate_dataset(request, name, token, username, page):
         if last==0:
             last=1
         if request.method == 'GET':
-            headers = {'Accept': 'application/json', 'Authorization': token}
+            headers = {'Accept': 'application/json', 'Authentication': token}
             #print data_detail['dataEntry']
             if page:
                 page1=int(page) * 20 - 20
@@ -71,7 +71,7 @@ def paginate_dataset(request, name, token, username, page):
 
 
 def get_prediction_feature_of_dataset(dataset, token):
-    headers = {'Accept': 'application/json', 'Authorization': token}
+    headers = {'Accept': 'application/json', 'Authentication': token}
     r = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
     data=json.loads(r.text)
     prediction_feature = ""
@@ -86,7 +86,7 @@ def get_prediction_feature_of_dataset(dataset, token):
     return prediction_feature
 
 def get_prediction_feature_name_of_dataset(dataset, token, prediction):
-    headers = {'Accept': 'application/json', 'Authorization': token}
+    headers = {'Accept': 'application/json', 'Authentication': token}
     r = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
     data=json.loads(r.text)
     for f in data['features']:
@@ -96,7 +96,7 @@ def get_prediction_feature_name_of_dataset(dataset, token, prediction):
     return name
 
 def get_number_of_not_null_of_dataset(dataset, token, prediction_feature):
-    headers = {'Accept': 'application/json', 'Authorization': token}
+    headers = {'Accept': 'application/json', 'Authentication': token}
     r = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
     data=json.loads(r.text)
     total = 0
