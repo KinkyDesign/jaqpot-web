@@ -1525,14 +1525,14 @@ def predict_model(request):
                     print data
                     data = json.loads(data)
                     n_data=[]
-                    n_d={}
-                    n_d1={}
                     for d in data:
+                        n_d = {}
+                        n_d1 = {}
                         for key, value in d.items():
                             new_val = value.replace(',', '.')
                             n_d1[''+key+'']=new_val
                             n_d.update(n_d1)
-                    n_data.append(n_d)
+                        n_data.append(n_d)
                     print n_data
                     data = n_data
                     print data
@@ -2566,71 +2566,197 @@ def valid_split(request):
 def external_validation(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
+
+    # Get the current page
     page = request.GET.get('page')
+    # Get the last page
     last = request.GET.get('last')
-    model= request.GET.get('model')
-    method = request.GET.get('method')
-    request.session['method'] = method
-
     if request.method == 'GET':
-        dataset=[]
+        # Get the selected model for prediction
+        model = request.GET.get('model')
+        # Save selected model at session model
+        request.session['model'] = model
+        dataset = []
+        # Get required feature of selected model
         headers = {'Accept': 'application/json', 'Authorization': token}
-        #get total number of datasets
         try:
-            res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+            required_res = requests.get(SERVER_URL + '/model/' + model + '/required', headers=headers)
         except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
-        if res.status_code >= 400:
-            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-        total_datasets= int(res.headers.get('total'))
-        if total_datasets%20 == 0:
-            last = total_datasets/20
-        else:
-            last = (total_datasets/20)+1
-
+            return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
+        if required_res.status_code >= 400:
+            return render(request, "error.html",
+                          {'token': token, 'username': username, 'error': json.loads(required_res.text)})
+        model_req = json.loads(required_res.text)
+        # check if is needed image or mocap
+        image, mopac = chech_image_mopac(model_req)
+        # Firstly, get the datasets of first page if user selects different page get the datasets of the selected page
         if page:
-            #page1 is the number of first dataset of page
-            page1=int(page) * 20 - 20
-            k=str(page1)
-            print k
+            page1 = int(page) * 20 - 20
+            k = str(page1)
             if page1 <= 1:
                 try:
-                    res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                    res = requests.get(SERVER_URL + '/dataset?start=0&max=20', headers=headers)
                 except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
                 if res.status_code >= 400:
-                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+                    return render(request, "error.html",
+                                  {'token': token, 'username': username, 'error': json.loads(res.text)})
+            elif last:
+                try:
+                    res = requests.get(SERVER_URL + '/dataset?start=' + last + '&max=20', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
+                if res.status_code >= 400:
+                    return render(request, "error.html",
+                                  {'token': token, 'username': username, 'error': json.loads(res.text)})
             else:
                 try:
-                    res = requests.get(SERVER_URL+'/dataset?start='+k+'&max=20', headers=headers)
+                    res = requests.get(SERVER_URL + '/dataset?start=' + k + '&max=20', headers=headers)
                 except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                    return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
                 if res.status_code >= 400:
-                    return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
+                    return render(request, "error.html",
+                                  {'token': token, 'username': username, 'error': json.loads(res.text)})
+
         else:
             page = 1
             try:
-                res = requests.get(SERVER_URL+'/dataset?start=0&max=20', headers=headers)
+                res = requests.get(SERVER_URL + '/dataset?start=0&max=20', headers=headers)
             except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+                return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
             if res.status_code >= 400:
-                return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
-        data= json.loads(res.text)
-        print res.text
+                return render(request, "error.html",
+                              {'token': token, 'username': username, 'error': json.loads(res.text)})
+        data = json.loads(res.text)
         for d in data:
-            dataset.append({'name': d['_id'], 'meta': d['meta']})
-        print dataset
+            dataset.append(
+                {'name': d['_id'], 'title': d['meta']['titles'][0], 'description': d['meta']['descriptions'][0]})
+
+        if len(dataset) < 20:
+            last = page
         try:
-            res1 = requests.get(SERVER_URL+'/dataset/featured', headers=headers)
+            res1 = requests.get(SERVER_URL + '/dataset/featured?start=0&max=100', headers=headers)
         except Exception as e:
-                    return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
+            return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
         if res1.status_code >= 400:
-            return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res1.text)})
+            return render(request, "error.html", {'token': token, 'username': username, 'error': json.loads(res1.text)})
         proposed_data = json.loads(res1.text)
         proposed = []
+
         for p in proposed_data:
-            proposed.append({'name': p['_id'], 'meta': p['meta'] })
-        return render(request, "choose_dataset_ext_valid.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed': proposed, 'model':model})
+            proposed.append({'name': p['_id'], 'meta': p['meta']})
+        # Display all datasets for selection
+        return render(request, "choose_dataset_ext_valid.html",
+                      {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last': last,
+                       'model_req': model_req, 'model': model, 'image': image, 'mopac': mopac, 'proposed': proposed})
+    if request.method == 'POST':
+        # Get the selected model for prediction from session
+        selected_model = request.session.get('model', '')
+        # Get the method of prediction
+        method = request.POST.get('radio_method')
+        # Get the required model
+        headers = {'Accept': 'application/json', 'Authorization': token}
+        try:
+            required_res = requests.get(SERVER_URL + '/model/' + selected_model + '/required', headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
+        if required_res.status_code >= 400:
+            return render(request, "error.html",
+                          {'token': token, 'username': username, 'error': json.loads(required_res.text)})
+        required_res = json.loads(required_res.text)
+        print required_res
+        if request.is_ajax():
+            img_descriptors = request.POST.getlist('img_desc[]')
+            mopac_descriptors = request.POST.getlist('mopac_desc[]')
+            if 'excel_data' in request.POST:
+                if img_descriptors:
+                    data = request.POST.get('img_desc[]')
+                    data = json.loads(data)
+                    new_data = create_dataset(data, username, required_res, img_descriptors, mopac_descriptors)
+                    json_data = json.dumps(new_data)
+                else:
+                    data = request.POST.get('excel_data')
+                    print data
+                    data = json.loads(data)
+                    n_data = []
+                    for d in data:
+                        n_d = {}
+                        n_d1 = {}
+                        for key, value in d.items():
+                            new_val = value.replace(',', '.')
+                            n_d1['' + key + ''] = new_val
+                            n_d.update(n_d1)
+                        n_data.append(n_d)
+                    print n_data
+                    data = n_data
+                    print data
+                    # Get data from excel and create dataset to the appropriate format
+                    new_data = create_dataset(data, username, required_res, img_descriptors, mopac_descriptors)
+                    json_data = json.dumps(new_data)
+                headers1 = {'Content-type': 'application/json', 'Authorization': token}
+                try:
+                    res = requests.post(SERVER_URL + '/dataset', headers=headers1, data=json_data)
+                    print res.text
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
+                if res.status_code >= 400:
+                    return JsonResponse({'server_error': json.loads(res.text), "ERROR_REDIRECT": "1"})
+                dataset = res.text
+                print dataset
+                body = {'test_dataset_uri': SERVER_URL + '/dataset/' + dataset,
+                        'model_uri': SERVER_URL + '/model/' + selected_model}
+                print body
+                headers = {'Accept': 'application/json', 'Authorization': token}
+                try:
+
+                    res = requests.post(SERVER_URL + '/validation/test_set_validation', headers=headers, data=body)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
+                if res.status_code >= 400:
+                    return render(request, "error.html",
+                                  {'token': token, 'username': username, 'error': json.loads(res.text)})
+                response = json.loads(res.text)
+                print response
+                id = response['_id']
+                return HttpResponse(id)
+        if method == 'select_dataset':
+            # Get the selected dataset
+            dataset = request.POST.get('radio')
+            print request.POST
+            if dataset == "" or dataset == None:
+                m = []
+                # get all models
+                headers = {'Accept': 'application/json', "Authorization": token}
+                try:
+                    res = requests.get(SERVER_URL + '/model?start=0&max=10000', headers=headers)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
+                if res.status_code >= 400:
+                    return render(request, "error.html",
+                                  {'token': token, 'username': username, 'error': json.loads(res.text)})
+                models = json.loads(res.text)
+                for mod in models:
+                    m.append({'name': mod['_id'], 'meta': mod['meta']})
+                return render(request, "choose_dataset_ext_valid.html",
+                              {'token': token, 'username': username, 'selected_model': selected_model, 'page': page,
+                               'last': last, 'error': "You should select a dataset."})
+            else:
+                body = {'test_dataset_uri': SERVER_URL + '/dataset/' + dataset,
+                        'model_uri': SERVER_URL + '/model/' + selected_model }
+                print body
+                headers = {'Accept': 'application/json', 'Authorization': token}
+                try:
+
+                    res = requests.post(SERVER_URL + '/validation/test_set_validation', headers=headers, data=body)
+                except Exception as e:
+                    return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
+                if res.status_code >= 400:
+                    return render(request, "error.html",
+                                  {'token': token, 'username': username, 'error': json.loads(res.text)})
+                response = json.loads(res.text)
+                print response
+                id = response['_id']
+                return redirect('/t_detail?name=' + id + '&model=' + selected_model)
 
 #Choose model for external validation
 #@token_required
@@ -4907,14 +5033,14 @@ def read_across_predict_model(request):
                 data = request.POST.get('excel_data')
                 data = json.loads(data)
                 n_data=[]
-                n_d={}
-                n_d1={}
                 for d in data:
+                    n_d = {}
+                    n_d1 = {}
                     for key, value in d.items():
                         new_val = value.replace(',', '.')
                         n_d1[''+key+'']=new_val
                         n_d.update(n_d1)
-                n_data.append(n_d)
+                    n_data.append(n_d)
                 print n_data
                 data = n_data
                 #data = json.loads(data)

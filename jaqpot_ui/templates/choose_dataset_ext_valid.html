@@ -1,124 +1,360 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block content  %}
+    <form id= "get_model_ext_valid" method="post"> {% csrf_token %}
+        <div class="div-table" style="width:100%; display: inline-block;">
+            <a id="back" class="btn bt-red" style="width:3%; float:left;" ><i class="glyphicon glyphicon-circle-arrow-left"></i></a>
+            <br>
+            <div>
+                {% if error %}
+                    <h1>{{error}}</h1>
+                {% else %}
+                    <h1>Choose method:</h1>
 
-<div class="div-table" style="width:100%;display:inline-block;">
+                    <input type="radio" name="radio_method" id="radio1" checked value="select_dataset"> Select dataset.<br>
+                    <input type="radio" name="radio_method" id="radio2" value="upload_dataset">Insert values.<br>
+                    </div>
+                    <br>
 
-     <div>
-        <h1>Select dataset:</h1>
-        <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
-        <br>
-        {% if error %}
-            {{error}}
-         {% endif%}
-        {% load endless %}
-         <h3>Example Dataset:</h3>
-        <div class="publicdataset list-group" style="height: 300px;overflow: scroll;">
+                    <div id="select_dataset" style="display:none;">
+                    <h1>Select dataset for validation:</h1>
+                    <div class="form-search search-only" ><i class="search-icon glyphicon glyphicon-search"></i> <input id="filter" class="form-control search-query green-form"></div>
+                    <br>
+                    <h3>Example Datasets:</h3>
+                    <div class="list-group" style="height: 300px;overflow: scroll;">
 
-            <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:40%; position:absolute;">Description</span>  <span style="float: left; left:80%; position:absolute;">Date</span>  </p>
-        {% for p in proposed %}
-             <a href="/get_model_ext_valid?dataset={{p.name}}&model={{model}}" class="list-group-item">{{p.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{p.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:40%;">{{p.meta.descriptions.0}}</span> <span class="overflow-span" style="float: left; left:80%; position:absolute;width:20%;">{{p.meta.date}}</span></a>
-        {% endfor %}
-            </div>
-        <div class="publicdataset list-group">
-        {% paginate 20 entries2 using "other_objects_page" %}
-            <h3>All Datasets:</h3>
-            <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:40%; position:absolute;">Description</span> <span style="float: left; left:80%; position:absolute;">Date</span></p>
-        {% for e in entries2 %}
-             <a href="/get_model_ext_valid?dataset={{e.name}}&model={{model}}" class="list-group-item">{{e.name}} <span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{e.meta.titles.0}}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:40%;">{{e.meta.descriptions.0}}</span><span class="overflow-span" style="float: left; left:80%; position:absolute;width:20%;">{{e.meta.date}}</span> </a>
-        {% endfor %}
-            </div>
-            {% get_pages %}
-            <div id="pageNavPosition5" class="pagination">
-                <span class="step-links">
+                        <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%;">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:40%; position:absolute;">Description</span><span style="float: left; left:80%; position:absolute;">Date</span>  </p>
+                        {% for p in proposed %}
+
+                            <a class="list-group-item" style="width:100%;float:left;" onclick="document.getElementById('{{p.name}}').checked=true;document.getElementById('get_model_ext_valid').submit();"><input type="radio" id="{{p.name}}" name="radio" value="{{p.name}}" style="display:none;" >{{p.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{% for title in p.meta.titles%}{{title}}{% if title %}{% if not forloop.last %}, {%endif%}{%else%} {%endif%}{% endfor%}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:40%;">{%for desc in p.meta.descriptions%}{{desc}}{% if desc %}{% if not forloop.last %}, {%endif%}{%else%} {% endif %}{% endfor %}</span><span class="overflow-span" style="float: left; left:80%; position:absolute;width:20%;">{{p.meta.date}}</span> </label></a>
+                        {% endfor %}
+                    </div>
+
+                    {% load endless %}
+                    <div class="list-group">
+                        <h3>All Datasets:</h3>
+                        <p class="list-group-item" style="background-color:#cf2323; border-color:#cf2323;width:100%">Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:40%; position:absolute;">Description</span> <span style="float: left; left:80%; position:absolute;">Date</span> </p>
+                        {% paginate 20 dataset %}
+                        {% for data in dataset %}
+
+                            <a class="list-group-item" style="width:100%;float:left;" onclick="document.getElementById('{{data.name}}').checked=true;document.getElementById('get_model_ext_valid').submit();"><input type="radio" name="radio" id="{{data.name}}" value="{{data.name}}" style="display:none;">{{data.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{data.title}}</span> <span class="overflow-span" style="float: left; left:40%; position:absolute;width:40%;">{{data.description}}</span><span class="overflow-span" style="float: left; left:80%; position:absolute;width:20%;">{{data.meta.date}}</span> </label></a>
+
+                        {% endfor %}
+                    </div>
+                    <!-- <h3>All datasets:</h3>
+        <label class="datasets" style="background-color:#cf2323;border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                Name <span style="float: left; left:20%; position:absolute;">Title</span> <span style="float: left; left:50%; position:absolute;">Description</span> </label>
+            {% paginate 20 dataset %}
+            {% for data in dataset %}
+                <label class="datasets" style="border: 1px solid #ccc;padding:5px;margin:0 0 5px;display:block; width:99%;">
+                    <input type="radio" name="radio" value="{{data.name}}">{{data.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%"><input type="radio" name="radio" value="{{data.name}}">{{data.name}}<span class="overflow-span" style="float: left; left:20%; position:absolute; width:20%">{{data.title}}</span> <span class="overflow-span" style="float: left; left:50%; position:absolute;width:50%;">{{data.description}}</span></span></label>
+
+            {% endfor %}  -->
+                    {% get_pages %}
+                    <div id="pageNavPosition5" class="pagination">
+                    <span class="step-links">
                     <ul class="pagination">
                         <li class="active">
                             {% if page|add:"0" >= 2 %}
-                            <a href="/external_validation?page={{page|add:-1}}">Previous</a>
+                                <a href="/external_validation?model={{model}}&page={{page|add:-1}}">Previous</a>
                             {% else %}
-                            <a href="/external_validation?page={{page}}">Previous</a>
+                                <a href="/external_validation?model={{model}}&page={{page}}">Previous</a>
                             {%endif %}
                         </li>
 
-                        {% if page|add:-1 >= 1 %}
-                        <li><a href="/external_validation?page=1">1</a></li>
-                        {% endif %}
-                        {% if page|add:-2 > 1%}
-                        <li><a><strong>...</strong></a></li>
-                        {% endif%}
-                        {% if page|add:-1 > 1%}
-                        <li><a href="/external_validation?page={{page|add:-1}}">{{page|add:-1}}</a></li>
-                        {% endif %}
-                        <li><a href="/external_validation?page={{page}}"><strong>{{page}}</strong></a></li>
+                        <li><a href="/external_validation?model={{model}}&page={{page}}"><strong>{{page}}</strong></a></li>
 
-                         {% if page|add:"1" < last%}
-                        <li><a href="/external_validation?page={{page|add:1}}">{{page|add:1}}</a></li>
-                        {% endif %}
-                        {% if page|add:"2" < last%}
-                        <li><a><strong>...</strong></a></li>
-                        {% endif%}
-                         {% if page|add:1 <= last %}
-                        <li><a href="/external_validation?page={{last}}">{{last}}</a></li>
-                        {% endif %}
 
                         <li class="active">
-                            {% if page >= last %}
-                                    <a href="/external_validation?page={{last}}">Next</a>
+                            {% if last %}
+                                <a href="/external_validation?model={{model}}&page={{last}}">Next</a>
                             {%else%}
-                                <a href="/external_validation?page={{page|add:1 }}">Next </a>
+                                <a href="/external_validation?model={{model}}&page={{page|add:1 }}">Next </a>
                             {% endif %}
                         </li>
 
 
-
                    </ul>
                 </span>
+                {% endif %}
+
+                </div>
+                </div>
+            <div id="upload_dataset" style="display:none; overflow: auto">
+                <input type="text" style="display:none" id="data">
+
             </div>
+            <br>
+            <input id="choose_alg1" type="submit" value="Validate" class="btn bt-red" style="width: 10%; float:right; right:10%;">
         </div>
-    </div>
 
+    </form>
+    <form style="display: hidden" action="/error" method="post" id="error"> {% csrf_token %}
+        <input type="hidden" id="server_error" name="server_error" value=""/>
+        <input type="hidden" id="csrfmiddlewaretoken" name="csrfmiddlewaretoken" value=""/>
+    </form>
 
-<script>
-//console.log(data)
-/*$('#dataset').bind('click', function(e){
-            $.ajax({
-                type: 'GET',
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8',
-                url: '/alg/',
-                data: {'algorithm': {{data|safe}} , },
-                success: function(result) {
-                        document.write(result)
-                        }
-    });
+    <script>
+        var image_descriptors = []
+        var mopac_descriptors = []
+        var pr =[]
+        $('#radio1').click(function() {
+            $("#select_dataset").show();
+            $("#upload_dataset").hide();
+        });
+        if($('#radio1').is(':checked')) {
+            $("#select_dataset").show();
+            $("#upload_dataset").hide();
+        }
+        $('#radio2').click(function() {
+            $("#select_dataset").hide();
+            $("#upload_dataset").show();
+        });
+        if($('#radio2').is(':checked')) {
+            $("#select_dataset").hide();
+            $("#upload_dataset").show();
+        }
 
-});*/
-//search from public dataset
-$(document).ready(function(){
-    $("#filter").keyup(function(){
-
-        // Retrieve the input field text and reset the count to zero
-        var filter = $(this).val(), count = 0;
-
-        // Loop through the comment list
-        $(".publicdataset a").each(function(){
-
-            // If the list item does not contain the text phrase fade it out
-            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
-                $(this).fadeOut();
-
-            // Show the list item if the phrase matches and increase the count by 1
-            } else {
-                $(this).show();
-                count++;
-            }
+        //Back buttom
+        $('#back').click(function(event) {
+            history.go(-1);
         });
 
-        // Update the count
-        var numberItems = count;
-        $("#filter-count").text("Number of Comments = "+count);
-    });
-});
+        // Create excel sheet
+        //var file = <input type="file" id="files"  accept="image/*" onchange="readURL(this, {{i}})" /><img id="img{{i}}" src="#" alt="your image" style= "display: none">
+        var data = [
+            {% for i in "1" %}
+                {
+                    {% if image %}
+                        "Image": '<div id="mybutton{{i}}" class="btn-file"><input type="file" id="file{{i}}" class="up_file" accept="image/*" onchange="readURL(this, {{i}})" />Choose image</div><input id="filename{{i}}"></input><img id="img{{i}}" src="#" alt="your image" style= "display: none">',
+                    {% endif %}
+                    {% if mopac %}
+                        "Mopac": '<div id="mopac_button{{i}}" class="btn-file"><input type="file" id="mopac_file{{i}}" class="up_file" onchange="readFile(this, {{i}})" />Choose file</div><input id="mopacname{{i}}"></input>',
+                    {% endif %}
+                    {% for m in model_req %}
+                        {% if m.category == 'EXPERIMENTAL' %}
+                            "{{m.name}}": "0",
+                        {% endif %}
+                    {% endfor %}
 
-</script>
-{%endblock%}
+                },
+            {% endfor %}
+
+        ]
+        var TotalRows=1
+        var container = document.getElementById('upload_dataset');
+        var hot = new Handsontable(container, {
+            data: data,
+            startRows: 1,
+            startCols: data.length,
+            height: 150,
+            rowHeaders: true,
+            colHeaders: true,
+            contextMenu: ['row_below', 'copy', 'paste', 'alignment',],
+            colHeaders:[
+                {% if image %}
+                    '<p data-toggle="tooltip" data-placement="top" data-container="body" title="Upload an image">Image</p>',
+                {% endif %}
+                {% if mopac %}
+                    '<p data-toggle="tooltip" data-placement="top" data-container="body" title="Upload a Mopac file">Mopac</p>',
+                {% endif %}
+                {% for m in model_req %}
+                    '<p data-toggle="tooltip" data-placement="top" data-container="body" title="Units: {{m.units}} Conditions: {% for k,v in m.conditions.iteritems %}{{k}}:{{v}}, {% endfor %}">{{m.name}}</p>',
+                {% endfor %}
+            ],
+            columns: [
+                {% if image %}
+                    { data: "Image", renderer: "html", type: 'checkbox' },
+                {% endif %}
+                {% if mopac %}
+                    { data: "Mopac", renderer: "html"},
+                {% endif %}
+                {% for m in model_req %}
+                    {% if m.category == 'EXPERIMENTAL' %}
+                        { data: "{{m.name}}"},
+                    {% endif %}
+                {% endfor %}
+            ],
+            stretchH: 'all',
+            contextMenuCopyPaste: {
+                swfPath: '/static/dist/zeroclipboard/ZeroClipboard.swf'
+            },
+            afterRender: function(){
+                //Display tooltip after handsontable render.
+                $('[data-toggle="tooltip"]').tooltip({
+                    container : 'body'
+                });
+                {% if image %}
+                    for (i = 1; i < pr.length; i++) {
+                        $('#filename'+i).val(pr[i]);
+                    }
+                {% endif %}
+                {% if mopac %}
+                    for (i = 1; i < mopac_path.length; i++) {
+                        $('#mopacname'+i).val(pr[i]);
+                    }
+                {% endif %}
+
+            },
+
+            //create upload form in the first cell if user add row
+            afterCreateRow: function(index, numberOfRows){
+                {% if image %}
+                    var next = index+1
+                    hot.setDataAtCell(index, 0, '<div id="mybutton'+next+'" class="btn-file" ><input type="file" id="file'+next+'" class="up_file" accept="image/*" onchange="readURL(this, '+next+')" />Choose image</div><input id="filename'+next+'"></input><img id="img'+next+'" src="#" alt="your image" style= "display: none">')
+                    TotalRows = TotalRows + numberOfRows
+                    if (TotalRows >next){
+                        var i=TotalRows
+                        hot.setDataAtCell(i-1, 0, '<div id="mybutton'+i+'" class="btn-file" ><input type="file" id="file'+i+'" class="up_file" accept="image/*" onchange="readURL(this, '+i+')" />Choose image</div><input id="filename'+i+'"></input><img id="img'+i+'" src="#" alt="your image" style= "display: none">')
+                    }
+                    pr[next+1]=pr[next]
+                    pr[next]=""
+                    console.log(pr)
+                    /*if (pr.length >= next){
+                        var temp = pr
+                        for (i=next;i<=pr.length; i++){
+                            pr[i+2] = temp[i]
+
+                    }
+                    alert(pr)
+                    console.log(pr)
+                    }*/
+                {% endif %}
+
+            },
+
+            {% if image or mopac %}
+                afterChange: function (changes, source) {
+                    if (!changes) {
+                        return;
+                    }
+                    $.each(changes, function (index, element) {
+                        {% if image %}
+                            for (i = 1; i < pr.length; i++) {
+                                $('#filename'+i).val(pr[i]);
+                            }
+                            });
+                        {% endif %}
+                    {% if mopac %}
+                        for (i = 1; i < mopac_path.length; i++) {
+                            $('#mopacname'+i).val(pr[i]);
+                        }
+                        });
+                    {% endif %}
+                },
+            {% endif %}
+
+
+        });
+
+
+        //search the selected dataset from the list
+        $(document).ready(function(){
+            search("#filter", ".datasets", "#filter-count");
+        });
+
+
+
+        $(document).ready(function(){
+
+            $('#get_model_ext_valid').on('submit', function(e) {
+                e.preventDefault();
+                if ($('#radio1').is(':checked')) {
+                    this.submit();
+                }
+                else {
+                    $.ajax({
+                        url: '/external_validation',
+                        type: 'POST',
+                        data: {
+                            csrfmiddlewaretoken: '{{csrf_token}}',
+                            excel_data: JSON.stringify(hot.getData()),
+                            img_desc: image_descriptors,
+                            mopac_desc: mopac_descriptors
+                        },
+                        cache: 'false'
+                    }).done(function (data) {
+                            //ERROR CASE
+                            console.log(data.ERROR_REDIRECT);
+                            if (data.ERROR_REDIRECT === "1") {
+                                console.log(data.server_error);
+                                $("#server_error").val(JSON.stringify(data.server_error));
+                                $("#error").submit();
+                            }
+                            else
+                            //SUCCESS CASE
+                            {
+                                window.location.replace("/t_detail?name="+data);
+                            }
+                        }
+                    )
+                    ;
+                }
+            })
+        });
+
+        function readURL(input, i) {
+            if (input.files && input.files[0]) {
+                pr[i]= $( "#file"+i ).val().split('-').pop();
+                $('#filename'+i).val(pr[i]);
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#img'+i)
+                        .attr('src', e.target.result)
+                        .width(10)
+                        .height(10);
+                    //send data uri via ajax
+                    $.ajax({
+                        url: '/calculate_image_descriptors',
+                        type: 'POST',
+                        data: {
+                            data_uri: e.target.result,
+                        },
+                        cache: 'false',
+                        success: function(data){
+                            alert(data)
+                            image_descriptors[i-1]=data
+                            console.log(i)
+                            console.log(image_descriptors)
+                        }
+                    });
+                };
+
+                reader.readAsDataURL(input.files[0]);
+
+            }
+
+        }
+
+
+        function readFile(input, i) {
+            if (input.files && input.files[0]) {
+                mopac_path[i]= $( "#mopac_file"+i ).val().split('-').pop();
+                $('#mopacname'+i).val(mopac_path[i]);
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    //send data uri via ajax
+                    $.ajax({
+                        url: '/calculate_mopac_descriptors',
+                        type: 'GET',
+                        data: {
+                            mopac_file: e.target.result,
+                        },
+                        cache: 'false',
+                        success: function(data){
+                            alert(data)
+                            mopac_descriptors[i-1]=data
+                        }
+                    });
+                };
+
+                reader.readAsDataURL(input.files[0]);
+
+            }
+
+
+        }
+
+
+    </script>
+{% endblock%}
