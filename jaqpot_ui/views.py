@@ -17,7 +17,7 @@ from elasticsearch import Elasticsearch
 
 from jaqpot_ui.create_dataset import create_dataset, chech_image_mopac, create_dataset2, create_and_clean_dataset, \
     create_dataset2_with_title, create_and_clean_dataset2_with_title
-from jaqpot_ui.decorators import token_required
+#from jaqpot_ui.decorators import token_required
 from jaqpot_ui.forms import UserForm, BibtexForm, TrainForm, FeatureForm, ContactForm, SubstanceownerForm, \
     UploadFileForm, TrainingForm, InputForm, NoPmmlForm, SelectPmmlForm, DatasetForm, ValidationForm, ExperimentalForm, \
     UploadForm, \
@@ -107,7 +107,7 @@ def logout(request):
 
 
 #List of all tasks
-@token_required
+##@token_required
 def task(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -208,7 +208,7 @@ def task(request):
             return render(request, "task.html", {'token': token, 'username': username, 'all_tasks': all_tasks ,'list_run': list_run, 'list_complete': list_complete, 'list_cancelled': list_cancelled, 'list_error': list_error, 'list_queued': list_queued})
 
 #More information about each task
-@token_required
+##@token_required
 def taskdetail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -297,7 +297,7 @@ def taskdetail(request):
         return render(request, "taskdetail.html", {'token': token, 'username': username, 'name': name, 'output': output})
 
 #stop running task
-@token_required
+##@token_required
 def stop_task(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -314,7 +314,7 @@ def stop_task(request):
         return render(request, "mainPage.html", {'token': token, 'username': username })
 
 #List of all BibTex
-@token_required
+##@token_required
 def bibtex(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -356,7 +356,7 @@ def bibtex(request):
             return render(request, "bibtex.html", {'token': token, 'username': username, 'name': name, 'final_output': final_output})
 
 #Details of each bibtex
-@token_required
+#@token_required
 def bib_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -396,7 +396,7 @@ def bib_detail(request):
         return render(request, "bibdetail.html", {'token': token, 'username': username, 'name': name, 'details': details, 'id':details['_id'],})
 
 #Delete Bibtex
-@token_required
+#@token_required
 def bib_delete(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -414,7 +414,7 @@ def bib_delete(request):
         return render(request, "mainPage.html", {'token': token, 'username': username })
 
 #Add a Bibtex
-@token_required
+#@token_required
 def add_bibtex(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -450,7 +450,7 @@ def add_bibtex(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         return render(request, "mainPage.html", {'token': token, 'username': username, 'name': name})
 
-@token_required
+#@token_required
 def sub(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -460,7 +460,7 @@ def sub(request):
         return render(request, "bibdetail.html", {'token': token, 'username': username, 'name': name})
 
 #User interface
-@token_required
+#@token_required
 def user(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -488,7 +488,7 @@ def user(request):
         return render(request, "user_details.html", {'token': token, 'username': username, 'name': name, 'contacts': contacts, 'percentage': percentage})
 
 #Train model
-@token_required
+#@token_required
 def trainmodel(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -556,7 +556,7 @@ def trainmodel(request):
         return render(request, "choose_dataset.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed':proposed})
 
 #choose dataset for training
-@token_required
+#@token_required
 def choose_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -622,7 +622,7 @@ def choose_dataset(request):
             return redirect('/change_params', {'token': token, 'username': username,})
 
 #change algorithms parameters, select pmml, prediction feature, scaling and doa for training
-@token_required
+#@token_required
 def change_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -830,7 +830,7 @@ def change_params(request):
 
 
 #Conformer
-@token_required
+#@token_required
 def conformer(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -842,7 +842,7 @@ def conformer(request):
         return redirect('/task', {'token': token, 'username': username})
 
 #list of models
-@token_required
+#@token_required
 def model(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -885,7 +885,7 @@ def model(request):
         return render(request, "model.html", {'token': token, 'username': username, 'models':models, 'proposed':proposed })
 
 #Display details for each model
-@token_required
+#@token_required
 def model_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -926,7 +926,7 @@ def model_detail(request):
         return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name, 'alg': alg_details, 'required':required_feature, 'algorithm':algorithm})
 
 #Delete selected model
-@token_required
+#@token_required
 def model_delete(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -942,7 +942,7 @@ def model_delete(request):
     reply = res.text
     return redirect('/model')
 
-@token_required
+#@token_required
 def model_pmml(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -998,7 +998,7 @@ def model_pmml(request):
         return render(request, "model_detail.html", {'token': token, 'username': username, 'details':details, 'name':name, 'alg': alg_details, 'required':required_feature, 'error': res.text})
 
 #list of features
-@token_required
+#@token_required
 def features(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1064,7 +1064,7 @@ def features(request):
             return render(request, "features.html", {'token': token, 'username': username, 'features': features, 'page': page, 'last': last})
 
 #Display details of each feature
-@token_required
+#@token_required
 def feature_details(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1082,7 +1082,7 @@ def feature_details(request):
         return render(request, "feature_details.html", {'token': token, 'username': username, 'name': name, 'feature_detail': feature_detail})
 
 #Add feature
-@token_required
+#@token_required
 def add_feature(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1105,7 +1105,7 @@ def add_feature(request):
         return render(request, "mainPage.html", {'token': token, 'username': username, 'name': name})
 
 #Delete feature
-@token_required
+#@token_required
 def feature_delete(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1122,7 +1122,7 @@ def feature_delete(request):
         return render(request, "mainPage.html", {'token': token, 'username': username })
 
 #List of algorithms
-@token_required
+#@token_required
 def algorithm(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1152,7 +1152,7 @@ def algorithm(request):
 
 
 #Display details of each algorithm
-@token_required
+#@token_required
 def algorithm_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1172,7 +1172,7 @@ def algorithm_detail(request):
         return render(request, "algorithm_detail.html", {'token': token, 'username': username, 'details': details, 'id': algorithm})
 
 #Delete algorithm
-@token_required
+#@token_required
 def algorithm_delete(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1189,7 +1189,7 @@ def algorithm_delete(request):
         return render(request, "mainPage.html", {'token': token, 'username': username})
 
 #List of dataset
-@token_required
+#@token_required
 def dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1255,7 +1255,7 @@ def dataset(request):
         return render(request, "dataset.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last, 'proposed':proposed})
 
 #Display details of each dataset
-@token_required
+#@token_required
 def dataset_detail(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1309,7 +1309,7 @@ def dataset_detail(request):
             return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail':data_detail, 'properties': properties, 'a': a, 'new': new, 'page':page, 'last':last})
 
 #Delete selected dataset
-@token_required
+#@token_required
 def dataset_delete(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1326,7 +1326,7 @@ def dataset_delete(request):
     print reply
     return redirect('/data')
 
-@token_required
+#@token_required
 def dispay_predicted_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1382,7 +1382,7 @@ def dispay_predicted_dataset(request):
         return render(request, "predicted_dataset.html", {'token': token, 'username': username, 'name': name,'data_detail':data_detail, 'properties': properties, 'new': new, 'a':predicted, 'page':page, 'last':last, 'model':model })
 
 #Predict model
-@token_required
+#@token_required
 def predict(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1417,7 +1417,7 @@ def predict(request):
         return render(request, "predict_model.html", {'token': token, 'username': username, 'my_models': m, 'proposed':proposed})
 
 
-@token_required
+#@token_required
 def predict_model(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1615,7 +1615,7 @@ def calculate_image_descriptors(request):
     print average_particle
     return HttpResponse(json.dumps(average_particle))
 
-@token_required
+#@token_required
 def calculate_mopac_descriptors(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1634,7 +1634,7 @@ def calculate_mopac_descriptors(request):
     return HttpResponse(json.dumps(response))
 
 @csrf_exempt
-@token_required
+#@token_required
 def error(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1644,7 +1644,7 @@ def error(request):
 
 
 #Search
-@token_required
+#@token_required
 def search(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1675,7 +1675,7 @@ def search(request):
         return HttpResponse(models)
 
 #Contact form
-@token_required
+#@token_required
 def contact(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1703,7 +1703,7 @@ def contact(request):
     return render_to_response('contact_form.html', {'form': form, 'token': token, 'username': username}, context_instance=RequestContext(request))
 
 #redirect to thanks page
-@token_required
+#@token_required
 def thanks(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1711,7 +1711,7 @@ def thanks(request):
     if request.method == 'GET':
         return render(request, "thanks.html", {'token': token, 'username': username})
 
-@token_required
+#@token_required
 def compound(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1720,7 +1720,7 @@ def compound(request):
         compound= [{'name':'compound1'}, {'name':'compound2'}, {'name':'compound3'}, {'name':'compound4'}]
         return render(request, "compound.html", {'token': token, 'username': username, 'compound': compound})
 
-@token_required
+#@token_required
 def compound_details(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1730,7 +1730,7 @@ def compound_details(request):
         return render(request, "compound_detail.html", {'token': token, 'username': username, 'name': name})
 
 #redirect to source page
-@token_required
+#@token_required
 def source(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1739,7 +1739,7 @@ def source(request):
         return render(request, "source.html", {'token': token, 'username': username})
 
 #redirect to documentation page
-@token_required
+#@token_required
 def documentation(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1747,7 +1747,7 @@ def documentation(request):
     if request.method == 'GET':
         return render(request, "documentation.html", {'token': token, 'username': username})
 
-@token_required
+#@token_required
 def explore(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1759,7 +1759,7 @@ def explore(request):
         return render(request, "explore.html", {'token': token, 'username': username, 'entries': entries, 'entries_2':entries2, 'entries_3':entries3})
 
 #Create dataset
-@token_required
+#@token_required
 def all_substance(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1860,7 +1860,7 @@ def all_substance(request):
                 error = "Fill in Substance owner id."
                 return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'error':error,'substance_owner': substance_owner, 'page': page})
 
-@token_required
+#@token_required
 def select_substance(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1883,7 +1883,7 @@ def select_substance(request):
         print substances
         return render(request, "select_substance.html", {'token': token, 'username': username, 'substances':substances['substance']})
 @csrf_exempt
-@token_required
+#@token_required
 def get_substance(request):
      token = request.session.get('token', '')
      username = request.session.get('username', '')
@@ -1903,7 +1903,7 @@ def get_substance(request):
         print data
      return HttpResponse(data)
 
-@token_required
+#@token_required
 def select_properties(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -1943,7 +1943,7 @@ def select_properties(request):
         request.session['selected_properties'] = final
         return redirect('/descriptors', {'token': token, 'username': username})
 
-@token_required
+#@token_required
 def select_descriptors(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -2001,7 +2001,7 @@ def select_descriptors(request):
         return render(request, "new_task.html", {'token': token, 'username': username, 'task':task})
 
 #Validate
-@token_required
+#@token_required
 def validate(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -2071,7 +2071,7 @@ def validate(request):
         return render(request, "choose_dataset_validate.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed': proposed,})
 
 #choose dataset for validation
-@token_required
+#@token_required
 def choose_dataset_validate(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -2138,7 +2138,7 @@ def choose_dataset_validate(request):
             elif method == "split":
                 return redirect('/valid_split', {'token': token, 'username': username,})
 
-@token_required
+#@token_required
 def valid_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -2352,7 +2352,7 @@ def valid_params(request):
         print task_id
         return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
 
-@token_required
+#@token_required
 def valid_split(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -2562,7 +2562,7 @@ def valid_split(request):
         return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
 
 #External validation
-@token_required
+#@token_required
 def external_validation(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -2633,7 +2633,7 @@ def external_validation(request):
         return render(request, "choose_dataset_ext_valid.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed': proposed, 'model':model})
 
 #Choose model for external validation
-@token_required
+#@token_required
 def ext_valid_model(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -2668,7 +2668,7 @@ def ext_valid_model(request):
         #Display all models for selection
         return render(request, "ext_validation.html", {'token': token, 'username': username, 'my_models': m, 'proposed':proposed,})
 #
-@token_required
+#@token_required
 def get_model_ext_valid(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -2690,7 +2690,7 @@ def get_model_ext_valid(request):
         return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
 
 #Display report after validation
-@token_required
+#@token_required
 def report(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -2740,7 +2740,7 @@ def report(request):
 
 
 #Experimental design
-@token_required
+#@token_required
 def experimental(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -2808,7 +2808,7 @@ def experimental(request):
         return render(request, "exp_dataset.html", {'token': token, 'username': username, 'dataset': dataset, 'page': page, 'last':last, 'proposed':proposed})
 
 #Select parameters for experimental design with input
-@token_required
+#@token_required
 def experimental_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -3178,7 +3178,7 @@ def experimental_params(request):
         return render(request, "exp_dataset_detail.html", {'token': token, 'username': username,'new':new, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params': json.loads(params) })
 
 @csrf_exempt
-@token_required
+#@token_required
 def exp_submit(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -3287,7 +3287,7 @@ def exp_submit(request):
         json_data = json.dumps(data)
         return HttpResponse(json_data)
 
-@token_required
+#@token_required
 def exp_iter(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -3471,7 +3471,7 @@ def exp_iter(request):
         return render(request, "exp_dataset_detail.html", {'token': token, 'username': username,'new':new, 'data_detail': data_detail, 'predicted': predictedFeatures, 'prediction':prediction_feature, 'model':model_detail, 'dataset_name':new_dataset, 'params':params})
 
 @csrf_exempt
-@token_required
+#@token_required
 def fact_submit(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -3570,7 +3570,7 @@ def fact_submit(request):
         json_data = json.dumps(data)
         return HttpResponse(json_data)
 
-@token_required
+#@token_required
 def factorial_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -3615,7 +3615,7 @@ def factorial_dataset(request):
 
 #Factorial Validation
 @csrf_exempt
-@token_required
+#@token_required
 def factorial_validation(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -3673,7 +3673,7 @@ def factorial_validation(request):
         return HttpResponse(error)
 
 #Experimental design without input
-@token_required
+#@token_required
 def exp_design(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -4139,7 +4139,7 @@ def exp_design(request):
             return redirect('/interlab_params', {'token': token, 'username': username})'''
 
 #Train model
-@token_required
+#@token_required
 def interlab_select_substance(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -4215,7 +4215,7 @@ def interlab_select_substance(request):
             proposed.append({'name': p['_id'], 'meta': p['meta']})
         return render(request, "interlab_dataset.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed':proposed})
 
-@token_required
+#@token_required
 def interlab_params(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -4248,7 +4248,7 @@ def interlab_params(request):
         print json.loads(res.text)['_id']
         return redirect('/report?name='+json.loads(res.text)['_id'])
 
-@token_required
+#@token_required
 def clean_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -4284,7 +4284,7 @@ def clean_dataset(request):
         return redirect('/dataset?dataset=' +dataset)
 
 #List of reports
-@token_required
+#@token_required
 def report_list(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -4399,7 +4399,7 @@ def report_list(request):
             return render(request, "dataset_detail.html", {'token': token, 'username': username, 'name': name, 'data_detail':data_detail, 'properties': properties, 'a': a, 'new': new, 'page':page, 'last':last})'''
 
 #Delete selected report
-@token_required
+#@token_required
 def report_delete(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -4419,7 +4419,7 @@ def report_delete(request):
     return redirect('/reports')
 
 #Qrf report
-@token_required
+#@token_required
 def qrf_report(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -4453,7 +4453,7 @@ def qrf_report(request):
 
     return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })
 
-@token_required
+#@token_required
 def report_download(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -4497,7 +4497,7 @@ def report_download(request):
     return render(request, "report.html", {'token': token, 'username': username, 'report': report, 'name':name })
 
 #Read Across Training
-@token_required
+#@token_required
 def read_across_dataset(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -4565,7 +4565,7 @@ def read_across_dataset(request):
         return render(request, "read_across_dataset.html", {'token': token, 'username': username, 'entries2': dataset, 'page': page, 'last':last, 'proposed':proposed})
 
 #read across select parameters for training
-@token_required
+#@token_required
 def read_across_train(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -4772,7 +4772,7 @@ def read_across_train(request):
 
 
 #Read Across Predict
-@token_required
+#@token_required
 def read_across_predict(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')
@@ -4806,7 +4806,7 @@ def read_across_predict(request):
         #Display all models for selection
         return render(request, "read_across_predict_model.html", {'token': token, 'username': username, 'my_models': m, 'proposed':proposed})
 
-@token_required
+#@token_required
 def read_across_predict_model(request):
     token = request.session.get('token', '')
     username = request.session.get('username', '')

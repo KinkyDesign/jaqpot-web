@@ -86,7 +86,7 @@ def get_prediction_feature_of_dataset(dataset, token):
     return prediction_feature
 
 def get_prediction_feature_name_of_dataset(dataset, token, prediction):
-    headers = {'Accept': 'application/json', 'Authentication': token}
+    headers = {'Accept': 'application/json', 'Authorization': token}
     r = requests.get(SERVER_URL+'/dataset/'+dataset, headers=headers)
     data=json.loads(r.text)
     for f in data['features']:
