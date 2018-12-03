@@ -1435,7 +1435,7 @@ def predict_model(request):
         #Get required feature of selected model
         headers = {'Accept': 'application/json', 'Authorization': token}
         try:
-            required_res = requests.get(SERVER_URL+'/model/'+model+'/required', headers=headers)
+            required_res = requests.get(SERVER_URL+'/model/'+model+'/required?keepOrder=true', headers=headers)
         except Exception as e:
                 return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if required_res.status_code >= 400:
@@ -1504,7 +1504,7 @@ def predict_model(request):
         #Get the required model
         headers = {'Accept': 'application/json', 'Authorization': token}
         try:
-            required_res = requests.get(SERVER_URL+'/model/'+selected_model+'/required', headers=headers)
+            required_res = requests.get(SERVER_URL+'/model/'+selected_model+'/required?keepOrder=true', headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if required_res.status_code >= 400:
@@ -2580,13 +2580,29 @@ def external_validation(request):
         # Get required feature of selected model
         headers = {'Accept': 'application/json', 'Authorization': token}
         try:
-            required_res = requests.get(SERVER_URL + '/model/' + model + '/required', headers=headers)
+            required_res = requests.get(SERVER_URL + '/model/' + model + '/required?keepOrder=true', headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
         if required_res.status_code >= 400:
             return render(request, "error.html",
                           {'token': token, 'username': username, 'error': json.loads(required_res.text)})
+
         model_req = json.loads(required_res.text)
+
+        # Get predicting feature of selected model
+        headers = {'Accept': 'application/json', 'Authorization': token}
+        try:
+            predicted_res = requests.get(SERVER_URL + '/model/' + model + '/predicting', headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
+        if predicted_res.status_code >= 400:
+            return render(request, "error.html",
+                          {'token': token, 'username': username, 'error': json.loads(predicted_res.text)})
+        model_pred=json.loads(predicted_res.text)
+        model_req.append(model_pred[0])
+
+
+
         # check if is needed image or mocap
         image, mopac = chech_image_mopac(model_req)
         # Firstly, get the datasets of first page if user selects different page get the datasets of the selected page
@@ -2657,13 +2673,26 @@ def external_validation(request):
         # Get the required model
         headers = {'Accept': 'application/json', 'Authorization': token}
         try:
-            required_res = requests.get(SERVER_URL + '/model/' + selected_model + '/required', headers=headers)
+            required_res = requests.get(SERVER_URL + '/model/' + selected_model + '/required?keepOrder=true', headers=headers)
         except Exception as e:
             return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
         if required_res.status_code >= 400:
             return render(request, "error.html",
                           {'token': token, 'username': username, 'error': json.loads(required_res.text)})
         required_res = json.loads(required_res.text)
+
+        # Get predicting feature of selected model
+        headers = {'Accept': 'application/json', 'Authorization': token}
+        try:
+            predicted_res = requests.get(SERVER_URL + '/model/' + selected_model + '/predicting', headers=headers)
+        except Exception as e:
+            return render(request, "error.html", {'token': token, 'username': username, 'server_error': e, })
+        if predicted_res.status_code >= 400:
+            return render(request, "error.html",
+                          {'token': token, 'username': username, 'error': json.loads(predicted_res.text)})
+        model_pred = json.loads(predicted_res.text)
+        required_res.append(model_pred[0])
+
         print required_res
         if request.is_ajax():
             img_descriptors = request.POST.getlist('img_desc[]')
@@ -2703,7 +2732,7 @@ def external_validation(request):
                     return JsonResponse({'server_error': json.loads(res.text), "ERROR_REDIRECT": "1"})
                 dataset = res.text
                 print dataset
-                body = {'test_dataset_uri': SERVER_URL + '/dataset/' + dataset,
+                body = {'test_dataset_uri': dataset,
                         'model_uri': SERVER_URL + '/model/' + selected_model}
                 print body
                 headers = {'Accept': 'application/json', 'Authorization': token}
