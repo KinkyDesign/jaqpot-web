@@ -26,7 +26,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -116,7 +116,7 @@ EXT_AUTH_URL_LOGIN = 'https://opensso.in-silico.ch:443/auth/authenticate?uri=ser
 EXT_AUTH_URL_LOGOUT = 'http://opensso.in-silico.ch/opensso/identity/logout'
 
 #URL_1 = 'http://enanomapper.ntua.gr:8880/jaqpot/services'
-SERVER_URL = os.getenv('JAQPOT_BASE_SERVICE', 'http://app.jaqpot.org:8080/jaqpot/services')
+SERVER_URL = os.getenv('JAQPOT_BASE_SERVICE', 'http://jaqpot.org:8080/jaqpot/services')
 
 
 TEMPLATE_CONTEXT_PROCESSORS += (

@@ -3231,7 +3231,7 @@ def exp_submit(request):
         #import pdb;pdb.set_trace();
         data_detail = json.loads(res.text)'''
         try:
-            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+            res = requests.delete(SERVER_URL + '/dataset/'+dataset, headers=headers)
         except Exception as e:
             print('error')
 
@@ -3413,7 +3413,7 @@ def exp_iter(request):
         #Delete dataset
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
-            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+            res = requests.delete(SERVER_URL + '/dataset/'+dataset, headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
@@ -3513,7 +3513,7 @@ def fact_submit(request):
         #Delete previous dataset
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
-            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+            res = requests.delete(SERVER_URL + '/dataset/'+dataset, headers=headers)
         except Exception as e:
             print('error')
         #Delete model
@@ -3719,7 +3719,7 @@ def exp_design(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         print res.text
         dataset = json.loads(res.text)['_id']
-        dataset_uri='http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset
+        dataset_uri = SERVER_URL+'/dataset/'+dataset
 
         params, al = get_params(request, parameters, al)
         params.update({"nVars": nVars, "levels":levels, "nTrials":[int(nTrials)], "varNames":varNames, "factors":factors, "newY":['CA']})
@@ -3743,7 +3743,7 @@ def exp_design(request):
             #Delete empty dataset
             headers = {'Accept': 'application/json', 'subjectid': token}
             try:
-                res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+                res = requests.delete(SERVER_URL + '/dataset/'+dataset, headers=headers)
             except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             if res.status_code >= 400:
@@ -3753,7 +3753,7 @@ def exp_design(request):
              #Delete empty dataset
             headers = {'Accept': 'application/json', 'subjectid': token}
             try:
-                res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+                res = requests.delete(SERVER_URL + '/dataset/' +dataset, headers=headers)
             except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             if res.status_code >= 400:
@@ -3765,7 +3765,7 @@ def exp_design(request):
                 #Delete empty dataset
                 headers = {'Accept': 'application/json', 'subjectid': token}
                 try:
-                    res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+                    res = requests.delete(SERVER_URL + '/dataset/'+dataset, headers=headers)
                 except Exception as e:
                             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
                 if res.status_code >= 400:
@@ -3784,8 +3784,8 @@ def exp_design(request):
         model = json.loads(res1.text)['result']
         model=model.split('model/')[1]
         print(model)
-        dataset_uri='http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset
-        #dataset_uri='http://test.jaqpot.org:8080/jaqpot/services/dataset/corona'
+        dataset_uri=SERVER_URL + '/dataset/' +dataset
+        #dataset_uri=SERVER_URL + '/dataset/corona'
         body={'dataset_uri':dataset_uri}
         try:
             res2 = requests.post(SERVER_URL+'/model/'+model, headers=headers, data=body)
@@ -3793,7 +3793,7 @@ def exp_design(request):
                 #Delete empty dataset
                 headers = {'Accept': 'application/json', 'subjectid': token}
                 try:
-                    res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+                    res = requests.delete(SERVER_URL + '/dataset/'+dataset, headers=headers)
                 except Exception as e:
                             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
                 if res.status_code >= 400:
@@ -3803,7 +3803,7 @@ def exp_design(request):
             #Delete empty dataset
             headers = {'Accept': 'application/json', 'subjectid': token}
             try:
-                res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+                res = requests.delete(SERVER_URL + '/dataset/'+dataset, headers=headers)
             except Exception as e:
                         return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
             if res.status_code >= 400:
@@ -3823,7 +3823,7 @@ def exp_design(request):
                 #Delete empty dataset
                 headers = {'Accept': 'application/json', 'subjectid': token}
                 try:
-                    res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+                    res = requests.delete(SERVER_URL + '/dataset/' +dataset, headers=headers)
                 except Exception as e:
                             return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
                 if res.status_code >= 400:
@@ -3845,7 +3845,7 @@ def exp_design(request):
         #Delete empty dataset
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
-            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+dataset, headers=headers)
+            res = requests.delete(SERVER_URL + '/dataset/'+dataset, headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
@@ -3901,7 +3901,7 @@ def exp_design(request):
         #Delete model
         headers = {'Accept': 'application/json', "subjectid": token}
         try:
-            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/model/'+model, headers=headers)
+            res = requests.delete(SERVER_URL + '/model/'+model, headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
@@ -3963,12 +3963,14 @@ def exp_design(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         d_detail = json.loads(res.text)
         #Clean new dataset
-        suggested="http://test.jaqpot.org:8080/jaqpot/services/feature/289iHuKmMM3M"
+        suggested = SERVER_URL + "/feature/289iHuKmMM3M"
+        # suggested = "http://localhost:8080/jaqpot/services/feature/289iHuKmMM3M"
+        # suggested = "https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
         '''for d in d_detail['features']:
             if d['name']=='suggestedTrials':
                 suggested= d['uri']
         print('----')'''
-        rows= d_detail['totalRows']
+        rows = d_detail['totalRows']
         columns = d_detail['totalColumns']
         new_data = create_and_clean_dataset2_with_title(d_detail['dataEntry'], "guest", d_detail['features'], d_detail['byModel'], rows, columns, d_detail['meta']['titles'][0], d_detail['meta']['descriptions'][0], prediction_feature, suggested)
         print new_data
@@ -3989,13 +3991,13 @@ def exp_design(request):
         #Delete previous dataset
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
-            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+new_dataset, headers=headers)
+            res = requests.delete(SERVER_URL + '/dataset/'+new_dataset, headers=headers)
         except Exception as e:
             print('error')
          #Delete previous dataset (exp_dataset)
         headers = {'Accept': 'application/json', 'subjectid': token}
         try:
-            res = requests.delete('http://test.jaqpot.org:8080/jaqpot/services/dataset/'+exp_dataset, headers=headers)
+            res = requests.delete(SERVER_URL + '/dataset/'+exp_dataset, headers=headers)
         except Exception as e:
                     return render(request, "error.html", {'token': token, 'username': username,'server_error':e, })
         if res.status_code >= 400:
@@ -4196,7 +4198,7 @@ def interlab_params(request):
             return render(request, "interlab_params.html", {'token': token, 'username': username, 'dataset':dataset, 'form':form})
         modelname = form['modelname'].value()
         description = form['description'].value()
-        dataset = "http://test.jaqpot.org:8080/jaqpot/services/dataset/interlab-dummy"
+        dataset = SERVER_URL + '/dataset/interlab-dummy'
         prediction = "https://apps.ideaconsult.net/enmtest/property/TOX/UNKNOWN_TOXICITY_SECTION/Log2+transformed/94D664CFE4929A0F400A5AD8CA733B52E049A688/3ed642f9-1b42-387a-9966-dea5b91e5f8a"
         headers = {'Accept': 'application/json', 'subjectid': token}
         body = {'title': modelname, 'descriptions': description, 'dataset_uri': dataset, 'prediction_feature':prediction}

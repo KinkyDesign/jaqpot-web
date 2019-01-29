@@ -118,4 +118,8 @@ def getvalue(d,k):
 
 @register.filter
 def splitname(d):
-    return d.split('_')[1]
+    # print d
+    # if "_" in d:
+    #     print "for split:" + d
+        return d.split('_')[1]
+    # return d.split('_')[1]
