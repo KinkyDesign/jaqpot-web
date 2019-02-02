@@ -104,7 +104,7 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 SITE_ID = 1
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'https://ui-jaqpot.prod.openrisknet.org/'
 
 TEMPLATE_DIRS = (
   'jaqpot_ui/templates',
@@ -116,8 +116,9 @@ EXT_AUTH_URL_LOGIN = 'https://opensso.in-silico.ch:443/auth/authenticate?uri=ser
 EXT_AUTH_URL_LOGOUT = 'http://opensso.in-silico.ch/opensso/identity/logout'
 
 #URL_1 = 'http://enanomapper.ntua.gr:8880/jaqpot/services'
-SERVER_URL = os.getenv('JAQPOT_BASE_SERVICE', 'http://localhost:8080/jaqpot/services')
-
+# SERVER_URL = os.getenv('JAQPOT_BASE_SERVICE', 'http://localhost:8080/jaqpot/services')
+SERVER_URL = os.getenv('JAQPOT_BASE_SERVICE', 'https://api-jaqpot.prod.openrisknet.org/jaqpot/services')
+OC = os.getenv('OPENSHIFT_HOMEDIR', '/')
 
 TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.request',

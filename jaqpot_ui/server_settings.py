@@ -116,7 +116,7 @@ EXT_AUTH_URL_LOGOUT = 'http://opensso.in-silico.ch/opensso/identity/logout'
 
 #URL_1 = 'http://enanomapper.ntua.gr:8880/jaqpot/services'
 SERVER_URL = 'http://app.jaqpot.org:8080/jaqpot/services'
-
+OPENSHIFT_HOMEDIR = ''
 
 TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.request',

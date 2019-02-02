@@ -71,7 +71,7 @@ def login(request):
                     if next:
                         return redirect(next.split("'")[1])
                     else:
-                        return redirect('/')
+                        return redirect('https://ui-jaqpot.prod.openrisknet.org/')
 
                 elif r.status_code == 401:
                     error = "Wrong username or password"
@@ -97,13 +97,13 @@ def logout(request):
                 request.session['username'] = ''
 
                 # send to home page
-               # return redirect('/')
+               # return redirect('https://ui-jaqpot.prod.openrisknet.org/')
             #else:
-                return redirect('/login')
+                return redirect('https://ui-jaqpot.prod.openrisknet.org/login')
         #except Exception as e:
          #   return render(request, "error.html", {'server_error':e, })
     else:
-        return redirect('/')
+        return redirect('https://ui-jaqpot.prod.openrisknet.org/')
 
 
 #List of all tasks
@@ -619,11 +619,13 @@ def choose_dataset(request):
         else:
             request.session['alg'] = algorithms[0]['alg']
             request.session['data'] = dataset
-            return redirect('/change_params', {'token': token, 'username': username,})
+            return redirect('https://ui-jaqpot.prod.openrisknet.org/change_params', {'token': token, 'username': username,})
+
 
 #change algorithms parameters, select pmml, prediction feature, scaling and doa for training
 #@token_required
 def change_params(request):
+    print request
     token = request.session.get('token', '')
     username = request.session.get('username', '')
 
@@ -826,7 +828,7 @@ def change_params(request):
         task_id = json.loads(res.text)['_id']
         print task_id
         print json.dumps(params)
-        return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+        return redirect('https://ui-jaqpot.prod.openrisknet.org/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
 
 
 #Conformer
@@ -839,7 +841,7 @@ def conformer(request):
         return render(request, "conformer.html", {'token': token, 'username': username})
     if request.method == 'POST':
         #add task for descriptors calculation
-        return redirect('/task', {'token': token, 'username': username})
+        return redirect('https://ui-jaqpot.prod.openrisknet.org/task', {'token': token, 'username': username})
 
 #list of models
 #@token_required
@@ -940,7 +942,7 @@ def model_delete(request):
     if res.status_code >= 400:
         return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
     reply = res.text
-    return redirect('/model')
+    return redirect('https://ui-jaqpot.prod.openrisknet.org/model')
 
 #@token_required
 def model_pmml(request):
@@ -1324,7 +1326,7 @@ def dataset_delete(request):
         return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
     reply = res.text
     print reply
-    return redirect('/data')
+    return redirect('https://ui-jaqpot.prod.openrisknet.org/data')
 
 #@token_required
 def dispay_predicted_dataset(request):
@@ -1594,7 +1596,7 @@ def predict_model(request):
                 response = json.loads(res.text)
                 print response
                 id = response['_id']
-                return redirect('/t_detail?name='+id+'&model='+selected_model)
+                return redirect('https://ui-jaqpot.prod.openrisknet.org/t_detail?name='+id+'&model='+selected_model)
 @csrf_exempt
 def calculate_image_descriptors(request):
     #get data uri od upload image
@@ -1693,7 +1695,7 @@ def contact(request):
             #css the sender mail
             recipients.append(sender)
             send_mail(subject, message, sender, recipients)
-            return HttpResponseRedirect('/thanks/') # Redirect after POST
+            return HttpResponseredirect('https://ui-jaqpot.prod.openrisknet.org/thanks/') # Redirect after POST
         else:
 
             return render_to_response('contact_form.html', {'form': form, 'token': token, 'username': username}, context_instance=RequestContext(request))
@@ -1838,7 +1840,7 @@ def all_substance(request):
                     return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
                 substances=json.loads(res.text)
                 request.session['substances'] = substances
-                return redirect('/select_substance', {'token': token, 'username': username})
+                return redirect('https://ui-jaqpot.prod.openrisknet.org/select_substance', {'token': token, 'username': username})
         elif method=="complete":
             form = SubstanceownerForm(request.POST)
             if form.is_valid(): # All validation rules pass
@@ -1855,7 +1857,7 @@ def all_substance(request):
                 substances=json.loads(res.text)
                 print substances
                 request.session['substances'] = substances
-                return redirect('/select_substance', {'token': token, 'username': username})
+                return redirect('https://ui-jaqpot.prod.openrisknet.org/select_substance', {'token': token, 'username': username})
             else:
                 error = "Fill in Substance owner id."
                 return render(request, "substance.html", {'token': token, 'username': username, 'form':form, 'error':error,'substance_owner': substance_owner, 'page': page})
@@ -1875,7 +1877,7 @@ def select_substance(request):
                 checkall.append(s['URI'])
             print checkall
             checkall=json.dumps(checkall)
-            #return redirect('/select_substance', {'token': token, 'username': username, 'checkall':checkall})
+            #return redirect('https://ui-jaqpot.prod.openrisknet.org/select_substance', {'token': token, 'username': username, 'checkall':checkall})
             return HttpResponse(checkall)
 
     if request.method == 'GET':
@@ -1941,7 +1943,7 @@ def select_properties(request):
             j=j+1
         print final
         request.session['selected_properties'] = final
-        return redirect('/descriptors', {'token': token, 'username': username})
+        return redirect('https://ui-jaqpot.prod.openrisknet.org/descriptors', {'token': token, 'username': username})
 
 #@token_required
 def select_descriptors(request):
@@ -1997,7 +1999,7 @@ def select_descriptors(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         response = json.loads(res.text)
         task = response['_id']
-        #return redirect('/task', {'token': token, 'username': username})
+        #return redirect('https://ui-jaqpot.prod.openrisknet.org/task', {'token': token, 'username': username})
         return render(request, "new_task.html", {'token': token, 'username': username, 'task':task})
 
 #Validate
@@ -2134,9 +2136,9 @@ def choose_dataset_validate(request):
             request.session['alg'] = algorithms[0]['alg']
             request.session['data'] = dataset
             if method == "cross":
-                return redirect('/valid_params', {'token': token, 'username': username,})
+                return redirect('https://ui-jaqpot.prod.openrisknet.org/valid_params', {'token': token, 'username': username,})
             elif method == "split":
-                return redirect('/valid_split', {'token': token, 'username': username,})
+                return redirect('https://ui-jaqpot.prod.openrisknet.org/valid_split', {'token': token, 'username': username,})
 
 #@token_required
 def valid_params(request):
@@ -2350,7 +2352,7 @@ def valid_params(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         task_id = json.loads(res.text)['_id']
         print task_id
-        return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+        return redirect('https://ui-jaqpot.prod.openrisknet.org/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
 
 #@token_required
 def valid_split(request):
@@ -2559,7 +2561,7 @@ def valid_split(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         task_id = json.loads(res.text)['_id']
         print task_id
-        return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+        return redirect('https://ui-jaqpot.prod.openrisknet.org/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
 
 #External validation
 #@token_required
@@ -2785,7 +2787,7 @@ def external_validation(request):
                 response = json.loads(res.text)
                 print response
                 id = response['_id']
-                return redirect('/t_detail?name=' + id + '&model=' + selected_model)
+                return redirect('https://ui-jaqpot.prod.openrisknet.org/t_detail?name=' + id + '&model=' + selected_model)
 
 #Choose model for external validation
 #@token_required
@@ -2842,7 +2844,7 @@ def get_model_ext_valid(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         task_id = json.loads(res.text)['_id']
         print task_id
-        return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+        return redirect('https://ui-jaqpot.prod.openrisknet.org/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
 
 #Display report after validation
 #@token_required
@@ -3216,7 +3218,7 @@ def experimental_params(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         task_id = json.loads(res.text)['_id']
         print task_id
-        #return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+        #return redirect('https://ui-jaqpot.prod.openrisknet.org/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
         try:
             res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
         except Exception as e:
@@ -3505,7 +3507,7 @@ def exp_iter(request):
         print res.text
         task_id = json.loads(res.text)['_id']
         print task_id
-        #return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+        #return redirect('https://ui-jaqpot.prod.openrisknet.org/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
         try:
             res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
         except Exception as e:
@@ -4069,7 +4071,7 @@ def exp_design(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         task_id = json.loads(res.text)['_id']
         print task_id
-        #return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+        #return redirect('https://ui-jaqpot.prod.openrisknet.org/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
         try:
             res1 = requests.get(SERVER_URL+'/task/'+task_id, headers=headers)
         except Exception as e:
@@ -4243,7 +4245,7 @@ def exp_design(request):
     if token:
         r = requests.post(SERVER_URL + '/aa/validate', headers=headers)
         if r.status_code != 200:
-            return redirect('/login')
+            return redirect('https://ui-jaqpot.prod.openrisknet.org/login')
         else:
             page=request.GET.get('page')
             if page:
@@ -4293,7 +4295,7 @@ def exp_design(request):
             res = requests.get(substance_owner+'/substance', headers=headers)
             substances=json.loads(res.text)
             request.session['substances'] = substances
-            return redirect('/interlab_params', {'token': token, 'username': username})'''
+            return redirect('https://ui-jaqpot.prod.openrisknet.org/interlab_params', {'token': token, 'username': username})'''
 
 #Train model
 #@token_required
@@ -4403,7 +4405,7 @@ def interlab_params(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         print res.text
         print json.loads(res.text)['_id']
-        return redirect('/report?name='+json.loads(res.text)['_id'])
+        return redirect('https://ui-jaqpot.prod.openrisknet.org/report?name='+json.loads(res.text)['_id'])
 
 #@token_required
 def clean_dataset(request):
@@ -4438,7 +4440,7 @@ def clean_dataset(request):
             return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
         dataset = res.text.split('/dataset/')[1]
         print dataset
-        return redirect('/dataset?dataset=' +dataset)
+        return redirect('https://ui-jaqpot.prod.openrisknet.org/dataset?dataset=' +dataset)
 
 #List of reports
 #@token_required
@@ -4507,10 +4509,10 @@ def report_list(request):
         #if token is not valid redirect to login page
         r = requests.post(SERVER_URL + '/aa/validate', headers={'Authorization': token})
         if r.status_code != 200:
-            return redirect('/login')
+            return redirect('https://ui-jaqpot.prod.openrisknet.org/login')
     else:
 
-        return redirect('/login')
+        return redirect('https://ui-jaqpot.prod.openrisknet.org/login')
 
     name = request.GET.get('name', '')
     page = request.GET.get('page', '')
@@ -4573,7 +4575,7 @@ def report_delete(request):
         return render(request, "error.html", {'token': token, 'username': username,'error': json.loads(res.text)})
     reply = res.text
     print reply
-    return redirect('/reports')
+    return redirect('https://ui-jaqpot.prod.openrisknet.org/reports')
 
 #Qrf report
 #@token_required
@@ -4925,7 +4927,7 @@ def read_across_train(request):
         task_id = json.loads(res.text)['_id']
         print task_id
         print json.dumps(params)
-        return redirect('/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
+        return redirect('https://ui-jaqpot.prod.openrisknet.org/t_detail?name='+task_id+'&status=queued', {'token': token, 'username': username})
 
 
 #Read Across Predict
@@ -5137,4 +5139,4 @@ def read_across_predict_model(request):
                 response = json.loads(res.text)
                 print response
                 id = response['_id']
-                return redirect('/t_detail?name='+id+'&model='+selected_model)
+                return redirect('https://ui-jaqpot.prod.openrisknet.org/t_detail?name='+id+'&model='+selected_model)
